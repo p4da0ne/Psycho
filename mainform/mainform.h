@@ -1,0 +1,112 @@
+#ifndef MAINFORM_H
+#define MAINFORM_H
+
+#include <QtGui>
+#include "ui_main_form.h"
+#include <manage_users.h>
+#include <output.h>
+#include "mymdiarea.h"
+#include <QMdiArea>
+#include <QMdiSubWindow>
+#include <QMessageBox>
+#include <QFile> 
+#include <mapview.h>
+#include "QMap"
+#include "QStringList"
+#include <reports.h>
+#include <supporting_tables.h>
+#include <object_manager.h>
+#include "settings.h"
+#include "calculatingproblemmanager.h"
+#include "db_saturn.h"
+#include "dataaccess.h"
+
+
+namespace Ui
+{
+    class main_form;
+};
+
+class Mainform : public QMainWindow
+{
+	Q_OBJECT
+
+signals:
+   void reopen_login();
+   void valid_user(int id_user);
+
+public:
+	Mainform(QMainWindow *parent = 0, Qt::WFlags flags = 0);
+	virtual ~Mainform();
+	QString db_driver,message,login_message;
+	int id_user;
+	bool login_flag;
+	QString str_to_md5(QString str);
+	QMdiArea * m_mdiArea;
+    
+private slots:
+	void show_calculating_form();
+	void show_user_form();
+	void show_connect_settings_dialog();
+	void test_connection();
+	void save_connection_settings();
+	void show_login_form();
+	void create_user_menu(int id_user);
+	void show_map_form();
+	void show_supporting_tables_form();
+	void show_object_manager_form();
+	//void show_dialog_add_new_region(int id_parent,bool is_parent_ko);
+
+private:
+	QMenu * menu;
+	QAction * action1;
+	QAction * action2;
+	QAction * action_adm;
+	QMenu * settings_menu;
+	QAction * sett_act1;
+	QAction * sett_act2;
+	QAction * sett_act3;
+	QAction * sett_act4;
+	QAction * sett_act5;
+	QMenu * DB_work_menu;
+	QMenu * oper_menu;
+	QAction * map_act;
+	QAction * opp_edit_action;
+	QAction * weapon_edit_action;
+	QAction * planer_action;
+	QLabel *message_label;
+	void init_menu(int id_user_group);
+	QDialog *DB_dialog;
+	QDialog *login_form;
+	QLineEdit *db_name_edit;
+	QLineEdit *host_edit;
+	QLineEdit *user_edit;
+	QLineEdit *password_edit;
+	QLineEdit *login_edit;
+	QLineEdit *login_password_edit;
+	QComboBox *ServDB_combobox;
+	Settings *settings;
+	CalculatingProblemManager *calc;
+
+    bool create_connection(QString,QString,QString,QString,QString);
+	bool close_connection();
+	void get_db_settings();
+	bool test_db_connection();
+	int login(QString login_name,QString password);
+	void add_mapwork(QMenu *oper_menu);
+	void add_menu_db_connection(QMenu *settings_menu);
+	void add_menu_manage_users(QMenu *settings_menu);
+	void add_menu_exit(QMenu *menu);
+	void add_menu_change_user(QMenu *menu);
+	void add_menu_enter_system(QMenu *menu);
+	void add_menu_supporting_tables(QMenu *oper_menu);
+	void add_menu_object_manager(QMenu *oper_menu);
+	void add_menu_calculation(QMenu *oper_menu);
+	bool connection_flag;
+	db_saturn *db;
+	//add_object *reg;
+
+	Ui::main_form *UI;
+};
+
+#endif // MAINFORM_H

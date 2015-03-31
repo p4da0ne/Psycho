@@ -1,0 +1,25 @@
+#ifndef SIMLEDELEGATE_H
+#define SIMLEDELEGATE_H
+
+#include <QSqlRelationalDelegate>
+#include <QPainter>
+
+class simleDelegate : public QSqlRelationalDelegate
+{
+	Q_OBJECT
+
+public:
+	simleDelegate(QObject *parent);
+	~simleDelegate();
+
+	void paint ( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index )const;
+    QSize sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index );
+	void updateEditorGeometry ( QWidget * editor, const QStyleOptionViewItem & option, const QModelIndex & index ) const;
+	void setModelData ( QWidget * editor, QAbstractItemModel * model, const QModelIndex & index ) const;
+	void setEditorData ( QWidget * editor, const QModelIndex & index ) const;
+    QWidget * createEditor ( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const;
+private:
+	
+};
+
+#endif // SIMLEDELEGATE_H
