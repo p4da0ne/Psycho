@@ -13,12 +13,22 @@
 #include <QList>
 #include <QBrush>
 #include <QtSql>
+#include <QDialog>
+#include <QMessageBox>
+#include <QHeaderView>
+#include <QFileDialog>
+#include <QUrl>
+#include <QPainter>
+#include <QLineEdit>
+#include "simledelegate.h"
+#include <QProgressDialog>
+#include <QMenu>
+#include <QMouseEvent>
+#include <QAction>
 #include "config_object_manager.h"
 #include "add_elements_dialog.h"
 #include "add_object.h"
 #include "simledelegate.h"
-#include "ui_object_manager_form.h"
-
 
 class simledelegate;
 

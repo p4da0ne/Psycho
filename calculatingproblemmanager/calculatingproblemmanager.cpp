@@ -1,18 +1,6 @@
 #include "calculatingproblemmanager.h"
-#include <QMenu>
-#include <QDir>
-#include <QAction>
-#include <QDialog>
-#include <QMessageBox>
-#include <QHeaderView>
-#include <QFileDialog>
-#include <QUrl>
-#include <QPoint>
-#include <QPainter>
-#include <QLineEdit>
-#include <QStandardItem>
-#include <QProgressDialog>
-#include <QStringList>
+
+#include "ui_calculatingproblemmanager_form.h"
 //#include "ui_calculatingproblemmanager_form.h"
 CalculatingProblemManager::CalculatingProblemManager(QWidget *parent) //int in_id_object
     : QWidget(parent),

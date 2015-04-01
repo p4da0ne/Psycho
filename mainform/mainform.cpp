@@ -1,4 +1,5 @@
 #include "mainform.h"
+#include "ui_main_form.h"
 
 #if defined Q_OS_WIN
 #define kodec QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Windows-1251"));
@@ -22,57 +23,22 @@ Mainform::Mainform(QMainWindow *parent, Qt::WFlags flags)
 	connect(this,SIGNAL(reopen_login()),this,SLOT(show_login_form()));
 	connect(this,SIGNAL(valid_user(int)),this,SLOT(create_user_menu(int)));
 	connect(this,SIGNAL(signalMainWindowShown()),this,SLOT(show_login_form()));
-	
-	
 
-//----------- Тестирование модуля вывода ---------
-	QTextCodec *codec = QTextCodec::codecForName("CP1251");
-	QTextCodec::setCodecForCStrings(codec);
-	Reports *r = new Reports;
-	QString report = r->create_object_formular(8);
+    QTextCodec *codec = QTextCodec::codecForName("CP1251");
+    QTextCodec::setCodecForCStrings(codec);
 
-//----------------------------------------
+	if (test_db_connection())
+	{
+		connection_flag = true;
+	}
+
 	init_menu(0);
-
-
-
-
-////
-
-//while (!test_db_connection())
-//	{
-//
-//	}
-//close_connection();
-//
-//
-//	QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
-//    db.setHostName("192.168.0.63");
-//	db.setDatabaseName("SATURN_3");
-//    db.setUserName("saturn_user");
-//    db.setPassword("qwerty");
-//	db.open();
-//	
-//
-//
-//
-//init_menu(1);
-//show_map_form();
-//
-
-
-
-
-
-
 }
 
 Mainform::~Mainform()
 {
  delete UI;
 }
-
-
 
 //========== Создание и открытие диалогового окна настроек соединения с БД ===============
 void Mainform::show_connect_settings_dialog()
@@ -583,10 +549,10 @@ void Mainform::show_user_form()
 //============= Открытие формы работы с картой ==============
 void Mainform::show_map_form()
 {
-	MapView * m = new MapView;
-	QMdiSubWindow * mapW = m_mdiArea->addSubWindow (m);
+    MapView *mapView = new MapView(this);
+    QMdiSubWindow * mapW = m_mdiArea->addSubWindow (mapView);
     mapW->setAttribute (Qt::WA_DeleteOnClose);
-    m->showMaximized();
+    mapView->showMaximized();
 	m_mdiArea->setActiveSubWindow (mapW);   
 
 }

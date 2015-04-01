@@ -10,16 +10,28 @@
 #include <QSqlTableModel>
 #include <QSqlDatabase>
 #include <QList>
-#include <QtSql>
+
 #include "Calculate_K_omkrf.h"
-#include "ui_calculatingproblemmanager_form.h"
+#include <QtSql>
+#include <QMenu>
+#include <QDir>
+#include <QAction>
+#include <QDialog>
+#include <QMessageBox>
+#include <QHeaderView>
+#include <QFileDialog>
+#include <QUrl>
+#include <QPoint>
+#include <QPainter>
+#include <QLineEdit>
+#include <QStandardItem>
+#include <QProgressDialog>
+#include <QStringList>
 #include "config_calculatingproblemmanager.h"
 #include "calculating_mps.h"
 #include "People_Losses.h"
 #include "textprinter.h"
 #include <QLabel>
-#include <QDialog>
-#include <QLineEdit>
 #include <QTextDocument>
 #include <QStringList>
 

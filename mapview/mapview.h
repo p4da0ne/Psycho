@@ -1,11 +1,28 @@
 #ifndef MAPVIEW_H
 #define MAPVIEW_H
 
+
 #include <QWidget>
 #include <QLineEdit>
 #include <QDialog>
 #include <QStatusBar>
 #include <QDate>
+#include <QLayout>
+#include <QMenuBar>
+#include <QFileDialog>
+#include <QTextCodec>
+#include <QPaintDevice>
+#include <QPixmap>
+#include <QPicture>
+#include <QPaintEvent>
+#include <QToolButton>
+#include <QLabel>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QPushButton>
+#include <QtSql>
+#include <QMessageBox>
+#include <QMap>
 
 
 #include <mapapi.h>
@@ -14,16 +31,15 @@
 #include "view_manage.h"
 #include "calculating_mps.h"
 #include "People_Losses.h"
-#include "../my_mapaccess/my_mapaccess.h"
+#include "my_mapaccess.h"
 //#include "Calculate_K_omkrf.h"
-
 
 class __EXPORT_MAPVIEW MapView : public QWidget
 {
     Q_OBJECT
 
 public:
-    MapView( QWidget *parent=0, const char *name=0 );
+    MapView( QWidget *parent=0);
 //    ~MapView();
     void	keyPressEvent(QKeyEvent *e);
 	void	mouseMoveEvent(QMouseEvent * event);
@@ -33,11 +49,25 @@ public:
 
 private:
 	void	showInformationDialog(QString information);
+
+
+
 public slots://на запросы
 	void	errors_message(QString str);
 	void	showInfoAboutObject(long int id_obj);
 	void	mouseRightMenu(HOBJ hobj, long int id_object, long int id_obj, QPoint pe, bool region);
+	void	mouseRightSimpleMenu(QPoint pe);
 private slots:
+
+//======= функции (слоты) расчетных задач, вызываемых из контекстного меню ===============
+
+//-- Расчетная задача "МПО региона" ---
+void regionMPOLevel();
+//-- Расчетная задача "Психогенные потери формирования" ---
+void formatonDamage();
+
+//==========================================
+
 	void	selectLineObject();
     void	open();
     void	LessScale();
@@ -60,6 +90,10 @@ private slots:
 	void showShortInformationObject_2arg(QString a,long int id_obj);
 	HSITE   openMapSit();
 	HSITE   openMapSit1();
+
+
+	//void slotCalcRegionMPO();
+	//void slotCalcFormationDamage();
 public:
 	MyMapAccess * map;
     QTextCodec  * MainCodec;
@@ -100,6 +134,15 @@ private:
 	Calculate_K_omkrf calc1;
 	/*calculating_mps		calc;*/
 //	QLabel      * lbl;
+
+
+//------------------
+//для меню
+	HOBJ hobj;
+	long int num_obj, id_obj;
+	QPoint pe_menu;
+	bool region;
+//-------------------
 };
 
 #endif

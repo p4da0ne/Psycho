@@ -1,11 +1,6 @@
 #include "manage_users.h"
-#include <QtSql>
-#include <QSqlError>
-#include <QDialog>
-#include <QComboBox>
-#include <QGridLayout>
-#include <QMessageBox>
-#include <QHeaderView>
+#include "ui_manage_users_form.h"
+
 
 ManageUsers::ManageUsers(QDialog *parent)
     : QDialog(parent),

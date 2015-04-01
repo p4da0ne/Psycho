@@ -1,20 +1,8 @@
 #include "object_manager.h"
-#include <QMenu>
-#include <QMouseEvent>
-#include <QAction>
 #include "../dataaccess/dataaccess.h"
-#include <QDialog>
-#include <QMessageBox>
-#include <QHeaderView>
-#include <QFileDialog>
-#include <QUrl>
-#include <QPainter>
-#include <QLineEdit>
-#include <QStandardItem>
-#include "simledelegate.h"
-#include <QProgressDialog>
 #include "ui_add_object.h"
 #include "ui_object_manager_form.h"
+
 
 Objectmanager::Objectmanager(QWidget *parent) //int in_id_object
     : QWidget(parent),

@@ -1,259 +1,244 @@
-#include <QLayout>
-#include <QMenuBar>р
-#include <QStatusBar>
-#include <QFileDialog>
-#include <QTextCodec>
-#include <QPaintDevice>
-#include <QPixmap>
-#include <QPicture>
-#include <QPaintEvent>
-#include <QToolButton>
-#include <QLabel>
-#include <QLineEdit>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QDialog>
-#include <QWidget>
-#include <QPushButton>
-#include <QStatusBar>
-#include <QtSql>
-#include <QSqlError>
-#include <QMessageBox>
-#include <QDialog>
-#include <QMap>
-#include <QtGui>
 #include "mapview.h"
 #include "view_manage.h"
 
- 
 
-MapView::MapView(QWidget *parent, const char *name)
+MapView::MapView(QWidget * parent)
     : QWidget(parent)
-
 {
        
-	   MainCodec = QTextCodec::codecForName("CP1251");
-	   setMouseTracking(true);
+       MainCodec = QTextCodec::codecForName("CP1251");
+       setMouseTracking(true);
 
-	   setWindowIcon(QIcon("./icons/mapwork.png")); 
+       setWindowIcon(QIcon("./icons/mapwork.png"));
 
-	QVBoxLayout *vertLayout = new QVBoxLayout();  //==== основной лэйаут
-	vertLayout->setMargin(1);
+    QVBoxLayout *vertLayout = new QVBoxLayout();  //==== основной лэйаут
+    vertLayout->setMargin(1);
 	
-	//==== формирование меню на основе QFrame и QToolButton's ====
-	QFrame *buttons_menu = new QFrame();
-	buttons_menu->setFrameStyle(QFrame::Panel | QFrame::Raised);
-	buttons_menu->setLineWidth(2);
+    //==== формирование меню на основе QFrame и QToolButton's ====
+    QFrame *buttons_menu = new QFrame();
+    buttons_menu->setFrameStyle(QFrame::Panel | QFrame::Raised);
+    buttons_menu->setLineWidth(2);
 
-	QToolButton *open_map_but = new QToolButton();
-	open_map_but->setIcon(QIcon("./icons/map_open.png"));
-	open_map_but->setIconSize(QSize(20,20));
-	open_map_but->setToolTip("Открыть карту");
-	connect(open_map_but, SIGNAL(clicked()), this, SLOT(open()));
+    QToolButton *open_map_but = new QToolButton();
+    open_map_but->setIcon(QIcon("./icons/map_open.png"));
+    open_map_but->setIconSize(QSize(20,20));
+    open_map_but->setToolTip("Открыть карту");
+    connect(open_map_but, SIGNAL(clicked()), this, SLOT(open()));
 
 //добавление пользовательского слоя
-	QToolButton *tool_button_test = new QToolButton();
-	tool_button_test->setIcon(QIcon("./icons/map_open.png"));
-	tool_button_test->setIconSize(QSize(20,20));
-	tool_button_test->setToolTip("Добавить слой");
-	connect(tool_button_test, SIGNAL(clicked()), this, SLOT(appendSit()));
+    QToolButton *tool_button_test = new QToolButton();
+    tool_button_test->setIcon(QIcon("./icons/map_open.png"));
+    tool_button_test->setIconSize(QSize(20,20));
+    tool_button_test->setToolTip("Добавить слой");
+    connect(tool_button_test, SIGNAL(clicked()), this, SLOT(appendSit()));
 
 
-	QToolButton *close_map_but = new QToolButton();
-	close_map_but->setIcon(QIcon("./icons/map_close.png"));
-	close_map_but->setIconSize(QSize(20,20));
-	close_map_but->setToolTip("Закрыть карту и все данные");
-	connect(close_map_but, SIGNAL(clicked()), this, SLOT(closeMap()));
+    QToolButton *close_map_but = new QToolButton();
+    close_map_but->setIcon(QIcon("./icons/map_close.png"));
+    close_map_but->setIconSize(QSize(20,20));
+    close_map_but->setToolTip("Закрыть карту и все данные");
+    connect(close_map_but, SIGNAL(clicked()), this, SLOT(closeMap()));
 //яркость
-	QToolButton *set_map_bright1 = new QToolButton();
-	set_map_bright1->setIcon(QIcon("./icons/up.png"));
-	set_map_bright1->setIconSize(QSize(20,20));
-	set_map_bright1->setToolTip("Увеличить яркость карты");
-	connect(set_map_bright1, SIGNAL(clicked()), this, SLOT(changeBrihgtUp()));
+    QToolButton *set_map_bright1 = new QToolButton();
+    set_map_bright1->setIcon(QIcon("./icons/up.png"));
+    set_map_bright1->setIconSize(QSize(20,20));
+    set_map_bright1->setToolTip("Увеличить яркость карты");
+    connect(set_map_bright1, SIGNAL(clicked()), this, SLOT(changeBrihgtUp()));
 //яркость
-	QToolButton *set_map_bright2 = new QToolButton();
-	set_map_bright2->setIcon(QIcon("./icons/down.png"));
-	set_map_bright2->setIconSize(QSize(20,20));
-	set_map_bright2->setToolTip("Уменьшить яркость карты");
-	connect(set_map_bright2, SIGNAL(clicked()), this, SLOT(changeBrihgtDown()));
-	QLabel *v_lab = new QLabel();
-
-	v_lab->setFrameStyle(QFrame::VLine | QFrame::Raised);
-	v_lab->setLineWidth(2);
+    QToolButton *set_map_bright2 = new QToolButton();
+    set_map_bright2->setIcon(QIcon("./icons/down.png"));
+    set_map_bright2->setIconSize(QSize(20,20));
+    set_map_bright2->setToolTip("Уменьшить яркость карты");
+    connect(set_map_bright2, SIGNAL(clicked()), this, SLOT(changeBrihgtDown()));
+    QLabel *v_lab = new QLabel();
 
 
-	QHBoxLayout *menuLayout = new QHBoxLayout();
-	menuLayout->setAlignment(Qt::AlignLeft);
-	menuLayout->setMargin(2);
-	menuLayout->setSpacing(0);
+//уменьшить масштаб отображения карты
+	QToolButton *less_scale_but = new QToolButton();
+	less_scale_but->setIcon(QIcon("./icons/less_scale.jpg"));
+	less_scale_but->setIconSize(QSize(20,20));
+	less_scale_but->setToolTip("Уменьшить масштаб");
+	connect(less_scale_but, SIGNAL(clicked()), this, SLOT(LessScale()));
+//увеличить масштаб отображения карты
+	QToolButton *greate_scale_but = new QToolButton();
+	greate_scale_but->setIcon(QIcon("./icons/greate_scale.jpg"));
+	greate_scale_but->setIconSize(QSize(20,20));
+	greate_scale_but->setToolTip("Увеличить масштаб");
+	connect(greate_scale_but, SIGNAL(clicked()), this, SLOT(GreateScale()));
 
-	menuLayout->addWidget(open_map_but);
-	menuLayout->addWidget(tool_button_test);
-	menuLayout->addWidget(close_map_but);
-	menuLayout->addWidget(set_map_bright1);
-	menuLayout->addWidget(set_map_bright2);
-	menuLayout->addWidget(v_lab);
 
-	buttons_menu->setLayout(menuLayout);
 
-	vertLayout->addWidget(buttons_menu);
 
-	//===================================================================
-    
-	QHBoxLayout *centralLayout = new QHBoxLayout();   
+    v_lab->setFrameStyle(QFrame::VLine | QFrame::Raised);
+    v_lab->setLineWidth(2);
 
-	QFrame *fr = new QFrame();
-	fr->setFrameStyle(QFrame::Box | QFrame::Raised);
-	fr->setLineWidth(2);
+
+    QHBoxLayout *menuLayout = new QHBoxLayout();
+    menuLayout->setAlignment(Qt::AlignLeft);
+    menuLayout->setMargin(2);
+    menuLayout->setSpacing(0);
+
+    menuLayout->addWidget(open_map_but);
+    menuLayout->addWidget(tool_button_test);
+    menuLayout->addWidget(close_map_but);
+    menuLayout->addWidget(set_map_bright1);
+    menuLayout->addWidget(set_map_bright2);
+    menuLayout->addWidget(v_lab);
+
 	
-	QLabel *left_panel_name = new QLabel("Работа с объектами");
-	left_panel_name->setAlignment(Qt::AlignCenter);
-	left_panel_name->setFont(QFont("Arial",8,QFont::Bold,false));
+	menuLayout->addWidget(less_scale_but);
+    menuLayout->addWidget(greate_scale_but);
+
+
+    buttons_menu->setLayout(menuLayout);
+
+    vertLayout->addWidget(buttons_menu);
+
+    //===================================================================
+    
+    QHBoxLayout *centralLayout = new QHBoxLayout();
+
+    QFrame *fr = new QFrame();
+    fr->setFrameStyle(QFrame::Box | QFrame::Raised);
+    fr->setLineWidth(2);
+	
+    QLabel *left_panel_name = new QLabel("Работа с объектами");
+    left_panel_name->setAlignment(Qt::AlignCenter);
+    left_panel_name->setFont(QFont("Arial",8,QFont::Bold,false));
 	
 //------------------тест класса ViewManage------------------------------------
 	
 
-	QPushButton *add_obj = new QPushButton("Показать средства");
-	connect(add_obj, SIGNAL(clicked()), this, SLOT(openMapSit1()));
+    QPushButton *add_obj = new QPushButton("Показать средства");
+    connect(add_obj, SIGNAL(clicked()), this, SLOT(openMapSit1()));
 
-	QPushButton *show_obj_but = new QPushButton("Показать формирования");
-	connect(show_obj_but, SIGNAL(clicked()), this, SLOT(openMapSit()));
+    QPushButton *show_obj_but = new QPushButton("Показать формирования");
+    connect(show_obj_but, SIGNAL(clicked()), this, SLOT(openMapSit()));
 
-	QPushButton *close_obj_but = new QPushButton("Скрыть все объекты");
-	connect(close_obj_but, SIGNAL(clicked()), this, SLOT(showCloseSitInfo()));
+    QPushButton *close_obj_but = new QPushButton("Скрыть все объекты");
+    connect(close_obj_but, SIGNAL(clicked()), this, SLOT(showCloseSitInfo()));
 
-	/*QPushButton *but1 = new QPushButton("1");
-	connect(but1, SIGNAL(clicked()), this, SLOT(test_view_manage()));
+    /*QPushButton *but1 = new QPushButton("1");
+    connect(but1, SIGNAL(clicked()), this, SLOT(test_view_manage()));
 
-	QPushButton *but2 = new QPushButton("2");
-	connect(but2, SIGNAL(clicked()), this, SLOT(test_view_manage2()));
+    QPushButton *but2 = new QPushButton("2");
+    connect(but2, SIGNAL(clicked()), this, SLOT(test_view_manage2()));
 
-	QPushButton *show_line_but = new QPushButton("Show line");
-	connect(show_line_but, SIGNAL(clicked()), this, SLOT(selectLineObject()));*/
+    QPushButton *show_line_but = new QPushButton("Show line");
+    connect(show_line_but, SIGNAL(clicked()), this, SLOT(selectLineObject()));*/
 
-	QPushButton *but_PL = new QPushButton("Психогенные потери");
-	connect(but_PL, SIGNAL(clicked()), this, SLOT(People_Losse()));
+    QPushButton *but_PL = new QPushButton("Психогенные потери");
+    connect(but_PL, SIGNAL(clicked()), this, SLOT(People_Losse()));
 
-	QPushButton *mps = new QPushButton("МПС своих войск");
-	connect(mps, SIGNAL(clicked()), this, SLOT(calc_mps()));
+    QPushButton *mps = new QPushButton("МПС своих войск");
+    connect(mps, SIGNAL(clicked()), this, SLOT(calc_mps()));
 
-		QPushButton *mps2 = new QPushButton("МПС войск противника");
-	connect(mps2, SIGNAL(clicked()), this, SLOT(calc_mps2()));
+        QPushButton *mps2 = new QPushButton("МПС войск противника");
+    connect(mps2, SIGNAL(clicked()), this, SLOT(calc_mps2()));
 
 
-	QVBoxLayout *left_layout = new QVBoxLayout();
-	left_layout->setAlignment(Qt::AlignTop);
-	left_layout->setMargin(2);
-	//left_layout->setHorizontalSpacing(0);
-	left_layout->addWidget(left_panel_name);
-	left_layout->addWidget(add_obj);
-	left_layout->addWidget(show_obj_but);
+    QVBoxLayout *left_layout = new QVBoxLayout();
+    left_layout->setAlignment(Qt::AlignTop);
+    left_layout->setMargin(2);
+    //left_layout->setHorizontalSpacing(0);
+    left_layout->addWidget(left_panel_name);
+    left_layout->addWidget(add_obj);
+    left_layout->addWidget(show_obj_but);
 		
-	/*left_layout->addWidget(show_line_but);
-	left_layout->addWidget(but1);
-	left_layout->addWidget(but2);*/
-	left_layout->addWidget(mps);
-	left_layout->addWidget(mps2);
-	left_layout->addWidget(but_PL);
-	left_layout->addWidget(close_obj_but);	
-	fr->setLayout(left_layout);
+    /*left_layout->addWidget(show_line_but);
+    left_layout->addWidget(but1);
+    left_layout->addWidget(but2);*/
+    left_layout->addWidget(mps);
+    left_layout->addWidget(mps2);
+    left_layout->addWidget(but_PL);
+    left_layout->addWidget(close_obj_but);
+    fr->setLayout(left_layout);
 
-	centralLayout->addWidget(fr);
+    centralLayout->addWidget(fr);
 
-	// === mapscroll ========================
+    // === mapscroll ========================
 
     mapwin = new MapScroll();
 
-	connect(mapwin,SIGNAL(signal_for_info_2_arg(QString, long int)),this,SLOT(showShortInformationObject_2arg(QString, long int)));
-	//connect(mapwin,SIGNAL(signal_for_info(long int)),this,SLOT(showShortInformationObject(long int)));//mysignal - движение мыши
+    connect(mapwin,SIGNAL(signal_for_info_2_arg(QString, long int)),this,SLOT(showShortInformationObject_2arg(QString, long int)));
+    //connect(mapwin,SIGNAL(signal_for_info(long int)),this,SLOT(showShortInformationObject(long int)));//mysignal - движение мыши
+    
+	
+	
 	connect(mapwin,SIGNAL(signal_for_right_button(HOBJ, long int, long int, QPoint, bool)),this,SLOT(mouseRightMenu(HOBJ, long int, long int, QPoint, bool)));
-    centralLayout->addWidget(mapwin);
+    
+	
+	
+	
+	connect(mapwin,SIGNAL(signal_for_change_scale(QPoint)),this,SLOT(mouseRightSimpleMenu(QPoint)));
+	
+	centralLayout->addWidget(mapwin);
 
-	//========================================
+    //========================================
 
-	//QFrame *right_fr = new QFrame();
-	//right_fr->setFrameStyle(QFrame::Box | QFrame::Raised);
-	//right_fr->setLineWidth(2);
+    //QFrame *right_fr = new QFrame();
+    //right_fr->setFrameStyle(QFrame::Box | QFrame::Raised);
+    //right_fr->setLineWidth(2);
 
-	//QToolButton *but3 = new QToolButton();
-	//but3->setIcon(QIcon("./icons/open.png"));
-	//but3->setIconSize(QSize(20,20));
-	//
-	//QToolButton *but4 = new QToolButton();
-	//but4->setIcon(QIcon("./icons/exit.png"));
-	//but4->setIconSize(QSize(20,20));
+    //QToolButton *but3 = new QToolButton();
+    //but3->setIcon(QIcon("./icons/open.png"));
+    //but3->setIconSize(QSize(20,20));
+    //
+    //QToolButton *but4 = new QToolButton();
+    //but4->setIcon(QIcon("./icons/exit.png"));
+    //but4->setIconSize(QSize(20,20));
 
-	//QGridLayout *right_grid = new QGridLayout();
-	//right_grid->setAlignment(Qt::AlignTop);
-	//right_grid->setMargin(2);
-	//right_grid->setHorizontalSpacing(0);
+    //QGridLayout *right_grid = new QGridLayout();
+    //right_grid->setAlignment(Qt::AlignTop);
+    //right_grid->setMargin(2);
+    //right_grid->setHorizontalSpacing(0);
 
-	//right_grid->addWidget(but3,0,0);
-	//right_grid->addWidget(but4,0,1);
-	//
-	//right_fr->setLayout(right_grid);
+    //right_grid->addWidget(but3,0,0);
+    //right_grid->addWidget(but4,0,1);
+    //
+    //right_fr->setLayout(right_grid);
 
-	//centralLayout->addWidget(right_fr);
+    //centralLayout->addWidget(right_fr);
 
-	//========================================
-	vertLayout->addLayout(centralLayout);
+    //========================================
+    vertLayout->addLayout(centralLayout);
 
    //==============================================
-	QLineEdit *status_bar = new QLineEdit();
-	status_bar->setReadOnly(true);
-	vertLayout->addWidget(status_bar);
+    QLineEdit *status_bar = new QLineEdit();
+    status_bar->setReadOnly(true);
+    vertLayout->addWidget(status_bar);
 
   //=================================================
 
-	QHBoxLayout *coord_layout = new QHBoxLayout();
-	cursor_coord = new QLineEdit();
-	cursor_coord->setReadOnly(true);
-	QLineEdit *map_scale = new QLineEdit();
-	map_scale->setReadOnly(true);
-	QLineEdit *additional_info = new QLineEdit();
-	additional_info->setReadOnly(true);
+    QHBoxLayout *coord_layout = new QHBoxLayout();
+    cursor_coord = new QLineEdit();
+    cursor_coord->setReadOnly(true);
+    QLineEdit *map_scale = new QLineEdit();
+    map_scale->setReadOnly(true);
+    QLineEdit *additional_info = new QLineEdit();
+    additional_info->setReadOnly(true);
 
-	coord_layout->addWidget(cursor_coord);
-	coord_layout->addWidget(map_scale);
-	coord_layout->addWidget(additional_info);
+    coord_layout->addWidget(cursor_coord);
+    coord_layout->addWidget(map_scale);
+    coord_layout->addWidget(additional_info);
 
-	vertLayout->addLayout(coord_layout);
+    vertLayout->addLayout(coord_layout);
 
 //=================================================
-	setLayout(vertLayout);
+    setLayout(vertLayout);
 //=========================================
-	flag1=0;
-	flag2=FALSE;
-	flag=FALSE;
-	model = new ViewManage();
+    flag1=0;
+    flag2=FALSE;
+    flag=FALSE;
+    model = new ViewManage();
 //	lbl = new QLabel();
 
-
-
-
-
-
-
-
-
-
-
-mapwin->mapOpen("C:/projects/Saturn_500m/Saturn topo.MAP");
-mapwin->appendData("C:/projects/Saturn_500m/Saturn/Сатурн.sit");
-mapwin->ChangeScale(0.5);
-mapwin->ChangeScale(0.5);
-mapwin->ChangeScale(0.5);
-mapwin->ChangeScale(0.5);
-
-
-
-
-
-
-
-
-
-
+//    mapwin->mapOpen("C:/projects/Saturn_500m/Saturn_topo.MAP");
+//    mapwin->appendData("C:/projects/Saturn_500m/Saturn/Saturn.sit");
+//    mapwin->ChangeScale(0.5);
+//    mapwin->ChangeScale(0.5);
+//    mapwin->ChangeScale(0.5);
+//    mapwin->ChangeScale(0.5);
 }
 //
 //MapView::~MapView()
@@ -395,6 +380,7 @@ selectAllObject2();
 		showInformationDialog("Объекты нанесены на карту");
 		return this_hsite;
 	}
+	mapwin->UpdateScreen();
 	return 0;
 }
 //отклик на пункт меню нанести объекты (ФОРМИРОВАНИЯ, ФЛАЖКИ)
@@ -446,6 +432,7 @@ HSITE MapView::openMapSit()
 		showInformationDialog("Объекты нанесены на карту");
 		return this_hsite;
 	}
+	mapwin->UpdateScreen();
 	return 0;
 }
 //вычисление координат на катре с движением мыши
@@ -630,7 +617,7 @@ void MapView::selectAllObject()
 //	                                      (long int hSit, double x, double y, const char * name_ff, long int id_obj, QMap<int,QString> semantic_map)
 
 
-//	long int a1 = mapwin->ApdateScreen();
+	
 }
 //========================================================================================================================================================
 void MapView::selectAllObject1()
@@ -696,7 +683,7 @@ QSqlQuery query;
                            | QMessageBox::Cancel,
                            QMessageBox::Save);
 	}
-	//mapwin->ApdateScreen();
+	
 
 
 
@@ -763,7 +750,7 @@ QSqlQuery query;
                            | QMessageBox::Cancel,
                            QMessageBox::Save);
 	}
-	//mapwin->ApdateScreen();
+
 }
 
 void MapView::selectAllObject2()
@@ -915,91 +902,127 @@ void MapView::test_view_manage2()
 
 //меню по клику правой клавишей мыши
 
-void	MapView::mouseRightMenu(HOBJ hobj, long int num_obj, long int id_obj, QPoint pe, bool region)
+void MapView::mouseRightMenu(HOBJ hobj, long int num_obj, long int id_obj, QPoint pe, bool reg)
 {    
+	this->hobj = hobj;
+	this->num_obj = num_obj;
+	this->id_obj = id_obj;
+	this->pe_menu = pe;
+	this->region = reg;
+		
+	mouse_menu = new QMenu(this); 
+	QAction *great_scale_act = new QAction("Увеличить масштаб карты  \">\"", this);
+	QAction *less_scale_act = new QAction("Уменьшить масштаб карты  \"<\"", this);
+
+	mouse_menu->addAction(great_scale_act); 
+	connect(great_scale_act, SIGNAL(triggered()), this, SLOT(GreateScale()));
+	mouse_menu->addAction(less_scale_act); 
+	connect(less_scale_act, SIGNAL(triggered()), this, SLOT(LessScale()));
+	//mouse_menu->addAction("&DeleteObject");  
 	
-			 if (region)
-			 {
-				int id_region;
-				QString name_region;
-				QSqlQuery query;	
-					query.exec(QString("SELECT name_region, id_region from region where excode_region = '%1'").arg(num_obj));
-					while (query.next())
-						{ 
-							name_region = query.value(0).toString();
-							id_region = query.value(1).toInt();
-						}
-			
-					float rez = calc1.get_Rez_on_id_region(id_region);
-						
-					QString str_id_obj;
-						if(rez > 0 && rez < 0.3)
-							str_id_obj="1";
-						if(rez >= 0.3 && rez < 0.5)
-							str_id_obj="2";
-						if(rez >=0.5 && rez <= 0.8)
-							str_id_obj="3";
-						if(rez == 0)
-							str_id_obj="4";
+	 if (region)
+	 {
+		QAction *regionMPOact = new QAction("Рассчитать уровень МПО", this);
+		connect(regionMPOact, SIGNAL(triggered()), this, SLOT(regionMPOLevel()));
+		mouse_menu->addAction(regionMPOact); 
+	 }
+	 else
+	 {
+		QAction *formationDamageAct = new QAction("Рассчитать психогенные потери", this);
+		connect(formationDamageAct, SIGNAL(triggered()), this, SLOT(formatonDamage()));
+		mouse_menu->addAction(formationDamageAct); 
+	 }
 
-			
+	 mouse_menu->exec(pe_menu);
+}
 
-				mouse_menu = new QMenu(this); 
-				mouse_menu->addAction("Уровень МПОб региона"); 
-				mouse_menu->addAction(name_region); 
-				mouse_menu->addAction(QString::number(calc1.get_Rez_on_id_region(id_region))); 
-				mouse_menu->exec(pe);
-				
-				mapwin->RegionAppendSemantic(hobj, str_id_obj);
 
-				////Изменение семантики региона (изменение цвета заливки региона)
 
-				//		map->mapAppendSemantic(hobj, 60011, str_id_obj.toLocal8Bit().data(), 32);
-
-				//		//сохранить данные об объекте
-				//		map->mapCommitWithPlace(hobj);
-				//		map->mapClearObject(hobj);
-				//		MyViewport->hide();
-				//		MyViewport->show();
-
-			 }
-
-			if (!region)
-			{
-				QSqlQuery query;
-				QString Name_ls;
-				QString str=QString("SELECT name_ls, enimy_ls, counte_ls FROM ls WHERE id_ls=%1").arg(id_obj);
-					if(query.exec(str))
-					{
-							while (query.next())
-							{
-								Name_ls = query.value(0).toString();
-												
-							}
-							query.clear();
-						
-					}
-				People_Losses pl;
-				pl.get_losses(id_obj);
-				QWidget *wgt = new QWidget();
-				wgt->setWindowTitle("Психогенные потери");
-				QLabel *leb = new QLabel();
-				leb->setText(QString("Потери л/с  %9 - средние %1 - %2; \n%3 - %4\n%5 - %6\n%7 - %8").arg(pl.min[1][0]).arg(pl.max[1][0]).arg(pl.min[1][1]).arg(pl.max[1][1]).arg(pl.min[1][2]).arg(pl.max[1][2]).arg(pl.min[1][3]).arg(pl.max[1][3]).arg(Name_ls));
-				QHBoxLayout *lo = new QHBoxLayout();
-				
-				lo->addWidget(leb);
-				wgt->setLayout(lo);
-				wgt->show();
+//-- Расчетная задача "МПО региона" ---
+void MapView::regionMPOLevel()
+{
+	int id_region;
+	QString name_region;
+	QSqlQuery query;	
+		query.exec(QString("SELECT name_region, id_region from region where excode_region = '%1'").arg(num_obj));
+		while (query.next())
+			{ 
+				name_region = query.value(0).toString();
+				id_region = query.value(1).toInt();
 			}
+
+		float rez = calc1.get_Rez_on_id_region(id_region);
 			
-		/*mouse_menu = new QMenu(this); 
-		mouse_menu->addAction("&Информация об объекте"); 
-		mouse_menu->addAction("&Green"); 
-		mouse_menu->addAction("&Blue"); 
-		mouse_menu->exec(pe);*/
+		QString str_id_obj;
+			if(rez > 0 && rez < 0.3)
+				str_id_obj="1";
+			if(rez >= 0.3 && rez < 0.5)
+				str_id_obj="2";
+			if(rez >=0.5 && rez <= 0.8)
+				str_id_obj="3";
+			if(rez == 0)
+				str_id_obj="4";
+
+	mapwin->RegionAppendSemantic(hobj, str_id_obj);
+
+
+	QMessageBox *wgt = new QMessageBox;
+	wgt->setWindowTitle("Уровень МПОб региона");
+	QString text = name_region + ": ";
+	text.append(QString::number(calc1.get_Rez_on_id_region(id_region)));
+	wgt->setText(text);
+	wgt->show();
 
 }
-		
+
+
+//-- Расчетная задача "Психогенные потери формирования" ---
+void MapView::formatonDamage()
+{
+	QSqlQuery query;
+	QString Name_ls;
+	QString str=QString("SELECT name_ls, enimy_ls, counte_ls FROM ls WHERE id_ls=%1").arg(id_obj);
+		if(query.exec(str))
+		{
+				while (query.next())
+				{
+					Name_ls = query.value(0).toString();
+									
+				}
+				query.clear();
+			
+		}
+	People_Losses pl;
+	pl.get_losses(id_obj);
+	QMessageBox *wgt = new QMessageBox;
+	wgt->setWindowTitle("Психогенные потери");
+	
+	wgt->setText(QString("Потери л/с  %9 - средние %1 - %2; \n%3 - %4\n%5 - %6\n%7 - %8").arg(pl.min[1][0]).arg(pl.max[1][0]).arg(pl.min[1][1]).arg(pl.max[1][1]).arg(pl.min[1][2]).arg(pl.max[1][2]).arg(pl.min[1][3]).arg(pl.max[1][3]).arg(Name_ls));
+	
+	//leb->setText(QString("Потери л/с  %9 - средние %1 - %2; \n%3 - %4\n%5 - %6\n%7 - %8").arg(pl.min[1][0]).arg(pl.max[1][0]).arg(pl.min[1][1]).arg(pl.max[1][1]).arg(pl.min[1][2]).arg(pl.max[1][2]).arg(pl.min[1][3]).arg(pl.max[1][3]).arg(Name_ls));
+	//QHBoxLayout *lo = new QHBoxLayout();
+	
+	//lo->addWidget(leb);
+	//wgt->setLayout(lo);
+	
+	wgt->show();
+}
+
+//меню по клику правой клавишей мыши в любом месте
+void	 MapView::mouseRightSimpleMenu(QPoint pe)
+{
+		mouse_menu = new QMenu(this); 
+		QAction *great_scale_act = new QAction("Увеличить масштаб карты  \">\"", this);
+		QAction *less_scale_act = new QAction("Уменьшить масштаб карты  \"<\"", this);
+
+			mouse_menu->addAction(great_scale_act); 
+			connect(great_scale_act, SIGNAL(triggered()), this, SLOT(GreateScale()));
+
+			mouse_menu->addAction(less_scale_act); 
+			connect(less_scale_act, SIGNAL(triggered()), this, SLOT(LessScale()));
+		//mouse_menu->addAction("&DeleteObject");  
+		mouse_menu->exec(pe);
+}		
 
 void	MapView::showShortInformationObject(long int id_obj)
 {
@@ -1066,7 +1089,7 @@ void	MapView::changeBrihgtUp()
 	{
 		bright++;
 		mapwin->setmapBright(bright);
-		//mapwin->ApdateScreen();
+		
 	}
 	else
 	showInformationDialog("Яркость максимальная");
@@ -1078,7 +1101,7 @@ void	MapView::changeBrihgtDown()
 	{
 		bright--;
 		mapwin->setmapBright(bright);
-		//mapwin->ApdateScreen();
+		
 	}
 	else
 	showInformationDialog("Яркость минимальная");
@@ -1089,7 +1112,7 @@ void	 MapView::appendSit()
 	QString name = QFileDialog::getOpenFileName(this, QString::null, QString::null, "Sites (*.sit)" );
 	long int a = mapwin->appendData(name.toLocal8Bit().data());
 	hSite1 = a;
-
+	
 }
 
 void MapView::showShortInformationObject_2arg(QString a,long int id_obj)

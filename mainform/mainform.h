@@ -2,20 +2,17 @@
 #define MAINFORM_H
 
 #include <QtGui>
-#include "ui_main_form.h"
-#include <manage_users.h>
-#include <output.h>
+#include <QMap>
+#include <QStringList>
+#include <QFile>
+
+#include "manage_users.h"
+#include "output.h"
 #include "mymdiarea.h"
-#include <QMdiArea>
-#include <QMdiSubWindow>
-#include <QMessageBox>
-#include <QFile> 
-#include <mapview.h>
-#include "QMap"
-#include "QStringList"
-#include <reports.h>
-#include <supporting_tables.h>
-#include <object_manager.h>
+#include "mapview.h"
+#include "reports.h"
+#include "supporting_tables.h"
+#include "object_manager.h"
 #include "settings.h"
 #include "calculatingproblemmanager.h"
 #include "db_saturn.h"
@@ -87,6 +84,7 @@ private:
 	QComboBox *ServDB_combobox;
 	Settings *settings;
 	CalculatingProblemManager *calc;
+   // MapView * mapView;
 
     bool create_connection(QString,QString,QString,QString,QString);
 	bool close_connection();

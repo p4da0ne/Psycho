@@ -1,8 +1,8 @@
 TEMPLATE = subdirs
 
-CONFIG += ordered
+CONFIG += debug ordered
 
-QT   += gui widgets sql
+QT   += gui core
 
 # Directories
 SUBDIRS += \
