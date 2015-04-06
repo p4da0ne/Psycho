@@ -15,7 +15,6 @@ SUBDIRS += \
         db_saturn \
         supporting_tables \
         object_manager \
-        calculatingproblemmanager \
         mainform
 	
 

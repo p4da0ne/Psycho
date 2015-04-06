@@ -17,7 +17,6 @@
 #include <supporting_tables.h>
 #include <object_manager.h>
 #include "settings.h"
-#include "calculatingproblemmanager.h"
 #include "db_saturn.h"
 #include "dataaccess.h"
 
@@ -45,7 +44,6 @@ public:
 	QMdiArea * m_mdiArea;
     
 private slots:
-	void show_calculating_form();
 	void show_user_form();
 	void show_connect_settings_dialog();
 	void test_connection();
@@ -58,6 +56,7 @@ private slots:
 	//void show_dialog_add_new_region(int id_parent,bool is_parent_ko);
 
 private:
+
 	QMenu * menu;
 	QAction * action1;
 	QAction * action2;
@@ -86,7 +85,6 @@ private:
 	QLineEdit *login_password_edit;
 	QComboBox *ServDB_combobox;
 	Settings *settings;
-	CalculatingProblemManager *calc;
 
     bool create_connection(QString,QString,QString,QString,QString);
 	bool close_connection();
@@ -101,7 +99,6 @@ private:
 	void add_menu_enter_system(QMenu *menu);
 	void add_menu_supporting_tables(QMenu *oper_menu);
 	void add_menu_object_manager(QMenu *oper_menu);
-	void add_menu_calculation(QMenu *oper_menu);
 	bool connection_flag;
 	db_saturn *db;
 	//add_object *reg;

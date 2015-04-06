@@ -5,14 +5,22 @@ HEADERS += \
          object_manager.h \
          add_object.h \
          add_elements_dialog.h \
-         simledelegate.h
-	
+         simledelegate.h \
+         Calculate_K_omkrf.h \
+         calculating_mps.h \
+         textprinter.h \
+         People_Losses.h
 
 #Source files
 SOURCES +=  object_manager.cpp \
         add_object.cpp \
         add_elements_dialog.cpp \
-        simledelegate.cpp
+        simledelegate.cpp \
+        Calculate_K_omkrf.cpp \
+        calculating_mps.cpp \
+        textprinter.cpp \
+        People_Losses.cpp
+
 		
 #Forms
 FORMS += object_manager_form.ui\
