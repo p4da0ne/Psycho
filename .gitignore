@@ -14,3 +14,13 @@ ui_*.h
 build/*lib
 */release/
 *.exe
+build/calculatingproblemmanager.dll
+build/dataaccess.dll
+build/db_saturn.dll
+build/manage_users.dll
+build/mapview.dll
+build/my_mapaccess.dll
+build/object_manager.dll
+build/output.dll
+build/reports.dll
+build/supporting_tables.dll

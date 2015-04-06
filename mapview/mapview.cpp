@@ -66,12 +66,8 @@ MapView::MapView(QWidget * parent)
 	greate_scale_but->setToolTip("Увеличить масштаб");
 	connect(greate_scale_but, SIGNAL(clicked()), this, SLOT(GreateScale()));
 
-
-
-
     v_lab->setFrameStyle(QFrame::VLine | QFrame::Raised);
     v_lab->setLineWidth(2);
-
 
     QHBoxLayout *menuLayout = new QHBoxLayout();
     menuLayout->setAlignment(Qt::AlignLeft);
@@ -84,18 +80,13 @@ MapView::MapView(QWidget * parent)
     menuLayout->addWidget(set_map_bright1);
     menuLayout->addWidget(set_map_bright2);
     menuLayout->addWidget(v_lab);
-
 	
 	menuLayout->addWidget(less_scale_but);
     menuLayout->addWidget(greate_scale_but);
 
-
     buttons_menu->setLayout(menuLayout);
-
     vertLayout->addWidget(buttons_menu);
-
     //===================================================================
-    
     QHBoxLayout *centralLayout = new QHBoxLayout();
 
     QFrame *fr = new QFrame();
@@ -107,8 +98,6 @@ MapView::MapView(QWidget * parent)
     left_panel_name->setFont(QFont("Arial",8,QFont::Bold,false));
 	
 //------------------тест класса ViewManage------------------------------------
-	
-
     QPushButton *add_obj = new QPushButton("Показать средства");
     connect(add_obj, SIGNAL(clicked()), this, SLOT(openMapSit1()));
 
@@ -118,98 +107,44 @@ MapView::MapView(QWidget * parent)
     QPushButton *close_obj_but = new QPushButton("Скрыть все объекты");
     connect(close_obj_but, SIGNAL(clicked()), this, SLOT(showCloseSitInfo()));
 
-    /*QPushButton *but1 = new QPushButton("1");
-    connect(but1, SIGNAL(clicked()), this, SLOT(test_view_manage()));
-
-    QPushButton *but2 = new QPushButton("2");
-    connect(but2, SIGNAL(clicked()), this, SLOT(test_view_manage2()));
-
-    QPushButton *show_line_but = new QPushButton("Show line");
-    connect(show_line_but, SIGNAL(clicked()), this, SLOT(selectLineObject()));*/
-
     QPushButton *but_PL = new QPushButton("Психогенные потери");
     connect(but_PL, SIGNAL(clicked()), this, SLOT(People_Losse()));
 
     QPushButton *mps = new QPushButton("МПС своих войск");
     connect(mps, SIGNAL(clicked()), this, SLOT(calc_mps()));
 
-        QPushButton *mps2 = new QPushButton("МПС войск противника");
+    QPushButton *mps2 = new QPushButton("МПС войск противника");
     connect(mps2, SIGNAL(clicked()), this, SLOT(calc_mps2()));
-
 
     QVBoxLayout *left_layout = new QVBoxLayout();
     left_layout->setAlignment(Qt::AlignTop);
     left_layout->setMargin(2);
-    //left_layout->setHorizontalSpacing(0);
     left_layout->addWidget(left_panel_name);
     left_layout->addWidget(add_obj);
     left_layout->addWidget(show_obj_but);
-		
-    /*left_layout->addWidget(show_line_but);
-    left_layout->addWidget(but1);
-    left_layout->addWidget(but2);*/
+
     left_layout->addWidget(mps);
     left_layout->addWidget(mps2);
     left_layout->addWidget(but_PL);
     left_layout->addWidget(close_obj_but);
     fr->setLayout(left_layout);
-
     centralLayout->addWidget(fr);
-
     // === mapscroll ========================
 
     mapwin = new MapScroll();
 
     connect(mapwin,SIGNAL(signal_for_info_2_arg(QString, long int)),this,SLOT(showShortInformationObject_2arg(QString, long int)));
     //connect(mapwin,SIGNAL(signal_for_info(long int)),this,SLOT(showShortInformationObject(long int)));//mysignal - движение мыши
-    
-	
-	
 	connect(mapwin,SIGNAL(signal_for_right_button(HOBJ, long int, long int, QPoint, bool)),this,SLOT(mouseRightMenu(HOBJ, long int, long int, QPoint, bool)));
-    
-	
-	
-	
 	connect(mapwin,SIGNAL(signal_for_change_scale(QPoint)),this,SLOT(mouseRightSimpleMenu(QPoint)));
-	
 	centralLayout->addWidget(mapwin);
-
-    //========================================
-
-    //QFrame *right_fr = new QFrame();
-    //right_fr->setFrameStyle(QFrame::Box | QFrame::Raised);
-    //right_fr->setLineWidth(2);
-
-    //QToolButton *but3 = new QToolButton();
-    //but3->setIcon(QIcon("./icons/open.png"));
-    //but3->setIconSize(QSize(20,20));
-    //
-    //QToolButton *but4 = new QToolButton();
-    //but4->setIcon(QIcon("./icons/exit.png"));
-    //but4->setIconSize(QSize(20,20));
-
-    //QGridLayout *right_grid = new QGridLayout();
-    //right_grid->setAlignment(Qt::AlignTop);
-    //right_grid->setMargin(2);
-    //right_grid->setHorizontalSpacing(0);
-
-    //right_grid->addWidget(but3,0,0);
-    //right_grid->addWidget(but4,0,1);
-    //
-    //right_fr->setLayout(right_grid);
-
-    //centralLayout->addWidget(right_fr);
-
     //========================================
     vertLayout->addLayout(centralLayout);
-
    //==============================================
     QLineEdit *status_bar = new QLineEdit();
     status_bar->setReadOnly(true);
     vertLayout->addWidget(status_bar);
-
   //=================================================
-
     QHBoxLayout *coord_layout = new QHBoxLayout();
     cursor_coord = new QLineEdit();
     cursor_coord->setReadOnly(true);
@@ -217,13 +152,10 @@ MapView::MapView(QWidget * parent)
     map_scale->setReadOnly(true);
     QLineEdit *additional_info = new QLineEdit();
     additional_info->setReadOnly(true);
-
     coord_layout->addWidget(cursor_coord);
     coord_layout->addWidget(map_scale);
     coord_layout->addWidget(additional_info);
-
     vertLayout->addLayout(coord_layout);
-
 //=================================================
     setLayout(vertLayout);
 //=========================================
@@ -231,16 +163,23 @@ MapView::MapView(QWidget * parent)
     flag2=FALSE;
     flag=FALSE;
     model = new ViewManage();
-//	lbl = new QLabel();
 
-//    mapwin->mapOpen("C:/projects/Saturn_500m/Saturn_topo.MAP");
-//    mapwin->appendData("C:/projects/Saturn_500m/Saturn/Saturn.sit");
-//    mapwin->ChangeScale(0.5);
-//    mapwin->ChangeScale(0.5);
-//    mapwin->ChangeScale(0.5);
-//    mapwin->ChangeScale(0.5);
+	QSettings settings;
+	QString path=settings.value("saturn\map\last_map").toString();
+	QString path_sit=settings.value("saturn\map\last_sit").toString();
+	if(QFile::exists(path)){
+		mapwin->mapOpen(path.toStdString().c_str());
+		if(QFile::exists(path_sit)){
+			mapwin->appendData(path_sit.toStdString().c_str());
+		}
+		mapwin->ChangeScale(0.5);
+		mapwin->ChangeScale(0.5);
+		mapwin->ChangeScale(0.5);
+		mapwin->ChangeScale(0.5);
+	}
+	
 }
-//
+
 //MapView::~MapView()
 //{
 //	delete lbl;
@@ -281,7 +220,10 @@ void MapView::open()
 
     if (File.isEmpty()) return;//если карта не выбрана
 	//mapwin->mapOpen(File.toLatin1().data());
-	mapwin->mapOpen(File.toLocal8Bit().data());
+	if(mapwin->mapOpen(File.toLocal8Bit().data()) > 0){
+        QSettings settings;
+        settings.setValue("saturn\map\last_map",File);
+	}
 }
 
 // отклик на нажатие кнопки/пункта меню "Закрыть"
@@ -376,7 +318,7 @@ HSITE MapView::openMapSit1()
 		hSite=this_hsite;
 		
 		selectAllObject1();
-selectAllObject2();
+        selectAllObject2();
 		showInformationDialog("Объекты нанесены на карту");
 		return this_hsite;
 	}
@@ -555,7 +497,7 @@ void MapView::showInfoAboutObject(long int id_obj)
 	}
 
 }
-//отобразить все объекты на карте
+//отобразить все объекты на карте (воинские формирования)
 void MapView::selectAllObject()
 {
 	QSqlQuery query;
@@ -620,9 +562,10 @@ void MapView::selectAllObject()
 	
 }
 //========================================================================================================================================================
+//вывод средств
 void MapView::selectAllObject1()
 {
-QSqlQuery query;
+    QSqlQuery query;
 	long int a11111=0;
 	QString str=QString("SELECT name_type_mpo_pso, coordinates.x_coordinates, coordinates.y_coordinates, type_mpo_pso.excode_type_mpo_pso, id_mpo_pso, mpo_pso.semantika_digit1, mpo_pso.semantika_digit2, semantika_1 FROM mpo_pso, coordinates, type_mpo_pso\
 						WHERE mpo_pso.id_coordinates=coordinates.id_coordinates AND mpo_pso.id_type_mpo_pso=type_mpo_pso.id_type_mpo_pso \
@@ -684,11 +627,6 @@ QSqlQuery query;
                            QMessageBox::Save);
 	}
 	
-
-
-
-
-
 	QSqlQuery query1;
 	
 	QString str1=QString("SELECT name_type_mpo_pso, coordinates.x_coordinates, coordinates.y_coordinates, type_mpo_pso.excode_type_mpo_pso, id_mpo_pso, mpo_pso.semantika_digit1, mpo_pso.semantika_digit2, semantika_1 FROM mpo_pso, coordinates, type_mpo_pso\
@@ -753,6 +691,8 @@ QSqlQuery query;
 
 }
 
+        //================================
+        //вывод особых условий
 void MapView::selectAllObject2()
 {	
 	QSqlQuery query;
@@ -761,7 +701,7 @@ void MapView::selectAllObject2()
 						special_conditions.semantika_2 , type_special_conditions.excode_type_sc, \
 						coordinates.x_coordinates, coordinates.y_coordinates, special_conditions.id_special_conditions FROM special_conditions, \
 						region, type_special_conditions, coordinates, coord_spec_cond \
-						where special_conditions.id_region=region.id_region AND \
+                        where special_conditions.id_region=region.id_region AND \
 						special_conditions.id_type_special_conditions=type_special_conditions.id_type_special_conditions \
 						AND coord_spec_cond.id_special_conditions=special_conditions.id_special_conditions \
 						AND coord_spec_cond.id_coordinates=coordinates.id_coordinates");
