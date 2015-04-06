@@ -163,26 +163,26 @@ MapView::MapView(QWidget * parent)
     flag=FALSE;
     model = new ViewManage();
 
-	QSettings settings;
-	QString path=settings.value("saturn\map\last_map").toString();
-	QString path_sit=settings.value("saturn\map\last_sit").toString();
+    //открытие последней открытой карты с ситом (если он есть).
+    QSettings settings("Saturn");
+    QString path=settings.value("last_map").toString();
+    QString path_sit=settings.value("last_sit").toString();
 	if(QFile::exists(path)){
-		mapwin->mapOpen(path.toStdString().c_str());
-		if(QFile::exists(path_sit)){
-			mapwin->appendData(path_sit.toStdString().c_str());
-		}
-		mapwin->ChangeScale(0.5);
-		mapwin->ChangeScale(0.5);
-		mapwin->ChangeScale(0.5);
-		mapwin->ChangeScale(0.5);
+        QMessageBox msgBox;
+        msgBox.setText("Do you want open last opened map?");
+        msgBox.setInformativeText(path);
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::Yes);
+        int ret = msgBox.exec();
+        if(QMessageBox::Yes == ret){
+            mapwin->mapOpen(path.toStdString().c_str());
+            if(QFile::exists(path_sit)){
+                mapwin->appendData(path_sit.toStdString().c_str());
+            }
+        }
 	}
 	
 }
-
-//MapView::~MapView()
-//{
-//	delete lbl;
-//}
 
 void MapView::showCloseSitInfo()
 {
@@ -215,13 +215,13 @@ void MapView::GreateScale()
 void MapView::open()
 {
     QString File = QFileDialog::getOpenFileName(this, QString::null, QString::null, 
-                   "Maps (*.map)\n Sites (*.sit)" );
+                   "Maps (*.map)" );
 
     if (File.isEmpty()) return;//если карта не выбрана
 	//mapwin->mapOpen(File.toLatin1().data());
-	if(mapwin->mapOpen(File.toLocal8Bit().data()) > 0){
-        QSettings settings;
-        settings.setValue("saturn\map\last_map",File);
+	if(mapwin->mapOpen(File.toLocal8Bit().data()) == 0){
+        QSettings settings("Saturn");
+        settings.setValue("last_map",File);
 	}
 }
 
@@ -274,6 +274,8 @@ void MapView::keyPressEvent(QKeyEvent *e)
 //===================================================
 HSITE MapView::openMapSit1()
 {	
+    QString fileRSC;
+    QSettings settings("Saturn");
 	long int a = mapwin->IsActive(mapwin->hMap);
 	if (a)
 	{
@@ -285,21 +287,29 @@ HSITE MapView::openMapSit1()
 			dir.mkdir(curFile);
 		}
 		curFile= curFile + "/sites";
-		dir.setPath(curFile);
+        dir.setPath(curFile);
 		if (!dir.exists())
 		{
 			dir.mkdir(curFile);
-			QString File = QFileDialog::getOpenFileName(this, QString::null, QString::null, 
-                   "Классификатор (*.rsc)" );
-			if (File.isEmpty()) 
+            fileRSC = QFileDialog::getOpenFileName(this, QString::null, QString::null, "Классификатор (*.rsc)" );
+            if (fileRSC.isEmpty())
 			{
-				int ret = QMessageBox::critical(this, "Сатурн",
-                                "Не выбран классификатор! \n");
-			}//если карта не выбрана
+                int ret = QMessageBox::critical(this, "Сатурн", "Не выбран классификатор! \n");
+            }else{
+                settings.setValue("last_rsc",fileRSC);
+            }
 		}
+        fileRSC=settings.value("last_rsc").toString();
+        if(!QFile::exists(fileRSC)){
+            QString fileRSC = QFileDialog::getOpenFileName(this, QString::null, QString::null, "Классификатор (*.rsc)" );
+            if (fileRSC.isEmpty())
+            {
+                int ret = QMessageBox::critical(this, "Сатурн", "Не выбран классификатор! \n");
+            }else{
+                settings.setValue("last_rsc",fileRSC);
+            }
+        }
 		curFile=curFile + "/sit_lear.sit";
-		QString File = "C:/Saturn/sites/Saturn.rsc";
-
 		QString str_mapname = "OBJECTS";
 			
 		HSITE this_hsite;
@@ -309,7 +319,7 @@ HSITE MapView::openMapSit1()
 		strcpy(createsite.MapName, str_mapname.toLocal8Bit().data());
 		createsite.MapType=2;
 			
-		this_hsite = mapwin->dataOpen(mapwin->hMap,curFile.toLocal8Bit().data(),File.toLocal8Bit().data(),&createsite);
+        this_hsite = mapwin->dataOpen(mapwin->hMap,curFile.toLocal8Bit().data(),fileRSC.toLocal8Bit().data(),&createsite);
 		mapwin->flag2=TRUE;
 		hSite=this_hsite;
 			
@@ -328,6 +338,8 @@ HSITE MapView::openMapSit1()
 //===============================================================================
 HSITE MapView::openMapSit()
 {	
+    QString fileRSC;
+    QSettings settings("Saturn");
 	long int a = mapwin->IsActive(mapwin->hMap);
 	if (a)
 	{
@@ -340,19 +352,27 @@ HSITE MapView::openMapSit()
 		}
 		curFile= curFile + "/sites";
 		dir.setPath(curFile);
-		if (!dir.exists())
-		{
-			dir.mkdir(curFile);
-			QString File = QFileDialog::getOpenFileName(this, QString::null, QString::null, 
-                   "Классификатор (*.rsc)" );
-			if (File.isEmpty()) 
-			{
-				int ret = QMessageBox::critical(this, "Сатурн",
-                                "Не выбран классификатор! \n");
-			}//если карта не выбрана
-		}
-		curFile=curFile + "/sit_lear.sit";
-		QString File = "C:/Saturn/sites/Saturn.rsc";
+        if (!dir.exists())
+        {
+            dir.mkdir(curFile);
+            fileRSC = QFileDialog::getOpenFileName(this, QString::null, QString::null, "Классификатор (*.rsc)" );
+            if (fileRSC.isEmpty())
+            {
+                int ret = QMessageBox::critical(this, "Сатурн", "Не выбран классификатор! \n");
+            }else{
+                settings.setValue("saturn/map/last_rsc",fileRSC);
+            }
+        }
+        fileRSC=settings.value("saturn/map/last_rsc").toString();
+        if(!QFile::exists(fileRSC)){
+            QString fileRSC = QFileDialog::getOpenFileName(this, QString::null, QString::null, "Классификатор (*.rsc)" );
+            if (fileRSC.isEmpty())
+            {
+                int ret = QMessageBox::critical(this, "Сатурн", "Не выбран классификатор! \n");
+            }else{
+                settings.setValue("saturn/map/last_rsc",fileRSC);
+            }
+        }
 		QString str_mapname = "OBJECTS";
 		
 		HSITE this_hsite;
@@ -362,7 +382,7 @@ HSITE MapView::openMapSit()
 		strcpy(createsite.MapName, str_mapname.toLocal8Bit().data());
 		createsite.MapType=2;
 		
-		this_hsite = mapwin->dataOpen(mapwin->hMap,curFile.toLocal8Bit().data(),File.toLocal8Bit().data(),&createsite);
+        this_hsite = mapwin->dataOpen(mapwin->hMap,curFile.toLocal8Bit().data(),fileRSC.toLocal8Bit().data(),&createsite);
 		mapwin->flag2=TRUE;
 		hSite=this_hsite;
 		
