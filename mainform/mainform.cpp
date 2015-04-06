@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #include "mainform.h"
 
 #if defined Q_OS_WIN

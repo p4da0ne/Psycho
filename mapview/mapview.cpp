@@ -5,74 +5,73 @@
 MapView::MapView(QWidget * parent)
     : QWidget(parent)
 {
-       
-       MainCodec = QTextCodec::codecForName("CP1251");
-       setMouseTracking(true);
 
-       setWindowIcon(QIcon("./icons/mapwork.png"));
+	MainCodec = QTextCodec::codecForName("CP1251");
+	setMouseTracking(true);
+	setWindowIcon(QIcon("./icons/mapwork.png"));
 
-    QVBoxLayout *vertLayout = new QVBoxLayout();  //==== основной лэйаут
-    vertLayout->setMargin(1);
-	
-    //==== формирование меню на основе QFrame и QToolButton's ====
-    QFrame *buttons_menu = new QFrame();
-    buttons_menu->setFrameStyle(QFrame::Panel | QFrame::Raised);
-    buttons_menu->setLineWidth(2);
+	QVBoxLayout *vertLayout = new QVBoxLayout();  //==== основной лэйаут
+	vertLayout->setMargin(1);
 
-    QToolButton *open_map_but = new QToolButton();
-    open_map_but->setIcon(QIcon("./icons/map_open.png"));
-    open_map_but->setIconSize(QSize(20,20));
-    open_map_but->setToolTip("ќткрыть карту");
-    connect(open_map_but, SIGNAL(clicked()), this, SLOT(open()));
+	//==== формирование меню на основе QFrame и QToolButton's ====
+	QFrame *buttons_menu = new QFrame();
+	buttons_menu->setFrameStyle(QFrame::Panel | QFrame::Raised);
+	buttons_menu->setLineWidth(2);
 
-//добавление пользовательского сло€
-    QToolButton *tool_button_test = new QToolButton();
-    tool_button_test->setIcon(QIcon("./icons/map_open.png"));
-    tool_button_test->setIconSize(QSize(20,20));
-    tool_button_test->setToolTip("ƒобавить слой");
-    connect(tool_button_test, SIGNAL(clicked()), this, SLOT(appendSit()));
+	QToolButton *open_map_but = new QToolButton();
+	open_map_but->setIcon(QIcon("./icons/map_open.png"));
+	open_map_but->setIconSize(QSize(20,20));
+	open_map_but->setToolTip("ќткрыть карту");
+	connect(open_map_but, SIGNAL(clicked()), this, SLOT(open()));
 
-
-    QToolButton *close_map_but = new QToolButton();
-    close_map_but->setIcon(QIcon("./icons/map_close.png"));
-    close_map_but->setIconSize(QSize(20,20));
-    close_map_but->setToolTip("«акрыть карту и все данные");
-    connect(close_map_but, SIGNAL(clicked()), this, SLOT(closeMap()));
-//€ркость
-    QToolButton *set_map_bright1 = new QToolButton();
-    set_map_bright1->setIcon(QIcon("./icons/up.png"));
-    set_map_bright1->setIconSize(QSize(20,20));
-    set_map_bright1->setToolTip("”величить €ркость карты");
-    connect(set_map_bright1, SIGNAL(clicked()), this, SLOT(changeBrihgtUp()));
-//€ркость
-    QToolButton *set_map_bright2 = new QToolButton();
-    set_map_bright2->setIcon(QIcon("./icons/down.png"));
-    set_map_bright2->setIconSize(QSize(20,20));
-    set_map_bright2->setToolTip("”меньшить €ркость карты");
-    connect(set_map_bright2, SIGNAL(clicked()), this, SLOT(changeBrihgtDown()));
-    QLabel *v_lab = new QLabel();
+	//добавление пользовательского сло€
+	QToolButton *tool_button_test = new QToolButton();
+	tool_button_test->setIcon(QIcon("./icons/map_open.png"));
+	tool_button_test->setIconSize(QSize(20,20));
+	tool_button_test->setToolTip("ƒобавить слой");
+	connect(tool_button_test, SIGNAL(clicked()), this, SLOT(appendSit()));
 
 
-//уменьшить масштаб отображени€ карты
+	QToolButton *close_map_but = new QToolButton();
+	close_map_but->setIcon(QIcon("./icons/map_close.png"));
+	close_map_but->setIconSize(QSize(20,20));
+	close_map_but->setToolTip("«акрыть карту и все данные");
+	connect(close_map_but, SIGNAL(clicked()), this, SLOT(closeMap()));
+	//€ркость
+	QToolButton *set_map_bright1 = new QToolButton();
+	set_map_bright1->setIcon(QIcon("./icons/up.png"));
+	set_map_bright1->setIconSize(QSize(20,20));
+	set_map_bright1->setToolTip("”величить €ркость карты");
+	connect(set_map_bright1, SIGNAL(clicked()), this, SLOT(changeBrihgtUp()));
+	//€ркость
+	QToolButton *set_map_bright2 = new QToolButton();
+	set_map_bright2->setIcon(QIcon("./icons/down.png"));
+	set_map_bright2->setIconSize(QSize(20,20));
+	set_map_bright2->setToolTip("”меньшить €ркость карты");
+	connect(set_map_bright2, SIGNAL(clicked()), this, SLOT(changeBrihgtDown()));
+	QLabel *v_lab = new QLabel();
+
+
+	//уменьшить масштаб отображени€ карты
 	QToolButton *less_scale_but = new QToolButton();
 	less_scale_but->setIcon(QIcon("./icons/less_scale.jpg"));
 	less_scale_but->setIconSize(QSize(20,20));
 	less_scale_but->setToolTip("”меньшить масштаб");
 	connect(less_scale_but, SIGNAL(clicked()), this, SLOT(LessScale()));
-//увеличить масштаб отображени€ карты
+	//увеличить масштаб отображени€ карты
 	QToolButton *greate_scale_but = new QToolButton();
 	greate_scale_but->setIcon(QIcon("./icons/greate_scale.jpg"));
 	greate_scale_but->setIconSize(QSize(20,20));
 	greate_scale_but->setToolTip("”величить масштаб");
 	connect(greate_scale_but, SIGNAL(clicked()), this, SLOT(GreateScale()));
 
-    v_lab->setFrameStyle(QFrame::VLine | QFrame::Raised);
-    v_lab->setLineWidth(2);
+	v_lab->setFrameStyle(QFrame::VLine | QFrame::Raised);
+	v_lab->setLineWidth(2);
 
-    QHBoxLayout *menuLayout = new QHBoxLayout();
-    menuLayout->setAlignment(Qt::AlignLeft);
-    menuLayout->setMargin(2);
-    menuLayout->setSpacing(0);
+	QHBoxLayout *menuLayout = new QHBoxLayout();
+	menuLayout->setAlignment(Qt::AlignLeft);
+	menuLayout->setMargin(2);
+	menuLayout->setSpacing(0);
 
     menuLayout->addWidget(open_map_but);
     menuLayout->addWidget(tool_button_test);
