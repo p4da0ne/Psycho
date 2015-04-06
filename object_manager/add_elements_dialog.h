@@ -147,6 +147,7 @@ private slots:
 	void add_persones_groups();
 	void edit_persones();
 	void add_persones_ls();
+    void add_persones_smi();
 	void add_special_cond();
 	void add_coord_special_cond_dlg();
 	void add_ls();

@@ -1,8 +1,21 @@
 #include "object_manager.h"
+#include <QMenu>
+#include <QMouseEvent>
+#include <QAction>
 #include "../dataaccess/dataaccess.h"
+#include <QDialog>
+#include <QMessageBox>
+#include <QHeaderView>
+#include <QFileDialog>
+#include <QUrl>
+#include <QPainter>
+#include <QLineEdit>
+#include <QStandardItem>
+#include "simledelegate.h"
+#include <QProgressDialog>
+#include <QStringList>
 #include "ui_add_object.h"
 #include "ui_object_manager_form.h"
-
 
 Objectmanager::Objectmanager(QWidget *parent) //int in_id_object
     : QWidget(parent),
@@ -26,7 +39,7 @@ Objectmanager::Objectmanager(QWidget *parent) //int in_id_object
 	connect(UI->object_manager_tree,SIGNAL(customContextMenuRequested(const QPoint &)),this,SLOT(customMenuTree(const QPoint &)));
 	connect(UI->columnView,SIGNAL(clicked(const QModelIndex &)),this,SLOT(column_item_clicked ( const QModelIndex & )));
 	
-	
+    iconsList << "./icons/0.png" << "./icons/01.png" << "./icons/02.png" << "./icons/03.png";
 	init_object_tree();
 }
 
@@ -86,10 +99,19 @@ void Objectmanager::customMenuView(const QPoint & pos)
 			QMenu *menu = new QMenu(this);
 			QAction *act=new QAction("Удалить регион",this);
 			connect(act,SIGNAL(triggered()),this,SLOT(delete_region()));
-			menu->addAction(act);
+            QAction *act_1 = new QAction(QString("Оценка морально-психологической обстановки: %1").arg(list.value(3)),this);
+            rez_z_1 = list.value(3).toFloat();
+            QAction *otch23 = new QAction(QString("Сформировать отчет"),this);
+            groud_id = list.value(1).toInt();
+            connect(otch23,SIGNAL(triggered()),this,SLOT(otchet()));
+
+            menu->addAction(act);
+            menu->addAction(act_1);
+            menu->addAction(otch23);
 			popupButton->setMenu(menu);
 			menu->exec(QCursor::pos());
-			}
+            }
+
 		else if(list.value(0)=="dsmi"){
 			QPushButton *popupButton = new QPushButton;
 			QMenu *menu = new QMenu(this);
@@ -107,17 +129,115 @@ void Objectmanager::customMenuView(const QPoint & pos)
 			menu->addAction(act);
 			popupButton->setMenu(menu);
 			menu->exec(QCursor::pos());
-	
 			}
-		else if(list.value(0)=="lss" || list.value(0)=="chls"){
+        else if(list.value(0)=="lss" ){//|| list.value(0)=="chls"){
+            People_Losses pl;
+            pl.get_losses(list.at(1).toInt());
+
+            QPushButton *popupButton = new QPushButton;
+			QMenu *menu = new QMenu(this);
+
+            QAction *act=new QAction(QString("Оценка морально-психологического состояния %1: %2").arg(list.value(4)).arg(list.value(3)),this);
+
+            QMenu* subMenu_1 = new QMenu("Потери л/с",menu);
+
+            QMenu* subMenu_1_1 = new QMenu("Интенсивность БД низкая");
+            QAction *act_1_1=new QAction(QString("через 1 час: %1 - %2").arg(pl.min[0][0]).arg(pl.max[0][0]),subMenu_1);
+            subMenu_1_1->addAction(act_1_1);
+            QAction *act_1_2=new QAction(QString("втечение суток: %1 - %2").arg(pl.min[0][1]).arg(pl.max[0][1]),subMenu_1);
+            subMenu_1_1->addAction(act_1_2);
+            QAction *act_1_3=new QAction(QString("через 3-5 суток: %1 - %2").arg(pl.min[0][2]).arg(pl.max[0][2]),subMenu_1);
+            subMenu_1_1->addAction(act_1_3);
+            QAction *act_1_4=new QAction(QString("более 5 суток: %1 - %2").arg(pl.min[0][3]).arg(pl.max[0][3]),subMenu_1);
+            subMenu_1_1->addAction(act_1_4);
+            subMenu_1->addMenu(subMenu_1_1);
+
+            QMenu* subMenu_1_2 = new QMenu("Интенсивность БД средняя");
+            QAction *act_2_1=new QAction(QString("через 1 час: %1 - %2").arg(pl.min[1][0]).arg(pl.max[1][0]),subMenu_1);
+            subMenu_1_2->addAction(act_2_1);
+            QAction *act_2_2=new QAction(QString("втечение суток: %1 - %2").arg(pl.min[1][1]).arg(pl.max[1][1]),subMenu_1);
+            subMenu_1_2->addAction(act_2_2);
+            QAction *act_2_3=new QAction(QString("через 3-5 суток: %1 - %2").arg(pl.min[1][2]).arg(pl.max[1][2]),subMenu_1);
+            subMenu_1_2->addAction(act_2_3);
+            QAction *act_2_4=new QAction(QString("более 5 суток: %1 - %2").arg(pl.min[1][3]).arg(pl.max[1][3]),subMenu_1);
+            subMenu_1_2->addAction(act_2_4);
+            subMenu_1->addMenu(subMenu_1_2);
+
+            QMenu* subMenu_1_3 = new QMenu("Интенсивность БД высокая");
+            QAction *act_3_1=new QAction(QString("через 1 час: %1 - %2").arg(pl.min[2][0]).arg(pl.max[2][0]),subMenu_1);
+            subMenu_1_3->addAction(act_3_1);
+            QAction *act_3_2=new QAction(QString("втечение суток: %1 - %2").arg(pl.min[2][1]).arg(pl.max[2][1]),subMenu_1);
+            subMenu_1_3->addAction(act_3_2);
+            QAction *act_3_3=new QAction(QString("через 3-5 суток: %1 - %2").arg(pl.min[2][2]).arg(pl.max[2][2]),subMenu_1);
+            subMenu_1_3->addAction(act_3_3);
+            QAction *act_3_4=new QAction(QString("более 5 суток: %1 - %2").arg(pl.min[2][3]).arg(pl.max[2][3]),subMenu_1);
+            subMenu_1_3->addAction(act_3_4);
+            subMenu_1->addMenu(subMenu_1_3);
+
+            menu->addMenu(subMenu_1);
+            QAction *act_del=new QAction("Удалить воинское формирование",this);
+            connect(act_del,SIGNAL(triggered()),this,SLOT(delete_ls()));
+            menu->addAction(act);
+            menu->addAction(act_del);
+            popupButton->setMenu(menu);
+            menu->exec(QCursor::pos());
+
+        }
+		else if(list.value(0)=="chls"){
+			People_Losses pl;
+			pl.get_losses(list.at(1).toInt());
 			QPushButton *popupButton = new QPushButton;
 			QMenu *menu = new QMenu(this);
-			QAction *act=new QAction("Удалить воинское формирование",this);
-			connect(act,SIGNAL(triggered()),this,SLOT(delete_ls()));
+
+        //	calculating_mps calc;
+            QAction *act=new QAction(QString("Оценка моралогического состояния %1: %2").arg(list.value(3)).arg(list.value(2)),this);
+			QAction *act_del=new QAction("Удалить воинское формирование",this);
+            connect(act_del,SIGNAL(triggered()),this,SLOT(delete_ls()));
+			QMenu* subMenu_1 = new QMenu("Потери л/с",menu);
+
+			QMenu* subMenu_1_1 = new QMenu("Интенсивность БД низкая");
+			QAction *act_1_1=new QAction(QString("через 1 час: %1 - %2").arg(pl.min[0][0]).arg(pl.max[0][0]),subMenu_1);
+			subMenu_1_1->addAction(act_1_1);
+			QAction *act_1_2=new QAction(QString("втечение суток: %1 - %2").arg(pl.min[0][1]).arg(pl.max[0][1]),subMenu_1);
+			subMenu_1_1->addAction(act_1_2);
+			QAction *act_1_3=new QAction(QString("через 3-5 суток: %1 - %2").arg(pl.min[0][2]).arg(pl.max[0][2]),subMenu_1);
+			subMenu_1_1->addAction(act_1_3);
+			QAction *act_1_4=new QAction(QString("более 5 суток: %1 - %2").arg(pl.min[0][3]).arg(pl.max[0][3]),subMenu_1);
+			subMenu_1_1->addAction(act_1_4);
+			subMenu_1->addMenu(subMenu_1_1);
+
+			QMenu* subMenu_1_2 = new QMenu("Интенсивность БД средняя");
+			QAction *act_2_1=new QAction(QString("через 1 час: %1 - %2").arg(pl.min[1][0]).arg(pl.max[1][0]),subMenu_1);
+			subMenu_1_2->addAction(act_2_1);
+			QAction *act_2_2=new QAction(QString("втечение суток: %1 - %2").arg(pl.min[1][1]).arg(pl.max[1][1]),subMenu_1);
+			subMenu_1_2->addAction(act_2_2);
+			QAction *act_2_3=new QAction(QString("через 3-5 суток: %1 - %2").arg(pl.min[1][2]).arg(pl.max[1][2]),subMenu_1);
+			subMenu_1_2->addAction(act_2_3);
+			QAction *act_2_4=new QAction(QString("более 5 суток: %1 - %2").arg(pl.min[1][3]).arg(pl.max[1][3]),subMenu_1);
+			subMenu_1_2->addAction(act_2_4);
+			subMenu_1->addMenu(subMenu_1_2);
+
+			QMenu* subMenu_1_3 = new QMenu("Интенсивность БД высокая");
+			QAction *act_3_1=new QAction(QString("через 1 час: %1 - %2").arg(pl.min[2][0]).arg(pl.max[2][0]),subMenu_1);
+			subMenu_1_3->addAction(act_3_1);
+			QAction *act_3_2=new QAction(QString("втечение суток: %1 - %2").arg(pl.min[2][1]).arg(pl.max[2][1]),subMenu_1);
+			subMenu_1_3->addAction(act_3_2);
+			QAction *act_3_3=new QAction(QString("через 3-5 суток: %1 - %2").arg(pl.min[2][2]).arg(pl.max[2][2]),subMenu_1);
+			subMenu_1_3->addAction(act_3_3);
+			QAction *act_3_4=new QAction(QString("более 5 суток: %1 - %2").arg(pl.min[2][3]).arg(pl.max[2][3]),subMenu_1);
+			subMenu_1_3->addAction(act_3_4);
+			subMenu_1->addMenu(subMenu_1_3);
+
+			menu->addMenu(subMenu_1);
+
+			//QAction *act=new QAction("Удалить воинское формирование",this);
+			//connect(act,SIGNAL(triggered()),this,SLOT(delete_ls()));
 			menu->addAction(act);
+			menu->addAction(act_del);
 			popupButton->setMenu(menu);
 			menu->exec(QCursor::pos());
 			}
+		
 		else if(list.value(0)=="dgr"){
 			QPushButton *popupButton = new QPushButton;
 			QMenu *menu = new QMenu(this);
@@ -375,13 +495,14 @@ void Objectmanager::show_objects(const QModelIndex &index)
 			query_count.exec(QString("select count(name_region) from region where parent_region = %1").arg(query.value(0).toInt()));
 			while (query_count.next()) {
 			int g = query_count.value(0).toInt(); //********
-			QStandardItem *item = new QStandardItem(query.value(1).toString() + " ["  + QString::number(g) + "]");
 			int id_region=query.value(0).toInt();
-			QString data_region="region_" + QString::number(id_region) + "_" + QString::number(id_country);
+			QIcon icon = QIcon(iconsList.at(calc_info_for_region(query.value(0).toString())));		
+			QStandardItem *item = new QStandardItem(query.value(1).toString() + " ["  + QString::number(g) + "]");
+			item->setIcon(icon);
+			QString data_region="region_" + QString::number(id_region) + "_" + QString::number(id_country) + "_" + QString::number(calc.get_Rez_on_id_region(id_region));
 			item->setData(data_region,Qt::UserRole);
 			//item->setData(QIcon(set_icon(query.value(2).toInt())),Qt::DecorationRole);
 			model->appendRow(item);
-			
 			child_region_objects(item,id_region);
 		}
 			
@@ -424,13 +545,13 @@ void Objectmanager::child_region_objects(QStandardItem *parent_item,int id_paren
 			query_count.exec(QString("select count(name_region) from region where parent_region = %1 ").arg(query.value(0).toInt()));
 			while (query_count.next()) {
 			int g = query_count.value(0).toInt();
-
 			int id_object=query.value(0).toInt();
-			if (id_object == id_parent_region)continue;			
+			if (id_object == id_parent_region)continue;		
+			QString icon = iconsList.at(calc_info_for_region(query.value(0).toString()));			
 			child_region_objects(set_child_item(query.value(1).toString() + " [" + QString::number(g)+ "]",
-												"reg_" + QString::number(id_object) + "_" + QString::number(id_parent_region), 
+												"reg_" + QString::number(id_object) + "_" + QString::number(id_parent_region) + "_" + QString::number(calc.get_Rez_on_id_region(id_object)),  
 												parent_item,
-												row),id_object);
+												row,icon),id_object);
 												//set_icon(query.value(2).toInt())),	
 			row++;
 			}
@@ -446,10 +567,10 @@ void Objectmanager::child_region_objects(QStandardItem *parent_item,int id_paren
 void Objectmanager::add_region_components(QStandardItem *parent_item,int id_parent_region,int start_row){
 //СМИ ====================================================================================================
 	QSqlQuery query;
-	query.exec(QString("SELECT id_region,id_smi,id_smi_region FROM smi_region WHERE id_region=%1").arg(id_parent_region));
+    query.exec(QString("SELECT sm.id_region,sm.id_smi,sm.id_smi_region,poz.id_position_smi,poz.id_smi FROM smi_region sm,smi poz WHERE id_region=%1 AND sm.id_smi = poz.id_smi").arg(id_parent_region));
 	int row=start_row+1;
 	int row_sw=0;
-
+//SELECT sm.id_region,sm.id_smi,sm.id_smi_region,poz.id_position_smi,poz.id_smi FROM smi_region sm,smi poz WHERE id_region=%1 AND sm.id_smi = poz.id_smi
 	int g; 
 	QSqlQuery query_count;
 	query_count.exec(QString("SELECT count(id_smi) FROM smi_region WHERE id_region=%1").arg(id_parent_region));
@@ -468,12 +589,26 @@ void Objectmanager::add_region_components(QStandardItem *parent_item,int id_pare
 			QSqlQuery query_smi;
 			int id_smi=query.value(1).toInt();
 			int id_smi_region=query.value(2).toInt();
+            int id_poz_smi = query.value(3).toInt();
 			query_smi.exec(QString("SELECT id_smi,name_smi FROM smi WHERE id_smi=%1").arg(query.value(1).toInt()));
 			while (query_smi.next())
 			{
-
-			child_smi_objects(set_child_item(query_smi.value(1).toString(),QString("dsmi_%1").arg(id_smi_region) + "_" + QString::number(id_smi),item,row_sw),
+                if (id_poz_smi == 3 || id_poz_smi == 5) {
+                QBrush b(Qt::blue);
+            child_smi_objects(set_child_item(query_smi.value(1).toString(),QString("dsmi_%1").arg(id_smi_region) + "_" + QString::number(id_smi),item,row_sw,b),
 														id_smi);
+                }
+                else if (id_poz_smi == 1 || id_poz_smi == 6){
+                QBrush b(Qt::red);
+            child_smi_objects(set_child_item(query_smi.value(1).toString(),QString("dsmi_%1").arg(id_smi_region) + "_" + QString::number(id_smi),item,row_sw,b),
+                                                            id_smi);
+
+                }
+                else{
+                    QBrush b(Qt::black);
+                child_smi_objects(set_child_item(query_smi.value(1).toString(),QString("dsmi_%1").arg(id_smi_region) + "_" + QString::number(id_smi),item,row_sw,b),
+                                                                id_smi);
+                }
 			}
 			row_sw++;
 		}
@@ -502,15 +637,16 @@ void Objectmanager::add_region_components(QStandardItem *parent_item,int id_pare
 			int id_ls=query.value(1).toInt();
 			int id_region = query.value(0).toInt();
 			bool enemy_ls = query.value(3).toBool();
-
+			float mps_for_ls = calc_mps.calculating(id_ls);
+			
 			if (enemy_ls == true) {
 			QBrush b(Qt::blue);
-			child_ls_objects( set_child_item(query.value(2).toString(),QString("chls_%1").arg(id_ls),item,row_vf,b),
+            child_ls_objects(set_child_item(query.value(2).toString(),QString("chls_%1_%2_%3").arg(id_ls).arg(mps_for_ls).arg(calc_mps.isEnemy(id_ls)),item,row_vf,iconsList.at(calc_mps_for_ls(mps_for_ls)),b),
 														id_ls);
 			}
 			else {
 			QBrush b(Qt::red);
-			child_ls_objects( set_child_item(query.value(2).toString(),QString("chls_%1").arg(id_ls),item,row_vf,b),
+            child_ls_objects(set_child_item(query.value(2).toString(),QString("chls_%1_%2_%3").arg(id_ls).arg(mps_for_ls).arg(calc_mps.isEnemy(id_ls)),item,row_vf,iconsList.at(calc_mps_for_ls(mps_for_ls)),b),
 														id_ls);
 			}
 			row_vf++;
@@ -590,7 +726,7 @@ query.exec(QString("SELECT id_region, id_special_conditions,name_special_conditi
 			row_sc++;
 		}
 	}
-	set_child_item("Добавить Особые условия",QString("psc_%1").arg(id_parent_region),item,row_sc);
+    set_child_item("Добавить Особые условия",QString("psc_%1").arg(id_parent_region),item,row_sc);
 	query.clear();
 //========================= Национальность =========================================================
 	query.exec(QString("SELECT id_nations,id_region,id_ls_nations FROM ls_nations WHERE id_region=%1").arg(id_parent_region));
@@ -815,7 +951,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 			int result=add_element->exec();
 
 			if (result==0)return;
-			QSqlQuery query_group;
+            QSqlQuery query_group;
 			query_group.exec(QString("SELECT id_groups,name_groups FROM groups WHERE id_groups=%1").arg(result));
 			while (query_group.next()){
 			QString name_group=query_group.value(1).toString();
@@ -953,12 +1089,39 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 			set_child_item("Добавить Персоналии",QString("ppers_%1").arg(list.value(1)),par,r2);
 		
 			}
-		}// ======================= для ВФ персоналии ===============================================================
+        }
+        else if(list.value(0)=="pperssmi"){
+
+            Add_elements_dialog *add_element= new Add_elements_dialog(26,list.value(1).toInt());
+            add_element->setModal(true);
+            int result=add_element->exec();
+            //вернул id
+            if (result==0)return;
+
+            QSqlQuery query_pers_smi;
+            query_pers_smi.exec(QString("SELECT id_persones,name_persones FROM persones WHERE id_persones=%1").arg(result));
+            while (query_pers_smi.next())
+            {
+            QString name_pers_smi=query_pers_smi.value(1).toString();
+            QString user_data_pers_smi=QString("dperssmi_%1_%2").arg(QString::number(result)).arg(query_pers_smi.value(0).toInt());
+
+            QStandardItem *par = model->itemFromIndex(index)->parent();
+            int r1 = model->itemFromIndex(index)->parent()->rowCount()-1;
+            int r2 = model->itemFromIndex(index)->parent()->rowCount();
+
+            set_child_item(name_pers_smi,user_data_pers_smi,par,r1);
+
+            set_child_item("Добавить персоналии",QString("pperssmi_%1").arg(list.value(1)),par,r2);
+
+            }
+        }
+
+        // ======================= для ВФ персоналии ===============================================================
 		else if(list.value(0)=="ppersls"){
 			
-			Add_elements_dialog *add_element= new Add_elements_dialog(25,list.value(1).toInt());
+            Add_elements_dialog *add_element= new Add_elements_dialog(25,list.value(1).toInt());
 			add_element->setModal(true);
-		 	int result=add_element->exec();
+            int result=add_element->exec();
 			//вернул id 
 			if (result==0)return;
 			
@@ -975,10 +1138,11 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 
 			set_child_item(name_pers,user_data_pers,par,r1);
 			
-			set_child_item("Добавить Персоналии",QString("ppersls_%1").arg(list.value(1)),par,r2);
+            set_child_item("Добавить Персоналии",QString("ppersls_%1").arg(list.value(1)),par,r2);
 		
 			}
 		}
+
 		// ======================= национальность ======================================
 		else if(list.value(0)=="nations"){
 			Add_elements_dialog *add_element= new Add_elements_dialog(4,list.value(1).toInt());
@@ -1072,12 +1236,19 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 			add_element->exec();
 
 		}// =============== для формирований по персоналу ================================
-		else if(list.value(0)=="dpersls"){
+        else if(list.value(0)=="dpersls"){
 			Add_elements_dialog *add_element= new Add_elements_dialog(24,list.value(1).toInt());
 			add_element->setModal(true);
 			connect(add_element->deleteButton,SIGNAL(clicked()),this,SLOT(delete_pers()));
 			add_element->exec();
 		}
+         // =============== для smi по персоналу ================================
+        else if(list.value(0)=="dperssmi"){
+        Add_elements_dialog *add_element= new Add_elements_dialog(24,list.value(1).toInt());
+        add_element->setModal(true);
+        connect(add_element->deleteButton,SIGNAL(clicked()),this,SLOT(delete_pers()));
+        add_element->exec();
+         }
 		//============== выбор для заполнения таблицы ====================================
 		else if(list.value(0)=="region"){
 			region_click(list.value(1).toInt());
@@ -1085,7 +1256,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 		else if(list.value(0)=="reg"){
 			region_click(list.value(1).toInt());
 		} // ================= в таблицу данные о СМИ =======================================
-		else if(list.value(0)=="dsmi"){
+        else if(list.value(0)=="dsmi"){
 			smi_click(list.value(2).toInt());
 		} // ================= в таблицу данные о ВФ =======================
 		else if(list.value(0)=="dls"){
@@ -1122,20 +1293,21 @@ void Objectmanager::child_ls_objects(QStandardItem *parent_item,int parent_ls)
 		while (query.next()){
 			int id_object=query.value(0).toInt();
 			if (id_object == parent_ls)continue;
+			float mps_for_ls = calc_mps.calculating(id_object);
 			bool enemy_ls = query.value(3).toBool();
 
 			if (enemy_ls == true) {
 			QBrush b(Qt::blue);
 			child_ls_objects(set_child_item(query.value(1).toString(),
-												"lss_" + QString::number(id_object) + "_" + QString::number(parent_ls), 
+												"lss_" + QString::number(id_object) + "_" + QString::number(parent_ls) + "_" + QString::number(mps_for_ls) + "_" + QString("%1").arg(calc_mps.isEnemy(id_object)), 
 												parent_item,
-												row,b),id_object);}
+                                                row,iconsList.at(calc_mps_for_ls(mps_for_ls)),b),id_object);}   //b
 			else {
 			QBrush b(Qt::red);
 			child_ls_objects(set_child_item(query.value(1).toString(),
-												"lss_" + QString::number(id_object) + "_" + QString::number(parent_ls), 
+												"lss_" + QString::number(id_object) + "_" + QString::number(parent_ls) + "_" + QString::number(mps_for_ls) + "_" + QString("%1").arg(calc_mps.isEnemy(id_object)), 
 												parent_item,
-												row,b),id_object);}
+                                                row,iconsList.at(calc_mps_for_ls(mps_for_ls)),b),id_object);} //b
 			row++;
 		}
 	}
@@ -1276,11 +1448,12 @@ void Objectmanager::add_ls_components(QStandardItem *parent_item,int id_parent_r
 
 
 }	
+
 void Objectmanager::add_groups_components(QStandardItem *parent_item,int id_parent_region,int start_row)
 {
 // ========================================= средства =================================================	
 	QSqlQuery query;
-	query.exec(QString("SELECT id_groups,id_mpo_pso FROM mpo_pso WHERE id_groups=%1").arg(id_parent_region));
+    query.exec(QString("SELECT id_groups,id_mpo_pso FROM mpo_pso WHERE id_groups=%1").arg(id_parent_region));
 	int row=0;
 	int row_sw=0;				
 	int g; 
@@ -1368,6 +1541,7 @@ void Objectmanager::add_groups_components(QStandardItem *parent_item,int id_pare
 //==========================================================================================================================
 }
 
+
 void Objectmanager::add_smi_components(QStandardItem *parent_item,int id_parent_region,int start_row)
 {
 // ========================================= средства =================================================	
@@ -1403,7 +1577,38 @@ void Objectmanager::add_smi_components(QStandardItem *parent_item,int id_parent_
 	}	
 	set_child_item("Добавить Средства",QString("pmposmi_%1").arg(id_parent_region),item,row_sw);
 	query.clear();
+ // ========================================= персонал =================================================
+        QSqlQuery query_pers;
+        query_pers.exec(QString("SELECT id_smi,id_persones FROM persones WHERE id_smi=%1").arg(id_parent_region));
+        int row_p=0;
+        int t;
+        QSqlQuery query_count_p;
+        query_count_p.exec(QString("SELECT count(id_persones) FROM persones WHERE id_smi=%1").arg(id_parent_region));
+        while (query_count_p.next()){
+            t = query_count_p.value(0).toInt();}
 
+        item=set_child_item("ПЕРСОНАЛИИ ["  + QString::number(t) + "]","perssmi",parent_item,row,"./icons/connect_saturn.png");
+        //QStandardItem *item=set_child_item("СМИ","smi",parent_item,row,"./icons/printer.png");
+        row++;
+
+        if (query_pers.size() != 0)
+        {
+            row_p=0;
+            while (query_pers.next())
+            {
+                QSqlQuery query_p;
+                int id_smi=query_pers.value(1).toInt();
+                query_p.exec(QString("SELECT id_persones,name_persones FROM persones WHERE id_persones=%1").arg(query_pers.value(1).toInt()));
+                while (query_p.next())
+                {
+                    set_child_item(query_p.value(1).toString(),QString("dperssmi_%1").arg(id_smi),item,row_p);
+                }
+                row_p++;
+            }
+
+        }
+        set_child_item("Добавить Персоналии",QString("pperssmi_%1").arg(id_parent_region),item,row_p);
+        query.clear();
 }
 
 QStandardItem * Objectmanager::set_child_item(QString item_text,QString user_data,QStandardItem *parent_item,int row)
@@ -1421,7 +1626,6 @@ QStandardItem * Objectmanager::set_child_item(QString item_text,QString user_dat
 		parent_item->setChild(row,item);
 		return item;
 	}
-
 QStandardItem * Objectmanager::set_child_item(QString item_text,QString user_data,QStandardItem *parent_item,int row,QFont font)
 	{
 		QStandardItem *item = new QStandardItem(item_text.toStdString().c_str());
@@ -1430,14 +1634,12 @@ QStandardItem * Objectmanager::set_child_item(QString item_text,QString user_dat
 		parent_item->setChild(row,item);
 		return item;
 	}
-	
 QStandardItem * Objectmanager::set_child_item(QString item_text,QString user_data,QStandardItem *parent_item,int row,QString icon_path)	{
 		QStandardItem *item = new QStandardItem(QIcon(icon_path),item_text.toStdString().c_str());
 		item->setData(user_data,Qt::UserRole);
 		parent_item->setChild(row,item);
 		return item;
 	}
-	
 QStandardItem * Objectmanager::set_child_item(QString item_text,QString user_data,QStandardItem *parent_item,int row,QString icon_path,QFont font)	{
 		QStandardItem *item = new QStandardItem(QIcon(icon_path),item_text.toStdString().c_str());
 		item->setFont(font);
@@ -1445,7 +1647,13 @@ QStandardItem * Objectmanager::set_child_item(QString item_text,QString user_dat
 		parent_item->setChild(row,item);
 		return item;
 	}
-
+QStandardItem * Objectmanager::set_child_item(QString item_text,QString user_data,QStandardItem *parent_item,int row,QString icon_path,QBrush b)	{
+        QStandardItem *item = new QStandardItem(QIcon(icon_path),item_text.toStdString().c_str());
+        item->setForeground(b);
+        item->setData(user_data,Qt::UserRole);
+        parent_item->setChild(row,item);
+        return item;
+    }
 //============= функции заполнения свойств в tableview ==================================
 void Objectmanager::region_click(int id_region){
 	QSqlRelationalTableModel *model_region = new QSqlRelationalTableModel(this);
@@ -1581,6 +1789,7 @@ void Objectmanager::region_click(int id_region){
 //	UI->property_object->setItemDelegate(new QSqlRelationalDelegate(UI->property_object));
 //=============================================================================================
 }
+//=======================================================================================
 void Objectmanager::smi_click(int id_smi){
 
 	QSqlRelationalTableModel *model_region = new QSqlRelationalTableModel(this);
@@ -1651,7 +1860,6 @@ for(int row=0; row!=model->rowCount(); ++row){
 	UI->property_object->setItemDelegateForColumn(13,delegat_smi);UI->property_object->setItemDelegateForColumn(14,delegat_smi);
 
 }
-
 void Objectmanager::ls_click (int id_ls)
 {
 QSqlRelationalTableModel *model_region = new QSqlRelationalTableModel(this);
@@ -1797,7 +2005,6 @@ QSqlRelationalTableModel *model_region = new QSqlRelationalTableModel(this);
 //	UI->label_coord->setText("Координаты организации " + name_gr + ":");
 	UI->coord_object->hideColumn(0);
 }
-
 void Objectmanager::mpo_click (int id_mpo){
 QSqlRelationalTableModel *model_region = new QSqlRelationalTableModel(this);
 	
@@ -1856,7 +2063,6 @@ QSqlRelationalTableModel *model_region = new QSqlRelationalTableModel(this);
 //	UI->label_coord->setText("Координаты организации " + name_gr + ":");
 	UI->coord_object->hideColumn(0);
 }
-
 
 void Objectmanager::sc_click (int id_sc){
 	QSqlRelationalTableModel *model_region = new QSqlRelationalTableModel(this);
@@ -1929,6 +2135,7 @@ void Objectmanager::sc_click (int id_sc){
 }
 
 //==========================  удаление по нажатию контекстного меню ================================
+
 void Objectmanager::delete_region(){
 	QMessageBox msgBox;
 	msgBox.setWindowTitle("Предупреждение");
@@ -2078,7 +2285,6 @@ void Objectmanager::delete_groups(){
 	UI->property_object->setModel(0);
 	UI->coord_object->setModel(0);
 }
-
 void Objectmanager::delete_mpo(){
 	QMessageBox msgBox;
 	msgBox.setWindowTitle("Предупреждение");
@@ -2193,3 +2399,595 @@ void Objectmanager::delete_pers(){
 }
 
 //============================================================================================
+void Objectmanager::otchet()
+{
+    otch = new QDialog;
+
+    QPushButton *Save_as_pdf = new QPushButton("Cохранить в PDF");
+
+    connect(Save_as_pdf,SIGNAL(clicked()),this,SLOT(save_pdf()));
+
+    otch->setWindowTitle("Формирование отчета");
+    QGridLayout *Grid = new QGridLayout;
+
+    name_region_edit = new QLineEdit();
+    type_region_edit = new QLineEdit();
+    description_region_edit = new QLineEdit();
+    counte_population_edit = new QLineEdit();
+    density_population_edit = new QLineEdit();
+    emmigration_population_edit = new QLineEdit();
+    immigration_population_edit = new QLineEdit();
+    birth_population_edit = new QLineEdit();
+    dead_population_edit = new QLineEdit();
+    name_nations_edit = new QLineEdit();
+
+    name_region_label = new QLabel("Название региона:");
+    type_region_label = new QLabel("Тип региона:");
+    description_region_label = new QLabel("Описание региона:");
+    counte_population_label = new QLabel("Население региона:");
+    density_population_label = new QLabel("Плотность населения региона:");
+    emmigration_population_label = new QLabel("Уровень эммиграции:");
+    immigration_population_label = new QLabel("Уровень иммиграции:");
+    birth_population_label = new QLabel("Уровень рождаемости:");
+    dead_population_label = new QLabel("Уровень смертности:");
+    name_nations_label = new QLabel("Национальный состав:");
+
+    QSqlQuery query;
+    QString str = QString("SELECT name_region, type_region, description_region, counte_population, density_population, emmigration_population, immigration_population, birth_population, dead_population FROM region WHERE id_region = %1").arg(groud_id);
+    query.exec(str);
+
+    QSqlRecord data = query.record();
+
+    while(query.next())
+    {
+        name_region_string = query.value(data.indexOf("name_region")).toString();
+        type_region_string = query.value(data.indexOf("type_region")).toString();
+        description_region_string = query.value(data.indexOf("description_region")).toString();
+        counte_population_string = query.value(data.indexOf("counte_population")).toString();
+        density_population_string = query.value(data.indexOf("density_population")).toString();
+        emmigration_population_string = query.value(data.indexOf("emmigration_population")).toString();
+        immigration_population_string = query.value(data.indexOf("immigration_population")).toString();
+        birth_population_string = query.value(data.indexOf("birth_population")).toString();
+        dead_population_string = query.value(data.indexOf("dead_population")).toString();
+    }
+
+    name_region_edit->setText(name_region_string);
+    type_region_edit->setText(type_region_string);
+    description_region_edit->setText(description_region_string);
+    counte_population_edit->setText(QString("%1").arg(counte_population_string));
+    density_population_edit->setText(density_population_string);
+    emmigration_population_edit->setText(emmigration_population_string);
+    immigration_population_edit->setText(immigration_population_string);
+    birth_population_edit->setText(birth_population_string);
+    dead_population_edit->setText(dead_population_string);
+
+    Grid->addWidget(name_region_label,0,0);
+    Grid->addWidget(name_region_edit,0,1);
+    Grid->addWidget(type_region_label,1,0);
+    Grid->addWidget(type_region_edit,1,1);
+    Grid->addWidget(description_region_label,2,0);
+    Grid->addWidget(description_region_edit,2,1);
+    Grid->addWidget(counte_population_label,3,0);
+    Grid->addWidget(counte_population_edit,3,1);
+    Grid->addWidget(density_population_label,4,0);
+    Grid->addWidget(density_population_edit,4,1);
+    Grid->addWidget(emmigration_population_label,5,0);
+    Grid->addWidget(emmigration_population_edit,5,1);
+    Grid->addWidget(immigration_population_label,6,0);
+    Grid->addWidget(immigration_population_edit,6,1);
+    Grid->addWidget(birth_population_label,7,0);
+    Grid->addWidget(birth_population_edit,7,1);
+    Grid->addWidget(dead_population_label,8,0);
+    Grid->addWidget(dead_population_edit,8,1);
+
+    Grid->addWidget(Save_as_pdf,9,1);
+
+    otch->setLayout(Grid);
+    otch->show();
+}
+void Objectmanager::save_pdf()
+{
+QTextDocument *doc = new QTextDocument;
+text = new TextPrinter(this);
+QDate date;
+QString time_date;
+int day,year,month;
+date = date.currentDate();
+day = date.dayOfWeek();
+month = date.month();
+year = date.year();
+time_date = date.toString("dd." "MM" "yyyy.г");
+
+
+QString htm;
+
+htm.append("<HTML> <HEAD> </HEAD> <BODY> <H2> <CENTER> <B> Справка региона (района) </B> </CENTER> </H2>  ");
+htm.append("  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Название региона: "); htm.append(name_region_string.toLocal8Bit());
+htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Тип региона: "); htm.append(type_region_string.toLocal8Bit());
+htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Описание региона: "); htm.append(description_region_string.toLocal8Bit());
+
+htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > <CENTER> <B> 1.Население </B> </CENTER> ");
+
+htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Население - "); htm.append(counte_population_string.toLocal8Bit());
+htm.append(" чел.( "); htm.append(density_population_string.toLocal8Bit()); htm.append(" чел на км2 плотность населения )");
+htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' >Национальный состав: ");
+
+QString str,str1,str2;
+QSqlQuery query,query1,query2;
+QSqlRecord data,data1,data2;
+
+
+str=QString("SELECT name_nations,persent_nations FROM region,ls_nations,nations WHERE region.id_region = ls_nations.id_region AND ls_nations.id_nations = nations.id_nations AND region.id_region = %1").arg(groud_id);
+query.clear();
+query.exec(str);
+data.clear();
+data = query.record();
+
+number = counte_population_string.toInt();
+
+while(query.next())
+{
+    name_nations_string = query.value(data.indexOf("name_nations")).toString();
+    persent_nations = query.value(data.indexOf("persent_nations")).toDouble();
+    number_nations = persent_nations/100*number;
+    htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > -"); htm.append(name_nations_string.toLocal8Bit()); htm.append(" (");
+    htm.append(QString("%1").arg(persent_nations).toLocal8Bit()); htm.append(" %, "); htm.append(QString("%1").arg(number_nations).toLocal8Bit()); htm.append(" чел)");
+}
+
+
+
+htm.append(" </FONT>  </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' >Уровень эммиграции: "); htm.append(emmigration_population_string.toLocal8Bit());
+htm.append(" </FONT>  </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' >Уровень иммиграции: "); htm.append(immigration_population_string.toLocal8Bit());
+htm.append(" </FONT>  </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' >Уровень рождаемости: "); htm.append(birth_population_string.toLocal8Bit());
+htm.append(" </FONT>  </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' >Уровень смертности: "); htm.append(dead_population_string.toLocal8Bit());
+
+number_sex_m = 0;
+number_sex_w = 0;
+
+number_m = 0;
+number_w = 0;
+QStringList list;
+
+str=QString("SELECT persent_sex_m FROM pop_sex WHERE id_region = %1").arg(groud_id);
+query.clear();
+query.exec(str);
+data.clear();
+data = query.record();
+
+while(query.next())
+{
+    number = query.value(data.indexOf("persent_sex_m")).toDouble();
+    number_sex_m = number;
+}
+
+
+
+str=QString("SELECT persent_sex_w FROM pop_sex WHERE id_region = %1").arg(groud_id);
+query.clear();
+query.exec(str);
+data.clear();
+data = query.record();
+
+while(query.next())
+{
+    number = query.value(data.indexOf("persent_sex_w")).toDouble();
+    number_sex_w = number;
+}
+if(number_sex_m==0)
+{
+    htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Половой состав: Данных нет");
+
+}
+else
+{
+number = counte_population_string.toInt();
+
+number_m = number_sex_m/100*number;
+
+
+
+
+number_w = number - number_m;
+
+htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Половой состав: ");
+htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Мужской пол: "); htm.append(QString("%1").arg(number_m).toLocal8Bit()); htm.append(" чел. ("); htm.append(QString("%1").arg(number_sex_m).toLocal8Bit()); htm.append(" %)");
+htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Женский пол: "); htm.append(QString("%1").arg(number_w).toLocal8Bit()); htm.append(" чел. ("); htm.append(QString("%1").arg(number_sex_w).toLocal8Bit()); htm.append(" %)");
+}
+
+
+
+
+
+str=QString("SELECT name_age,persent_age FROM age,pop_age WHERE pop_age.id_age = age.id_age AND id_region = %1").arg(groud_id);
+query.clear();
+query.exec(str);
+data.clear();
+data = query.record();
+if(query.size()==0)
+{
+    htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Возрастной состав: Данных нет");
+}
+
+else
+{
+    htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Возрастной состав: ");
+
+while(query.next())
+{
+    name_age_string = query.value(data.indexOf("name_age")).toString();
+    persent_age_string = query.value(data.indexOf("persent_age")).toString();
+    htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' >"); htm.append(name_age_string.toLocal8Bit()); htm.append(" - "); htm.append(persent_age_string.toLocal8Bit()); htm.append("%");
+}
+}
+
+
+
+
+str=QString("SELECT name_confessions,persent_confessions FROM ls_confessions,confessions WHERE id_region = %1 AND ls_confessions.id_confessions = confessions.id_confessions").arg(groud_id);
+query.clear();
+query.exec(str);
+data.clear();
+data = query.record();
+if(query.size()==0)
+{
+    htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Религиозный состав: Данных нет");
+}
+
+else
+{
+    htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Религиозный состав: ");
+
+while(query.next())
+{
+    name_confessions = query.value(data.indexOf("name_confessions")).toString();
+    persent_confessions = query.value(data.indexOf("persent_confessions")).toString();
+
+
+    htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' >"); htm.append(name_confessions.toLocal8Bit()); htm.append(" - "); htm.append(persent_confessions.toLocal8Bit()); htm.append("%");
+}
+}
+
+
+//--------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------
+htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > <CENTER> <B> 2.СМИ </B> </CENTER> ");
+
+
+
+int l=0;
+int d=0;
+
+
+
+
+str=QString("SELECT id_position_smi,name_position_smi FROM position_smi");
+query.clear();
+query.exec(str);
+data.clear();
+data = query.record();
+QString name_position_smi,nametype_smi,name_smi;
+int id_position_smi,id_type_smi;
+
+while(query.next())
+{
+    name_position_smi = query.value(data.indexOf("name_position_smi")).toString();
+    id_position_smi = query.value(data.indexOf("id_position_smi")).toInt();
+
+    str1 = QString("SELECT id_type_smi,nametype_smi FROM type_smi");
+    query1.clear();
+    query1.exec(str1);
+    data1.clear();
+    data1 = query1.record();
+    l=0;
+
+    while(query1.next())
+    {
+     nametype_smi = query1.value(data1.indexOf("nametype_smi")).toString();
+     id_type_smi = query1.value(data1.indexOf("id_type_smi")).toInt();
+
+     str2=QString("SELECT smi.name_smi FROM smi,smi_region WHERE smi_region.id_smi = smi.id_smi AND id_position_smi = %1 AND id_type_smi = %2 AND  id_region = %3").arg(id_position_smi).arg(id_type_smi).arg(groud_id);
+     query2.clear();
+     query2.exec(str2);
+     data2.clear();
+     data2 = query2.record();
+     smi_number = query2.size();
+     if(smi_number>0)
+     {
+         l++;
+         d=1;
+         if(l<2)
+         {
+          htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > <CENTER> <B>");
+          htm.append(name_position_smi.toLocal8Bit());
+          htm.append(": </B> </CENTER> ");
+         }
+          htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > ");
+          htm.append(nametype_smi.toLocal8Bit());
+          htm.append(": ");
+          htm.append(QString("%1").arg(smi_number).toLocal8Bit());
+          while(query2.next())
+          {
+           name_smi = query2.value(data2.indexOf("name_smi")).toString();
+           htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > - ");
+           htm.append(name_smi.toLocal8Bit());
+          }
+     }
+    }
+
+
+
+
+
+
+
+    }
+
+
+
+if(d==0) htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Данных нет  ");
+//--------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------
+
+htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > <CENTER> <B> 3. Организации </B> </CENTER> ");
+
+QString name_trend_groups,name_sphere_groups,name_groups;
+
+int id_trend_groups,id_sphere_groups;
+l=0;
+d=0;
+
+str=QString("SELECT id_trend_groups,name_trend_groups FROM trend_groups");
+query.clear();
+query.exec(str);
+data.clear();
+data = query.record();
+
+
+while(query.next())
+{
+    name_trend_groups = query.value(data.indexOf("name_trend_groups")).toString();
+    id_trend_groups = query.value(data.indexOf("id_trend_groups")).toInt();
+
+    str1 = QString("SELECT id_sphere_groups,name_sphere_groups FROM sphere_groups");
+    query1.clear();
+    query1.exec(str1);
+    data1.clear();
+    data1 = query1.record();
+    l=0;
+
+    while(query1.next())
+    {
+     name_sphere_groups = query1.value(data1.indexOf("name_sphere_groups")).toString();
+     id_sphere_groups = query1.value(data1.indexOf("id_sphere_groups")).toInt();
+
+     str2=QString("SELECT name_groups FROM groups WHERE id_sphere_groups = %1 AND id_trend = %2 AND  id_region = %3").arg(id_sphere_groups).arg(id_trend_groups).arg(groud_id);
+     query2.clear();
+     query2.exec(str2);
+     data2.clear();
+     data2 = query2.record();
+     smi_number = query2.size();
+     if(smi_number>0)
+     {
+         l++;
+         d=1;
+         if(l<2)
+         {
+          htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > <CENTER> <B>");
+          htm.append(name_trend_groups.toLocal8Bit());
+          htm.append(": </B> </CENTER> ");
+         }
+          htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > ");
+          htm.append(name_sphere_groups.toLocal8Bit());
+          htm.append(": ");
+          htm.append(QString("%1").arg(smi_number).toLocal8Bit());
+          while(query2.next())
+          {
+           name_groups = query2.value(data2.indexOf("name_groups")).toString();
+           htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > - ");
+           htm.append(name_groups.toLocal8Bit());
+          }
+     }
+    }
+
+
+
+
+
+
+
+    }
+
+
+
+
+if(d==0) htm.append(" </FONT>  </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Данных нет ");
+
+//------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
+
+str.clear();
+query.clear();
+data.clear();
+
+str = QString("SELECT * FROM region WHERE id_region = %1").arg(groud_id);
+query.exec(str);
+data=query.record();
+
+for(int i=0;i<33;i++) factori[i]=0;
+factorflag=0;
+
+
+while(query.next())
+{
+ int i=0;
+ factori[i] = query.value(data.indexOf("poverty_population")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("price_population")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("education")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("trust_vs_population")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("support_vs_population")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("ability_vs_population")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("proposition_org_population")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("opposition_org_population")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("position_vip")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("unemployment_population")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("refugees")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("demography")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("availability_smi_population")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("smi_o_vs")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("protection_iti")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("ungov_org")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("patriotic_population")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("crim_population")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("corruption_population")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("shadow_population")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("illegal_migration_population")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("extremism_population")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("prison_population")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("protest_population")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("opg_population")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("drug_population")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("conflict_population")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("cooperation_ro")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("cult_object_population")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("autoritet_liders")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("regard_liders")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("religion_ls_enemy")).toDouble(); i++;
+ factori[i] = query.value(data.indexOf("religion_ls_their")).toDouble();
+
+
+}
+
+factor_text << "Высокий уровень бедности и доли населения с денежными доходами, ниже региональной величины прожиточного минимума"
+        << "Высокий уровень цен на продукты и услуги первой необходимости."
+        << "Низкий уровень образования населения, недостаточное количество высших учебных заведений."
+        << "Низкая степень доверия населения органам государственной власти, командованию Вооруженных Сил."
+        << "Низкая степень поддержки населением действий Вооруженных Сил."
+        << "Неспособность и отсутствие возможностей государственных (региональных) структур оказать содействие Вооружённым Силам в выполнении задач в период непосредственной угрозы агрессии и военное время."
+        << "Низкая степень влияния на общественное мнение населения основных политических партий, неправительственных, общественных и религиозных организаций, выступающих в поддержку государства и Вооруженных сил."
+        << "Наличие оппозиционных, радикальных политических движений и организаций (в том числе и молодежных) и достаточно высокий уровень их поддержки населением. "
+        << "Негативная позиция государственных (региональных) авторитетных деятелей политики, культуры, искусства по отношению к Вооруженным Силам."
+        << "Высокий уровень безработицы в регионе."
+        << "Наличие беженцев из других регионов Российской Федерации, сопредельных с ней территорий."
+        << "Сложная демографическая ситуация в регионе."
+        << "Низкий уровень информатизации региона и степень доступности средств массовой информации и коммуникации, затрудняющие ведение пропаганды и контрпропаганды."
+        << "Деструктивная направленность информации, публикуемой в региональных СМИ в отношении Вооруженных Сил."
+        << "Низкая степень защищенности объектов телерадиовещания, сотовой связи, инфо - и телекоммуникационной инфраструктуры региона."
+        << "Высокая степень активности неправительственных организаций и фондов деструктивной направленности."
+        << "Низкий уровень сформированности патриотического сознания населения."
+        << "Высокий уровень преступности в регионе."
+        << "Высокая степень коррумпированности органов власти."
+        << "Высокая степень влияния теневого сектора экономики и финансов региона на общественное мнение."
+        << "Наличие нелегальных миграционных потоков."
+        << "Наличие экстремистских проявлений и НВФ."
+        << "Большое количество исправительно-трудовых учреждений, и число осужденных."
+        << "Высокий уровень протестной активности населения."
+        << "Наличие организованных преступных группировок."
+        << "Наличие в peгионе путей незаконного экспорта (импорта) оружия и наркотиков."
+        << "Наличие межнациональных, межэтнических конфликтов.";
+
+
+
+
+
+
+
+for(int i=0;i<33;i++) if(factori[i]>0 && factori[i]<=0.3) factorflag=1;
+if(factorflag == 0)
+{
+htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' >  <B> Факторы, дестабилизирующие моральную обстановку в регионе, отсутствуют, либо о них неизвестно. </B>  ");
+}
+else
+{
+    htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > <CENTER> <B> Факторами, дестабилизирующими моральную обстановку в регионе, являются: </B> </CENTER> ");
+
+
+    for(int i=0;i<26;i++)
+    {
+        if(factori[i]>0 && factori[i]<=0.3)
+        {
+            htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > - ");
+            htm.append(factor_text.at(i).toLocal8Bit());
+        }
+    }
+}
+
+
+
+
+
+
+
+
+htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > <CENTER> <B> ВЫВОД </B> </CENTER> ");
+
+if(rez_z_1 < 0.3)
+htm.append(" </FONT>  </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Обстановка затрудняет выполнение задач ");
+else
+{
+if(rez_z_1 > 0.3 && rez_z_1 <0.5)
+htm.append(" </FONT>  </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Обстановка не оказывает существенного влияния на выполнение задач ");
+
+else
+htm.append(" </FONT>  </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Обстановка способствует выполнению задач ");
+
+}
+
+
+htm.append("  </FONT>  </P> </BODY> </HTML>");
+
+
+QFile file_pdf;
+QString filename;
+QFont font;
+font.setPointSizeF(10.10);
+doc->setDefaultFont(font);
+doc->setHtml(htm);
+
+
+filename = QString("c:/formular.pdf");
+file_pdf.setFileName(filename);
+file_pdf.open(QIODevice::WriteOnly);
+file_pdf.close();
+text->setOrientation(QPrinter::Portrait);
+text->exportPdf(doc,"Сохранить формуляр",filename);
+
+
+otch->close();
+
+}
+int Objectmanager::calc_info_for_region(QString id_region)
+{
+    Calculate_K_omkrf calc;
+    calc.set_parametr(id_region);
+    calc.calc_Rezultat();
+    float rez = calc.getRezultate();
+    if(rez > 0 && rez < 0.3)
+        return 1;
+    if(rez >= 0.3 && rez < 0.5)
+        return 2;
+    if(rez >=0.5 && rez <= 0.8)
+        return 3;
+    if(rez == 0)
+        return 0;
+    if(rez < 0 || rez > 0.8)
+        return -1;
+    //return -678;
+}
+
+int Objectmanager::calc_mps_for_ls(float n)
+{
+    if(n > 0 && n < 0.3)
+        return 1;
+    if(n >= 0.3 && n < 0.6)
+        return 2;
+    if(n >=0.6 && n <= 1)
+        return 3;
+    if(n == 0)
+        return 0;
+    if(n < 0 || n > 1)
+        return -1;
+}

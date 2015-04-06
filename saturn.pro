@@ -1,8 +1,8 @@
 TEMPLATE = subdirs
 
-CONFIG += debug ordered
+CONFIG += ordered
 
-QT   += gui core
+QT   += gui widgets sql
 
 # Directories
 SUBDIRS += \
@@ -15,9 +15,9 @@ SUBDIRS += \
         db_saturn \
         supporting_tables \
         object_manager \
-        calculatingproblemmanager \
         mainform
 	
 
 INSTALLS += transl
 TRANSLATIONS = saturn_ru.ts
+

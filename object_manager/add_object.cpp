@@ -15,6 +15,7 @@ add_object::add_object(int id_region, bool is_parent_ko,QWidget *parent)
 	connect(UI->add_object_pushButton,SIGNAL(clicked()),this,SLOT(add_new_object()));
 	connect(UI->cancel_pushButton,SIGNAL(clicked()),this,SLOT(close()));
 	setWindowTitle("Добавить регион");
+    setWindowIcon(QIcon("./icons/planet.png"));
 	
 //	setWindowIcon(QIcon("./img/database.png"));
 

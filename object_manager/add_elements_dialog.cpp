@@ -1,4 +1,4 @@
- #include <QtGui>
+#include <QtGui>
 #include "add_elements_dialog.h"
 
 
@@ -15,6 +15,7 @@ Add_elements_dialog::Add_elements_dialog(int type_element,int id_object,QWidget 
 	{
 	QMessageBox msgBox;
 	msgBox.setWindowTitle("Предупреждение");
+    msgBox.setWindowIcon(QIcon("./icons/chast.ico"));
 	msgBox.setText("Выбрать СМИ из имеющихся в базе?"); 
 	
 	msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
@@ -59,6 +60,7 @@ Add_elements_dialog::Add_elements_dialog(int type_element,int id_object,QWidget 
 			 mainLayout->addLayout(buttonsLayout, 1, 0, 1, 2);
 			 setLayout(mainLayout);
 			 setWindowTitle("Добавить СМИ");
+             setWindowIcon(QIcon("./icons/book.png"));
 			 break;
 			 }  
 	 case QMessageBox::No:{
@@ -282,6 +284,7 @@ Add_elements_dialog::Add_elements_dialog(int type_element,int id_object,QWidget 
 			 mainLayout->addLayout(buttonsLayout, 16, 0, 1, 2);
 			 setLayout(mainLayout);
 			 setWindowTitle("Добавить СМИ");
+             setWindowIcon(QIcon("./icons/book.png"));
 			break;
 			}
 		default:
@@ -401,6 +404,7 @@ break;
 		 mainLayout->addLayout(buttonsLayout, 6, 0, 1, 2);
 		 setLayout(mainLayout);
 		 setWindowTitle("Добавить воинское формирование");
+         setWindowIcon(QIcon("./icons/weapon.png"));
 		 break;
 		}
 	case 3://=============== Организации ============================================
@@ -592,6 +596,7 @@ break;
 
 		 setLayout(mainLayout);
 		 setWindowTitle("Добавить организацию");
+         setWindowIcon(QIcon("./icons/group.png"));
 		 break;
 		}
 case 4:// ============ Национальность ================================================
@@ -621,7 +626,7 @@ case 4:// ============ Национальность ==========================================
 		 mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		 this->setLayout(mainLayout);
 		 setWindowTitle("Национальный состав");
-
+         setWindowIcon(QIcon("./icons/user_config.png"));
 	//==========================================
 	 table_nations();
 
@@ -739,6 +744,7 @@ case 5:{ //========== Воинские формирования ====================================
 		 mainLayout->addLayout(buttonsLayout, 6, 0, 1, 2);
 		 setLayout(mainLayout);
 		 setWindowTitle("Добавить воинское формирование");
+         setWindowIcon(QIcon("./icons/weapon.png"));
 		 break;
 		}
 case 6:{// ============ Религия ================================================
@@ -767,7 +773,7 @@ case 6:{// ============ Религия ================================================
 		mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		this->setLayout(mainLayout);
 		setWindowTitle("Религиозный состав");
-
+        setWindowIcon(QIcon("./icons/change_user.png"));
 	//==========================================
 	 table_confess();
 
@@ -800,7 +806,7 @@ case 7:{// ============ Профессиональный состав ================================
 		mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		this->setLayout(mainLayout);
 		setWindowTitle("Профессиональный состав");
-
+        setWindowIcon(QIcon("./icons/change_user.png"));
 	//==========================================
 	 table_prof();
 
@@ -833,7 +839,7 @@ case 8:{// ============ Возрастной состав ======================================
 		mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		this->setLayout(mainLayout);
 		setWindowTitle("Возрастной состав");
-
+        setWindowIcon(QIcon("./icons/change_user.png"));
 	//==========================================
 	 table_age();
 
@@ -866,7 +872,7 @@ case 9:{// ============ половой состав =========================================
 		mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		this->setLayout(mainLayout);
 		setWindowTitle("Половой состав");
-
+        setWindowIcon(QIcon("./icons/change_user.png"));
 	//==========================================
 	 table_sex();
 	
@@ -903,7 +909,7 @@ case 10:// ============ Национальность для ВФ===================================
 		 mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		 this->setLayout(mainLayout);
 		 setWindowTitle("Национальный состав");
-
+         setWindowIcon(QIcon("./icons/change_user.png"));
 	//==========================================
 	 table_nations_vf();
 
@@ -937,7 +943,7 @@ case 11:{// ============ Религия для ВФ ========================================
 		mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		this->setLayout(mainLayout);
 		setWindowTitle("Религиозный состав");
-
+        setWindowIcon(QIcon("./icons/change_user.png"));
 	//==========================================
 	 table_confess_conf();
 
@@ -971,7 +977,7 @@ case 12:{// ============ Штатка ================================================
 		mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		this->setLayout(mainLayout);
 		setWindowTitle("Штатно-должностной состав");
-
+        setWindowIcon(QIcon("./icons/change_user.png"));
 	//==========================================
 	 table_rank();
 
@@ -1077,6 +1083,7 @@ case 13: { //=========================== средства ==============================
 		 mainLayout->addLayout(buttonsLayout, 7, 0, 1, 2);
 		 setLayout(mainLayout);
 		 setWindowTitle("Добавить средства");
+         setWindowIcon(QIcon("./icons/connect_saturn.png"));
 		 break;
 		 
 		 }
@@ -1178,6 +1185,7 @@ case 13: { //=========================== средства ==============================
 		 mainLayout->addLayout(buttonsLayout, 7, 0, 1, 2);
 		 setLayout(mainLayout);
 		 setWindowTitle("Добавить средства");
+         setWindowIcon(QIcon("./icons/connect_saturn.png"));
 		 break;
 		 
 		 }
@@ -1279,6 +1287,7 @@ case 15: { //=========================== средства СМИ ==========================
 		 mainLayout->addLayout(buttonsLayout, 7, 0, 1, 2);
 		 setLayout(mainLayout);
 		 setWindowTitle("Добавить средства");
+         setWindowIcon(QIcon("./icons/connect_saturn.png"));
 		 break;
 		 
 		 }
@@ -1398,6 +1407,7 @@ case 16://=============== Условия ============================================
 
 		 setLayout(mainLayout);
 		 setWindowTitle("Добавить особое условие");
+         setWindowIcon(QIcon("./icons/Stop2.png"));
 
 		// table_coord();
 		 connect(coord_view,SIGNAL(cellClicked(int,int)),this,SLOT(show_redaktor_coord(int,int)));
@@ -1610,26 +1620,26 @@ case 22:{// ============ Штатка для организаций ================================
 		} 
 case 23:{ //========== Персонал для групп ====================================
 		 
-		 label = new QLabel("Name persones:");
+         label = new QLabel("Имя:");
 		 lineEdit_name = new QLineEdit;
 		 label->setBuddy(lineEdit_name);
 		 
-		 label_2 = new QLabel("Age persones:");
+         label_2 = new QLabel("Возраст:");
 		 lineEdit_counte_ls = new QLineEdit;
 		 label_2->setBuddy(lineEdit_counte_ls);
-		 label_3 = new QLabel("Contact persones:");
+         label_3 = new QLabel("Контакты:");
 		 lineEdit_counte_ls_bd = new QLineEdit;
 		 label_3->setBuddy(lineEdit_counte_ls_bd);
-		 label_4 = new QLabel("Opposition persones:");
-		 checkbox_enemy = new QCheckBox(" [-V- opposition]", this);
+         label_4 = new QLabel("Оппозиция:");
+         checkbox_enemy = new QCheckBox(" [-V- оппозиция]", this);
 		 label_4->setBuddy(checkbox_enemy);
-		 label_5 = new QLabel("Rank persones:");
+         label_5 = new QLabel("Должноть:");
 		 lineEdit_rank = new QLineEdit;
 		 label_5->setBuddy(lineEdit_rank);
-		 label_6 = new QLabel("Authority persones:");
+         label_6 = new QLabel("Авторитет:");
 		 lineEdit_aut = new QLineEdit;
 		 label_6->setBuddy(lineEdit_aut);
-		 label_7 = new QLabel("Description persones:");
+         label_7 = new QLabel("Характеристика:");
 		 textEdit_propa = new QTextEdit;
 		 label_7->setBuddy(textEdit_propa);
 		 textEdit_propa->setFixedHeight(50);
@@ -1730,38 +1740,38 @@ case 23:{ //========== Персонал для групп ====================================
 		}
 case 24:{ //========== Персонал данные ====================================
 
-	 label = new QLabel("Name persones:");
+     label = new QLabel("Имя:");
 	 lineEdit_name = new QLineEdit;
 	 lineEdit_name->setDisabled(true);
 	 lineEdit_name->setStyleSheet("font:bold; color: black");
 	 label->setBuddy(lineEdit_name);
 	 
-	 label_2 = new QLabel("Age persones:");
+     label_2 = new QLabel("Возраст:");
 	 lineEdit_counte_ls = new QLineEdit;
 	 label_2->setBuddy(lineEdit_counte_ls);
   	 lineEdit_counte_ls->setDisabled(true);
 	 lineEdit_counte_ls->setStyleSheet("font:bold; color: black");
-	 label_3 = new QLabel("Contact persones:");
+     label_3 = new QLabel("Контакты:");
 	 lineEdit_counte_ls_bd = new QLineEdit;
 	 label_3->setBuddy(lineEdit_counte_ls_bd);
 	 lineEdit_counte_ls_bd->setDisabled(true);
 	 lineEdit_counte_ls_bd->setStyleSheet("font:bold; color: black");
-	 label_4 = new QLabel("Opposition persones:");
-	 checkbox_enemy = new QCheckBox(" [-V- opposition]", this);
+     label_4 = new QLabel("Оппозиция:");
+     checkbox_enemy = new QCheckBox(" [-V- оппозиция]", this);
 	 label_4->setBuddy(checkbox_enemy);
 	 checkbox_enemy->setDisabled(true);
 	 checkbox_enemy->setStyleSheet("color: black");
-	 label_5 = new QLabel("Rank persones:");
+     label_5 = new QLabel("Должность:");
 	 lineEdit_rank = new QLineEdit;
 	 label_5->setBuddy(lineEdit_rank);
 	 lineEdit_rank->setDisabled(true);
 	 lineEdit_rank->setStyleSheet("font:bold; color: black");
-	 label_6 = new QLabel("Authority persones:");
+     label_6 = new QLabel("Авторитет:");
 	 lineEdit_aut = new QLineEdit;
 	 label_6->setBuddy(lineEdit_aut);
 	 lineEdit_aut->setDisabled(true);
 	 lineEdit_aut->setStyleSheet("font:bold; color: black");
-	 label_7 = new QLabel("Description persones:");
+     label_7 = new QLabel("Характеристика:");
 	 textEdit_propa = new QTextEdit;
 	 label_7->setBuddy(textEdit_propa);
 	 textEdit_propa->setDisabled(true);
@@ -1902,26 +1912,26 @@ case 24:{ //========== Персонал данные ====================================
 	 }
 case 25:{ //========== Персонал для формирований ====================================
 		 
-		 label = new QLabel("Name persones:");
+         label = new QLabel("Имя:");
 		 lineEdit_name = new QLineEdit;
 		 label->setBuddy(lineEdit_name);
 		 
-		 label_2 = new QLabel("Age persones:");
+         label_2 = new QLabel("Возраст:");
 		 lineEdit_counte_ls = new QLineEdit;
 		 label_2->setBuddy(lineEdit_counte_ls);
-		 label_3 = new QLabel("Contact persones:");
+         label_3 = new QLabel("Контакты:");
 		 lineEdit_counte_ls_bd = new QLineEdit;
 		 label_3->setBuddy(lineEdit_counte_ls_bd);
-		 label_4 = new QLabel("Opposition persones:");
+         label_4 = new QLabel("Оппозиция:");
 		 checkbox_enemy = new QCheckBox(" [-V- opposition]", this);
 		 label_4->setBuddy(checkbox_enemy);
-		 label_5 = new QLabel("Rank persones:");
+         label_5 = new QLabel("Должность:");
 		 lineEdit_rank = new QLineEdit;
 		 label_5->setBuddy(lineEdit_rank);
-		 label_6 = new QLabel("Authority persones:");
+         label_6 = new QLabel("Авторитет:");
 		 lineEdit_aut = new QLineEdit;
 		 label_6->setBuddy(lineEdit_aut);
-		 label_7 = new QLabel("Description persones:");
+         label_7 = new QLabel("Характеристика:");
 		 textEdit_propa = new QTextEdit;
 		 label_7->setBuddy(textEdit_propa);
 		 textEdit_propa->setFixedHeight(50);
@@ -2019,7 +2029,127 @@ case 25:{ //========== Персонал для формирований ===============================
 		 setLayout(mainLayout);
 		 setWindowTitle("Добавить данные по персоналу");
 		 break;
-		}
+        }
+ case 26:{ //========== Персонал для СМИ ====================================
+
+             label = new QLabel("Имя:");
+             lineEdit_name = new QLineEdit;
+             label->setBuddy(lineEdit_name);
+
+             label_2 = new QLabel("Возраст:");
+             lineEdit_counte_ls = new QLineEdit;
+             label_2->setBuddy(lineEdit_counte_ls);
+             label_3 = new QLabel("Контакты:");
+             lineEdit_counte_ls_bd = new QLineEdit;
+             label_3->setBuddy(lineEdit_counte_ls_bd);
+             label_4 = new QLabel("Оппозиция:");
+             checkbox_enemy = new QCheckBox(" [-V- opposition]", this);
+             label_4->setBuddy(checkbox_enemy);
+             label_5 = new QLabel("Должность:");
+             lineEdit_rank = new QLineEdit;
+             label_5->setBuddy(lineEdit_rank);
+             label_6 = new QLabel("Авторитет:");
+             lineEdit_aut = new QLineEdit;
+             label_6->setBuddy(lineEdit_aut);
+             label_7 = new QLabel("Характеристика:");
+             textEdit_propa = new QTextEdit;
+             label_7->setBuddy(textEdit_propa);
+             textEdit_propa->setFixedHeight(50);
+
+
+             addButton = new QPushButton("Добавить");
+             addButton->setDefault(true);
+             connect(addButton,SIGNAL(clicked()),this,SLOT(add_persones_smi()));
+             cancelButton = new QPushButton("Отмена");
+             connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
+
+             QHBoxLayout *buttonsLayout = new QHBoxLayout;
+             buttonsLayout->addStretch();
+             buttonsLayout->addWidget(addButton);
+             buttonsLayout->addWidget(cancelButton);
+
+             QHBoxLayout *topLeftLayout = new QHBoxLayout;
+             topLeftLayout->addWidget(label);
+             QHBoxLayout *topLeftLayout_2 = new QHBoxLayout;
+             topLeftLayout_2->addWidget(lineEdit_name);
+             QHBoxLayout *topLeftLayout_3 = new QHBoxLayout;
+             topLeftLayout_3->addWidget(label_2);
+             QHBoxLayout *topLeftLayout_4 = new QHBoxLayout;
+             topLeftLayout_4->addWidget(lineEdit_counte_ls);
+             QHBoxLayout *topLeftLayout_5 = new QHBoxLayout;
+             topLeftLayout_5->addWidget(label_3);
+             QHBoxLayout *topLeftLayout_6 = new QHBoxLayout;
+             topLeftLayout_6->addWidget(lineEdit_counte_ls_bd);
+             QHBoxLayout *topLeftLayout_7 = new QHBoxLayout;
+             topLeftLayout_7->addWidget(label_4);
+             QHBoxLayout *topLeftLayout_8 = new QHBoxLayout;
+             topLeftLayout_8->addWidget(checkbox_enemy);
+             QHBoxLayout *topLeftLayout_9 = new QHBoxLayout;
+             topLeftLayout_9->addWidget(label_5);
+             QHBoxLayout *topLeftLayout_10 = new QHBoxLayout;
+             topLeftLayout_10->addWidget(lineEdit_rank);
+             QHBoxLayout *topLeftLayout_11 = new QHBoxLayout;
+             topLeftLayout_11->addWidget(label_6);
+             QHBoxLayout *topLeftLayout_12 = new QHBoxLayout;
+             topLeftLayout_12->addWidget(lineEdit_aut);
+             QHBoxLayout *topLeftLayout_13 = new QHBoxLayout;
+             topLeftLayout_13->addWidget(label_7);
+             QHBoxLayout *topLeftLayout_14 = new QHBoxLayout;
+             topLeftLayout_14->addWidget(textEdit_propa);
+
+
+             QVBoxLayout *leftLayout = new QVBoxLayout;
+             leftLayout->addLayout(topLeftLayout);
+             QVBoxLayout *leftLayout_2 = new QVBoxLayout;
+             leftLayout_2->addLayout(topLeftLayout_2);
+             QVBoxLayout *leftLayout_3 = new QVBoxLayout;
+             leftLayout_3->addLayout(topLeftLayout_3);
+             QVBoxLayout *leftLayout_4 = new QVBoxLayout;
+             leftLayout_4->addLayout(topLeftLayout_4);
+             QVBoxLayout *leftLayout_5 = new QVBoxLayout;
+             leftLayout_5->addLayout(topLeftLayout_5);
+             QVBoxLayout *leftLayout_6 = new QVBoxLayout;
+             leftLayout_6->addLayout(topLeftLayout_6);
+             QVBoxLayout *leftLayout_7 = new QVBoxLayout;
+             leftLayout_7->addLayout(topLeftLayout_7);
+             QVBoxLayout *leftLayout_8 = new QVBoxLayout;
+             leftLayout_8->addLayout(topLeftLayout_8);
+             QVBoxLayout *leftLayout_9 = new QVBoxLayout;
+             leftLayout_9->addLayout(topLeftLayout_9);
+             QVBoxLayout *leftLayout_10 = new QVBoxLayout;
+             leftLayout_10->addLayout(topLeftLayout_10);
+             QVBoxLayout *leftLayout_11 = new QVBoxLayout;
+             leftLayout_11->addLayout(topLeftLayout_11);
+             QVBoxLayout *leftLayout_12 = new QVBoxLayout;
+             leftLayout_12->addLayout(topLeftLayout_12);
+             QVBoxLayout *leftLayout_13 = new QVBoxLayout;
+             leftLayout_13->addLayout(topLeftLayout_13);
+             QVBoxLayout *leftLayout_14 = new QVBoxLayout;
+             leftLayout_14->addLayout(topLeftLayout_14);
+             leftLayout->addStretch(1);
+
+             QGridLayout *mainLayout = new QGridLayout;
+             mainLayout->setSizeConstraint(QLayout::SetFixedSize);
+             mainLayout->addLayout(leftLayout, 0, 0);
+             mainLayout->addLayout(leftLayout_2, 0, 1);
+             mainLayout->addLayout(leftLayout_3, 1, 0);
+             mainLayout->addLayout(leftLayout_4, 1, 1);
+             mainLayout->addLayout(leftLayout_5, 2, 0);
+             mainLayout->addLayout(leftLayout_6, 2, 1);
+             mainLayout->addLayout(leftLayout_7, 3, 0);
+             mainLayout->addLayout(leftLayout_8, 3, 1);
+             mainLayout->addLayout(leftLayout_9, 4, 0);
+             mainLayout->addLayout(leftLayout_10, 4, 1);
+             mainLayout->addLayout(leftLayout_11, 5, 0);
+             mainLayout->addLayout(leftLayout_12, 5, 1);
+             mainLayout->addLayout(leftLayout_13, 6, 0);
+             mainLayout->addLayout(leftLayout_14, 6, 1);
+
+             mainLayout->addLayout(buttonsLayout, 7, 0, 1, 2);
+             setLayout(mainLayout);
+             setWindowTitle("Добавить данные по персоналу");
+             break;
+            }
 	}
 }
 
@@ -5621,6 +5751,39 @@ void Add_elements_dialog::add_persones_ls(){
 		}else{
 			this->done(0);
 		}
-	
+}
+//============================ персонал в сми ===============================================
+void Add_elements_dialog::add_persones_smi(){
+
+            QString name_persones = lineEdit_name->text();
+            QString desc_pers=textEdit_propa->toPlainText();
+            int counte_age = lineEdit_counte_ls->text().toInt();
+            QString contact = lineEdit_counte_ls_bd->text();
+            QString rank_pers = lineEdit_rank->text();
+            float aut = lineEdit_aut->text().toFloat();
+            bool opossition = checkbox_enemy->isChecked();
+
+            int id_smi = in_id_object;
+
+            QMap<QString,QString> map;
+
+                if (id_smi<1) return;
+                map.clear();
+                map.insert("name_persones",name_persones);
+                map.insert("age_persones",QString::number(counte_age));
+                map.insert("authority_persones",QString::number(aut));
+                map.insert("contact_persones",contact);
+                map.insert("rank_persones",rank_pers);
+                map.insert("id_smi",QString::number(id_smi));
+                map.insert("opposition_persones",QString::number(opossition));
+                map.insert("description_persones",desc_pers);
+
+
+                int id_pers=insert_in_table("persones",map,"id_persones");
+                if(id_pers>0){
+                    this->done(id_pers);
+                }else{
+                    this->done(0);
+                }
 	
 }
