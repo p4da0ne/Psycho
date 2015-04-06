@@ -1,4 +1,4 @@
- #include <QtGui>
+#include <QtGui>
 #include "add_elements_dialog.h"
 
 

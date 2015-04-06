@@ -42,7 +42,7 @@ public:
 	long int	IsActive(HMAP hMap);
 	long int	GetSiteLayerCount(HMAP hMap,HSITE hSite);
 	long int	GetError();
-	long int	ApdateScreen();
+	long int	UpdateScreen();
 	QPoint		getXY(double x, double y);
 	void		dataClose(HMAP hMap, HSITE hSite);
 	double		getMapX1(HMAP hMap);
@@ -53,7 +53,7 @@ public:
 	long int	objectTopScale(HOBJ hobj);
 	long int	objectByMap(HMAP hMap, HOBJ object);
 	void		mouseRightMenu();
-	long int		getHobj(double *x, double *y);
+	QStringList		getHobj(double *x, double *y);
 	int			HScrollBarValue();
 	int			VScrollBarValue();
 	long int	getLayerCount();
@@ -67,6 +67,8 @@ signals:
 	void		signal_for_info(long int hobj);
 	void		signal_for_right_button(HOBJ hobj, long int num_obj, long int id_object, QPoint pe, bool region);
 	void		signal_for_info_2_arg(QString a, long int b);
+
+	void		signal_for_change_scale(QPoint pe);
 protected:
     bool  eventFilter (QObject * watched, QEvent * event);
     void  drawContents( QPainter* p, int cx, int cy, int cw, int ch);

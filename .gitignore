@@ -1,0 +1,16 @@
+*.[oa]
+*.idb
+*.pdb
+*.pdsyncu
+ui_*.h
+*.vcproj
+*.sln
+*.ncb
+*.user
+*.pdsync
+*.exp
+*.ilk
+*/debug/
+build/*lib
+*/release/
+*.exe

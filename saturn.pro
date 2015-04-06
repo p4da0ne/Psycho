@@ -20,3 +20,4 @@ SUBDIRS += \
 
 INSTALLS += transl
 TRANSLATIONS = saturn_ru.ts
+

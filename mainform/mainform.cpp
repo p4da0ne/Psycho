@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include "mainform.h"
 
 #if defined Q_OS_WIN
@@ -608,5 +609,3 @@ void Mainform::show_object_manager_form(){
 	m_mdiArea->setActiveSubWindow (obmanager);  
 
 }
-
-

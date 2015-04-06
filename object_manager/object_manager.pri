@@ -25,4 +25,3 @@ SOURCES +=  object_manager.cpp \
 #Forms
 FORMS += object_manager_form.ui\
          add_object.ui
-		

@@ -113,7 +113,6 @@ int			MapScroll::mapOpen(  const char *name )
   char        newnamefile[MAX_PATH];
   char        sxfname[MAX_PATH];
   int         length;
-  if_create=0;
   if (hMap)
    {
     void (WINAPI * lpmapfn)(int);
@@ -121,36 +120,36 @@ int			MapScroll::mapOpen(  const char *name )
     (*lpmapfn)(hMap);
     hMap = 0;
    }
-  
+
   SplitThePath(name, drive, dir, namefile, extname);
 
-  if ((stricmp(extname,".map") == 0) || (stricmp(extname,".sit") == 0) || 
+  if ((stricmp(extname,".map") == 0) || (stricmp(extname,".sit") == 0) ||
       (stricmp(extname,".rsw") == 0) || (stricmp(extname,".mtw") == 0))
   {
     hMap=map->mapOpen(name, 0);
-  }            
-                                                                  
- 
+  }
+
+
    if (hMap)
    {
       long int	mapW, mapH;
-	  map->mapGetPictureSize(hMap,&mapW,&mapH);
-     
-      if (MyViewport == 0)  
+      setViewScale(16000000);//установть масштаб, с каким изначально откроется карта
+      map->mapGetPictureSize(hMap,&mapW,&mapH);
+
+      if (MyViewport == 0)
       {
         MyViewport = new QWidget(viewport());
-		MyViewport->setAttribute(Qt::WA_NoBackground);
+        MyViewport->setAttribute(Qt::WA_NoBackground);
         setWidget(MyViewport);
       }
       else MyViewport->show();
       //изменение размеров содержимого
       MyViewport->setGeometry(0, 0, mapW, mapH);
 
-	  setFocus();
+      setFocus();
       MyViewport->repaint();
   }
-  map->mapSetBright(hMap, 5); // ===== установка яркости карты
-  if_open_sit = FALSE;
+    //map->mapSetBright(hMap, 5); // ===== установка яркости карты
   return 0;
 };
 
@@ -219,10 +218,9 @@ void		MapScroll::ChangePos(long int dx,long int dy)
 //нажатие клавиш мыши//delete
 void		MapScroll::mousePressEvent(QMouseEvent * event)
 {
-	if (if_open_sit)
+	if (hMap)
 	{
-		if (!if_create)
-		{
+		
 			if (event->button())
 			{
 					pe = event->pos();
@@ -234,15 +232,7 @@ void		MapScroll::mousePressEvent(QMouseEvent * event)
 
 				if (event->button() == Qt::LeftButton)//левая клавиша мыши
 				{					
-					findObject(&screenX, &screenY);
-
-					//QString b = map-> objectName();//  mapClearObject(info);
-
-			/*		int ret = QMessageBox::warning (this, tr("My Application"),  b,
-                           QMessageBox::Save | QMessageBox::Discard
-                           | QMessageBox::Cancel,
-                           QMessageBox::Save);
-*/			
+					findObject(&screenX, &screenY);		
 				}
 
 				if (event->button() == Qt::RightButton)   //Правая клавиша мыши
@@ -250,43 +240,21 @@ void		MapScroll::mousePressEvent(QMouseEvent * event)
 
 				
 					findObject2(&screenX, &screenY);
-				//	long int hobj = getHobj(&screenX, &screenY);
+					
+					/*QStringList list = getHobj(&screenX, &screenY);
+					long int id_odject = list.at(0).toInt();
+					long int semantic_flag = list.at(1).toInt();
+					long int id_coordinates = list.at(2).toInt();
+					pe = event->globalPos();
 
-
-		//			
-		//long int a1=0;
-		//long int g3=32822;
-		//char value3[32];
-
-		//a1 = map->mapSemanticCodeValue(hobj, g3, value3, 32, 1);
-
-
-		//long int id_obj = atoi(value3);
-
-
-
-
-
-		//			long int id_odject = findObject1(&screenX, &screenY);
-		//			pe = event->globalPos();
-		//			/*if (flag2)
-		//			{
-		//				
-		//				if (flag)
-		//				{*/
-		//		
-
-		//					emit signal_for_right_button(id_odject, pe);
-
-
-
-
-						/*}
-						flag=FALSE;
-					}*/
+					switch (flag)
+					{
+						case 0: emit signal_for_change_scale(pe); break;
+						case 1: emit signal_for_right_button(id_odject, pe, semantic_flag, id_coordinates); break;
+					}
+					flag=0;*/
 				}
 			}
-		}
 	}
 }
 
@@ -317,7 +285,7 @@ void		MapScroll::findObject(double *x, double *y)
 
 
 
-long int		MapScroll::findObject1(double *x, double *y)
+long int MapScroll::findObject1(double *x, double *y)
 {	
 	select = map->mapCreateMapSelectContext(hMap);//создать условия поиска
 	info=map->mapCreateObject(hMap);
@@ -362,36 +330,28 @@ void		MapScroll::findObject2(double *x, double *y)
 		
 		if (!((QString(value2)=="mpo_pso")||(QString(value2)=="special_conditions")))
 		{
-		a = map->mapSemanticCodeValue(info, g3, value3, 32, 1);
-
-
-		long int id_obj = atoi(value3);
-
-
-
-		b = map->mapSemanticCodeValue(info, g1, value, 32, 1);
-		
-		
-
-		// только для РЕГИОНОВ!!!				   
-		if (b!=0) 
-		{
-			
-		region = true;
-
-		}
+			a = map->mapSemanticCodeValue(info, g3, value3, 32, 1);
+			long int id_obj = atoi(value3);
+			b = map->mapSemanticCodeValue(info, g1, value, 32, 1);
+	
+			// только для РЕГИОНОВ!!!				   
+			if (b!=0) 
+			{
+				region = true;
+			}
 
 			if ((b!=0)||(a!=0))
-			{
-
-				//	long int id_odject = findObject1(&screenX, &screenY);
-
-				//	pe = event->globalPos();
-				
-			emit signal_for_right_button(info, num_obj, id_obj,  pe, region);
+			{		
+				emit signal_for_right_button(info, num_obj, id_obj,  pe, region);
 			}
-		
-
+			else
+			{
+				emit signal_for_change_scale(pe); //сигнал испускается при клике на любое "пустое" место карты
+			}
+		}
+		else
+		{
+			emit signal_for_change_scale(pe); //сигнал испускается при клике на "mpo_pso" или на "special_conditions"
 		}
 
 
@@ -419,7 +379,7 @@ long int	MapScroll::IsObject1(HOBJ hobj)
 //		g1=17501;
 		g1=60011;
 		// получаем номер объекта
-		long int ff = map->mapObjectKey(hobj);\
+		long int ff = map->mapObjectKey(hobj);
 
 		long int ff1 = map->mapObjectKey(hobj);
 		
@@ -488,17 +448,61 @@ long int	MapScroll::IsObject1(HOBJ hobj)
 
 
 
-long int	MapScroll::getHobj(double *x, double *y)
+//long int	MapScroll::getHobj(double *x, double *y)
+//{
+//	info=map->mapCreateObject(hMap);
+//	changeFrame();
+//	info=map->mapWhatObject(hMap,info,&frame,WO_LAST,PP_PLANE);
+//	long int g1 = map->mapAvailableSemanticCount(info);
+//			g1 = map->mapAvailableSemanticCode(info,g1);//код последней доступной семантики
+//		char value[32];
+//		long int a1=0,a2=0;
+//		g1=17501;
+//			a1 = map->mapSemanticCodeValue(info, g1, value, 32, 1);
+//			int k=0, step=1;
+//		for (int i=0; i<32; i++)
+//		{
+//			if ((int)value[i]!=0)
+//				k++;
+//			else break;
+//		}
+//		for (int i=k-1; i>=0; i--)
+//		{
+//			a2 = a2 + abs(((int)value[i]-48))*step;
+//			step*=10;
+//		}
+//		if (a1!=0) 
+//		{
+//			if (a2!=0)
+//			{
+//				flag=TRUE;
+//			}
+//			long int a1 = map->mapClearObject(info);
+//		}
+//		return a2;
+//}
+
+//для правой клавиши мыши
+QStringList	MapScroll::getHobj(double *x, double *y)
 {
+	QStringList list;
 	info=map->mapCreateObject(hMap);
 	changeFrame();
 	info=map->mapWhatObject(hMap,info,&frame,WO_LAST,PP_PLANE);
 	long int g1 = map->mapAvailableSemanticCount(info);
 			g1 = map->mapAvailableSemanticCode(info,g1);//код последней доступной семантики
-		char value[32];
+		char value[32], value_flag[16], value_coord[18];
 		long int a1=0,a2=0;
 		g1=17501;
 			a1 = map->mapSemanticCodeValue(info, g1, value, 32, 1);
+		g1 = 17502;
+			int a3 = map->mapSemanticCodeValue(info, g1, value_flag, 16, 1);
+		g1 = 17503;
+			a3 = map->mapSemanticCodeValue(info, g1, value_coord, 16, 1);
+		/*char value_test[32];
+		g1 = 25;//проверка семантики, где тип ракет
+			a3 = map->mapSemanticCodeValue(info, g1, value_test, 32, 1);*/
+		QString str_value_coord = value_coord;
 			int k=0, step=1;
 		for (int i=0; i<32; i++)
 		{
@@ -515,12 +519,17 @@ long int	MapScroll::getHobj(double *x, double *y)
 		{
 			if (a2!=0)
 			{
-				flag=TRUE;
+				flag=1;
 			}
 			long int a1 = map->mapClearObject(info);
 		}
-		return a2;
+		list.append(QString::number(a2));
+		list.append(QString::number(value_flag[0]));
+		list.append(str_value_coord);
+		return list;
 }
+
+
 void		MapScroll::changeFrame()
 {
 	dframe.X1 = screenX+1;
@@ -699,7 +708,7 @@ long int	MapScroll::GetSiteLayerCount(HMAP hMap,HSITE hSite)
 	return map->mapGetSiteLayerCount(hMap,hSite);
 }
 //обновить изображение в размерах экрана
-long int	MapScroll::ApdateScreen()
+long int	MapScroll::UpdateScreen()
 {
 	long int a1;
 	HWND hwnd = map->mapGetHandleForMessage();

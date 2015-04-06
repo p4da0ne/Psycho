@@ -3,12 +3,18 @@
 
 #include <QDialog>
 #include "config_manage_users.h"
-#include "ui_manage_users_form.h"
 #include <QLabel>
 #include <QComboBox>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QCheckBox>
+#include <QtSql>
+#include <QSqlError>
+#include <QGridLayout>
+#include <QMessageBox>
+#include <QHeaderView>
+class QTableWidgetItem;
+class QTableWidget;
 
 namespace Ui
 {

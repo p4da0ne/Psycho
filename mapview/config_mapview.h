@@ -17,7 +17,7 @@
 #include <windows.h>
 #pragma warning (disable:4251)
 #pragma warning (disable:4530)
-#ifdef __USE_DLL_XXXXX
+#ifdef __USE_DLL_MAPVIEW
 
 	#define __EXPORT_MAPVIEW __declspec(dllexport)
 #else

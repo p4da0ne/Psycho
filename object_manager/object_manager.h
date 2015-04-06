@@ -154,4 +154,4 @@ private:
 	//virtual void contextMenuEvent(QContextMenuEvent* pe);
 };
 
-#endif 
+#endif
