@@ -372,6 +372,7 @@ HSITE MapView::openMapSit()
                 settings.setValue("saturn/map/last_rsc",fileRSC);
             }
         }
+        curFile=curFile + "/sit_formirovania.sit";
 		QString str_mapname = "OBJECTS";
 		
 		HSITE this_hsite;
