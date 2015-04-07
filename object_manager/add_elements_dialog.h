@@ -218,4 +218,4 @@ private slots:
 	
 };
 
-#endif // ADD_SOFTWARE_DIALOG_H
+#endif //  ADD_SOFTWARE_DIALOG_H
