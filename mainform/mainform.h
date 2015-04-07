@@ -17,6 +17,7 @@
 #include <supporting_tables.h>
 #include <object_manager.h>
 #include "settings.h"
+#include "settingsform.h"
 #include "db_saturn.h"
 #include "dataaccess.h"
 
@@ -53,6 +54,7 @@ private slots:
 	void show_map_form();
 	void show_supporting_tables_form();
 	void show_object_manager_form();
+    void show_settings_form();
 	//void show_dialog_add_new_region(int id_parent,bool is_parent_ko);
 
 private:
@@ -67,6 +69,7 @@ private:
 	QAction * sett_act3;
 	QAction * sett_act4;
 	QAction * sett_act5;
+    QAction * sett_act_setting;
 	QMenu * DB_work_menu;
 	QMenu * oper_menu;
 	QAction * map_act;
@@ -99,6 +102,7 @@ private:
 	void add_menu_enter_system(QMenu *menu);
 	void add_menu_supporting_tables(QMenu *oper_menu);
 	void add_menu_object_manager(QMenu *oper_menu);
+    void add_menu_settings(QMenu *oper_menu);
 	bool connection_flag;
 	db_saturn *db;
 	//add_object *reg;

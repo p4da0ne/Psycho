@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #include "mainform.h"
 
 #if defined Q_OS_WIN
@@ -23,63 +22,23 @@ Mainform::Mainform(QMainWindow *parent, Qt::WFlags flags)
 	connect(this,SIGNAL(reopen_login()),this,SLOT(show_login_form()));
 	connect(this,SIGNAL(valid_user(int)),this,SLOT(create_user_menu(int)));
 	connect(this,SIGNAL(signalMainWindowShown()),this,SLOT(show_login_form()));
-	
-	
-
 //----------- Тестирование модуля вывода ---------
 	QTextCodec *codec = QTextCodec::codecForName("CP1251");
 	QTextCodec::setCodecForCStrings(codec);
 	Reports *r = new Reports;
-	QString report = r->create_object_formular(8);
-
+    QString report = r->create_object_formular(8);
 //----------------------------------------
-
     if (test_db_connection())
         {
             connection_flag = true;
         }
-
 	init_menu(0);
-
-
-
-
-////
-
-//while (!test_db_connection())
-//	{
-//
-//	}
-//close_connection();
-//
-//
-//	QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
-//    db.setHostName("192.168.0.63");
-//	db.setDatabaseName("SATURN_3");
-//    db.setUserName("saturn_user");
-//    db.setPassword("qwerty");
-//	db.open();
-//	
-//
-//
-//
-//init_menu(1);
-//show_map_form();
-//
-
-
-
-
-
-
 }
 
 Mainform::~Mainform()
 {
  delete UI;
 }
-
-
 
 //========== Создание и открытие диалогового окна настроек соединения с БД ===============
 void Mainform::show_connect_settings_dialog()
@@ -291,11 +250,8 @@ void Mainform::init_menu(int id_user_group)
 			settings_menu = new QMenu("Настройки");
 			add_menu_db_connection(settings_menu);
 			add_menu_manage_users(settings_menu);
-			
+            add_menu_settings(settings_menu);
 			UI->menuBar->addMenu(settings_menu);
-
-		//	DB_work_menu = new QMenu("Работа с БД");
-		//	UI->menuBar->addMenu(DB_work_menu);
 
 			oper_menu = new QMenu("Оперативная работа");
 			add_menu_supporting_tables(oper_menu);
@@ -315,11 +271,8 @@ void Mainform::init_menu(int id_user_group)
 			settings_menu = new QMenu("Настройки");
 			add_menu_db_connection(settings_menu);
 			add_menu_manage_users(settings_menu);
-			
+            add_menu_settings(settings_menu);
 			UI->menuBar->addMenu(settings_menu);
-
-		//	DB_work_menu = new QMenu("Работа с БД");
-		//	UI->menuBar->addMenu(DB_work_menu);
 
 			oper_menu = new QMenu("Оперативная работа");
 			add_menu_supporting_tables(oper_menu);
@@ -337,11 +290,7 @@ void Mainform::init_menu(int id_user_group)
 			add_menu_exit(menu);
 			UI->menuBar->addMenu(menu);
 			
-	//		DB_work_menu = new QMenu("Работа с БД");
-		//	UI->menuBar->addMenu(DB_work_menu);
-
 			oper_menu = new QMenu("Оперативная работа");
-		//	add_menu_supporting_tables(oper_menu);
 			add_menu_object_manager(oper_menu);
 			add_mapwork(oper_menu);
 			UI->menuBar->addMenu(oper_menu);
@@ -407,6 +356,13 @@ void Mainform::add_menu_object_manager(QMenu *oper_menu){
 	oper_menu->addAction(sett_act3);
 	connect(sett_act3, SIGNAL(triggered()),this, SLOT(show_object_manager_form()));
 }
+
+void Mainform::add_menu_settings(QMenu *oper_menu){
+    sett_act_setting = new QAction("Настройки",this);
+    sett_act_setting->setIcon(QIcon("./icons/text.png"));
+    oper_menu->addAction(sett_act_setting);
+    connect(sett_act_setting, SIGNAL(triggered()),this, SLOT(show_settings_form()));
+}
 //============= Создание и открытие формы входа (смены) пользователя ==========
 void Mainform::show_login_form()
 {
@@ -466,7 +422,7 @@ void Mainform::show_login_form()
 	QString password =	login_password_edit->text();
 	if(!login(login_name,password))
 	{
-		login_message = "<p align = 'center'><font color='red'>" + tr("Login or password are incorrect.") + "</font></p>";
+		login_message = "<p align = 'center'><font color='red'>Неверные имя пользователя или пароль.</font></p>";
 		message_label->setText(login_message);
 		delete login_form;	 
 		reopen_login();
@@ -481,6 +437,8 @@ void Mainform::show_login_form()
  login_message = "";
  return;
 }
+
+
 
 
 //============== Функция проверки логина и пароля пользователя в БД ======================
@@ -567,7 +525,10 @@ void Mainform::create_user_menu(int id_user)
 	return;
 }
 
-
+void Mainform::show_settings_form(){
+    SettingsForm * sf = new SettingsForm();
+    sf->show();
+}
 
 
 //===================================================

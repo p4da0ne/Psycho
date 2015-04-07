@@ -5,78 +5,73 @@
 MapView::MapView(QWidget * parent)
     : QWidget(parent)
 {
-       
-       MainCodec = QTextCodec::codecForName("CP1251");
-       setMouseTracking(true);
 
-       setWindowIcon(QIcon("./icons/mapwork.png"));
+	MainCodec = QTextCodec::codecForName("CP1251");
+	setMouseTracking(true);
+	setWindowIcon(QIcon("./icons/mapwork.png"));
 
-    QVBoxLayout *vertLayout = new QVBoxLayout();  //==== основной лэйаут
-    vertLayout->setMargin(1);
-	
-    //==== формирование меню на основе QFrame и QToolButton's ====
-    QFrame *buttons_menu = new QFrame();
-    buttons_menu->setFrameStyle(QFrame::Panel | QFrame::Raised);
-    buttons_menu->setLineWidth(2);
+	QVBoxLayout *vertLayout = new QVBoxLayout();  //==== основной лэйаут
+	vertLayout->setMargin(1);
 
-    QToolButton *open_map_but = new QToolButton();
-    open_map_but->setIcon(QIcon("./icons/map_open.png"));
-    open_map_but->setIconSize(QSize(20,20));
-    open_map_but->setToolTip("Открыть карту");
-    connect(open_map_but, SIGNAL(clicked()), this, SLOT(open()));
+	//==== формирование меню на основе QFrame и QToolButton's ====
+	QFrame *buttons_menu = new QFrame();
+	buttons_menu->setFrameStyle(QFrame::Panel | QFrame::Raised);
+	buttons_menu->setLineWidth(2);
 
-//добавление пользовательского слоя
-    QToolButton *tool_button_test = new QToolButton();
-    tool_button_test->setIcon(QIcon("./icons/map_open.png"));
-    tool_button_test->setIconSize(QSize(20,20));
-    tool_button_test->setToolTip("Добавить слой");
-    connect(tool_button_test, SIGNAL(clicked()), this, SLOT(appendSit()));
+	QToolButton *open_map_but = new QToolButton();
+	open_map_but->setIcon(QIcon("./icons/map_open.png"));
+	open_map_but->setIconSize(QSize(20,20));
+	open_map_but->setToolTip("Открыть карту");
+	connect(open_map_but, SIGNAL(clicked()), this, SLOT(open()));
 
-
-    QToolButton *close_map_but = new QToolButton();
-    close_map_but->setIcon(QIcon("./icons/map_close.png"));
-    close_map_but->setIconSize(QSize(20,20));
-    close_map_but->setToolTip("Закрыть карту и все данные");
-    connect(close_map_but, SIGNAL(clicked()), this, SLOT(closeMap()));
-//яркость
-    QToolButton *set_map_bright1 = new QToolButton();
-    set_map_bright1->setIcon(QIcon("./icons/up.png"));
-    set_map_bright1->setIconSize(QSize(20,20));
-    set_map_bright1->setToolTip("Увеличить яркость карты");
-    connect(set_map_bright1, SIGNAL(clicked()), this, SLOT(changeBrihgtUp()));
-//яркость
-    QToolButton *set_map_bright2 = new QToolButton();
-    set_map_bright2->setIcon(QIcon("./icons/down.png"));
-    set_map_bright2->setIconSize(QSize(20,20));
-    set_map_bright2->setToolTip("Уменьшить яркость карты");
-    connect(set_map_bright2, SIGNAL(clicked()), this, SLOT(changeBrihgtDown()));
-    QLabel *v_lab = new QLabel();
+	//добавление пользовательского слоя
+	QToolButton *tool_button_test = new QToolButton();
+	tool_button_test->setIcon(QIcon("./icons/map_open.png"));
+	tool_button_test->setIconSize(QSize(20,20));
+	tool_button_test->setToolTip("Добавить слой");
+	connect(tool_button_test, SIGNAL(clicked()), this, SLOT(appendSit()));
 
 
-//уменьшить масштаб отображения карты
+	QToolButton *close_map_but = new QToolButton();
+	close_map_but->setIcon(QIcon("./icons/map_close.png"));
+	close_map_but->setIconSize(QSize(20,20));
+	close_map_but->setToolTip("Закрыть карту и все данные");
+	connect(close_map_but, SIGNAL(clicked()), this, SLOT(closeMap()));
+	//яркость
+	QToolButton *set_map_bright1 = new QToolButton();
+	set_map_bright1->setIcon(QIcon("./icons/up.png"));
+	set_map_bright1->setIconSize(QSize(20,20));
+	set_map_bright1->setToolTip("Увеличить яркость карты");
+	connect(set_map_bright1, SIGNAL(clicked()), this, SLOT(changeBrihgtUp()));
+	//яркость
+	QToolButton *set_map_bright2 = new QToolButton();
+	set_map_bright2->setIcon(QIcon("./icons/down.png"));
+	set_map_bright2->setIconSize(QSize(20,20));
+	set_map_bright2->setToolTip("Уменьшить яркость карты");
+	connect(set_map_bright2, SIGNAL(clicked()), this, SLOT(changeBrihgtDown()));
+	QLabel *v_lab = new QLabel();
+
+
+	//уменьшить масштаб отображения карты
 	QToolButton *less_scale_but = new QToolButton();
 	less_scale_but->setIcon(QIcon("./icons/less_scale.jpg"));
 	less_scale_but->setIconSize(QSize(20,20));
 	less_scale_but->setToolTip("Уменьшить масштаб");
 	connect(less_scale_but, SIGNAL(clicked()), this, SLOT(LessScale()));
-//увеличить масштаб отображения карты
+	//увеличить масштаб отображения карты
 	QToolButton *greate_scale_but = new QToolButton();
 	greate_scale_but->setIcon(QIcon("./icons/greate_scale.jpg"));
 	greate_scale_but->setIconSize(QSize(20,20));
 	greate_scale_but->setToolTip("Увеличить масштаб");
 	connect(greate_scale_but, SIGNAL(clicked()), this, SLOT(GreateScale()));
 
+	v_lab->setFrameStyle(QFrame::VLine | QFrame::Raised);
+	v_lab->setLineWidth(2);
 
-
-
-    v_lab->setFrameStyle(QFrame::VLine | QFrame::Raised);
-    v_lab->setLineWidth(2);
-
-
-    QHBoxLayout *menuLayout = new QHBoxLayout();
-    menuLayout->setAlignment(Qt::AlignLeft);
-    menuLayout->setMargin(2);
-    menuLayout->setSpacing(0);
+	QHBoxLayout *menuLayout = new QHBoxLayout();
+	menuLayout->setAlignment(Qt::AlignLeft);
+	menuLayout->setMargin(2);
+	menuLayout->setSpacing(0);
 
     menuLayout->addWidget(open_map_but);
     menuLayout->addWidget(tool_button_test);
@@ -84,18 +79,13 @@ MapView::MapView(QWidget * parent)
     menuLayout->addWidget(set_map_bright1);
     menuLayout->addWidget(set_map_bright2);
     menuLayout->addWidget(v_lab);
-
 	
 	menuLayout->addWidget(less_scale_but);
     menuLayout->addWidget(greate_scale_but);
 
-
     buttons_menu->setLayout(menuLayout);
-
     vertLayout->addWidget(buttons_menu);
-
     //===================================================================
-    
     QHBoxLayout *centralLayout = new QHBoxLayout();
 
     QFrame *fr = new QFrame();
@@ -107,8 +97,6 @@ MapView::MapView(QWidget * parent)
     left_panel_name->setFont(QFont("Arial",8,QFont::Bold,false));
 	
 //------------------тест класса ViewManage------------------------------------
-	
-
     QPushButton *add_obj = new QPushButton("Показать средства");
     connect(add_obj, SIGNAL(clicked()), this, SLOT(openMapSit1()));
 
@@ -118,98 +106,44 @@ MapView::MapView(QWidget * parent)
     QPushButton *close_obj_but = new QPushButton("Скрыть все объекты");
     connect(close_obj_but, SIGNAL(clicked()), this, SLOT(showCloseSitInfo()));
 
-    /*QPushButton *but1 = new QPushButton("1");
-    connect(but1, SIGNAL(clicked()), this, SLOT(test_view_manage()));
-
-    QPushButton *but2 = new QPushButton("2");
-    connect(but2, SIGNAL(clicked()), this, SLOT(test_view_manage2()));
-
-    QPushButton *show_line_but = new QPushButton("Show line");
-    connect(show_line_but, SIGNAL(clicked()), this, SLOT(selectLineObject()));*/
-
     QPushButton *but_PL = new QPushButton("Психогенные потери");
     connect(but_PL, SIGNAL(clicked()), this, SLOT(People_Losse()));
 
     QPushButton *mps = new QPushButton("МПС своих войск");
     connect(mps, SIGNAL(clicked()), this, SLOT(calc_mps()));
 
-        QPushButton *mps2 = new QPushButton("МПС войск противника");
+    QPushButton *mps2 = new QPushButton("МПС войск противника");
     connect(mps2, SIGNAL(clicked()), this, SLOT(calc_mps2()));
-
 
     QVBoxLayout *left_layout = new QVBoxLayout();
     left_layout->setAlignment(Qt::AlignTop);
     left_layout->setMargin(2);
-    //left_layout->setHorizontalSpacing(0);
     left_layout->addWidget(left_panel_name);
     left_layout->addWidget(add_obj);
     left_layout->addWidget(show_obj_but);
-		
-    /*left_layout->addWidget(show_line_but);
-    left_layout->addWidget(but1);
-    left_layout->addWidget(but2);*/
+
     left_layout->addWidget(mps);
     left_layout->addWidget(mps2);
     left_layout->addWidget(but_PL);
     left_layout->addWidget(close_obj_but);
     fr->setLayout(left_layout);
-
     centralLayout->addWidget(fr);
-
     // === mapscroll ========================
 
     mapwin = new MapScroll();
 
     connect(mapwin,SIGNAL(signal_for_info_2_arg(QString, long int)),this,SLOT(showShortInformationObject_2arg(QString, long int)));
     //connect(mapwin,SIGNAL(signal_for_info(long int)),this,SLOT(showShortInformationObject(long int)));//mysignal - движение мыши
-    
-	
-	
 	connect(mapwin,SIGNAL(signal_for_right_button(HOBJ, long int, long int, QPoint, bool)),this,SLOT(mouseRightMenu(HOBJ, long int, long int, QPoint, bool)));
-    
-	
-	
-	
 	connect(mapwin,SIGNAL(signal_for_change_scale(QPoint)),this,SLOT(mouseRightSimpleMenu(QPoint)));
-	
 	centralLayout->addWidget(mapwin);
-
-    //========================================
-
-    //QFrame *right_fr = new QFrame();
-    //right_fr->setFrameStyle(QFrame::Box | QFrame::Raised);
-    //right_fr->setLineWidth(2);
-
-    //QToolButton *but3 = new QToolButton();
-    //but3->setIcon(QIcon("./icons/open.png"));
-    //but3->setIconSize(QSize(20,20));
-    //
-    //QToolButton *but4 = new QToolButton();
-    //but4->setIcon(QIcon("./icons/exit.png"));
-    //but4->setIconSize(QSize(20,20));
-
-    //QGridLayout *right_grid = new QGridLayout();
-    //right_grid->setAlignment(Qt::AlignTop);
-    //right_grid->setMargin(2);
-    //right_grid->setHorizontalSpacing(0);
-
-    //right_grid->addWidget(but3,0,0);
-    //right_grid->addWidget(but4,0,1);
-    //
-    //right_fr->setLayout(right_grid);
-
-    //centralLayout->addWidget(right_fr);
-
     //========================================
     vertLayout->addLayout(centralLayout);
-
    //==============================================
     QLineEdit *status_bar = new QLineEdit();
     status_bar->setReadOnly(true);
     vertLayout->addWidget(status_bar);
-
   //=================================================
-
     QHBoxLayout *coord_layout = new QHBoxLayout();
     cursor_coord = new QLineEdit();
     cursor_coord->setReadOnly(true);
@@ -217,13 +151,10 @@ MapView::MapView(QWidget * parent)
     map_scale->setReadOnly(true);
     QLineEdit *additional_info = new QLineEdit();
     additional_info->setReadOnly(true);
-
     coord_layout->addWidget(cursor_coord);
     coord_layout->addWidget(map_scale);
     coord_layout->addWidget(additional_info);
-
     vertLayout->addLayout(coord_layout);
-
 //=================================================
     setLayout(vertLayout);
 //=========================================
@@ -231,20 +162,26 @@ MapView::MapView(QWidget * parent)
     flag2=FALSE;
     flag=FALSE;
     model = new ViewManage();
-//	lbl = new QLabel();
 
-//    mapwin->mapOpen("C:/projects/Saturn_500m/Saturn_topo.MAP");
-//    mapwin->appendData("C:/projects/Saturn_500m/Saturn/Saturn.sit");
-//    mapwin->ChangeScale(0.5);
-//    mapwin->ChangeScale(0.5);
-//    mapwin->ChangeScale(0.5);
-//    mapwin->ChangeScale(0.5);
+    //открытие последней открытой карты с ситом (если он есть).
+    QSettings settings("Saturn");
+    QString path=settings.value("last_map").toString();
+    QString path_sit=settings.value("last_sit").toString();
+	if(QFile::exists(path)){
+        QMessageBox msgBox;
+        msgBox.setText("Do you want open last opened map?");
+        msgBox.setInformativeText(path);
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::Yes);
+        int ret = msgBox.exec();
+        if(QMessageBox::Yes == ret){
+            mapwin->mapOpen(path.toStdString().c_str());
+            if(QFile::exists(path_sit)){
+                mapwin->appendData(path_sit.toStdString().c_str());
+            }
+        }
+	}
 }
-//
-//MapView::~MapView()
-//{
-//	delete lbl;
-//}
 
 void MapView::showCloseSitInfo()
 {
@@ -277,11 +214,14 @@ void MapView::GreateScale()
 void MapView::open()
 {
     QString File = QFileDialog::getOpenFileName(this, QString::null, QString::null, 
-                   "Maps (*.map)\n Sites (*.sit)" );
+                   "Maps (*.map)" );
 
     if (File.isEmpty()) return;//если карта не выбрана
 	//mapwin->mapOpen(File.toLatin1().data());
-	mapwin->mapOpen(File.toLocal8Bit().data());
+	if(mapwin->mapOpen(File.toLocal8Bit().data()) == 0){
+        QSettings settings("Saturn");
+        settings.setValue("last_map",File);
+	}
 }
 
 // отклик на нажатие кнопки/пункта меню "Закрыть"
@@ -333,6 +273,8 @@ void MapView::keyPressEvent(QKeyEvent *e)
 //===================================================
 HSITE MapView::openMapSit1()
 {	
+    QString fileRSC;
+    QSettings settings("Saturn");
 	long int a = mapwin->IsActive(mapwin->hMap);
 	if (a)
 	{
@@ -344,21 +286,29 @@ HSITE MapView::openMapSit1()
 			dir.mkdir(curFile);
 		}
 		curFile= curFile + "/sites";
-		dir.setPath(curFile);
+        dir.setPath(curFile);
 		if (!dir.exists())
 		{
 			dir.mkdir(curFile);
-			QString File = QFileDialog::getOpenFileName(this, QString::null, QString::null, 
-                   "Классификатор (*.rsc)" );
-			if (File.isEmpty()) 
+            fileRSC = QFileDialog::getOpenFileName(this, QString::null, QString::null, "Классификатор (*.rsc)" );
+            if (fileRSC.isEmpty())
 			{
-				int ret = QMessageBox::critical(this, "Сатурн",
-                                "Не выбран классификатор! \n");
-			}//если карта не выбрана
+                int ret = QMessageBox::critical(this, "Сатурн", "Не выбран классификатор! \n");
+            }else{
+                settings.setValue("last_rsc",fileRSC);
+            }
 		}
+        fileRSC=settings.value("last_rsc").toString();
+        if(!QFile::exists(fileRSC)){
+            QString fileRSC = QFileDialog::getOpenFileName(this, QString::null, QString::null, "Классификатор (*.rsc)" );
+            if (fileRSC.isEmpty())
+            {
+                int ret = QMessageBox::critical(this, "Сатурн", "Не выбран классификатор! \n");
+            }else{
+                settings.setValue("last_rsc",fileRSC);
+            }
+        }
 		curFile=curFile + "/sit_lear.sit";
-		QString File = "C:/Saturn/sites/Saturn.rsc";
-
 		QString str_mapname = "OBJECTS";
 			
 		HSITE this_hsite;
@@ -368,7 +318,7 @@ HSITE MapView::openMapSit1()
 		strcpy(createsite.MapName, str_mapname.toLocal8Bit().data());
 		createsite.MapType=2;
 			
-		this_hsite = mapwin->dataOpen(mapwin->hMap,curFile.toLocal8Bit().data(),File.toLocal8Bit().data(),&createsite);
+        this_hsite = mapwin->dataOpen(mapwin->hMap,curFile.toLocal8Bit().data(),fileRSC.toLocal8Bit().data(),&createsite);
 		mapwin->flag2=TRUE;
 		hSite=this_hsite;
 			
@@ -376,7 +326,7 @@ HSITE MapView::openMapSit1()
 		hSite=this_hsite;
 		
 		selectAllObject1();
-selectAllObject2();
+        selectAllObject2();
 		showInformationDialog("Объекты нанесены на карту");
 		return this_hsite;
 	}
@@ -387,6 +337,8 @@ selectAllObject2();
 //===============================================================================
 HSITE MapView::openMapSit()
 {	
+    QString fileRSC;
+    QSettings settings("Saturn");
 	long int a = mapwin->IsActive(mapwin->hMap);
 	if (a)
 	{
@@ -399,19 +351,28 @@ HSITE MapView::openMapSit()
 		}
 		curFile= curFile + "/sites";
 		dir.setPath(curFile);
-		if (!dir.exists())
-		{
-			dir.mkdir(curFile);
-			QString File = QFileDialog::getOpenFileName(this, QString::null, QString::null, 
-                   "Классификатор (*.rsc)" );
-			if (File.isEmpty()) 
-			{
-				int ret = QMessageBox::critical(this, "Сатурн",
-                                "Не выбран классификатор! \n");
-			}//если карта не выбрана
-		}
-		curFile=curFile + "/sit_lear.sit";
-		QString File = "C:/Saturn/sites/Saturn.rsc";
+        if (!dir.exists())
+        {
+            dir.mkdir(curFile);
+            fileRSC = QFileDialog::getOpenFileName(this, QString::null, QString::null, "Классификатор (*.rsc)" );
+            if (fileRSC.isEmpty())
+            {
+                int ret = QMessageBox::critical(this, "Сатурн", "Не выбран классификатор! \n");
+            }else{
+                settings.setValue("saturn/map/last_rsc",fileRSC);
+            }
+        }
+        fileRSC=settings.value("saturn/map/last_rsc").toString();
+        if(!QFile::exists(fileRSC)){
+            QString fileRSC = QFileDialog::getOpenFileName(this, QString::null, QString::null, "Классификатор (*.rsc)" );
+            if (fileRSC.isEmpty())
+            {
+                int ret = QMessageBox::critical(this, "Сатурн", "Не выбран классификатор! \n");
+            }else{
+                settings.setValue("saturn/map/last_rsc",fileRSC);
+            }
+        }
+        curFile=curFile + "/sit_formirovania.sit";
 		QString str_mapname = "OBJECTS";
 		
 		HSITE this_hsite;
@@ -421,7 +382,7 @@ HSITE MapView::openMapSit()
 		strcpy(createsite.MapName, str_mapname.toLocal8Bit().data());
 		createsite.MapType=2;
 		
-		this_hsite = mapwin->dataOpen(mapwin->hMap,curFile.toLocal8Bit().data(),File.toLocal8Bit().data(),&createsite);
+        this_hsite = mapwin->dataOpen(mapwin->hMap,curFile.toLocal8Bit().data(),fileRSC.toLocal8Bit().data(),&createsite);
 		mapwin->flag2=TRUE;
 		hSite=this_hsite;
 		
@@ -555,7 +516,7 @@ void MapView::showInfoAboutObject(long int id_obj)
 	}
 
 }
-//отобразить все объекты на карте
+//отобразить все объекты на карте (воинские формирования)
 void MapView::selectAllObject()
 {
 	QSqlQuery query;
@@ -620,9 +581,10 @@ void MapView::selectAllObject()
 	
 }
 //========================================================================================================================================================
+//вывод средств
 void MapView::selectAllObject1()
 {
-QSqlQuery query;
+    QSqlQuery query;
 	long int a11111=0;
 	QString str=QString("SELECT name_type_mpo_pso, coordinates.x_coordinates, coordinates.y_coordinates, type_mpo_pso.excode_type_mpo_pso, id_mpo_pso, mpo_pso.semantika_digit1, mpo_pso.semantika_digit2, semantika_1 FROM mpo_pso, coordinates, type_mpo_pso\
 						WHERE mpo_pso.id_coordinates=coordinates.id_coordinates AND mpo_pso.id_type_mpo_pso=type_mpo_pso.id_type_mpo_pso \
@@ -684,11 +646,6 @@ QSqlQuery query;
                            QMessageBox::Save);
 	}
 	
-
-
-
-
-
 	QSqlQuery query1;
 	
 	QString str1=QString("SELECT name_type_mpo_pso, coordinates.x_coordinates, coordinates.y_coordinates, type_mpo_pso.excode_type_mpo_pso, id_mpo_pso, mpo_pso.semantika_digit1, mpo_pso.semantika_digit2, semantika_1 FROM mpo_pso, coordinates, type_mpo_pso\
@@ -753,6 +710,8 @@ QSqlQuery query;
 
 }
 
+        //================================
+        //вывод особых условий
 void MapView::selectAllObject2()
 {	
 	QSqlQuery query;
@@ -761,7 +720,7 @@ void MapView::selectAllObject2()
 						special_conditions.semantika_2 , type_special_conditions.excode_type_sc, \
 						coordinates.x_coordinates, coordinates.y_coordinates, special_conditions.id_special_conditions FROM special_conditions, \
 						region, type_special_conditions, coordinates, coord_spec_cond \
-						where special_conditions.id_region=region.id_region AND \
+                        where special_conditions.id_region=region.id_region AND \
 						special_conditions.id_type_special_conditions=type_special_conditions.id_type_special_conditions \
 						AND coord_spec_cond.id_special_conditions=special_conditions.id_special_conditions \
 						AND coord_spec_cond.id_coordinates=coordinates.id_coordinates");
