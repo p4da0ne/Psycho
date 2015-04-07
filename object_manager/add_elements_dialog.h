@@ -52,7 +52,8 @@ private:
 	 QLabel *label_14;
 	 QLabel *label_15;
 	 QLabel *label_16;
-	 
+     QLabel *label_foto;
+     QLabel *label_foto_name;
 
 	 QTextEdit *textEdit;
 	 QTextEdit *textEdit_2;

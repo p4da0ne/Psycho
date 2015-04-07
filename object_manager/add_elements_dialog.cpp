@@ -1620,29 +1620,30 @@ case 22:{// ============ Штатка для организаций ================================
 		} 
 case 23:{ //========== Персонал для групп ====================================
 		 
-         label = new QLabel("Имя:");
-		 lineEdit_name = new QLineEdit;
-		 label->setBuddy(lineEdit_name);
+
+        label = new QLabel("Имя:");
+        lineEdit_name = new QLineEdit;
+        label->setBuddy(lineEdit_name);
 		 
-         label_2 = new QLabel("Возраст:");
-		 lineEdit_counte_ls = new QLineEdit;
-		 label_2->setBuddy(lineEdit_counte_ls);
-         label_3 = new QLabel("Контакты:");
-		 lineEdit_counte_ls_bd = new QLineEdit;
-		 label_3->setBuddy(lineEdit_counte_ls_bd);
-         label_4 = new QLabel("Оппозиция:");
-         checkbox_enemy = new QCheckBox(" [-V- оппозиция]", this);
-		 label_4->setBuddy(checkbox_enemy);
-         label_5 = new QLabel("Должноть:");
-		 lineEdit_rank = new QLineEdit;
-		 label_5->setBuddy(lineEdit_rank);
-         label_6 = new QLabel("Авторитет:");
-		 lineEdit_aut = new QLineEdit;
-		 label_6->setBuddy(lineEdit_aut);
-         label_7 = new QLabel("Характеристика:");
-		 textEdit_propa = new QTextEdit;
-		 label_7->setBuddy(textEdit_propa);
-		 textEdit_propa->setFixedHeight(50);
+        label_2 = new QLabel("Возраст:");
+        lineEdit_counte_ls = new QLineEdit;
+        label_2->setBuddy(lineEdit_counte_ls);
+        label_3 = new QLabel("Контакты:");
+        lineEdit_counte_ls_bd = new QLineEdit;
+        label_3->setBuddy(lineEdit_counte_ls_bd);
+        label_4 = new QLabel("Оппозиция:");
+        checkbox_enemy = new QCheckBox(" [-V- оппозиция]", this);
+        label_4->setBuddy(checkbox_enemy);
+        label_5 = new QLabel("Должноть:");
+        lineEdit_rank = new QLineEdit;
+        label_5->setBuddy(lineEdit_rank);
+        label_6 = new QLabel("Авторитет:");
+        lineEdit_aut = new QLineEdit;
+        label_6->setBuddy(lineEdit_aut);
+        label_7 = new QLabel("Характеристика:");
+        textEdit_propa = new QTextEdit;
+        label_7->setBuddy(textEdit_propa);
+        textEdit_propa->setFixedHeight(50);
 		 
 	     
 		 addButton = new QPushButton("Добавить");
@@ -1740,6 +1741,10 @@ case 23:{ //========== Персонал для групп ====================================
 		}
 case 24:{ //========== Персонал данные ====================================
 
+     label_foto_name = new QLabel("Фото:");
+     label_foto = new QLabel;
+     label_foto_name->setBuddy(label_foto);
+
      label = new QLabel("Имя:");
 	 lineEdit_name = new QLineEdit;
 	 lineEdit_name->setDisabled(true);
@@ -1780,13 +1785,13 @@ case 24:{ //========== Персонал данные ====================================
 	
 
 	QSqlQuery query;
-	QString str = QString("SELECT id_persones, name_persones, age_persones, contact_persones, rank_persones, authority_persones, opposition_persones, description_persones FROM persones where id_persones = %1").arg(in_id_object);
+    QString str = QString("SELECT id_persones, name_persones, age_persones, contact_persones, rank_persones, authority_persones, opposition_persones, description_persones, image_persones FROM persones where id_persones = %1").arg(in_id_object);
 	if(!query.exec(str)){
 	 return;
 	}
     
 	QSqlRecord rec = query.record();
-	QString name_pers,contact,rank_pers,desc_pers;
+    QString name_pers,contact,rank_pers,desc_pers,foto_name,path_foto;
 	float autor;
 	int age_pers;
 	bool oppos;
@@ -1799,14 +1804,19 @@ case 24:{ //========== Персонал данные ====================================
 		rank_pers=query.value(rec.indexOf("rank_persones")).toString();
 		desc_pers=query.value(rec.indexOf("description_persones")).toString();
 		oppos=query.value(rec.indexOf("opposition_persones")).toBool();
+        foto_name = query.value(rec.indexOf("image_persones")).toString();
+
 	
 		lineEdit_name->setText(name_pers);
 		lineEdit_counte_ls->setText(QString::number(age_pers));
-		lineEdit_counte_ls_bd->setText(contact);
+        lineEdit_counte_ls_bd->setText(contact);
 		checkbox_enemy->setChecked(oppos);
 		lineEdit_rank->setText(rank_pers);
 		lineEdit_aut->setText(QString::number(autor));
 		textEdit_propa->setText(desc_pers);
+
+        path_foto = "foto_persones/" + foto_name;
+        label_foto->setText("<CENTER><IMG BORDER=\"0\" SRC=\""+path_foto+"\"></CENTER>");
 	}
 		 
 	 addButton = new QPushButton("Редактировать");
@@ -1827,7 +1837,12 @@ case 24:{ //========== Персонал данные ====================================
 	 buttonsLayout->addWidget(addButton);
 	 buttonsLayout->addWidget(cancelButton);
 
-	 QHBoxLayout *topLeftLayout = new QHBoxLayout;
+
+         QHBoxLayout *topLeftLayout_15 = new QHBoxLayout;
+         topLeftLayout_15->addWidget(label_foto_name);
+         QHBoxLayout *topLeftLayout_16 = new QHBoxLayout;
+         topLeftLayout_16->addWidget(label_foto);
+         QHBoxLayout *topLeftLayout = new QHBoxLayout;
 		 topLeftLayout->addWidget(label);
 		 QHBoxLayout *topLeftLayout_2 = new QHBoxLayout;
 		 topLeftLayout_2->addWidget(lineEdit_name);
@@ -1857,7 +1872,11 @@ case 24:{ //========== Персонал данные ====================================
 		 topLeftLayout_14->addWidget(textEdit_propa);
 
 
-		 QVBoxLayout *leftLayout = new QVBoxLayout;
+         QVBoxLayout *leftLayout_15 = new QVBoxLayout;
+         leftLayout_15->addLayout(topLeftLayout_15);
+         QVBoxLayout *leftLayout_16 = new QVBoxLayout;
+         leftLayout_16->addLayout(topLeftLayout_16);
+         QVBoxLayout *leftLayout = new QVBoxLayout;
 		 leftLayout->addLayout(topLeftLayout);
 		 QVBoxLayout *leftLayout_2 = new QVBoxLayout;
 		 leftLayout_2->addLayout(topLeftLayout_2);
@@ -1903,8 +1922,10 @@ case 24:{ //========== Персонал данные ====================================
 		 mainLayout->addLayout(leftLayout_12, 5, 1);
 		 mainLayout->addLayout(leftLayout_13, 6, 0);
 		 mainLayout->addLayout(leftLayout_14, 6, 1);
+         mainLayout->addLayout(leftLayout_15, 7, 0);
+         mainLayout->addLayout(leftLayout_16, 7, 1);
 		 
-		 mainLayout->addLayout(buttonsLayout, 7, 0, 1, 2);
+         mainLayout->addLayout(buttonsLayout, 8, 0, 1, 2);
 		 setLayout(mainLayout);
 		 setWindowTitle("Данные по персоналу");
 	
