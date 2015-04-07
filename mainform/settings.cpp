@@ -9,6 +9,7 @@ Settings::Settings(QObject *parent)
 	_user_name=settings_db_connect->value("/settings_db_connect/user_name","postgres").toString();
 	_user_password=settings_db_connect->value("/settings_db_connect/user_password","").toString();
 	_host=settings_db_connect->value("/settings_db_connect/host","localhost").toString();
+
 }
 
 Settings::~Settings()
