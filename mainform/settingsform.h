@@ -22,6 +22,7 @@ public slots:
 
 private:
     QPushButton *pb_rsc;
+    QPushButton *pb_ok;
     QLineEdit *line_rsc;
     QLabel *label_rsc;
 

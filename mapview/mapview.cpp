@@ -181,7 +181,6 @@ MapView::MapView(QWidget * parent)
             }
         }
 	}
-	
 }
 
 void MapView::showCloseSitInfo()

@@ -28,12 +28,10 @@ Mainform::Mainform(QMainWindow *parent, Qt::WFlags flags)
 	Reports *r = new Reports;
     QString report = r->create_object_formular(8);
 //----------------------------------------
-
     if (test_db_connection())
         {
             connection_flag = true;
         }
-
 	init_menu(0);
 }
 
@@ -252,11 +250,8 @@ void Mainform::init_menu(int id_user_group)
 			settings_menu = new QMenu("Настройки");
 			add_menu_db_connection(settings_menu);
 			add_menu_manage_users(settings_menu);
-			
+            add_menu_settings(settings_menu);
 			UI->menuBar->addMenu(settings_menu);
-
-		//	DB_work_menu = new QMenu("Работа с БД");
-		//	UI->menuBar->addMenu(DB_work_menu);
 
 			oper_menu = new QMenu("Оперативная работа");
 			add_menu_supporting_tables(oper_menu);
@@ -276,11 +271,8 @@ void Mainform::init_menu(int id_user_group)
 			settings_menu = new QMenu("Настройки");
 			add_menu_db_connection(settings_menu);
 			add_menu_manage_users(settings_menu);
-			
+            add_menu_settings(settings_menu);
 			UI->menuBar->addMenu(settings_menu);
-
-		//	DB_work_menu = new QMenu("Работа с БД");
-		//	UI->menuBar->addMenu(DB_work_menu);
 
 			oper_menu = new QMenu("Оперативная работа");
 			add_menu_supporting_tables(oper_menu);
@@ -298,11 +290,7 @@ void Mainform::init_menu(int id_user_group)
 			add_menu_exit(menu);
 			UI->menuBar->addMenu(menu);
 			
-	//		DB_work_menu = new QMenu("Работа с БД");
-		//	UI->menuBar->addMenu(DB_work_menu);
-
 			oper_menu = new QMenu("Оперативная работа");
-		//	add_menu_supporting_tables(oper_menu);
 			add_menu_object_manager(oper_menu);
 			add_mapwork(oper_menu);
 			UI->menuBar->addMenu(oper_menu);
