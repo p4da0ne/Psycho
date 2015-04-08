@@ -92,6 +92,7 @@ private:
 	 QLineEdit *lineEdit_7;
 	 QLineEdit *lineEdit_x;
 	 QLineEdit *lineEdit_y;
+     QLineEdit *lineEdit_name_f;
      QCheckBox *caseCheckBox;
      QCheckBox *fromStartCheckBox;
      QCheckBox *wholeWordsCheckBox;
@@ -145,7 +146,7 @@ private slots:
 	void add_mpo_pso_groups();
 	void add_mpo_pso_smi();
 	void add_groups();
-	void add_persones_groups();
+    void add_persones_groups();
 	void edit_persones();
 	void add_persones_ls();
     void add_persones_smi();
@@ -212,6 +213,7 @@ private slots:
 	void table_rank();
 	void table_rank_gr();
 	void table_coord(int id_coord);
+    void open_file();
 
 	//void add_hardware_object();
 	//void add_sstk_object();
