@@ -15,16 +15,21 @@ class SettingsForm : public QDialog
 public:
     explicit SettingsForm(QDialog *parent = 0);
 
+
 signals:
     
 public slots:
     void selectRSC();
+    void selectIMG();
 
 private:
     QPushButton *pb_rsc;
+    QPushButton *pb_img;
     QPushButton *pb_ok;
     QLineEdit *line_rsc;
+    QLineEdit *line_img;
     QLabel *label_rsc;
+    QLabel *label_img;
 
     
 };

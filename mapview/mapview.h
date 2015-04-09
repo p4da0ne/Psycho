@@ -50,8 +50,6 @@ public:
 private:
 	void	showInformationDialog(QString information);
 
-
-
 public slots://на запросы
 	void	errors_message(QString str);
 	void	showInfoAboutObject(long int id_obj);
