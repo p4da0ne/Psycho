@@ -5621,13 +5621,14 @@ void Add_elements_dialog::clicked_open_file()
 {
     QString fileName = QFileDialog::getOpenFileName(this, "Выбор фотографии", "foto_persones/",
                                                     "Images (*.jpg *.png)");
+ //   if (!fileName.isEmpty()) return;
     QString baseName = QFileInfo(fileName).fileName();
 
     QString path_foto = "foto_persones/" + baseName;
     label_foto->setText("<CENTER><IMG BORDER=\"0\" SRC=\""+path_foto+"\" width = '200' height = '200'> </CENTER>");
     //label_foto->setDisabled(true);
     label_foto_hide->setText(baseName);
-    if (!fileName.isEmpty()) return;
+
 }
 
 
@@ -5768,7 +5769,8 @@ void Add_elements_dialog::add_persones_groups(){
 //============================ редактирование персонала =============================================
 void Add_elements_dialog::edit_persones(){
  
-     label_foto->setEnabled(true);
+    textEdit_propa->setReadOnly(false);
+    label_foto->setEnabled(true);
      label_foto_hide->setVisible(false);
      lineEdit_name->setStyleSheet("color: black");
 	 lineEdit_name->setEnabled(true);
@@ -5783,7 +5785,7 @@ void Add_elements_dialog::edit_persones(){
 	 lineEdit_aut->setEnabled(true);
 	 textEdit_propa->setStyleSheet("color: black");
 	 textEdit_propa->setEnabled(true);
-	 textEdit_propa->setFixedHeight(50);
+     textEdit_propa->setFixedHeight(100);
 	 saveButton->setEnabled(true);
 	 deleteButton->setDisabled(true);
      connect(label_foto,SIGNAL(label_clicked()),this,SLOT(clicked_open_file()));
@@ -5825,6 +5827,7 @@ void Add_elements_dialog::save_edit_persones(){
 	 textEdit_propa->setDisabled(true);
 	 textEdit_propa->setStyleSheet("font:bold; color: black");
      label_foto->setDisabled(true);
+     textEdit_propa->setReadOnly(false);
 
    }
 
