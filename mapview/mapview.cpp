@@ -821,10 +821,7 @@ void MapView::test_view_manage2()
     obj_data2 = model->get_all_objects_info(0,0,7000000,7000000);
     QMap<QString,QString> data_k;
     QMap<QString,QString>::iterator k;
-
     QTableWidget *table = new QTableWidget();
-
-    int count = obj_data2.size();
     table->setColumnCount(3);
     int row = 0;
 
@@ -857,10 +854,7 @@ void MapView::test_view_manage2()
     dlg->exec();
 }
 
-
-
 //меню по клику правой клавишей мыши
-
 void MapView::mouseRightMenu(HOBJ hobj, long int num_obj, long int id_obj, QPoint pe, bool reg)
 {    
     this->hobj = hobj;
@@ -868,11 +862,9 @@ void MapView::mouseRightMenu(HOBJ hobj, long int num_obj, long int id_obj, QPoin
     this->id_obj = id_obj;
     this->pe_menu = pe;
     this->region = reg;
-
     mouse_menu = new QMenu(this);
     QAction *great_scale_act = new QAction("Увеличить масштаб карты  \">\"", this);
     QAction *less_scale_act = new QAction("Уменьшить масштаб карты  \"<\"", this);
-
     mouse_menu->addAction(great_scale_act);
     connect(great_scale_act, SIGNAL(triggered()), this, SLOT(GreateScale()));
     mouse_menu->addAction(less_scale_act);
@@ -891,15 +883,11 @@ void MapView::mouseRightMenu(HOBJ hobj, long int num_obj, long int id_obj, QPoin
         connect(formationDamageAct, SIGNAL(triggered()), this, SLOT(formatonDamage()));
         mouse_menu->addAction(formationDamageAct);
     }
-
     mouse_menu->exec(pe_menu);
 }
 
-
-
 //-- Расчетная задача "МПО региона" ---
-void MapView::regionMPOLevel()
-{
+void MapView::regionMPOLevel(){
     int id_region;
     QString name_region;
     QSqlQuery query;
@@ -911,7 +899,6 @@ void MapView::regionMPOLevel()
     }
 
     float rez = calc1.get_Rez_on_id_region(id_region);
-
     QString str_id_obj;
     if(rez > 0 && rez < 0.3)
         str_id_obj="1";
@@ -921,19 +908,14 @@ void MapView::regionMPOLevel()
         str_id_obj="3";
     if(rez == 0)
         str_id_obj="4";
-
     mapwin->RegionAppendSemantic(hobj, str_id_obj);
-
-
     QMessageBox *wgt = new QMessageBox;
     wgt->setWindowTitle("Уровень МПОб региона");
     QString text = name_region + ": ";
     text.append(QString::number(calc1.get_Rez_on_id_region(id_region)));
     wgt->setText(text);
     wgt->show();
-
 }
-
 
 //-- Расчетная задача "Психогенные потери формирования" ---
 void MapView::formatonDamage()
@@ -955,15 +937,7 @@ void MapView::formatonDamage()
     pl.get_losses(id_obj);
     QMessageBox *wgt = new QMessageBox;
     wgt->setWindowTitle("Психогенные потери");
-
     wgt->setText(QString("Потери л/с  %9 - средние %1 - %2; \n%3 - %4\n%5 - %6\n%7 - %8").arg(pl.min[1][0]).arg(pl.max[1][0]).arg(pl.min[1][1]).arg(pl.max[1][1]).arg(pl.min[1][2]).arg(pl.max[1][2]).arg(pl.min[1][3]).arg(pl.max[1][3]).arg(Name_ls));
-
-    //leb->setText(QString("Потери л/с  %9 - средние %1 - %2; \n%3 - %4\n%5 - %6\n%7 - %8").arg(pl.min[1][0]).arg(pl.max[1][0]).arg(pl.min[1][1]).arg(pl.max[1][1]).arg(pl.min[1][2]).arg(pl.max[1][2]).arg(pl.min[1][3]).arg(pl.max[1][3]).arg(Name_ls));
-    //QHBoxLayout *lo = new QHBoxLayout();
-
-    //lo->addWidget(leb);
-    //wgt->setLayout(lo);
-
     wgt->show();
 }
 
@@ -1013,8 +987,6 @@ void	MapView::showShortInformationObject(long int id_obj)
     QHBoxLayout *hbox4_layout = new QHBoxLayout;   //
     hbox4_layout->addWidget(info_label50);			//
     hbox4_layout->addWidget(info_label51);
-    //-----
-    QHBoxLayout *hbox5_layout = new QHBoxLayout;
     //-----
     QVBoxLayout *vbox_layout = new QVBoxLayout;   //
     vbox_layout->addLayout(hbox1_layout);
@@ -1074,8 +1046,7 @@ void    MapView::appendSit()
 
 }
 
-void    MapView::showShortInformationObject_2arg(QString a,long int id_obj)
-{
+void    MapView::showShortInformationObject_2arg(QString a,long int id_obj){
     short_info_dialog = new QDialog;
     short_info_dialog->setWindowTitle("Информация об объекте");
     QSqlQuery query;
