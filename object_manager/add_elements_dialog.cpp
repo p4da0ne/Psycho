@@ -1642,7 +1642,7 @@ case 23:{ //========== Персонал для групп ====================================
         label_7 = new QLabel("Характеристика:");
         textEdit_propa = new QTextEdit;
         label_7->setBuddy(textEdit_propa);
-        textEdit_propa->setFixedHeight(50);
+        textEdit_propa->setFixedHeight(100);
 
         QLabel *label_f = new QLabel("Фото:");
         lineEdit_name_f = new QLineEdit;
@@ -1800,9 +1800,10 @@ case 24:{ //========== Персонал данные ====================================
      label_7 = new QLabel("Характеристика:");
 	 textEdit_propa = new QTextEdit;
 	 label_7->setBuddy(textEdit_propa);
-	 textEdit_propa->setDisabled(true);
+     textEdit_propa->setReadOnly(true);
+    // textEdit_propa->setDisabled(true);
 	 textEdit_propa->setStyleSheet("font:bold; color: black");
-	 textEdit_propa->setFixedHeight(50);
+     textEdit_propa->setFixedHeight(100);
 
 	QSqlQuery query;
     QString str = QString("SELECT id_persones, name_persones, age_persones, contact_persones, rank_persones, authority_persones, opposition_persones, description_persones, image_persones FROM persones where id_persones = %1").arg(in_id_object);
@@ -1979,7 +1980,7 @@ case 25:{ //=========== Персонал для формирований ==============================
          label_7 = new QLabel("Характеристика:");
 		 textEdit_propa = new QTextEdit;
 		 label_7->setBuddy(textEdit_propa);
-		 textEdit_propa->setFixedHeight(50);
+         textEdit_propa->setFixedHeight(100);
 		 
          QLabel *label_f = new QLabel("Фото:");
          lineEdit_name_f = new QLineEdit;
@@ -2116,7 +2117,7 @@ case 25:{ //=========== Персонал для формирований ==============================
              label_7 = new QLabel("Характеристика:");
              textEdit_propa = new QTextEdit;
              label_7->setBuddy(textEdit_propa);
-             textEdit_propa->setFixedHeight(50);
+             textEdit_propa->setFixedHeight(100);
 
              QLabel *label_f = new QLabel("Фото:");
              lineEdit_name_f = new QLineEdit;
@@ -5624,7 +5625,7 @@ void Add_elements_dialog::clicked_open_file()
 
     QString path_foto = "foto_persones/" + baseName;
     label_foto->setText("<CENTER><IMG BORDER=\"0\" SRC=\""+path_foto+"\" width = '200' height = '200'> </CENTER>");
-
+    //label_foto->setDisabled(true);
     label_foto_hide->setText(baseName);
     if (!fileName.isEmpty()) return;
 }
@@ -5767,8 +5768,9 @@ void Add_elements_dialog::add_persones_groups(){
 //============================ редактирование персонала =============================================
 void Add_elements_dialog::edit_persones(){
  
-    label_foto_hide->setVisible(false);
-    lineEdit_name->setStyleSheet("color: black");
+     label_foto->setEnabled(true);
+     label_foto_hide->setVisible(false);
+     lineEdit_name->setStyleSheet("color: black");
 	 lineEdit_name->setEnabled(true);
 	 lineEdit_counte_ls->setStyleSheet("color: black");
      lineEdit_counte_ls->setEnabled(true);
@@ -5822,7 +5824,7 @@ void Add_elements_dialog::save_edit_persones(){
 	 lineEdit_aut->setStyleSheet("font:bold; color: black");
 	 textEdit_propa->setDisabled(true);
 	 textEdit_propa->setStyleSheet("font:bold; color: black");
-
+     label_foto->setDisabled(true);
 
    }
 
