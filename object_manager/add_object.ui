@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>add_object</class>
- <widget class="QDialog" name="add_object" >
-  <property name="geometry" >
+ <widget class="QDialog" name="add_object">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,63 +10,63 @@
     <height>189</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>add_object</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2" >
-   <item row="0" column="0" >
-    <layout class="QGridLayout" name="gridLayout" >
-     <item row="0" column="1" >
-      <widget class="QLineEdit" name="name_region_lineEdit" />
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="name_region_lineEdit"/>
      </item>
-     <item row="0" column="0" >
-      <widget class="QLabel" name="name_region_label" >
-       <property name="text" >
+     <item row="0" column="0">
+      <widget class="QLabel" name="name_region_label">
+       <property name="text">
         <string>Наименование региона:</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="0" >
-      <widget class="QLabel" name="type_region_label" >
-       <property name="layoutDirection" >
+     <item row="1" column="0">
+      <widget class="QLabel" name="type_region_label">
+       <property name="layoutDirection">
         <enum>Qt::LeftToRight</enum>
        </property>
-       <property name="text" >
+       <property name="text">
         <string>Тип региона:</string>
        </property>
-       <property name="alignment" >
+       <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
-     <item row="1" column="1" >
-      <widget class="QLineEdit" name="type_region_lineEdit" />
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="type_region_lineEdit"/>
      </item>
-     <item row="2" column="0" >
-      <widget class="QLabel" name="desc_region_label" >
-       <property name="text" >
+     <item row="2" column="0">
+      <widget class="QLabel" name="desc_region_label">
+       <property name="text">
         <string>Описание региона:</string>
        </property>
-       <property name="alignment" >
+       <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
-     <item row="2" column="1" >
-      <widget class="QTextEdit" name="desc_region_textEdit" />
+     <item row="2" column="1">
+      <widget class="QTextEdit" name="desc_region_textEdit"/>
      </item>
     </layout>
    </item>
-   <item row="1" column="0" >
-    <layout class="QGridLayout" name="gridLayout_9" >
-     <item row="0" column="0" >
-      <layout class="QGridLayout" name="gridLayout_8" >
-       <item row="0" column="0" >
-        <spacer name="horizontalSpacer_2" >
-         <property name="orientation" >
+   <item row="1" column="0">
+    <layout class="QGridLayout" name="gridLayout_9">
+     <item row="0" column="0">
+      <layout class="QGridLayout" name="gridLayout_8">
+       <item row="0" column="0">
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
-         <property name="sizeHint" stdset="0" >
+         <property name="sizeHint" stdset="0">
           <size>
            <width>40</width>
            <height>20</height>
@@ -73,40 +74,40 @@
          </property>
         </spacer>
        </item>
-       <item row="0" column="1" >
-        <widget class="QPushButton" name="add_object_pushButton" >
-         <property name="minimumSize" >
+       <item row="0" column="1">
+        <widget class="QPushButton" name="add_object_pushButton">
+         <property name="minimumSize">
           <size>
            <width>81</width>
            <height>25</height>
           </size>
          </property>
-         <property name="maximumSize" >
+         <property name="maximumSize">
           <size>
            <width>81</width>
            <height>25</height>
           </size>
          </property>
-         <property name="text" >
+         <property name="text">
           <string>Добавить</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="2" >
-        <widget class="QPushButton" name="cancel_pushButton" >
-         <property name="minimumSize" >
+       <item row="0" column="2">
+        <widget class="QPushButton" name="cancel_pushButton">
+         <property name="minimumSize">
           <size>
            <width>81</width>
            <height>25</height>
           </size>
          </property>
-         <property name="maximumSize" >
+         <property name="maximumSize">
           <size>
            <width>81</width>
            <height>25</height>
           </size>
          </property>
-         <property name="text" >
+         <property name="text">
           <string>Отмена</string>
          </property>
         </widget>
@@ -117,7 +118,7 @@
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="6" margin="11" />
+ <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections/>
 </ui>

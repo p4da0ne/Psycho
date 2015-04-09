@@ -1620,43 +1620,58 @@ case 22:{// ============ Штатка для организаций ================================
 		} 
 case 23:{ //========== Персонал для групп ====================================
 		 
-         label = new QLabel("Имя:");
-		 lineEdit_name = new QLineEdit;
-		 label->setBuddy(lineEdit_name);
+
+        label = new QLabel("Имя:");
+        lineEdit_name = new QLineEdit;
+        label->setBuddy(lineEdit_name);
 		 
-         label_2 = new QLabel("Возраст:");
-		 lineEdit_counte_ls = new QLineEdit;
-		 label_2->setBuddy(lineEdit_counte_ls);
-         label_3 = new QLabel("Контакты:");
-		 lineEdit_counte_ls_bd = new QLineEdit;
-		 label_3->setBuddy(lineEdit_counte_ls_bd);
-         label_4 = new QLabel("Оппозиция:");
-         checkbox_enemy = new QCheckBox(" [-V- оппозиция]", this);
-		 label_4->setBuddy(checkbox_enemy);
-         label_5 = new QLabel("Должноть:");
-		 lineEdit_rank = new QLineEdit;
-		 label_5->setBuddy(lineEdit_rank);
-         label_6 = new QLabel("Авторитет:");
-		 lineEdit_aut = new QLineEdit;
-		 label_6->setBuddy(lineEdit_aut);
-         label_7 = new QLabel("Характеристика:");
-		 textEdit_propa = new QTextEdit;
-		 label_7->setBuddy(textEdit_propa);
-		 textEdit_propa->setFixedHeight(50);
+        label_2 = new QLabel("Возраст:");
+        lineEdit_counte_ls = new QLineEdit;
+        label_2->setBuddy(lineEdit_counte_ls);
+        label_3 = new QLabel("Контакты:");
+        lineEdit_counte_ls_bd = new QLineEdit;
+        label_3->setBuddy(lineEdit_counte_ls_bd);
+        label_4 = new QLabel("Оппозиция:");
+        checkbox_enemy = new QCheckBox(" [-V- оппозиция]", this);
+        label_4->setBuddy(checkbox_enemy);
+        label_5 = new QLabel("Должноть:");
+        lineEdit_rank = new QLineEdit;
+        label_5->setBuddy(lineEdit_rank);
+        label_6 = new QLabel("Авторитет:");
+        lineEdit_aut = new QLineEdit;
+        label_6->setBuddy(lineEdit_aut);
+        label_7 = new QLabel("Характеристика:");
+        textEdit_propa = new QTextEdit;
+        label_7->setBuddy(textEdit_propa);
+        textEdit_propa->setFixedHeight(50);
+
+        QLabel *label_f = new QLabel("Фото:");
+        lineEdit_name_f = new QLineEdit;
+        label->setBuddy(lineEdit_name_f);
 		 
 	     
 		 addButton = new QPushButton("Добавить");
 		 addButton->setDefault(true);
-		 connect(addButton,SIGNAL(clicked()),this,SLOT(add_persones_groups()));
+         connect(addButton,SIGNAL(clicked()),this,SLOT(add_persones_groups()));
 		 cancelButton = new QPushButton("Отмена");
 		 connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
+         QPushButton *openButton = new QPushButton("открыть");
+         openButton->setText("...");
+         openButton->setFixedSize(30,20);
+         connect(openButton,SIGNAL(clicked()),this,SLOT(open_file()));
 
 		 QHBoxLayout *buttonsLayout = new QHBoxLayout;
 		 buttonsLayout->addStretch();
 		 buttonsLayout->addWidget(addButton);
 		 buttonsLayout->addWidget(cancelButton);
 		 
-		 QHBoxLayout *topLeftLayout = new QHBoxLayout;
+
+         QHBoxLayout *topLeftLayout_15 = new QHBoxLayout;
+         topLeftLayout_15->addWidget(label_f);
+         QHBoxLayout *topLeftLayout_16 = new QHBoxLayout;
+         topLeftLayout_16->addWidget(lineEdit_name_f);
+         topLeftLayout_16->addWidget(openButton);
+         QHBoxLayout *topLeftLayout = new QHBoxLayout;
 		 topLeftLayout->addWidget(label);
 		 QHBoxLayout *topLeftLayout_2 = new QHBoxLayout;
 		 topLeftLayout_2->addWidget(lineEdit_name);
@@ -1686,7 +1701,12 @@ case 23:{ //========== Персонал для групп ====================================
 		 topLeftLayout_14->addWidget(textEdit_propa);
 
 
-		 QVBoxLayout *leftLayout = new QVBoxLayout;
+         QVBoxLayout *leftLayout_15 = new QVBoxLayout;
+         leftLayout_15->addLayout(topLeftLayout_15);
+         QVBoxLayout *leftLayout_16 = new QVBoxLayout;
+         leftLayout_16->addLayout(topLeftLayout_16);
+
+         QVBoxLayout *leftLayout = new QVBoxLayout;
 		 leftLayout->addLayout(topLeftLayout);
 		 QVBoxLayout *leftLayout_2 = new QVBoxLayout;
 		 leftLayout_2->addLayout(topLeftLayout_2);
@@ -1718,27 +1738,33 @@ case 23:{ //========== Персонал для групп ====================================
 
 		 QGridLayout *mainLayout = new QGridLayout;
 		 mainLayout->setSizeConstraint(QLayout::SetFixedSize);
-		 mainLayout->addLayout(leftLayout, 0, 0);
-		 mainLayout->addLayout(leftLayout_2, 0, 1);
-		 mainLayout->addLayout(leftLayout_3, 1, 0);
-		 mainLayout->addLayout(leftLayout_4, 1, 1);
-		 mainLayout->addLayout(leftLayout_5, 2, 0);
-		 mainLayout->addLayout(leftLayout_6, 2, 1);
-		 mainLayout->addLayout(leftLayout_7, 3, 0);
-		 mainLayout->addLayout(leftLayout_8, 3, 1);
-		 mainLayout->addLayout(leftLayout_9, 4, 0);
-		 mainLayout->addLayout(leftLayout_10, 4, 1);
-		 mainLayout->addLayout(leftLayout_11, 5, 0);
-		 mainLayout->addLayout(leftLayout_12, 5, 1);
-		 mainLayout->addLayout(leftLayout_13, 6, 0);
-		 mainLayout->addLayout(leftLayout_14, 6, 1);
-		 
-		 mainLayout->addLayout(buttonsLayout, 7, 0, 1, 2);
+
+         mainLayout->addLayout(leftLayout_15, 0, 0);
+         mainLayout->addLayout(leftLayout_16, 0, 1);
+         mainLayout->addLayout(leftLayout, 1, 0);
+         mainLayout->addLayout(leftLayout_2, 1, 1);
+         mainLayout->addLayout(leftLayout_3, 2, 0);
+         mainLayout->addLayout(leftLayout_4, 2, 1);
+         mainLayout->addLayout(leftLayout_5, 3, 0);
+         mainLayout->addLayout(leftLayout_6, 3, 1);
+         mainLayout->addLayout(leftLayout_7, 4, 0);
+         mainLayout->addLayout(leftLayout_8, 4, 1);
+         mainLayout->addLayout(leftLayout_9, 5, 0);
+         mainLayout->addLayout(leftLayout_10, 5, 1);
+         mainLayout->addLayout(leftLayout_11, 6, 0);
+         mainLayout->addLayout(leftLayout_12, 6, 1);
+         mainLayout->addLayout(leftLayout_13, 7, 0);
+         mainLayout->addLayout(leftLayout_14, 7, 1);
+         mainLayout->addLayout(buttonsLayout, 8, 0, 1, 2);
 		 setLayout(mainLayout);
 		 setWindowTitle("Добавить данные по персоналу");
 		 break;
 		}
 case 24:{ //========== Персонал данные ====================================
+
+     label_foto_name = new QLabel("Фото:");
+     label_foto = new QLabel;
+     label_foto_name->setBuddy(label_foto);
 
      label = new QLabel("Имя:");
 	 lineEdit_name = new QLineEdit;
@@ -1780,13 +1806,13 @@ case 24:{ //========== Персонал данные ====================================
 	
 
 	QSqlQuery query;
-	QString str = QString("SELECT id_persones, name_persones, age_persones, contact_persones, rank_persones, authority_persones, opposition_persones, description_persones FROM persones where id_persones = %1").arg(in_id_object);
+    QString str = QString("SELECT id_persones, name_persones, age_persones, contact_persones, rank_persones, authority_persones, opposition_persones, description_persones, image_persones FROM persones where id_persones = %1").arg(in_id_object);
 	if(!query.exec(str)){
 	 return;
 	}
     
 	QSqlRecord rec = query.record();
-	QString name_pers,contact,rank_pers,desc_pers;
+    QString name_pers,contact,rank_pers,desc_pers,foto_name,path_foto;
 	float autor;
 	int age_pers;
 	bool oppos;
@@ -1799,14 +1825,19 @@ case 24:{ //========== Персонал данные ====================================
 		rank_pers=query.value(rec.indexOf("rank_persones")).toString();
 		desc_pers=query.value(rec.indexOf("description_persones")).toString();
 		oppos=query.value(rec.indexOf("opposition_persones")).toBool();
+        foto_name = query.value(rec.indexOf("image_persones")).toString();
+
 	
 		lineEdit_name->setText(name_pers);
 		lineEdit_counte_ls->setText(QString::number(age_pers));
-		lineEdit_counte_ls_bd->setText(contact);
+        lineEdit_counte_ls_bd->setText(contact);
 		checkbox_enemy->setChecked(oppos);
 		lineEdit_rank->setText(rank_pers);
 		lineEdit_aut->setText(QString::number(autor));
 		textEdit_propa->setText(desc_pers);
+
+        path_foto = "foto_persones/" + foto_name;
+        label_foto->setText("<CENTER><IMG BORDER=\"0\" SRC=\""+path_foto+"\" width = '200' height = '200'> </CENTER>");
 	}
 		 
 	 addButton = new QPushButton("Редактировать");
@@ -1827,7 +1858,12 @@ case 24:{ //========== Персонал данные ====================================
 	 buttonsLayout->addWidget(addButton);
 	 buttonsLayout->addWidget(cancelButton);
 
-	 QHBoxLayout *topLeftLayout = new QHBoxLayout;
+
+         QHBoxLayout *topLeftLayout_15 = new QHBoxLayout;
+         topLeftLayout_15->addWidget(label_foto_name);
+         QHBoxLayout *topLeftLayout_16 = new QHBoxLayout;
+         topLeftLayout_16->addWidget(label_foto);
+         QHBoxLayout *topLeftLayout = new QHBoxLayout;
 		 topLeftLayout->addWidget(label);
 		 QHBoxLayout *topLeftLayout_2 = new QHBoxLayout;
 		 topLeftLayout_2->addWidget(lineEdit_name);
@@ -1857,7 +1893,11 @@ case 24:{ //========== Персонал данные ====================================
 		 topLeftLayout_14->addWidget(textEdit_propa);
 
 
-		 QVBoxLayout *leftLayout = new QVBoxLayout;
+         QVBoxLayout *leftLayout_15 = new QVBoxLayout;
+         leftLayout_15->addLayout(topLeftLayout_15);
+         QVBoxLayout *leftLayout_16 = new QVBoxLayout;
+         leftLayout_16->addLayout(topLeftLayout_16);
+         QVBoxLayout *leftLayout = new QVBoxLayout;
 		 leftLayout->addLayout(topLeftLayout);
 		 QVBoxLayout *leftLayout_2 = new QVBoxLayout;
 		 leftLayout_2->addLayout(topLeftLayout_2);
@@ -1889,28 +1929,31 @@ case 24:{ //========== Персонал данные ====================================
 
 		 QGridLayout *mainLayout = new QGridLayout;
 		 mainLayout->setSizeConstraint(QLayout::SetFixedSize);
-		 mainLayout->addLayout(leftLayout, 0, 0);
-		 mainLayout->addLayout(leftLayout_2, 0, 1);
-		 mainLayout->addLayout(leftLayout_3, 1, 0);
-		 mainLayout->addLayout(leftLayout_4, 1, 1);
-		 mainLayout->addLayout(leftLayout_5, 2, 0);
-		 mainLayout->addLayout(leftLayout_6, 2, 1);
-		 mainLayout->addLayout(leftLayout_7, 3, 0);
-		 mainLayout->addLayout(leftLayout_8, 3, 1);
-		 mainLayout->addLayout(leftLayout_9, 4, 0);
-		 mainLayout->addLayout(leftLayout_10, 4, 1);
-		 mainLayout->addLayout(leftLayout_11, 5, 0);
-		 mainLayout->addLayout(leftLayout_12, 5, 1);
-		 mainLayout->addLayout(leftLayout_13, 6, 0);
-		 mainLayout->addLayout(leftLayout_14, 6, 1);
+         mainLayout->addLayout(leftLayout_15, 0, 0);
+         mainLayout->addLayout(leftLayout_16, 0, 1);
+         mainLayout->addLayout(leftLayout, 1, 0);
+         mainLayout->addLayout(leftLayout_2, 1, 1);
+         mainLayout->addLayout(leftLayout_3, 2, 0);
+         mainLayout->addLayout(leftLayout_4, 2, 1);
+         mainLayout->addLayout(leftLayout_5, 3, 0);
+         mainLayout->addLayout(leftLayout_6, 3, 1);
+         mainLayout->addLayout(leftLayout_7, 4, 0);
+         mainLayout->addLayout(leftLayout_8, 4, 1);
+         mainLayout->addLayout(leftLayout_9, 5, 0);
+         mainLayout->addLayout(leftLayout_10, 5, 1);
+         mainLayout->addLayout(leftLayout_11, 6, 0);
+         mainLayout->addLayout(leftLayout_12, 6, 1);
+         mainLayout->addLayout(leftLayout_13, 7, 0);
+         mainLayout->addLayout(leftLayout_14, 7, 1);
+
 		 
-		 mainLayout->addLayout(buttonsLayout, 7, 0, 1, 2);
+         mainLayout->addLayout(buttonsLayout, 8, 0, 1, 2);
 		 setLayout(mainLayout);
 		 setWindowTitle("Данные по персоналу");
 	
 	 break;
 	 }
-case 25:{ //========== Персонал для формирований ====================================
+case 25:{ //=========== Персонал для формирований ====================================
 		 
          label = new QLabel("Имя:");
 		 lineEdit_name = new QLineEdit;
@@ -1936,18 +1979,30 @@ case 25:{ //========== Персонал для формирований ===============================
 		 label_7->setBuddy(textEdit_propa);
 		 textEdit_propa->setFixedHeight(50);
 		 
+         QLabel *label_f = new QLabel("Фото:");
+         lineEdit_name_f = new QLineEdit;
+         label->setBuddy(lineEdit_name_f);
 	     
 		 addButton = new QPushButton("Добавить");
 		 addButton->setDefault(true);
 		 connect(addButton,SIGNAL(clicked()),this,SLOT(add_persones_ls()));
 		 cancelButton = new QPushButton("Отмена");
 		 connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
+         QPushButton *openButton = new QPushButton("открыть");
+         openButton->setText("...");
+         openButton->setFixedSize(30,20);
+         connect(openButton,SIGNAL(clicked()),this,SLOT(open_file()));
 
 		 QHBoxLayout *buttonsLayout = new QHBoxLayout;
 		 buttonsLayout->addStretch();
 		 buttonsLayout->addWidget(addButton);
 		 buttonsLayout->addWidget(cancelButton);
 		 
+         QHBoxLayout *topLeftLayout_15 = new QHBoxLayout;
+         topLeftLayout_15->addWidget(label_f);
+         QHBoxLayout *topLeftLayout_16 = new QHBoxLayout;
+         topLeftLayout_16->addWidget(lineEdit_name_f);
+         topLeftLayout_16->addWidget(openButton);
 		 QHBoxLayout *topLeftLayout = new QHBoxLayout;
 		 topLeftLayout->addWidget(label);
 		 QHBoxLayout *topLeftLayout_2 = new QHBoxLayout;
@@ -1977,7 +2032,11 @@ case 25:{ //========== Персонал для формирований ===============================
 		 QHBoxLayout *topLeftLayout_14 = new QHBoxLayout;
 		 topLeftLayout_14->addWidget(textEdit_propa);
 
+         QVBoxLayout *leftLayout_15 = new QVBoxLayout;
+         leftLayout_15->addLayout(topLeftLayout_15);
 
+         QVBoxLayout *leftLayout_16 = new QVBoxLayout;
+         leftLayout_16->addLayout(topLeftLayout_16);
 		 QVBoxLayout *leftLayout = new QVBoxLayout;
 		 leftLayout->addLayout(topLeftLayout);
 		 QVBoxLayout *leftLayout_2 = new QVBoxLayout;
@@ -2010,22 +2069,23 @@ case 25:{ //========== Персонал для формирований ===============================
 
 		 QGridLayout *mainLayout = new QGridLayout;
 		 mainLayout->setSizeConstraint(QLayout::SetFixedSize);
-		 mainLayout->addLayout(leftLayout, 0, 0);
-		 mainLayout->addLayout(leftLayout_2, 0, 1);
-		 mainLayout->addLayout(leftLayout_3, 1, 0);
-		 mainLayout->addLayout(leftLayout_4, 1, 1);
-		 mainLayout->addLayout(leftLayout_5, 2, 0);
-		 mainLayout->addLayout(leftLayout_6, 2, 1);
-		 mainLayout->addLayout(leftLayout_7, 3, 0);
-		 mainLayout->addLayout(leftLayout_8, 3, 1);
-		 mainLayout->addLayout(leftLayout_9, 4, 0);
-		 mainLayout->addLayout(leftLayout_10, 4, 1);
-		 mainLayout->addLayout(leftLayout_11, 5, 0);
-		 mainLayout->addLayout(leftLayout_12, 5, 1);
-		 mainLayout->addLayout(leftLayout_13, 6, 0);
-		 mainLayout->addLayout(leftLayout_14, 6, 1);
-		 
-		 mainLayout->addLayout(buttonsLayout, 7, 0, 1, 2);
+         mainLayout->addLayout(leftLayout_15, 0, 0);
+         mainLayout->addLayout(leftLayout_16, 0, 1);
+         mainLayout->addLayout(leftLayout, 1, 0);
+         mainLayout->addLayout(leftLayout_2, 1, 1);
+         mainLayout->addLayout(leftLayout_3, 2, 0);
+         mainLayout->addLayout(leftLayout_4, 2, 1);
+         mainLayout->addLayout(leftLayout_5, 3, 0);
+         mainLayout->addLayout(leftLayout_6, 3, 1);
+         mainLayout->addLayout(leftLayout_7, 4, 0);
+         mainLayout->addLayout(leftLayout_8, 4, 1);
+         mainLayout->addLayout(leftLayout_9, 5, 0);
+         mainLayout->addLayout(leftLayout_10, 5, 1);
+         mainLayout->addLayout(leftLayout_11, 6, 0);
+         mainLayout->addLayout(leftLayout_12, 6, 1);
+         mainLayout->addLayout(leftLayout_13, 7, 0);
+         mainLayout->addLayout(leftLayout_14, 7, 1);
+         mainLayout->addLayout(buttonsLayout, 8, 0, 1, 2);
 		 setLayout(mainLayout);
 		 setWindowTitle("Добавить данные по персоналу");
 		 break;
@@ -2056,18 +2116,30 @@ case 25:{ //========== Персонал для формирований ===============================
              label_7->setBuddy(textEdit_propa);
              textEdit_propa->setFixedHeight(50);
 
+             QLabel *label_f = new QLabel("Фото:");
+             lineEdit_name_f = new QLineEdit;
+             label->setBuddy(lineEdit_name_f);
 
              addButton = new QPushButton("Добавить");
              addButton->setDefault(true);
              connect(addButton,SIGNAL(clicked()),this,SLOT(add_persones_smi()));
              cancelButton = new QPushButton("Отмена");
              connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
+             QPushButton *openButton = new QPushButton("открыть");
+             openButton->setText("...");
+             openButton->setFixedSize(30,20);
+             connect(openButton,SIGNAL(clicked()),this,SLOT(open_file()));
 
              QHBoxLayout *buttonsLayout = new QHBoxLayout;
              buttonsLayout->addStretch();
              buttonsLayout->addWidget(addButton);
              buttonsLayout->addWidget(cancelButton);
 
+             QHBoxLayout *topLeftLayout_15 = new QHBoxLayout;
+             topLeftLayout_15->addWidget(label_f);
+             QHBoxLayout *topLeftLayout_16 = new QHBoxLayout;
+             topLeftLayout_16->addWidget(lineEdit_name_f);
+             topLeftLayout_16->addWidget(openButton);
              QHBoxLayout *topLeftLayout = new QHBoxLayout;
              topLeftLayout->addWidget(label);
              QHBoxLayout *topLeftLayout_2 = new QHBoxLayout;
@@ -2097,7 +2169,10 @@ case 25:{ //========== Персонал для формирований ===============================
              QHBoxLayout *topLeftLayout_14 = new QHBoxLayout;
              topLeftLayout_14->addWidget(textEdit_propa);
 
-
+             QVBoxLayout *leftLayout_15 = new QVBoxLayout;
+             leftLayout_15->addLayout(topLeftLayout_15);
+             QVBoxLayout *leftLayout_16 = new QVBoxLayout;
+             leftLayout_16->addLayout(topLeftLayout_16);
              QVBoxLayout *leftLayout = new QVBoxLayout;
              leftLayout->addLayout(topLeftLayout);
              QVBoxLayout *leftLayout_2 = new QVBoxLayout;
@@ -2130,22 +2205,23 @@ case 25:{ //========== Персонал для формирований ===============================
 
              QGridLayout *mainLayout = new QGridLayout;
              mainLayout->setSizeConstraint(QLayout::SetFixedSize);
-             mainLayout->addLayout(leftLayout, 0, 0);
-             mainLayout->addLayout(leftLayout_2, 0, 1);
-             mainLayout->addLayout(leftLayout_3, 1, 0);
-             mainLayout->addLayout(leftLayout_4, 1, 1);
-             mainLayout->addLayout(leftLayout_5, 2, 0);
-             mainLayout->addLayout(leftLayout_6, 2, 1);
-             mainLayout->addLayout(leftLayout_7, 3, 0);
-             mainLayout->addLayout(leftLayout_8, 3, 1);
-             mainLayout->addLayout(leftLayout_9, 4, 0);
-             mainLayout->addLayout(leftLayout_10, 4, 1);
-             mainLayout->addLayout(leftLayout_11, 5, 0);
-             mainLayout->addLayout(leftLayout_12, 5, 1);
-             mainLayout->addLayout(leftLayout_13, 6, 0);
-             mainLayout->addLayout(leftLayout_14, 6, 1);
-
-             mainLayout->addLayout(buttonsLayout, 7, 0, 1, 2);
+             mainLayout->addLayout(leftLayout_15, 0, 0);
+             mainLayout->addLayout(leftLayout_16, 0, 1);
+             mainLayout->addLayout(leftLayout, 1, 0);
+             mainLayout->addLayout(leftLayout_2, 1, 1);
+             mainLayout->addLayout(leftLayout_3, 2, 0);
+             mainLayout->addLayout(leftLayout_4, 2, 1);
+             mainLayout->addLayout(leftLayout_5, 3, 0);
+             mainLayout->addLayout(leftLayout_6, 3, 1);
+             mainLayout->addLayout(leftLayout_7, 4, 0);
+             mainLayout->addLayout(leftLayout_8, 4, 1);
+             mainLayout->addLayout(leftLayout_9, 5, 0);
+             mainLayout->addLayout(leftLayout_10, 5, 1);
+             mainLayout->addLayout(leftLayout_11, 6, 0);
+             mainLayout->addLayout(leftLayout_12, 6, 1);
+             mainLayout->addLayout(leftLayout_13, 7, 0);
+             mainLayout->addLayout(leftLayout_14, 7, 1);
+             mainLayout->addLayout(buttonsLayout, 8, 0, 1, 2);
              setLayout(mainLayout);
              setWindowTitle("Добавить данные по персоналу");
              break;
@@ -5527,8 +5603,20 @@ void Add_elements_dialog::table_coord(int id_coord) {
 		coord_view->setItem(row,3,item);
 	}	
    row++;
- //  coord_view->resizeColumnsToContents();
+   //  coord_view->resizeColumnsToContents();
 }
+
+void Add_elements_dialog::open_file()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, "Выбор фотографии", "foto_persones/",
+                                                    "Images (*.jpg *.png)");
+    QString baseName = QFileInfo(fileName).fileName();
+    lineEdit_name_f->setText(baseName);
+    if (!fileName.isEmpty()) return;
+}
+
+
+
 void Add_elements_dialog::add_coord_special_cond_dlg()
 {
 	add_dlg = new QDialog;
@@ -5633,6 +5721,7 @@ void Add_elements_dialog::add_persones_groups(){
 	int counte_age = lineEdit_counte_ls->text().toInt();
 	QString contact = lineEdit_counte_ls_bd->text();
 	QString rank_pers = lineEdit_rank->text();
+    QString file_name = lineEdit_name_f->text();
 	float aut = lineEdit_aut->text().toFloat();
 	bool opossition = checkbox_enemy->isChecked();
 	
@@ -5650,6 +5739,7 @@ void Add_elements_dialog::add_persones_groups(){
 		map.insert("id_groups",QString::number(id_gr));
 		map.insert("opposition_persones",QString::number(opossition));
 		map.insert("description_persones",desc_pers);
+        map.insert("image_persones",file_name);
 		
 		
 		int id_pers=insert_in_table("persones",map,"id_persones");
@@ -5664,7 +5754,9 @@ void Add_elements_dialog::add_persones_groups(){
 //============================ редактирование персонала =============================================
 void Add_elements_dialog::edit_persones(){
  
-	 lineEdit_name->setStyleSheet("color: black");
+     label_foto->setVisible(false);
+     label_foto_name->setVisible(false);
+     lineEdit_name->setStyleSheet("color: black");
 	 lineEdit_name->setEnabled(true);
 	 lineEdit_counte_ls->setStyleSheet("color: black");
 	 lineEdit_counte_ls->setEnabled(true);
@@ -5716,6 +5808,8 @@ void Add_elements_dialog::save_edit_persones(){
 	 lineEdit_aut->setStyleSheet("font:bold; color: black");
 	 textEdit_propa->setDisabled(true);
 	 textEdit_propa->setStyleSheet("font:bold; color: black");
+     label_foto->setVisible(true);
+     label_foto_name->setVisible(true);
 }
 
 //============================ персонал в формирований ===============================================
@@ -5726,6 +5820,7 @@ void Add_elements_dialog::add_persones_ls(){
 	int counte_age = lineEdit_counte_ls->text().toInt();
 	QString contact = lineEdit_counte_ls_bd->text();
 	QString rank_pers = lineEdit_rank->text();
+    QString file_name = lineEdit_name_f->text();
 	float aut = lineEdit_aut->text().toFloat();
 	bool opossition = checkbox_enemy->isChecked();
 	
@@ -5743,6 +5838,7 @@ void Add_elements_dialog::add_persones_ls(){
 		map.insert("id_ls",QString::number(id_ls));
 		map.insert("opposition_persones",QString::number(opossition));
 		map.insert("description_persones",desc_pers);
+        map.insert("image_persones",file_name);
 		
 		
 		int id_pers=insert_in_table("persones",map,"id_persones");
@@ -5760,6 +5856,7 @@ void Add_elements_dialog::add_persones_smi(){
             int counte_age = lineEdit_counte_ls->text().toInt();
             QString contact = lineEdit_counte_ls_bd->text();
             QString rank_pers = lineEdit_rank->text();
+            QString file_name = lineEdit_name_f->text();
             float aut = lineEdit_aut->text().toFloat();
             bool opossition = checkbox_enemy->isChecked();
 
@@ -5777,7 +5874,7 @@ void Add_elements_dialog::add_persones_smi(){
                 map.insert("id_smi",QString::number(id_smi));
                 map.insert("opposition_persones",QString::number(opossition));
                 map.insert("description_persones",desc_pers);
-
+                map.insert("image_persones",file_name);
 
                 int id_pers=insert_in_table("persones",map,"id_persones");
                 if(id_pers>0){
