@@ -3,7 +3,7 @@
 
 #include <QDialog>
 #include <QtSql>
- class MyLabel;
+class MyLabel;
  class QCheckBox;
  class QDialogButtonBox;
  class QGroupBox;

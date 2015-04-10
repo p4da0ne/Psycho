@@ -5828,7 +5828,7 @@ void Add_elements_dialog::save_edit_persones(){
 	 textEdit_propa->setStyleSheet("font:bold; color: black");
      label_foto->setDisabled(true);
      textEdit_propa->setReadOnly(false);
-
+	 close();
    }
 
 //============================ персонал в формирований ===============================================
