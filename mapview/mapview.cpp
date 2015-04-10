@@ -335,9 +335,8 @@ HSITE MapView::openMapSit1()
 }
 //отклик на пункт меню нанести объекты (ФОРМИРОВАНИЯ, ФЛАЖКИ)
 //===============================================================================
-HSITE MapView::openMapSit()
-{	
-    QString fileRSC;
+HSITE MapView::openMapSit(){	
+    QString fileRSC,fileMAP;
     QSettings settings("Saturn");
     long int a = mapwin->IsActive(mapwin->hMap);
     if (a)
@@ -359,20 +358,20 @@ HSITE MapView::openMapSit()
             {
                 int ret = QMessageBox::critical(this, "Сатурн", "Не выбран классификатор! \n");
             }else{
-                settings.setValue("saturn/map/last_rsc",fileRSC);
+                settings.setValue("last_rsc",fileRSC);
             }
         }
-        fileRSC=settings.value("saturn/map/last_rsc").toString();
+        fileRSC=settings.value("last_rsc").toString();
         if(!QFile::exists(fileRSC)){
             QString fileRSC = QFileDialog::getOpenFileName(this, QString::null, QString::null, "Классификатор (*.rsc)" );
             if (fileRSC.isEmpty())
             {
                 int ret = QMessageBox::critical(this, "Сатурн", "Не выбран классификатор! \n");
             }else{
-                settings.setValue("saturn/map/last_rsc",fileRSC);
+                settings.setValue("last_rsc",fileRSC);
             }
         }
-        curFile=curFile + "/sit_formirovania.sit";
+        curFile=curFile + "/sit_lear.sit";
         QString str_mapname = "OBJECTS";
 
         HSITE this_hsite;
@@ -1493,197 +1492,160 @@ void	MapView::calc_mps()
 {
     calculating_mps calc;
     QSqlQuery query;
-    QString str=QString("SELECT name_ls, coordinates.x_coordinates, coordinates.y_coordinates, type_ls.excode_type_ls, \
-                        ls.short_name_ls, id_ls \
-                        FROM ls, coordinates, type_ls WHERE ls.id_coordinates=coordinates.id_coordinates AND \
-            ls.id_type_ls=type_ls.id_type_ls	AND type_ls.excode_type_ls <> '' AND \
-            coordinates.x_coordinates<>0 AND coordinates.y_coordinates<>0 AND \
-            ls.short_name_ls <> '' and enimy_ls=FALSE");
+    QString str=QString("SELECT name_ls, coordinates.x_coordinates, coordinates.y_coordinates, type_ls.excode_type_ls,ls.short_name_ls, id_ls FROM ls, coordinates, type_ls WHERE ls.id_coordinates=coordinates.id_coordinates AND ls.id_type_ls=type_ls.id_type_ls	AND type_ls.excode_type_ls <> '' AND coordinates.x_coordinates<>0 AND coordinates.y_coordinates<>0 AND ls.short_name_ls <> '' and enimy_ls=FALSE");
 
-            long int a = mapwin->IsActive(mapwin->hMap);
-            if (a)
-    {
-            if(query.exec(str))
-    {
+    long int a = mapwin->IsActive(mapwin->hMap);
+    if (a){
+        if(query.exec(str))
+        {
             while (query.next())
-    {
-            int id_ls = query.value(5).toInt();
-    long int X_coord=query.value(1).toInt();
-    long int Y_coord=query.value(2).toInt();
-    QString excode_type_ls = query.value(3).toString();
+            {
+                int id_ls = query.value(5).toInt();
+                long int X_coord=query.value(1).toInt();
+                long int Y_coord=query.value(2).toInt();
+                QString excode_type_ls = query.value(3).toString();
 
-    float MPS=calc.calculating(id_ls);
-    float MPS_kont=calc.get_mps_kont();
-    float MPS_ofec=calc.get_mps_ofec();
-    float MPS_priz=calc.get_mps_priz();
+                float MPS=calc.calculating(id_ls);
+                float MPS_kont=calc.get_mps_kont();
+                float MPS_ofec=calc.get_mps_ofec();
+                float MPS_priz=calc.get_mps_priz();
 
-    if (MPS!=-1)
-    {
-        QMap<int,QString> semantic_map;
-        // показатель подразделения
-        semantic_map[60004]=QString::number(MPS);
-        // принадлежность
-        semantic_map[60028]="6";
-        semantic_map[60001]=QString::number(MPS_ofec);
-        semantic_map[60002]=QString::number(MPS_kont);
-        semantic_map[60003]=QString::number(MPS_priz);
+                if (MPS!=-1)
+                {
+                    QMap<int,QString> semantic_map;
+                    // показатель подразделения
+                    semantic_map[60004]=QString::number(MPS);
+                    // принадлежность
+                    semantic_map[60028]="6";
+                    semantic_map[60001]=QString::number(MPS_ofec);
+                    semantic_map[60002]=QString::number(MPS_kont);
+                    semantic_map[60003]=QString::number(MPS_priz);
 
+                    // вид стрелки
+                    if (MPS < 0.3)					semantic_map[60012]="4";
+                    if ((MPS >= 0.3)&&(MPS <= 0.7))	semantic_map[60012]="5";
+                    if ((MPS > 0.7)&&(MPS <= 1.0))	semantic_map[60012]="3";
 
-        // вид стрелки
-        if (MPS < 0.3)					semantic_map[60012]="4";
-        if ((MPS >= 0.3)&&(MPS <= 0.7))	semantic_map[60012]="5";
-        if ((MPS > 0.7)&&(MPS <= 1.0))	semantic_map[60012]="3";
+                    QString kodeX = "V00000000312";
 
-        QString kodeX = "V00000000312";
-
-        // если значкт формирований - авиа или военно-морские базы, то стрелка знака МПС рисуется левее и ниже
-        if ((excode_type_ls=="1311701001")||(excode_type_ls=="0006701004")||(excode_type_ls=="0006701003")||(excode_type_ls=="V0000001118")) mapwin->createObject(hSite,X_coord-3000,Y_coord-6000,kodeX.toLocal8Bit().data(),1, semantic_map);
-        // иначе просто левее флажка формирования
-        else mapwin->createObject(hSite,X_coord,Y_coord-3000,kodeX.toLocal8Bit().data(),1, semantic_map);
+                    // если значкт формирований - авиа или военно-морские базы, то стрелка знака МПС рисуется левее и ниже
+                    if ((excode_type_ls=="1311701001")||(excode_type_ls=="0006701004")||(excode_type_ls=="0006701003")||(excode_type_ls=="V0000001118")) mapwin->createObject(hSite,X_coord-3000,Y_coord-6000,kodeX.toLocal8Bit().data(),1, semantic_map);
+                    // иначе просто левее флажка формирования
+                    else mapwin->createObject(hSite,X_coord,Y_coord-3000,kodeX.toLocal8Bit().data(),1, semantic_map);
+                }
+            }
+            query.clear();
+        }
     }
-}
-query.clear();
-}
-}
-showInformationDialog("Информация нанесена на карту");
-return;
+    showInformationDialog("Информация нанесена на карту");
+    return;
 }
 
 void	MapView::calc_mps2()
 {
     calculating_mps calc;
     QSqlQuery query;
-    QString str=QString("SELECT name_ls, coordinates.x_coordinates, coordinates.y_coordinates, type_ls.excode_type_ls, \
-                        ls.short_name_ls, id_ls \
-                        FROM ls, coordinates, type_ls WHERE ls.id_coordinates=coordinates.id_coordinates AND \
-            ls.id_type_ls=type_ls.id_type_ls	AND type_ls.excode_type_ls <> '' AND \
-            coordinates.x_coordinates<>0 AND coordinates.y_coordinates<>0 AND \
-            ls.short_name_ls <> '' and enimy_ls=TRUE");
-
-            //	QString str=QString("SELECT excode_region, name_region, id_region  FROM region WHERE excode_region<>0");
-            long int a = mapwin->IsActive(mapwin->hMap);
-            if (a)
+    QString str=QString("SELECT name_ls, coordinates.x_coordinates, coordinates.y_coordinates, type_ls.excode_type_ls, ls.short_name_ls, id_ls FROM ls, coordinates, type_ls WHERE ls.id_coordinates=coordinates.id_coordinates AND ls.id_type_ls=type_ls.id_type_ls AND type_ls.excode_type_ls <> '' AND coordinates.x_coordinates<>0 AND coordinates.y_coordinates<>0 AND ls.short_name_ls <> '' and enimy_ls=TRUE");
+    long int a = mapwin->IsActive(mapwin->hMap);
+    if (a)
     {
-            if(query.exec(str))
-    {
+        if(query.exec(str))
+        {
             while (query.next())
-    {
-            int id_ls = query.value(5).toInt();
-    long int X_coord=query.value(1).toInt();
-    long int Y_coord=query.value(2).toInt();
-    QString excode_type_ls = query.value(3).toString();
-
-    float MPS=calc.calculating(id_ls);
-
-    float MPS_kont=calc.get_mps_kont();
-    float MPS_ofec=calc.get_mps_ofec();
-    float MPS_priz=calc.get_mps_priz();
-    if (MPS!=-1)
-    {
-        QMap<int,QString> semantic_map;
-        // показатель подразделения
-        semantic_map[60004]=QString::number(MPS);
-        // принадлежность
-        semantic_map[60028]="7";
-
-        semantic_map[60001]=QString::number(MPS_ofec);
-        semantic_map[60002]=QString::number(MPS_kont);
-        semantic_map[60003]=QString::number(MPS_priz);
-        // вид стрелки
-        if (MPS < 0.3)					semantic_map[60012]="4";
-        if ((MPS >= 0.3)&&(MPS <= 0.7))	semantic_map[60012]="5";
-        if ((MPS > 0.7)&&(MPS <= 1.0))	semantic_map[60012]="3";
-
-        QString kodeX = "V00000000313";
-
-        // если значкт формирований - авиа или военно-морские базы, то стрелка знака МПС рисуется правее и ниже
-        if ((excode_type_ls=="L1900000115")||(excode_type_ls=="V1234500048")||(excode_type_ls=="V1900000111")||(excode_type_ls=="L1900000052")) mapwin->createObject(hSite,X_coord-3000,Y_coord+6000,kodeX.toLocal8Bit().data(),1, semantic_map);
-        // иначе просто правее флажка формирования
-        else mapwin->createObject(hSite,X_coord,Y_coord+3000,kodeX.toLocal8Bit().data(),1, semantic_map);
+            {
+                int id_ls = query.value(5).toInt();
+                long int X_coord=query.value(1).toInt();
+                long int Y_coord=query.value(2).toInt();
+                QString excode_type_ls = query.value(3).toString();
+                float MPS=calc.calculating(id_ls);
+                float MPS_kont=calc.get_mps_kont();
+                float MPS_ofec=calc.get_mps_ofec();
+                float MPS_priz=calc.get_mps_priz();
+                if (MPS!=-1)
+                {
+                    QMap<int,QString> semantic_map;
+                    // показатель подразделения
+                    semantic_map[60004]=QString::number(MPS);
+                    // принадлежность
+                    semantic_map[60028]="7";
+                    semantic_map[60001]=QString::number(MPS_ofec);
+                    semantic_map[60002]=QString::number(MPS_kont);
+                    semantic_map[60003]=QString::number(MPS_priz);
+                    // вид стрелки
+                    if (MPS < 0.3)					semantic_map[60012]="4";
+                    if ((MPS >= 0.3)&&(MPS <= 0.7))	semantic_map[60012]="5";
+                    if ((MPS > 0.7)&&(MPS <= 1.0))	semantic_map[60012]="3";
+                    QString kodeX = "V00000000313";
+                    // если значкт формирований - авиа или военно-морские базы, то стрелка знака МПС рисуется правее и ниже
+                    if ((excode_type_ls=="L1900000115")||(excode_type_ls=="V1234500048")||(excode_type_ls=="V1900000111")||(excode_type_ls=="L1900000052")) mapwin->createObject(hSite,X_coord-3000,Y_coord+6000,kodeX.toLocal8Bit().data(),1, semantic_map);
+                    // иначе просто правее флажка формирования
+                    else mapwin->createObject(hSite,X_coord,Y_coord+3000,kodeX.toLocal8Bit().data(),1, semantic_map);
+                }
+            }
+            query.clear();
+        }
     }
-}
-query.clear();
-}
-}
-showInformationDialog("Информация нанесена на карту");
-return;
+    showInformationDialog("Информация нанесена на карту");
+    return;
 }
 
 void	MapView::People_Losse()
 {
-    /*People_Losses pl;
-    pl.get_losses(20);
-    QWidget *wgt = new QWidget();
-    QLabel *leb = new QLabel();
-    leb->setText(QString("Потери л/с БФ- средние %1 - %2;\n%3 - %4\n%5 - %6\n%7 - %8").arg(pl.min[1][0]).arg(pl.max[1][0]).arg(pl.min[1][1]).arg(pl.max[1][1]).arg(pl.min[1][2]).arg(pl.max[1][2]).arg(pl.min[1][3]).arg(pl.max[1][3]));
-    QHBoxLayout *lo = new QHBoxLayout();
-    lo->addWidget(leb);
-    wgt->setLayout(lo);
-    wgt->show();*/
-
-    calculating_mps calc;
     QSqlQuery query;
     QDate date;
     QString StrDate=date.currentDate().toString("dd.MM.yyyy");
-    QString str=QString("SELECT name_ls, coordinates.x_coordinates, coordinates.y_coordinates, type_ls.excode_type_ls, \
-                        ls.short_name_ls, id_ls \
-                        FROM ls, coordinates, type_ls WHERE ls.id_coordinates=coordinates.id_coordinates AND \
-            ls.id_type_ls=type_ls.id_type_ls	AND type_ls.excode_type_ls <> '' AND \
-            coordinates.x_coordinates<>0 AND coordinates.y_coordinates<>0 AND \
-            ls.short_name_ls <> '' and enimy_ls=FALSE");
-
-            //	QString str=QString("SELECT excode_region, name_region, id_region  FROM region WHERE excode_region<>0");
-            long int a = mapwin->IsActive(mapwin->hMap);
-            if (a)
+    QString str=QString("SELECT name_ls, coordinates.x_coordinates, coordinates.y_coordinates, type_ls.excode_type_ls, ls.short_name_ls, id_ls FROM ls, coordinates, type_ls WHERE ls.id_coordinates=coordinates.id_coordinates AND ls.id_type_ls=type_ls.id_type_ls AND type_ls.excode_type_ls <> '' AND coordinates.x_coordinates<>0 AND coordinates.y_coordinates<>0 AND ls.short_name_ls <> '' and enimy_ls=FALSE");
+    long int a = mapwin->IsActive(mapwin->hMap);
+    if (a)
     {
-            if(query.exec(str))
-    {
+        if(query.exec(str))
+        {
             while (query.next())
-    {
-            int id_ls = query.value(5).toInt();
-    long int X_coord=query.value(1).toInt();
-    long int Y_coord=query.value(2).toInt();
-    QString excode_type_ls = query.value(3).toString();
+            {
+                int id_ls = query.value(5).toInt();
+                long int X_coord=query.value(1).toInt();
+                long int Y_coord=query.value(2).toInt();
+                QString excode_type_ls = query.value(3).toString();
 
-    /*float MPS=calc.calculating(id_ls);*/
-    People_Losses pl;
-    pl.get_losses(id_ls);
-    /*float MPS_kont=calc.get_mps_kont();
+                /*float MPS=calc.calculating(id_ls);*/
+                People_Losses pl;
+                pl.get_losses(id_ls);
+                /*float MPS_kont=calc.get_mps_kont();
                 float MPS_ofec=calc.get_mps_ofec();
                 float MPS_priz=calc.get_mps_priz();*/
 
-    QMap<int,QString> semantic_map;
-    // показатель подразделения
+                QMap<int,QString> semantic_map;
+                // показатель подразделения
 
 
-    // принадлежность
-    /*semantic_map[60028]="7";	*/
+                // принадлежность
+                /*semantic_map[60028]="7";	*/
 
-    semantic_map[60006]=StrDate;
-    semantic_map[60007]=QString::number(pl.max[1][0]);
-    semantic_map[60008]=QString::number(pl.max[1][1]);
-    semantic_map[60009]=QString::number(pl.max[1][2]);
-    semantic_map[60010]=QString::number(pl.max[1][3]);
-    //// вид стрелки
-    //if (MPS < 0.3)					semantic_map[60012]="4";
-    //if ((MPS >= 0.3)&&(MPS <= 0.7))	semantic_map[60012]="5";
-    //if ((MPS > 0.7)&&(MPS <= 1.0))	semantic_map[60012]="3";
+                semantic_map[60006]=StrDate;
+                semantic_map[60007]=QString::number(pl.max[1][0]);
+                semantic_map[60008]=QString::number(pl.max[1][1]);
+                semantic_map[60009]=QString::number(pl.max[1][2]);
+                semantic_map[60010]=QString::number(pl.max[1][3]);
+                //// вид стрелки
+                //if (MPS < 0.3)					semantic_map[60012]="4";
+                //if ((MPS >= 0.3)&&(MPS <= 0.7))	semantic_map[60012]="5";
+                //if ((MPS > 0.7)&&(MPS <= 1.0))	semantic_map[60012]="3";
 
-    QString kodeX = "V0000000032";
+                QString kodeX = "V0000000032";
 
-    // если значек формирований - авиа или военно-морские базы, то стрелка знака МПС рисуется правее и ниже
-    if ((excode_type_ls=="1311701001")||(excode_type_ls=="0006701004")||(excode_type_ls=="0006701003")||(excode_type_ls=="V0000001118")) mapwin->createObject(hSite,X_coord+13500,Y_coord-7500,kodeX.toLocal8Bit().data(),1, semantic_map);
-    // если значек - большой флаг
-    if (excode_type_ls=="V00911000078")  mapwin->createObject(hSite,X_coord+17000,Y_coord-4500,kodeX.toLocal8Bit().data(),1, semantic_map);
-    // иначе просто левее флажка формирования
-    if ((excode_type_ls!="1311701001")&&(excode_type_ls!="0006701004")&&(excode_type_ls!="0006701003")&&(excode_type_ls!="V0000001118")&&(excode_type_ls!="V00911000078")) mapwin->createObject(hSite,X_coord+17000,Y_coord-4500,kodeX.toLocal8Bit().data(),1, semantic_map);
+                // если значек формирований - авиа или военно-морские базы, то стрелка знака МПС рисуется правее и ниже
+                if ((excode_type_ls=="1311701001")||(excode_type_ls=="0006701004")||(excode_type_ls=="0006701003")||(excode_type_ls=="V0000001118")) mapwin->createObject(hSite,X_coord+13500,Y_coord-7500,kodeX.toLocal8Bit().data(),1, semantic_map);
+                // если значек - большой флаг
+                if (excode_type_ls=="V00911000078")  mapwin->createObject(hSite,X_coord+17000,Y_coord-4500,kodeX.toLocal8Bit().data(),1, semantic_map);
+                // иначе просто левее флажка формирования
+                if ((excode_type_ls!="1311701001")&&(excode_type_ls!="0006701004")&&(excode_type_ls!="0006701003")&&(excode_type_ls!="V0000001118")&&(excode_type_ls!="V00911000078")) mapwin->createObject(hSite,X_coord+17000,Y_coord-4500,kodeX.toLocal8Bit().data(),1, semantic_map);
 
-}
-query.clear();
-}
-}
-showInformationDialog("Информация нанесена на карту");
-return;
+            }
+            query.clear();
+        }
+    }
+    showInformationDialog("Информация нанесена на карту");
+    return;
 
 
 }
