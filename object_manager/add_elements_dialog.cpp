@@ -1,12 +1,11 @@
 #include <QtGui>
 #include "add_elements_dialog.h"
-
+#include "mylabel.h"
 
 Add_elements_dialog::Add_elements_dialog(int type_element,int id_object,QWidget *parent)
 	: QDialog(parent)
 {
 	in_id_object=id_object;
-	
 	
 //	setWindowIcon(QIcon("./img/database.png"));
 	switch(type_element)
@@ -1643,7 +1642,7 @@ case 23:{ //========== Персонал для групп ====================================
         label_7 = new QLabel("Характеристика:");
         textEdit_propa = new QTextEdit;
         label_7->setBuddy(textEdit_propa);
-        textEdit_propa->setFixedHeight(50);
+        textEdit_propa->setFixedHeight(100);
 
         QLabel *label_f = new QLabel("Фото:");
         lineEdit_name_f = new QLineEdit;
@@ -1763,8 +1762,9 @@ case 23:{ //========== Персонал для групп ====================================
 case 24:{ //========== Персонал данные ====================================
 
      label_foto_name = new QLabel("Фото:");
-     label_foto = new QLabel;
+     label_foto = new MyLabel;
      label_foto_name->setBuddy(label_foto);
+     label_foto_hide = new QLabel("");
 
      label = new QLabel("Имя:");
 	 lineEdit_name = new QLineEdit;
@@ -1800,10 +1800,10 @@ case 24:{ //========== Персонал данные ====================================
      label_7 = new QLabel("Характеристика:");
 	 textEdit_propa = new QTextEdit;
 	 label_7->setBuddy(textEdit_propa);
-	 textEdit_propa->setDisabled(true);
+     textEdit_propa->setReadOnly(true);
+    // textEdit_propa->setDisabled(true);
 	 textEdit_propa->setStyleSheet("font:bold; color: black");
-	 textEdit_propa->setFixedHeight(50);
-	
+     textEdit_propa->setFixedHeight(100);
 
 	QSqlQuery query;
     QString str = QString("SELECT id_persones, name_persones, age_persones, contact_persones, rank_persones, authority_persones, opposition_persones, description_persones, image_persones FROM persones where id_persones = %1").arg(in_id_object);
@@ -1931,6 +1931,7 @@ case 24:{ //========== Персонал данные ====================================
 		 mainLayout->setSizeConstraint(QLayout::SetFixedSize);
          mainLayout->addLayout(leftLayout_15, 0, 0);
          mainLayout->addLayout(leftLayout_16, 0, 1);
+
          mainLayout->addLayout(leftLayout, 1, 0);
          mainLayout->addLayout(leftLayout_2, 1, 1);
          mainLayout->addLayout(leftLayout_3, 2, 0);
@@ -1948,6 +1949,8 @@ case 24:{ //========== Персонал данные ====================================
 
 		 
          mainLayout->addLayout(buttonsLayout, 8, 0, 1, 2);
+         mainLayout->addWidget(label_foto_hide, 9, 0);
+
 		 setLayout(mainLayout);
 		 setWindowTitle("Данные по персоналу");
 	
@@ -1977,7 +1980,7 @@ case 25:{ //=========== Персонал для формирований ==============================
          label_7 = new QLabel("Характеристика:");
 		 textEdit_propa = new QTextEdit;
 		 label_7->setBuddy(textEdit_propa);
-		 textEdit_propa->setFixedHeight(50);
+         textEdit_propa->setFixedHeight(100);
 		 
          QLabel *label_f = new QLabel("Фото:");
          lineEdit_name_f = new QLineEdit;
@@ -2114,7 +2117,7 @@ case 25:{ //=========== Персонал для формирований ==============================
              label_7 = new QLabel("Характеристика:");
              textEdit_propa = new QTextEdit;
              label_7->setBuddy(textEdit_propa);
-             textEdit_propa->setFixedHeight(50);
+             textEdit_propa->setFixedHeight(100);
 
              QLabel *label_f = new QLabel("Фото:");
              lineEdit_name_f = new QLineEdit;
@@ -5614,7 +5617,19 @@ void Add_elements_dialog::open_file()
     lineEdit_name_f->setText(baseName);
     if (!fileName.isEmpty()) return;
 }
+void Add_elements_dialog::clicked_open_file()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, "Выбор фотографии", "foto_persones/",
+                                                    "Images (*.jpg *.png)");
+ //   if (!fileName.isEmpty()) return;
+    QString baseName = QFileInfo(fileName).fileName();
 
+    QString path_foto = "foto_persones/" + baseName;
+    label_foto->setText("<CENTER><IMG BORDER=\"0\" SRC=\""+path_foto+"\" width = '200' height = '200'> </CENTER>");
+    //label_foto->setDisabled(true);
+    label_foto_hide->setText(baseName);
+
+}
 
 
 void Add_elements_dialog::add_coord_special_cond_dlg()
@@ -5754,12 +5769,13 @@ void Add_elements_dialog::add_persones_groups(){
 //============================ редактирование персонала =============================================
 void Add_elements_dialog::edit_persones(){
  
-     label_foto->setVisible(false);
-     label_foto_name->setVisible(false);
+    textEdit_propa->setReadOnly(false);
+    label_foto->setEnabled(true);
+     label_foto_hide->setVisible(false);
      lineEdit_name->setStyleSheet("color: black");
 	 lineEdit_name->setEnabled(true);
 	 lineEdit_counte_ls->setStyleSheet("color: black");
-	 lineEdit_counte_ls->setEnabled(true);
+     lineEdit_counte_ls->setEnabled(true);
 	 lineEdit_counte_ls_bd->setStyleSheet("color: black");
 	 lineEdit_counte_ls_bd->setEnabled(true);
 	 checkbox_enemy->setEnabled(true);
@@ -5769,9 +5785,10 @@ void Add_elements_dialog::edit_persones(){
 	 lineEdit_aut->setEnabled(true);
 	 textEdit_propa->setStyleSheet("color: black");
 	 textEdit_propa->setEnabled(true);
-	 textEdit_propa->setFixedHeight(50);
+     textEdit_propa->setFixedHeight(100);
 	 saveButton->setEnabled(true);
 	 deleteButton->setDisabled(true);
+     connect(label_foto,SIGNAL(label_clicked()),this,SLOT(clicked_open_file()));
 	  
 	
 }
@@ -5785,9 +5802,10 @@ void Add_elements_dialog::save_edit_persones(){
 	QString rank_pers = lineEdit_rank->text();
 	float aut = lineEdit_aut->text().toFloat();
 	bool opossition = checkbox_enemy->isChecked();
+    QString l_foto = label_foto_hide->text();
 
 	QSqlQuery query;
-	QString str = QString("UPDATE persones SET name_persones='%1', age_persones='%2',contact_persones='%3',rank_persones='%4',opposition_persones='%5',description_persones='%6',authority_persones='%7' WHERE id_persones=%8").arg(name_persones).arg(counte_age).arg(contact).arg(rank_pers).arg(opossition).arg(desc_pers).arg(aut).arg(id_persers);
+    QString str = QString("UPDATE persones SET name_persones='%1', age_persones='%2',contact_persones='%3',rank_persones='%4',opposition_persones='%5',description_persones='%6',authority_persones='%7', image_persones='%8' WHERE id_persones=%9").arg(name_persones).arg(counte_age).arg(contact).arg(rank_pers).arg(opossition).arg(desc_pers).arg(aut).arg(l_foto).arg(id_persers);
 	
 	if(!query.exec(str)){
 			 return;
@@ -5808,9 +5826,10 @@ void Add_elements_dialog::save_edit_persones(){
 	 lineEdit_aut->setStyleSheet("font:bold; color: black");
 	 textEdit_propa->setDisabled(true);
 	 textEdit_propa->setStyleSheet("font:bold; color: black");
-     label_foto->setVisible(true);
-     label_foto_name->setVisible(true);
-}
+     label_foto->setDisabled(true);
+     textEdit_propa->setReadOnly(false);
+	 close();
+   }
 
 //============================ персонал в формирований ===============================================
 void Add_elements_dialog::add_persones_ls(){

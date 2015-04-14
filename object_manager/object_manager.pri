@@ -9,7 +9,8 @@ HEADERS += \
          Calculate_K_omkrf.h \
          calculating_mps.h \
          textprinter.h \
-         People_Losses.h
+         People_Losses.h \
+    mylabel.h
 
 #Source files
 SOURCES +=  object_manager.cpp \
@@ -19,7 +20,8 @@ SOURCES +=  object_manager.cpp \
         Calculate_K_omkrf.cpp \
         calculating_mps.cpp \
         textprinter.cpp \
-        People_Losses.cpp
+        People_Losses.cpp \
+    mylabel.cpp
 
 		
 #Forms

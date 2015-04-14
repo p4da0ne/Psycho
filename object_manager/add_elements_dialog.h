@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QtSql>
+class MyLabel;
  class QCheckBox;
  class QDialogButtonBox;
  class QGroupBox;
@@ -14,6 +15,7 @@
  class QDateEdit;
 #include <QTableWidget>
 #include <QSqlRelationalTableModel>
+#include "mylabel.h"
 
 class Add_elements_dialog : public QDialog
 {
@@ -52,8 +54,9 @@ private:
 	 QLabel *label_14;
 	 QLabel *label_15;
 	 QLabel *label_16;
-     QLabel *label_foto;
+     MyLabel *label_foto;
      QLabel *label_foto_name;
+     QLabel *label_foto_hide;
 
 	 QTextEdit *textEdit;
 	 QTextEdit *textEdit_2;
@@ -134,7 +137,7 @@ private:
 	 QTableWidget *coord_view;
 	 QDialog *edit_dlg;
 	 QDialog *add_dlg;
-	
+     QPushButton *openButton;
 	 int in_id_object;
 	 int id_persers;
 	 
@@ -214,6 +217,7 @@ private slots:
 	void table_rank_gr();
 	void table_coord(int id_coord);
     void open_file();
+    void clicked_open_file();
 
 	//void add_hardware_object();
 	//void add_sstk_object();
