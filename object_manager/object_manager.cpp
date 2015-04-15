@@ -14,6 +14,7 @@
 #include "simledelegate.h"
 #include <QProgressDialog>
 #include <QStringList>
+#include "../reports/reports.h"
 #include "ui_add_object.h"
 #include "ui_object_manager_form.h"
 
@@ -117,7 +118,12 @@ void Objectmanager::customMenuView(const QPoint & pos)
 			QMenu *menu = new QMenu(this);
 			QAction *act=new QAction("Удалить СМИ",this);
 			connect(act,SIGNAL(triggered()),this,SLOT(delete_smi()));
+
+            QAction *otch_smi = new QAction (QString("Сформировать отчет"),this);
+            smi_id = list.value(1).toInt();
+            connect(otch_smi,SIGNAL(triggered()),this,SLOT(otchet_groups()));
 			menu->addAction(act);
+            menu->addAction(otch_smi);
 			popupButton->setMenu(menu);
 			menu->exec(QCursor::pos());
 			}
@@ -126,7 +132,13 @@ void Objectmanager::customMenuView(const QPoint & pos)
 			QMenu *menu = new QMenu(this);
 			QAction *act=new QAction("Удалить воинское формирование",this);
 			connect(act,SIGNAL(triggered()),this,SLOT(delete_ls()));
-			menu->addAction(act);
+            QAction *otch_ls = new QAction (QString("Сформировать отчет"),this);
+            ls_id = list.value(1).toInt();
+            connect(otch_ls,SIGNAL(triggered()),this,SLOT(otchet_groups()));
+
+
+            menu->addAction(act);
+            menu->addAction(otch_ls);
 			popupButton->setMenu(menu);
 			menu->exec(QCursor::pos());
 			}
@@ -177,8 +189,12 @@ void Objectmanager::customMenuView(const QPoint & pos)
             menu->addMenu(subMenu_1);
             QAction *act_del=new QAction("Удалить воинское формирование",this);
             connect(act_del,SIGNAL(triggered()),this,SLOT(delete_ls()));
+            QAction *otch_ls = new QAction (QString("Сформировать отчет"),this);
+            ls_id = list.value(1).toInt();
+            connect(otch_ls,SIGNAL(triggered()),this,SLOT(otchet_groups()));
             menu->addAction(act);
             menu->addAction(act_del);
+            menu->addAction(otch_ls);
             popupButton->setMenu(menu);
             menu->exec(QCursor::pos());
 
@@ -232,8 +248,12 @@ void Objectmanager::customMenuView(const QPoint & pos)
 
 			//QAction *act=new QAction("Удалить воинское формирование",this);
 			//connect(act,SIGNAL(triggered()),this,SLOT(delete_ls()));
+            QAction *otch_ls = new QAction (QString("Сформировать отчет"),this);
+            ls_id = list.value(1).toInt();
+            connect(otch_ls,SIGNAL(triggered()),this,SLOT(otchet_groups()));
 			menu->addAction(act);
 			menu->addAction(act_del);
+            menu->addAction(otch_ls);
 			popupButton->setMenu(menu);
 			menu->exec(QCursor::pos());
 			}
@@ -243,7 +263,13 @@ void Objectmanager::customMenuView(const QPoint & pos)
 			QMenu *menu = new QMenu(this);
 			QAction *act=new QAction("Удалить организацию",this);
 			connect(act,SIGNAL(triggered()),this,SLOT(delete_groups()));
+
+            QAction *otch_groups = new QAction (QString("Сформировать отчет"),this);
+            group_id = list.value(1).toInt();
+            connect(otch_groups,SIGNAL(triggered()),this,SLOT(otchet_groups()));
+
 			menu->addAction(act);
+            menu->addAction(otch_groups);
 			popupButton->setMenu(menu);
 			menu->exec(QCursor::pos());
 			}
@@ -1019,7 +1045,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 			
 			Add_elements_dialog *add_element= new Add_elements_dialog(14,list.value(1).toInt());
 			add_element->setModal(true);
-		 	int result=add_element->exec();
+            int result=add_element->exec();
 			//вернул id 
 			if (result==0)return;
 			
@@ -2485,6 +2511,38 @@ void Objectmanager::otchet()
     otch->setLayout(Grid);
     otch->show();
 }
+
+void Objectmanager::otchet_groups()
+{
+    QModelIndex index = UI->columnView->currentIndex();
+    if(!index.data(Qt::UserRole).toBool()) return;
+    QVariant id=index.data(Qt::UserRole);
+    if (id.type() == QVariant::String){
+        QString user_data=id.toString();
+        QStringList list=user_data.split("_");
+        if(list.value(0)=="dgr"){
+         Reports *r = new Reports;
+         int id_suka = list.value(1).toInt();
+         QString report = r->create_object_formular(id_suka);
+         r->show_preview_dialog(report);
+        }
+        else if(list.value(0)=="dsmi"){
+            Reports *r = new Reports;
+            int id_suka_smi = list.value(2).toInt();
+            QString report = r->create_object_formular_smi(id_suka_smi);
+            r->show_preview_dialog(report);
+           }
+        else if((list.value(0)=="chls") || (list.value(0) == "lss")){
+            Reports *r = new Reports;
+            int id_suka_ls = list.value(1).toInt();
+            QString report = r->create_object_formular_ls(id_suka_ls);
+            r->show_preview_dialog(report);
+           }
+
+}
+}
+// QString str = QString("select gr.name_groups,gr.counte_groups,gr.founder_group,gr.menegement_groups,gr.officce_groups,gr.description_groups,gr.propaganda_groups,tr.name_trend_groups,sph.name_sphere_groups, form.name_form_groups, reg.name_region FROM groups gr,trend_groups tr,sphere_groups sph, form_groups form, region reg where gr.id_trend=tr.id_trend_groups AND gr.id_sphere_groups=sph.id_sphere_groups AND gr.id_form_groups=form.id_form_groups AND gr.id_region = reg.id_region AND gr.id_groups=%1").arg(group_id);
+
 void Objectmanager::save_pdf()
 {
 QTextDocument *doc = new QTextDocument;

@@ -1,6 +1,7 @@
 #include <QtGui>
 #include "add_elements_dialog.h"
 #include "mylabel.h"
+#include "reports.h"
 
 Add_elements_dialog::Add_elements_dialog(int type_element,int id_object,QWidget *parent)
 	: QDialog(parent)
@@ -1850,14 +1851,16 @@ case 24:{ //========== Персонал данные ====================================
 	 saveButton->setDisabled(true);
 	 deleteButton = new QPushButton("Удалить");
 	 connect(deleteButton,SIGNAL(clicked()),this,SLOT(close()));
+     otchetButton = new QPushButton("Отчет");
+     connect(otchetButton,SIGNAL(clicked()),this,SLOT(otchet_pers()));
 	
 	 QHBoxLayout *buttonsLayout = new QHBoxLayout;
 	 buttonsLayout->addStretch();
 	 buttonsLayout->addWidget(deleteButton);
 	 buttonsLayout->addWidget(saveButton);
 	 buttonsLayout->addWidget(addButton);
-	 buttonsLayout->addWidget(cancelButton);
-
+     buttonsLayout->addWidget(otchetButton);
+     buttonsLayout->addWidget(cancelButton);
 
          QHBoxLayout *topLeftLayout_15 = new QHBoxLayout;
          topLeftLayout_15->addWidget(label_foto_name);
@@ -5631,6 +5634,14 @@ void Add_elements_dialog::clicked_open_file()
 
 }
 
+void Add_elements_dialog::otchet_pers()
+{
+    int id_pers = in_id_object;
+    Reports *r = new Reports;
+    QString report = r->create_object_formular_pers(id_pers);
+    r->show_preview_dialog(report);
+}
+
 
 void Add_elements_dialog::add_coord_special_cond_dlg()
 {
@@ -5788,6 +5799,7 @@ void Add_elements_dialog::edit_persones(){
      textEdit_propa->setFixedHeight(100);
 	 saveButton->setEnabled(true);
 	 deleteButton->setDisabled(true);
+     otchetButton->setDisabled(true);
      connect(label_foto,SIGNAL(label_clicked()),this,SLOT(clicked_open_file()));
 	  
 	
@@ -5812,6 +5824,7 @@ void Add_elements_dialog::save_edit_persones(){
 		 }
 	 saveButton->setDisabled(true);
 	 deleteButton->setEnabled(true);
+     otchetButton->setEnabled(true);
 	 lineEdit_name->setDisabled(true);
 	 lineEdit_name->setStyleSheet("font:bold; color: black");
 	 lineEdit_counte_ls->setDisabled(true);

@@ -20,25 +20,76 @@ Reports::~Reports()
 
 QString Reports::create_object_formular(int id_object)
 {
- ReportData *report_model = new ReportData;
- QMap<QString,QString> obj_data;
+    ReportData *report_model = new ReportData;
+    QMap <int, QMap< QString,QString> > obj_data;
+    obj_data = report_model->get_obj_info(id_object);
 
- obj_data = report_model->get_obj_info(id_object);
+    Output *out = new Output;
 
- Output *out = new Output;
- QString s = out->createHtmlHeader();
- QString title="‘ормул€р";
- s.append(out->createHtmlH(title));
- QStringList head;
- head<<"Attribut"<<"Mean";
- s.append(out->createHtmlTable(obj_data,head));
- s.append(out->createHtmlFooter());
-return s;
+    QString s = out->createHtmlHeader();
+    s.append(out->createHtmlH("‘ормул€р организации", 2));
+    s.append(out->createHtmlTable_2(obj_data));
+    s.append(out->createHtmlFooter());
+    return s;
+}
+QString Reports::create_object_formular_pers(int id_object)
+{
+    ReportData *report_model = new ReportData;
+    QMap<QString,QString> obj_data;
+    obj_data = report_model->pers_info(id_object);
+
+    Output *out = new Output;
+
+    QString s = out->createHtmlHeader();
+    s.append(out->createHtmlH("‘ормул€р персоналии",2));
+    s.append(out->createHtmlTable_3(obj_data));
+    s.append(out->createHtmlFooter());
+    return s;
 }
 
+QString Reports::create_object_formular_smi(int id_object)
+{
+    ReportData *report_model = new ReportData;
+    QMap <int, QMap< QString,QString> > obj_data;
+    obj_data = report_model->smi_info(id_object);
+
+    Output *out = new Output;
+
+    QString s = out->createHtmlHeader();
+    s.append(out->createHtmlH("‘ормул€р —ћ»", 2));
+    s.append(out->createHtmlTable_2(obj_data));
+    s.append(out->createHtmlFooter());
+    return s;
+}
+
+QString Reports::create_object_formular_ls(int id_object)
+{
+    ReportData *report_model = new ReportData;
+    QMap <int, QMap< QString,QString> > obj_data;
+    obj_data = report_model->ls_info(id_object);
+
+    Output *out = new Output;
+
+    QString s = out->createHtmlHeader();
+    s.append(out->createHtmlH("‘ормул€р ¬оинского формировани€", 2));
+    s.append(out->createHtmlTable_2(obj_data));
+    s.append(out->createHtmlFooter());
+    return s;
+}
 
 void Reports::show_preview_dialog(QString html)
 {
  ReportView *view = new ReportView;
  view->preview_dialog(html);
 }
+void Reports::show_preview_dialog1(QString html)
+{
+ ReportView *view = new ReportView;
+ view->print_formul(html);
+}
+void Reports::show_preview_dialog2(QString html)
+{
+ ReportView *view = new ReportView;
+ view->print_pdf_formul(html);
+}
+

@@ -63,6 +63,7 @@ private slots:
 	void delete_pers();
 	
     void otchet();
+    void otchet_groups();
     void save_pdf();
 
 private:
@@ -143,8 +144,12 @@ private:
         float number_sex_m,number_sex_w,number,persent_nations,rez_z_1;
         int number_m,number_w,smi_number,number_nations;
         int groud_id;
+        int group_id;
+        int smi_id;
+        int ls_id;
 
         QDialog *otch;
+        QDialog *otchet_gr;
         TextPrinter *text;
 
 	Ui::object_manager_form *UI;

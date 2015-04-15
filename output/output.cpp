@@ -49,8 +49,48 @@ QString Output::createHtmlP(QString text,  int weight_italic,QString align)
 	QString p = weight_italic2 + "<p align='" +  align + "'>" + text + " </p>" +weight_italic1 ;
 	return p;
 }
+QString Output::createHtmlTable_3(QMap<QString,QString> table_data,int width)
+{
+    QString r;
+    r.append("<TABLE WIDTH ='"+ QString::number(width)+ "%' BORDER='1' cellpadding=4 align = center>");
+    QMap<QString,QString>::iterator it=table_data.begin();
+    for (;it !=table_data.end(); ++it)
+    {
+        r.append("<TR> <TD>");
+        r.append(it.key());
+        r.append("</TD> <TD>");
+        r.append(it.value());
+        r.append("</TD></TR>");
+    }
+    r.append("</table>");
+return r;
+}
 
+QString Output::createHtmlTable_2(QMap <int, QMap< QString,QString> > table_data,int width)
+{
+    QString r;
+    r.append("<TABLE WIDTH ='"+ QString::number(width)+ "%' BORDER='1'  cellpadding=4  align = center> ");
 
+    QMap<QString,QString> map;
+    QMap <int, QMap< QString,QString> >::iterator it=table_data.begin();
+    for (;it !=table_data.end(); ++it)
+    {
+        map=it.value();
+
+        QMap<QString,QString> :: iterator it1=map.begin();
+        for (;it1 !=map.end(); ++it1)
+        {
+         r.append("<TR><TD>");
+         r.append(it1.key());
+         r.append("</TD><TD>");
+         r.append(it1.value());
+         r.append("</TD></TR>");
+        }
+
+       }
+        r.append("</table>");
+return r;
+}
 
 
 //===== Формирование таблицы на основе двумерного массива и списка ======

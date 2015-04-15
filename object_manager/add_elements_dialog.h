@@ -108,6 +108,7 @@ private:
 	 QPushButton *saveButton;
 	 
      QPushButton *cancelButton;
+     QPushButton *otchetButton;
 
      QWidget *extension;
 	 QComboBox *comboBox;
@@ -218,6 +219,7 @@ private slots:
 	void table_coord(int id_coord);
     void open_file();
     void clicked_open_file();
+    void otchet_pers();
 
 	//void add_hardware_object();
 	//void add_sstk_object();
