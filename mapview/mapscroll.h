@@ -62,13 +62,14 @@ public:
 	long int	setmapBright(long int bright);
 	void		paint95();
 	void		findObjectByCod();
+    void        freeObject(HOBJ hobj);
+    void        deleteObject(HOBJ hobj);
 
 signals:
 	void		signal_for_info(long int hobj);
 	void		signal_for_right_button(HOBJ hobj, long int num_obj, long int id_object, QPoint pe, bool region);
 	void		signal_for_info_2_arg(QString a, long int b);
-
-	void		signal_for_change_scale(QPoint pe);
+    void		signal_for_change_scale(QPoint pe,HOBJ hobj, long int num_obj, long int id_object, bool region);
 protected:
     bool  eventFilter (QObject * watched, QEvent * event);
     void  drawContents( QPainter* p, int cx, int cy, int cw, int ch);

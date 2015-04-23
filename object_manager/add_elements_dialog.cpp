@@ -7,10 +7,8 @@ Add_elements_dialog::Add_elements_dialog(int type_element,int id_object,QWidget 
 	: QDialog(parent)
 {
 	in_id_object=id_object;
-	
-//	setWindowIcon(QIcon("./img/database.png"));
 	switch(type_element)
-{
+	{
 	case 1:// ============ СМИ ================================================
 	{
 	QMessageBox msgBox;
@@ -1763,7 +1761,7 @@ case 23:{ //========== Персонал для групп ====================================
 case 24:{ //========== Персонал данные ====================================
 
      label_foto_name = new QLabel("Фото:");
-     label_foto = new MyLabel;
+     label_foto = new MyLabel();
      label_foto_name->setBuddy(label_foto);
      label_foto_hide = new QLabel("");
 

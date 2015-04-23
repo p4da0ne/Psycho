@@ -228,7 +228,14 @@ public:
 	long int mapPlaneToGeo42(HMAP hmap,double *Bx, double *Ly);
 	long int mapPlaneToGeo423D(HMAP hmap,double *Bx, double *Ly, double *H);
 
+    // Удалить объект карты
+    // Предыдущее состояние объекта сохраняется в резервных
+    // файлах и может быть восстановлено
+    // info  - идентификатор объекта карты в памяти
+    // Признак удаления записывается в памяти и в файле
+    // При ошибке возвращает ноль
 
+   long int mapDeleteObject(HOBJ info);
 
 
 protected:

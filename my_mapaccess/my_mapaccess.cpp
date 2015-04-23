@@ -991,7 +991,20 @@ long int MyMapAccess::mapPlaneToGeo423D(HMAP hMap,
 {
 	long int (WINAPI * lpfn_mapPlaneToGeo423D)(HMAP ,double *, double *, double *);          
 	(FARPROC&)lpfn_mapPlaneToGeo423D = ::GetProcAddress(LibInst, "mapPlaneToGeo423D");   
-	return ( * lpfn_mapPlaneToGeo423D)(hMap, Bx, Ly, H); 
+    return ( * lpfn_mapPlaneToGeo423D)(hMap, Bx, Ly, H);
+}
+
+// Удалить объект карты
+// Предыдущее состояние объекта сохраняется в резервных
+// файлах и может быть восстановлено
+// info  - идентификатор объекта карты в памяти
+// Признак удаления записывается в памяти и в файле
+// При ошибке возвращает ноль
+long int MyMapAccess::mapDeleteObject(HOBJ info)
+{
+    long int (WINAPI * lpfn_mapDeleteObject)(HOBJ);
+    (FARPROC&) lpfn_mapDeleteObject = ::GetProcAddress(LibInst, "mapDeleteObject");
+    return ( * lpfn_mapDeleteObject)(info);
 }
 
   // Запросить - может ли карта редактироваться

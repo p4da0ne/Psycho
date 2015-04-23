@@ -135,7 +135,7 @@ MapView::MapView(QWidget * parent)
     connect(mapwin,SIGNAL(signal_for_info_2_arg(QString, long int)),this,SLOT(showShortInformationObject_2arg(QString, long int)));
     //connect(mapwin,SIGNAL(signal_for_info(long int)),this,SLOT(showShortInformationObject(long int)));//mysignal - движение мыши
     connect(mapwin,SIGNAL(signal_for_right_button(HOBJ, long int, long int, QPoint, bool)),this,SLOT(mouseRightMenu(HOBJ, long int, long int, QPoint, bool)));
-    connect(mapwin,SIGNAL(signal_for_change_scale(QPoint)),this,SLOT(mouseRightSimpleMenu(QPoint)));
+    connect(mapwin,SIGNAL(signal_for_change_scale(QPoint,HOBJ, long int, long int, bool)),this,SLOT(mouseRightSimpleMenu(QPoint ,HOBJ , long int , long int , bool )));
     centralLayout->addWidget(mapwin);
     //========================================
     vertLayout->addLayout(centralLayout);
@@ -181,6 +181,11 @@ MapView::MapView(QWidget * parent)
             }
         }
     }
+}
+
+MapView::~MapView(){
+        mapwin->dataClose(mapwin->hMap,hSite);
+		
 }
 
 void MapView::showCloseSitInfo()
@@ -235,7 +240,6 @@ void MapView::opacityMap()
 {
 
 }
-
 
 void MapView::keyPressEvent(QKeyEvent *e)
 {
@@ -792,8 +796,6 @@ void MapView::test_view_manage()
     obj_data = model->get_obj_info(9);
 
     QTableWidget *table = new QTableWidget();
-
-    int count = obj_data.size();
     table->setColumnCount(2);
     int row = 0;
 
@@ -868,8 +870,6 @@ void MapView::mouseRightMenu(HOBJ hobj, long int num_obj, long int id_obj, QPoin
     connect(great_scale_act, SIGNAL(triggered()), this, SLOT(GreateScale()));
     mouse_menu->addAction(less_scale_act);
     connect(less_scale_act, SIGNAL(triggered()), this, SLOT(LessScale()));
-    //mouse_menu->addAction("&DeleteObject");
-
     if (region)
     {
         QAction *regionMPOact = new QAction("Рассчитать уровень МПО", this);
@@ -882,6 +882,9 @@ void MapView::mouseRightMenu(HOBJ hobj, long int num_obj, long int id_obj, QPoin
         connect(formationDamageAct, SIGNAL(triggered()), this, SLOT(formatonDamage()));
         mouse_menu->addAction(formationDamageAct);
     }
+    QAction *deleteObject = new QAction("Удалить объект", this);
+    connect(deleteObject, SIGNAL(triggered()), this, SLOT(deleteObject()));
+    mouse_menu->addAction(deleteObject);
     mouse_menu->exec(pe_menu);
 }
 
@@ -940,9 +943,26 @@ void MapView::formatonDamage()
     wgt->show();
 }
 
-//меню по клику правой клавишей мыши в любом месте
-void	 MapView::mouseRightSimpleMenu(QPoint pe)
+void MapView::deleteObject()
 {
+    mapwin->deleteObject(this->hobj);
+    this->GreateScale();
+    this->LessScale();
+}
+
+void MapView::freeObject()
+{
+    mapwin->freeObject(this->hobj);
+}
+
+//меню по клику правой клавишей мыши в любом месте
+void	 MapView::mouseRightSimpleMenu(QPoint pe,HOBJ hobj, long int num_obj, long int id_object, bool region)
+{
+    this->hobj = hobj;
+    this->num_obj = num_obj;
+    this->id_obj = id_object;
+    this->pe_menu = pe;
+    this->region = region;
     mouse_menu = new QMenu(this);
     QAction *great_scale_act = new QAction("Увеличить масштаб карты  \">\"", this);
     QAction *less_scale_act = new QAction("Уменьшить масштаб карты  \"<\"", this);
@@ -952,7 +972,11 @@ void	 MapView::mouseRightSimpleMenu(QPoint pe)
 
     mouse_menu->addAction(less_scale_act);
     connect(less_scale_act, SIGNAL(triggered()), this, SLOT(LessScale()));
-    //mouse_menu->addAction("&DeleteObject");
+
+    QAction *deleteObject = new QAction("Удалить объект", this);
+    connect(deleteObject, SIGNAL(triggered()), this, SLOT(deleteObject()));
+    mouse_menu->addAction(deleteObject);
+
     mouse_menu->exec(pe);
 }		
 
@@ -1103,8 +1127,6 @@ void    MapView::showShortInformationObject_2arg(QString a,long int id_obj){
         QString	flag_country;
 
         int id_type_smi=1;
-        int b;
-
         QSqlQuery query1;
         QString str1 = QString("SELECT count(smi_region.id_smi) FROM smi_region, smi WHERE smi_region.id_region= %1  AND smi.id_smi=smi_region.id_smi AND smi.id_type_smi= %2").arg(id_region).arg(id_type_smi);
         query1.exec(str1);

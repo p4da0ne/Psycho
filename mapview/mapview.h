@@ -40,7 +40,7 @@ class __EXPORT_MAPVIEW MapView : public QWidget
 
 public:
     MapView( QWidget *parent=0);
-//    ~MapView();
+    ~MapView();
     void	keyPressEvent(QKeyEvent *e);
 	void	mouseMoveEvent(QMouseEvent * event);
 	void	selectAllObject();
@@ -54,7 +54,7 @@ public slots://на запросы
 	void	errors_message(QString str);
 	void	showInfoAboutObject(long int id_obj);
 	void	mouseRightMenu(HOBJ hobj, long int id_object, long int id_obj, QPoint pe, bool region);
-	void	mouseRightSimpleMenu(QPoint pe);
+    void    mouseRightSimpleMenu(QPoint pe, HOBJ hobj=0, long int num_obj=0, long int id_object=0, bool region=false);
 private slots:
 
 //======= функции (слоты) расчетных задач, вызываемых из контекстного меню ===============
@@ -63,7 +63,10 @@ private slots:
 void regionMPOLevel();
 //-- Расчетная задача "Психогенные потери формирования" ---
 void formatonDamage();
+//-- Удаление объекта с пользовательского слоя
+void deleteObject();
 
+void freeObject();
 //==========================================
 
 	void	selectLineObject();
@@ -118,7 +121,7 @@ public:
 	bool		if_open_sit;
 	bool		if_create;
 	QPoint		pe;
-	double		screenX, screenY;
+    double		screenX, screenY;
 protected:
 	QString		curFile;
 	QString		File;

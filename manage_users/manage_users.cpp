@@ -282,21 +282,7 @@ void ManageUsers::view_users()
 }
 void ManageUsers::del_user()
 {
-	//ui_del_user = new QDialog();
-	//ui_del_user->setWindowTitle("Delete user");
-	//QGridLayout *Grid = new QGridLayout;
-	//del_user_name = new QLabel("input user id: ");
-	//id_del_user = new QLineEdit();
-	//del_user_pb = new QPushButton(tr("Delete"));
-	//Grid->addWidget(del_user_name,1,1);
-	//Grid->addWidget(id_del_user,1,2);
-	//Grid->addWidget(del_user_pb,1,3);
-	//ui_del_user->setLayout(Grid);
-	//ui_del_user->exec();
-	//ui_del_user->Accepted;	
-//	connect(del_user_pb,SIGNAL(clicked()),this,SLOT(del_user_run()));
-int row_count = UI->users_tabe->rowCount();
-	bool fl;
+    int row_count = UI->users_tabe->rowCount();
 	int f = 0;
 	for(int i=0;i<row_count;i++)
 	{
