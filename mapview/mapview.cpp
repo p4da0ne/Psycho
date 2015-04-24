@@ -882,7 +882,9 @@ void MapView::mouseRightMenu(HOBJ hobj, long int num_obj, long int id_obj, QPoin
         connect(formationDamageAct, SIGNAL(triggered()), this, SLOT(formatonDamage()));
         mouse_menu->addAction(formationDamageAct);
     }
-    QAction *deleteObject = new QAction("Удалить объект", this);
+	const char * objectName=mapwin->getObjectName(hobj);
+    QString title(objectName);
+    QAction *deleteObject = new QAction("Удалить объект - " + title, this);
     connect(deleteObject, SIGNAL(triggered()), this, SLOT(deleteObject()));
     mouse_menu->addAction(deleteObject);
     mouse_menu->exec(pe_menu);
@@ -974,7 +976,7 @@ void	 MapView::mouseRightSimpleMenu(QPoint pe,HOBJ hobj, long int num_obj, long 
     connect(less_scale_act, SIGNAL(triggered()), this, SLOT(LessScale()));
 
     const char * objectName=mapwin->getObjectName(hobj);
-    QString title="";
+    QString title(objectName);
     title.append(objectName);
     QAction *deleteObject = new QAction("Удалить объект - " + title, this);
     connect(deleteObject, SIGNAL(triggered()), this, SLOT(deleteObject()));
