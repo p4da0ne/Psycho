@@ -550,6 +550,41 @@ void Objectmanager::show_objects(const QModelIndex &index)
 	return;
 	}
 }
+int Objectmanager::calcul(int id_region){
+
+    int count_smi_ = count_smi(id_region);
+
+    QSqlQuery query;
+        QString str = QString("SELECT id_region FROM region WHERE parent_region = %1").arg(id_region);
+        if(!query.exec(str))
+        {
+             return 0;
+        }
+
+        QSqlRecord rec = query.record();
+
+        while(query.next())
+        {
+            int id_reg = query.value(rec.indexOf("id_region")).toInt();
+            count_smi_ += calcul(id_reg);
+        }
+    return count_smi_;
+ }
+
+int Objectmanager::count_smi(int id){
+
+    int count;
+
+    QSqlQuery query_count;
+    query_count.exec(QString("SELECT count(id_smi) FROM smi_region WHERE id_region=%1").arg(id));
+
+    while (query_count.next()){
+       count = query_count.value(0).toInt();
+    }
+    return count;
+
+}
+
 
 void Objectmanager::child_region_objects(QStandardItem *parent_item,int id_parent_region)
 {
@@ -597,13 +632,16 @@ void Objectmanager::add_region_components(QStandardItem *parent_item,int id_pare
 	int row=start_row+1;
 	int row_sw=0;
 //SELECT sm.id_region,sm.id_smi,sm.id_smi_region,poz.id_position_smi,poz.id_smi FROM smi_region sm,smi poz WHERE id_region=%1 AND sm.id_smi = poz.id_smi
-	int g; 
+
+    int ggg= calcul(id_parent_region);
+
+    int g;
 	QSqlQuery query_count;
 	query_count.exec(QString("SELECT count(id_smi) FROM smi_region WHERE id_region=%1").arg(id_parent_region));
 	while (query_count.next()){
 		g = query_count.value(0).toInt();}
 	
-	QStandardItem *item=set_child_item("СМИ ["  + QString::number(g) + "]","smi",parent_item,row,"./icons/printer.png");
+    QStandardItem *item=set_child_item("СМИ ["  + QString::number(g) +"/" + QString::number(ggg)+ "]","smi",parent_item,row,"./icons/printer.png");
 	//QStandardItem *item=set_child_item("СМИ","smi",parent_item,row,"./icons/printer.png");
 	row++;
 	
@@ -648,13 +686,14 @@ void Objectmanager::add_region_components(QStandardItem *parent_item,int id_pare
 	query.exec(QString("SELECT id_region, id_ls,name_ls,enimy_ls FROM ls WHERE id_region=%1 ORDER BY name_ls").arg(id_parent_region));
 	int row_vf=0;
 	int b; 
-	QSqlQuery query_count_ls;
+
+    QSqlQuery query_count_ls;
 	query_count_ls.exec(QString("SELECT count(id_ls) FROM ls WHERE id_region=%1").arg(id_parent_region));
 	while (query_count_ls.next()){
 		b = query_count_ls.value(0).toInt();
 	}
-	item=set_child_item("ВОИНСКИЕ ФОРМИРОВАНИЯ ["  + QString::number(b) + "]",QString("ls_%1").arg(id_parent_region),parent_item,row,"./icons/weapon.png");
-	row++;
+    item=set_child_item("ВОИНСКИЕ ФОРМИРОВАНИЯ ["  + QString::number(b) + "]",QString("ls_%1").arg(id_parent_region),parent_item,row,"./icons/weapon.png");
+    row++;
 	if (query.size() != 0)
 	{//Ветка воинские формирования
 		row_vf=0;
@@ -2430,12 +2469,19 @@ void Objectmanager::otchet()
     otch = new QDialog;
 
     QPushButton *Save_as_pdf = new QPushButton("Cохранить в PDF");
+    QPushButton *print_doc = new QPushButton("Печать");
+
+    otch->setWindowIcon(QIcon("./icons/report.png"));
 
     connect(Save_as_pdf,SIGNAL(clicked()),this,SLOT(save_pdf()));
+    connect(print_doc,SIGNAL(clicked()),this,SLOT(print_formul()));
 
     otch->setWindowTitle("Формирование отчета");
     QGridLayout *Grid = new QGridLayout;
+    QHBoxLayout *button_lay = new QHBoxLayout;
 
+    button_lay->addWidget(Save_as_pdf);
+    button_lay->addWidget(print_doc);
     name_region_edit = new QLineEdit();
     type_region_edit = new QLineEdit();
     description_region_edit = new QLineEdit();
@@ -2506,8 +2552,7 @@ void Objectmanager::otchet()
     Grid->addWidget(dead_population_label,8,0);
     Grid->addWidget(dead_population_edit,8,1);
 
-    Grid->addWidget(Save_as_pdf,9,1);
-
+    Grid->addLayout(button_lay,9,1);
     otch->setLayout(Grid);
     otch->show();
 }
@@ -2542,6 +2587,472 @@ void Objectmanager::otchet_groups()
 }
 }
 // QString str = QString("select gr.name_groups,gr.counte_groups,gr.founder_group,gr.menegement_groups,gr.officce_groups,gr.description_groups,gr.propaganda_groups,tr.name_trend_groups,sph.name_sphere_groups, form.name_form_groups, reg.name_region FROM groups gr,trend_groups tr,sphere_groups sph, form_groups form, region reg where gr.id_trend=tr.id_trend_groups AND gr.id_sphere_groups=sph.id_sphere_groups AND gr.id_form_groups=form.id_form_groups AND gr.id_region = reg.id_region AND gr.id_groups=%1").arg(group_id);
+
+
+void Objectmanager::print_formul()
+{
+    QTextDocument *doc = new QTextDocument;
+    text = new TextPrinter(this);
+    QDate date;
+    QString time_date;
+    int day,year,month;
+    date = date.currentDate();
+    day = date.dayOfWeek();
+    month = date.month();
+    year = date.year();
+    time_date = date.toString("dd." "MM" "yyyy.г");
+
+
+    QString htm;
+
+    htm.append("<HTML> <HEAD> </HEAD> <BODY> <H2> <CENTER> <B> Справка региона (района) </B> </CENTER> </H2>  ");
+    htm.append("  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Название региона: "); htm.append(name_region_string.toLocal8Bit());
+    htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Тип региона: "); htm.append(type_region_string.toLocal8Bit());
+    htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Описание региона: "); htm.append(description_region_string.toLocal8Bit());
+
+    htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > <CENTER> <B> 1.Население </B> </CENTER> ");
+
+    htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Население - "); htm.append(counte_population_string.toLocal8Bit());
+    htm.append(" чел.( "); htm.append(density_population_string.toLocal8Bit()); htm.append(" чел на км2 плотность населения )");
+    htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' >Национальный состав: ");
+
+    QString str,str1,str2;
+    QSqlQuery query,query1,query2;
+    QSqlRecord data,data1,data2;
+
+
+    str=QString("SELECT name_nations,persent_nations FROM region,ls_nations,nations WHERE region.id_region = ls_nations.id_region AND ls_nations.id_nations = nations.id_nations AND region.id_region = %1").arg(groud_id);
+    query.clear();
+    query.exec(str);
+    data.clear();
+    data = query.record();
+
+    number = counte_population_string.toInt();
+
+    while(query.next())
+    {
+        name_nations_string = query.value(data.indexOf("name_nations")).toString();
+        persent_nations = query.value(data.indexOf("persent_nations")).toDouble();
+        number_nations = persent_nations/100*number;
+        htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > -"); htm.append(name_nations_string.toLocal8Bit()); htm.append(" (");
+        htm.append(QString("%1").arg(persent_nations).toLocal8Bit()); htm.append(" %, "); htm.append(QString("%1").arg(number_nations).toLocal8Bit()); htm.append(" чел)");
+    }
+
+
+
+    htm.append(" </FONT>  </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' >Уровень эммиграции: "); htm.append(emmigration_population_string.toLocal8Bit());
+    htm.append(" </FONT>  </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' >Уровень иммиграции: "); htm.append(immigration_population_string.toLocal8Bit());
+    htm.append(" </FONT>  </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' >Уровень рождаемости: "); htm.append(birth_population_string.toLocal8Bit());
+    htm.append(" </FONT>  </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' >Уровень смертности: "); htm.append(dead_population_string.toLocal8Bit());
+
+    number_sex_m = 0;
+    number_sex_w = 0;
+
+    number_m = 0;
+    number_w = 0;
+    QStringList list;
+
+    str=QString("SELECT persent_sex_m FROM pop_sex WHERE id_region = %1").arg(groud_id);
+    query.clear();
+    query.exec(str);
+    data.clear();
+    data = query.record();
+
+    while(query.next())
+    {
+        number = query.value(data.indexOf("persent_sex_m")).toDouble();
+        number_sex_m = number;
+    }
+
+
+
+    str=QString("SELECT persent_sex_w FROM pop_sex WHERE id_region = %1").arg(groud_id);
+    query.clear();
+    query.exec(str);
+    data.clear();
+    data = query.record();
+
+    while(query.next())
+    {
+        number = query.value(data.indexOf("persent_sex_w")).toDouble();
+        number_sex_w = number;
+    }
+    if(number_sex_m==0)
+    {
+        htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Половой состав: Данных нет");
+
+    }
+    else
+    {
+    number = counte_population_string.toInt();
+
+    number_m = number_sex_m/100*number;
+
+
+
+
+    number_w = number - number_m;
+
+    htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Половой состав: ");
+    htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Мужской пол: "); htm.append(QString("%1").arg(number_m).toLocal8Bit()); htm.append(" чел. ("); htm.append(QString("%1").arg(number_sex_m).toLocal8Bit()); htm.append(" %)");
+    htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Женский пол: "); htm.append(QString("%1").arg(number_w).toLocal8Bit()); htm.append(" чел. ("); htm.append(QString("%1").arg(number_sex_w).toLocal8Bit()); htm.append(" %)");
+    }
+
+
+
+
+
+    str=QString("SELECT name_age,persent_age FROM age,pop_age WHERE pop_age.id_age = age.id_age AND id_region = %1").arg(groud_id);
+    query.clear();
+    query.exec(str);
+    data.clear();
+    data = query.record();
+    if(query.size()==0)
+    {
+        htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Возрастной состав: Данных нет");
+    }
+
+    else
+    {
+        htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Возрастной состав: ");
+
+    while(query.next())
+    {
+        name_age_string = query.value(data.indexOf("name_age")).toString();
+        persent_age_string = query.value(data.indexOf("persent_age")).toString();
+        htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' >"); htm.append(name_age_string.toLocal8Bit()); htm.append(" - "); htm.append(persent_age_string.toLocal8Bit()); htm.append("%");
+    }
+    }
+
+
+
+
+    str=QString("SELECT name_confessions,persent_confessions FROM ls_confessions,confessions WHERE id_region = %1 AND ls_confessions.id_confessions = confessions.id_confessions").arg(groud_id);
+    query.clear();
+    query.exec(str);
+    data.clear();
+    data = query.record();
+    if(query.size()==0)
+    {
+        htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Религиозный состав: Данных нет");
+    }
+
+    else
+    {
+        htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Религиозный состав: ");
+
+    while(query.next())
+    {
+        name_confessions = query.value(data.indexOf("name_confessions")).toString();
+        persent_confessions = query.value(data.indexOf("persent_confessions")).toString();
+
+
+        htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' >"); htm.append(name_confessions.toLocal8Bit()); htm.append(" - "); htm.append(persent_confessions.toLocal8Bit()); htm.append("%");
+    }
+    }
+
+
+    //--------------------------------------------------------------------------------------------------------------------------------
+    //--------------------------------------------------------------------------------------------------------------------------------
+    //--------------------------------------------------------------------------------------------------------------------------------
+    htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > <CENTER> <B> 2.СМИ </B> </CENTER> ");
+
+
+
+    int l=0;
+    int d=0;
+
+
+
+
+    str=QString("SELECT id_position_smi,name_position_smi FROM position_smi");
+    query.clear();
+    query.exec(str);
+    data.clear();
+    data = query.record();
+    QString name_position_smi,nametype_smi,name_smi;
+    int id_position_smi,id_type_smi;
+
+    while(query.next())
+    {
+        name_position_smi = query.value(data.indexOf("name_position_smi")).toString();
+        id_position_smi = query.value(data.indexOf("id_position_smi")).toInt();
+
+        str1 = QString("SELECT id_type_smi,nametype_smi FROM type_smi");
+        query1.clear();
+        query1.exec(str1);
+        data1.clear();
+        data1 = query1.record();
+        l=0;
+
+        while(query1.next())
+        {
+         nametype_smi = query1.value(data1.indexOf("nametype_smi")).toString();
+         id_type_smi = query1.value(data1.indexOf("id_type_smi")).toInt();
+
+         str2=QString("SELECT smi.name_smi FROM smi,smi_region WHERE smi_region.id_smi = smi.id_smi AND id_position_smi = %1 AND id_type_smi = %2 AND  id_region = %3").arg(id_position_smi).arg(id_type_smi).arg(groud_id);
+         query2.clear();
+         query2.exec(str2);
+         data2.clear();
+         data2 = query2.record();
+         smi_number = query2.size();
+         if(smi_number>0)
+         {
+             l++;
+             d=1;
+             if(l<2)
+             {
+              htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > <CENTER> <B>");
+              htm.append(name_position_smi.toLocal8Bit());
+              htm.append(": </B> </CENTER> ");
+             }
+              htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > ");
+              htm.append(nametype_smi.toLocal8Bit());
+              htm.append(": ");
+              htm.append(QString("%1").arg(smi_number).toLocal8Bit());
+              while(query2.next())
+              {
+               name_smi = query2.value(data2.indexOf("name_smi")).toString();
+               htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > - ");
+               htm.append(name_smi.toLocal8Bit());
+              }
+         }
+        }
+
+
+
+
+
+
+
+        }
+
+
+
+    if(d==0) htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Данных нет  ");
+    //--------------------------------------------------------------------------------------------------------------------------------
+    //--------------------------------------------------------------------------------------------------------------------------------
+    //--------------------------------------------------------------------------------------------------------------------------------
+    //--------------------------------------------------------------------------------------------------------------------------------
+
+    htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > <CENTER> <B> 3. Организации </B> </CENTER> ");
+
+    QString name_trend_groups,name_sphere_groups,name_groups;
+
+    int id_trend_groups,id_sphere_groups;
+    l=0;
+    d=0;
+
+    str=QString("SELECT id_trend_groups,name_trend_groups FROM trend_groups");
+    query.clear();
+    query.exec(str);
+    data.clear();
+    data = query.record();
+
+
+    while(query.next())
+    {
+        name_trend_groups = query.value(data.indexOf("name_trend_groups")).toString();
+        id_trend_groups = query.value(data.indexOf("id_trend_groups")).toInt();
+
+        str1 = QString("SELECT id_sphere_groups,name_sphere_groups FROM sphere_groups");
+        query1.clear();
+        query1.exec(str1);
+        data1.clear();
+        data1 = query1.record();
+        l=0;
+
+        while(query1.next())
+        {
+         name_sphere_groups = query1.value(data1.indexOf("name_sphere_groups")).toString();
+         id_sphere_groups = query1.value(data1.indexOf("id_sphere_groups")).toInt();
+
+         str2=QString("SELECT name_groups FROM groups WHERE id_sphere_groups = %1 AND id_trend = %2 AND  id_region = %3").arg(id_sphere_groups).arg(id_trend_groups).arg(groud_id);
+         query2.clear();
+         query2.exec(str2);
+         data2.clear();
+         data2 = query2.record();
+         smi_number = query2.size();
+         if(smi_number>0)
+         {
+             l++;
+             d=1;
+             if(l<2)
+             {
+              htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > <CENTER> <B>");
+              htm.append(name_trend_groups.toLocal8Bit());
+              htm.append(": </B> </CENTER> ");
+             }
+              htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > ");
+              htm.append(name_sphere_groups.toLocal8Bit());
+              htm.append(": ");
+              htm.append(QString("%1").arg(smi_number).toLocal8Bit());
+              while(query2.next())
+              {
+               name_groups = query2.value(data2.indexOf("name_groups")).toString();
+               htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > - ");
+               htm.append(name_groups.toLocal8Bit());
+              }
+         }
+        }
+
+
+
+
+
+
+
+        }
+
+
+
+
+    if(d==0) htm.append(" </FONT>  </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Данных нет ");
+
+    //------------------------------------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------------------
+
+    str.clear();
+    query.clear();
+    data.clear();
+
+    str = QString("SELECT * FROM region WHERE id_region = %1").arg(groud_id);
+    query.exec(str);
+    data=query.record();
+
+    for(int i=0;i<33;i++) factori[i]=0;
+    factorflag=0;
+
+
+    while(query.next())
+    {
+     int i=0;
+     factori[i] = query.value(data.indexOf("poverty_population")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("price_population")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("education")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("trust_vs_population")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("support_vs_population")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("ability_vs_population")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("proposition_org_population")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("opposition_org_population")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("position_vip")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("unemployment_population")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("refugees")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("demography")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("availability_smi_population")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("smi_o_vs")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("protection_iti")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("ungov_org")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("patriotic_population")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("crim_population")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("corruption_population")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("shadow_population")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("illegal_migration_population")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("extremism_population")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("prison_population")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("protest_population")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("opg_population")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("drug_population")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("conflict_population")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("cooperation_ro")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("cult_object_population")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("autoritet_liders")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("regard_liders")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("religion_ls_enemy")).toDouble(); i++;
+     factori[i] = query.value(data.indexOf("religion_ls_their")).toDouble();
+
+
+    }
+
+    factor_text << "Высокий уровень бедности и доли населения с денежными доходами, ниже региональной величины прожиточного минимума"
+            << "Высокий уровень цен на продукты и услуги первой необходимости."
+            << "Низкий уровень образования населения, недостаточное количество высших учебных заведений."
+            << "Низкая степень доверия населения органам государственной власти, командованию Вооруженных Сил."
+            << "Низкая степень поддержки населением действий Вооруженных Сил."
+            << "Неспособность и отсутствие возможностей государственных (региональных) структур оказать содействие Вооружённым Силам в выполнении задач в период непосредственной угрозы агрессии и военное время."
+            << "Низкая степень влияния на общественное мнение населения основных политических партий, неправительственных, общественных и религиозных организаций, выступающих в поддержку государства и Вооруженных сил."
+            << "Наличие оппозиционных, радикальных политических движений и организаций (в том числе и молодежных) и достаточно высокий уровень их поддержки населением. "
+            << "Негативная позиция государственных (региональных) авторитетных деятелей политики, культуры, искусства по отношению к Вооруженным Силам."
+            << "Высокий уровень безработицы в регионе."
+            << "Наличие беженцев из других регионов Российской Федерации, сопредельных с ней территорий."
+            << "Сложная демографическая ситуация в регионе."
+            << "Низкий уровень информатизации региона и степень доступности средств массовой информации и коммуникации, затрудняющие ведение пропаганды и контрпропаганды."
+            << "Деструктивная направленность информации, публикуемой в региональных СМИ в отношении Вооруженных Сил."
+            << "Низкая степень защищенности объектов телерадиовещания, сотовой связи, инфо - и телекоммуникационной инфраструктуры региона."
+            << "Высокая степень активности неправительственных организаций и фондов деструктивной направленности."
+            << "Низкий уровень сформированности патриотического сознания населения."
+            << "Высокий уровень преступности в регионе."
+            << "Высокая степень коррумпированности органов власти."
+            << "Высокая степень влияния теневого сектора экономики и финансов региона на общественное мнение."
+            << "Наличие нелегальных миграционных потоков."
+            << "Наличие экстремистских проявлений и НВФ."
+            << "Большое количество исправительно-трудовых учреждений, и число осужденных."
+            << "Высокий уровень протестной активности населения."
+            << "Наличие организованных преступных группировок."
+            << "Наличие в peгионе путей незаконного экспорта (импорта) оружия и наркотиков."
+            << "Наличие межнациональных, межэтнических конфликтов.";
+
+
+
+
+
+
+
+    for(int i=0;i<33;i++) if(factori[i]>0 && factori[i]<=0.3) factorflag=1;
+    if(factorflag == 0)
+    {
+    htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' >  <B> Факторы, дестабилизирующие моральную обстановку в регионе, отсутствуют, либо о них неизвестно. </B>  ");
+    }
+    else
+    {
+        htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > <CENTER> <B> Факторами, дестабилизирующими моральную обстановку в регионе, являются: </B> </CENTER> ");
+
+
+        for(int i=0;i<26;i++)
+        {
+            if(factori[i]>0 && factori[i]<=0.3)
+            {
+                htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > - ");
+                htm.append(factor_text.at(i).toLocal8Bit());
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+    htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > <CENTER> <B> ВЫВОД </B> </CENTER> ");
+
+    if(rez_z_1 < 0.3)
+    htm.append(" </FONT>  </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Обстановка затрудняет выполнение задач ");
+    else
+    {
+    if(rez_z_1 > 0.3 && rez_z_1 <0.5)
+    htm.append(" </FONT>  </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Обстановка не оказывает существенного влияния на выполнение задач ");
+
+    else
+    htm.append(" </FONT>  </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Обстановка способствует выполнению задач ");
+
+    }
+
+
+    htm.append("  </FONT>  </P> </BODY> </HTML>");
+
+    QFont font;
+    font.setPointSize(10);
+    doc->setDefaultFont(font);
+    doc->setHtml(htm);
+    text->setOrientation(QPrinter::Portrait);
+    text->print(doc, tr("Печать документа"));
+
+
+    otch->close();
+}
 
 void Objectmanager::save_pdf()
 {
@@ -3005,8 +3516,6 @@ font.setPointSizeF(10.10);
 doc->setDefaultFont(font);
 doc->setHtml(htm);
 
-
-filename = QString("c:/formular.pdf");
 file_pdf.setFileName(filename);
 file_pdf.open(QIODevice::WriteOnly);
 file_pdf.close();
