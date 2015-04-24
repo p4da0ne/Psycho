@@ -963,10 +963,10 @@ long int MyMapAccess::mapGeoToPlane(HMAP hmap,
 {
 	long int (WINAPI * lpfn_mapGeoToPlane)(HMAP ,double *, double *);          
 	(FARPROC&)lpfn_mapGeoToPlane = ::GetProcAddress(LibInst, "mapGeoToPlane");   
-	return ( * lpfn_mapGeoToPlane)(hmap, Bx, Ly); 
+    return ( * lpfn_mapGeoToPlane)(hmap, Bx, Ly);
 }
 
-	// Преобразование из метров на местности (проекция карты)
+ // Преобразование из метров на местности (проекция карты)
  // в геодезические координаты в радианах (эллипсоид Красовского)
  // (поддерживается не для всех карт !)
  // hmap  - идентификатор открытых данных
@@ -1006,6 +1006,7 @@ long int MyMapAccess::mapDeleteObject(HOBJ info)
     (FARPROC&) lpfn_mapDeleteObject = ::GetProcAddress(LibInst, "mapDeleteObject");
     return ( * lpfn_mapDeleteObject)(info);
 }
+
 
   // Запросить - может ли карта редактироваться
   // hMap  - идентификатор открытой карты

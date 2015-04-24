@@ -64,6 +64,7 @@ public:
 	void		findObjectByCod();
     void        freeObject(HOBJ hobj);
     void        deleteObject(HOBJ hobj);
+    const char * getObjectName(HOBJ hobj);
 
 signals:
 	void		signal_for_info(long int hobj);

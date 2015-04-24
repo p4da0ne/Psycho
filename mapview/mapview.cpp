@@ -973,10 +973,12 @@ void	 MapView::mouseRightSimpleMenu(QPoint pe,HOBJ hobj, long int num_obj, long 
     mouse_menu->addAction(less_scale_act);
     connect(less_scale_act, SIGNAL(triggered()), this, SLOT(LessScale()));
 
-    QAction *deleteObject = new QAction("Удалить объект", this);
+    const char * objectName=mapwin->getObjectName(hobj);
+    QString title="";
+    title.append(objectName);
+    QAction *deleteObject = new QAction("Удалить объект - " + title, this);
     connect(deleteObject, SIGNAL(triggered()), this, SLOT(deleteObject()));
     mouse_menu->addAction(deleteObject);
-
     mouse_menu->exec(pe);
 }		
 

@@ -469,6 +469,8 @@ void		MapScroll::dataClose(HMAP hMap, HSITE hSite)
     flag2=0;
 }
 
+
+
 //добавление существующего пользовательского слоя
 long int	MapScroll::appendData(const char* sitname)
 {
@@ -887,6 +889,11 @@ void MapScroll::deleteObject(HOBJ hobj)
 {
     map->mapDeleteObject(hobj);
 
+}
+
+const char * MapScroll::getObjectName(HOBJ hobj)
+{
+    return map->mapObjectName(hobj);
 }
 
 //Изменение семантики региона
