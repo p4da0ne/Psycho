@@ -65,8 +65,11 @@ private slots:
     void otchet();
     void otchet_groups();
     void save_pdf();
+    void print_formul();
 
 private:
+    int calcul(int);
+    int count_smi(int);
 	simleDelegate *delegat; 
 	QStandardItem * set_child_item(QString item_text,QString user_data,QStandardItem *parent_item,int row);
 	QStandardItem * set_child_item(QString item_text,QString user_data,QStandardItem *parent_item,int row,QFont font);
