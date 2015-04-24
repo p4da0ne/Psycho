@@ -882,6 +882,8 @@ void MapView::mouseRightMenu(HOBJ hobj, long int num_obj, long int id_obj, QPoin
         connect(formationDamageAct, SIGNAL(triggered()), this, SLOT(formatonDamage()));
         mouse_menu->addAction(formationDamageAct);
     }
+
+
 	const char * objectName=mapwin->getObjectName(hobj);
     QString title(objectName);
     QAction *deleteObject = new QAction("Удалить объект - " + title, this);

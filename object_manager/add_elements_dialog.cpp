@@ -1835,7 +1835,18 @@ case 24:{ //========== Персонал данные ====================================
 		lineEdit_aut->setText(QString::number(autor));
 		textEdit_propa->setText(desc_pers);
 
-        path_foto = "foto_persones/" + foto_name;
+
+        QSettings settings("Saturn");
+        QString path_pict=settings.value("last_img").toString();
+        if(path_pict == QString::null){
+            path_pict="C:/projects/Saturn_500m/Saturn/icons2/" ;
+        }else{
+            path_pict=path_pict.append("/");
+        }
+
+
+
+        path_pict.append( "foto_persones/").append(foto_name);
         label_foto->setText("<CENTER><IMG BORDER=\"0\" SRC=\""+path_foto+"\" width = '200' height = '200'> </CENTER>");
 	}
 		 
