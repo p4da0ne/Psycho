@@ -2,6 +2,7 @@
 #define REPORT_DATA_H
 
 #include <QObject>
+#include <QSettings>
 #include <QMap>
 
 
@@ -13,7 +14,6 @@ public:
     explicit ReportData(QObject *parent=0);
     /// Destructor
     ~ReportData();
-
 
     QMap<int, QMap<QString, QString> > get_obj_info(int id_object = 0);
     QMap<QString,QString> pers_info(int id_object = 0);

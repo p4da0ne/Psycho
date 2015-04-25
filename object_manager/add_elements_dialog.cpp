@@ -1843,11 +1843,8 @@ case 24:{ //========== Персонал данные ====================================
         }else{
             path_pict=path_pict.append("/");
         }
-
-
-
         path_pict.append( "foto_persones/").append(foto_name);
-        label_foto->setText("<CENTER><IMG BORDER=\"0\" SRC=\""+path_foto+"\" width = '200' height = '200'> </CENTER>");
+        label_foto->setText("<CENTER><IMG BORDER=\"0\" SRC=\""+path_pict+"\" width = '200' height = '200'> </CENTER>");
 	}
 		 
 	 addButton = new QPushButton("Редактировать");
@@ -5631,12 +5628,20 @@ void Add_elements_dialog::open_file()
 }
 void Add_elements_dialog::clicked_open_file()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, "Выбор фотографии", "foto_persones/",
+	    QSettings settings("Saturn");
+        QString path_pict=settings.value("last_img").toString();
+        if(path_pict == QString::null){
+            path_pict="C:/projects/Saturn_500m/Saturn/icons2/" ;
+        }else{
+            path_pict=path_pict.append("/");
+        }
+        path_pict.append( "foto_persones/");
+    QString fileName = QFileDialog::getOpenFileName(this, "Выбор фотографии", path_pict,
                                                     "Images (*.jpg *.png)");
  //   if (!fileName.isEmpty()) return;
     QString baseName = QFileInfo(fileName).fileName();
 
-    QString path_foto = "foto_persones/" + baseName;
+    QString path_foto = path_pict + baseName;
     label_foto->setText("<CENTER><IMG BORDER=\"0\" SRC=\""+path_foto+"\" width = '200' height = '200'> </CENTER>");
     //label_foto->setDisabled(true);
     label_foto_hide->setText(baseName);

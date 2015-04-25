@@ -85,27 +85,33 @@ QMap <int, QMap< QString,QString> > ReportData::get_obj_info(int id_object)
 
 QMap<QString, QString> ReportData::pers_info(int id_object)
 {
-    pers_info_date = new QMap<QString, QString>;
+	pers_info_date = new QMap<QString, QString>;
     pers_info_date->clear();
     QSqlQuery query;
     query.prepare ("SELECT pers.name_persones,pers.age_persones,pers.contact_persones, pers.description_persones, pers.authority_persones, pers.opposition_persones, pers.rank_persones, image_persones \
             FROM   persones pers  \
             WHERE  id_persones = ?");
 
-    query.addBindValue(id_object);
+	query.addBindValue(id_object);
     if(!query.exec())
     {
         QString sss = query.lastError().text();
-        return *pers_info_date;
+		return *pers_info_date;
     }
     QMap<QString, QString> map;
     QSqlRecord rec = query.record();
-
     QString foto_name;
-
     query.next();
-       foto_name = query.value(rec.indexOf("image_persones")).toString();
-       QString path_foto = "foto_persones/" + foto_name;
+	foto_name = query.value(rec.indexOf("image_persones")).toString();
+	QSettings settings("Saturn");
+	QString path_pict=settings.value("last_img").toString();
+        if(path_pict == QString::null){
+            path_pict="C:/projects/Saturn_500m/Saturn/icons2/" ;
+        }else{
+            path_pict=path_pict.append("/");
+        }
+        path_pict.append("foto_persones/");
+       QString path_foto = path_pict + foto_name;
        pers_info_date->insert("1. Фотография:","<CENTER><IMG BORDER=\"0\" SRC=\""+path_foto+"\" width = '200' height = '200'> </CENTER>");
        pers_info_date->insert("2. Фамилия, Имя, Отчество",query.value(rec.indexOf("name_persones")).toString());
        pers_info_date->insert("3. Должность(звание)",query.value(rec.indexOf("rank_persones")).toString());
