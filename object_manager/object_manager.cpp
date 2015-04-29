@@ -18,6 +18,7 @@
 #include "ui_add_object.h"
 #include "ui_object_manager_form.h"
 
+
 Objectmanager::Objectmanager(QWidget *parent) //int in_id_object
     : QWidget(parent),
 	UI (new Ui::object_manager_form)
@@ -34,12 +35,27 @@ Objectmanager::Objectmanager(QWidget *parent) //int in_id_object
 	UI->delete_button->setEnabled(false);*/
 	UI->object_manager_tree->setContextMenuPolicy(Qt::CustomContextMenu);
 	UI->columnView->setContextMenuPolicy(Qt::CustomContextMenu);	
-	
+    UI->add_coord_button->setIcon(QIcon("./icons/add.png"));
+    UI->del_coord_button->setIcon(QIcon("./icons/close.png"));
+    UI->edit_coord_button->setIcon(QIcon("./icons/edit.png"));
+
+//==============================COMBOBOX 0 строка нафиг + работа с координатами ===============================
+
+    QListView* listView = qobject_cast<QListView*>(UI->coord_system_comboBox->view());
+    Q_CHECK_PTR(listView);
+    listView->setRowHidden(0, true);
+
+    connect(UI->coord_system_comboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(change_coord_system(int)));
+    connect(UI->add_coord_button,SIGNAL(clicked()),this,SLOT(add_new_coordinates()));
+    connect(UI->del_coord_button,SIGNAL(clicked()),this,SLOT(delete_coordinates()));
+    connect(UI->edit_coord_button,SIGNAL(clicked()),this,SLOT(edit_coordinates_view()));
+//==============================================================================================================
+
 	connect(UI->object_manager_tree,SIGNAL(clicked(const QModelIndex &)),this,SLOT(show_objects ( const QModelIndex & )));
 	connect(UI->columnView,SIGNAL(customContextMenuRequested(const QPoint &)),this,SLOT(customMenuView(const QPoint &)));
 	connect(UI->object_manager_tree,SIGNAL(customContextMenuRequested(const QPoint &)),this,SLOT(customMenuTree(const QPoint &)));
 	connect(UI->columnView,SIGNAL(clicked(const QModelIndex &)),this,SLOT(column_item_clicked ( const QModelIndex & )));
-	
+
     iconsList << "./icons/0.png" << "./icons/01.png" << "./icons/02.png" << "./icons/03.png";
 	init_object_tree();
 }
@@ -494,34 +510,39 @@ void Objectmanager::delete_country_blok()
 //================= выбор объекта из дерева =====================================
 void Objectmanager::show_objects(const QModelIndex &index)
 {
-	UI->coord_object->setModel(0);
+    clear_tableWidget(UI->coord_table);
 	UI->property_object->setModel(0);
 	QFont font;
 	font.setBold(true);
 	QVariant id=index.data(Qt::UserRole);
 	if (id.type() == QVariant::String) { 
-	QString user_data=id.toString();
-	QProgressDialog progress("Формирование информации о регионах", "Отмена", 0, 4, this);
+    QString user_data=id.toString();
+
+
+    QProgressDialog progress("Формирование информации о регионах", "Отмена", 0, 100);
     progress.setWindowModality(Qt::WindowModal);
-	progress.setWindowTitle("Формирование информации о регионах");
-	progress.show();
-    progress.setValue(1);
-	
-	QStringList list=user_data.split("_");
+    progress.setWindowTitle("Формирование информации о регионах");
+
+    progress.show();
+
+
+    QStringList list=user_data.split("_");
+    progress.setValue(15);
 		if(list.value(0)=="country") {
-		int id_country = list.value(1).toInt();
-		QSqlQuery query;
+        int id_country = list.value(1).toInt();
+        QSqlQuery query;
+
 		query.exec(QString("SELECT id_region, name_region,parent_region FROM region WHERE id_country=%1 order by name_region").arg(id_country));
 		model = new QStandardItemModel(this);
 		QStandardItem *parentItem = model->invisibleRootItem();
-		
+        progress.setValue(25);
 		while (query.next()) {
-			
+
 			QSqlQuery query_count; // подсчет ********
 			query_count.exec(QString("select count(name_region) from region where parent_region = %1").arg(query.value(0).toInt()));
-			while (query_count.next()) {
-			int g = query_count.value(0).toInt(); //********
-			int id_region=query.value(0).toInt();
+            while (query_count.next()) {
+            int g = query_count.value(0).toInt(); //********
+            int id_region=query.value(0).toInt();
 			QIcon icon = QIcon(iconsList.at(calc_info_for_region(query.value(0).toString())));		
 			QStandardItem *item = new QStandardItem(query.value(1).toString() + " ["  + QString::number(g) + "]");
 			item->setIcon(icon);
@@ -529,23 +550,23 @@ void Objectmanager::show_objects(const QModelIndex &index)
 			item->setData(data_region,Qt::UserRole);
 			//item->setData(QIcon(set_icon(query.value(2).toInt())),Qt::DecorationRole);
 			model->appendRow(item);
-			child_region_objects(item,id_region);
-		}
-			
+            child_region_objects(item,id_region);
+        }
+        progress.setValue(35);
 			}
-	
-		progress.setValue(2);
+
+        progress.setValue(55);
 	QStandardItem *item = new QStandardItem(QIcon("./icons/add.png"),"Добавить регион");
-	item->setFont(font);
+    item->setFont(font);
 	item->setData(QString("pregion_%1").arg(id_country),Qt::UserRole);
-	progress.setValue(3);
+    progress.setValue(75);
 	model->appendRow(item);
 	
 //	model->sort(2,Qt::AscendingOrder);
 	UI->columnView->setModel(model);
 
-	progress.setValue(4);
-	progress.close();
+    progress.setValue(100);
+    progress.close();
 		}
 	return;
 	}
@@ -878,8 +899,8 @@ query.exec(QString("SELECT id_region,id_pop_sex FROM pop_sex WHERE id_region=%1"
 }	
 void Objectmanager::column_item_clicked ( const QModelIndex &index){
 	
-	UI->coord_object->setModel(0);
-	UI->property_object->setModel(0);
+    clear_tableWidget(UI->coord_table);
+    UI->property_object->setModel(0);
 	QVariant id=index.data(Qt::UserRole);
 	if (id.type() == QVariant::String) 
 	{
@@ -1295,6 +1316,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 			add_element->exec();
 		}
 		else if(list.value(0)=="dpers"){
+            show_coordinates(list.value(0),list.value(1).toInt(),"coord_persones","id_persones");
 			Add_elements_dialog *add_element= new Add_elements_dialog(24,list.value(1).toInt());
 			add_element->setModal(true);
 			connect(add_element->deleteButton,SIGNAL(clicked()),this,SLOT(delete_pers()));
@@ -1302,6 +1324,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 
 		}// =============== для формирований по персоналу ================================
         else if(list.value(0)=="dpersls"){
+            show_coordinates(list.value(0),list.value(1).toInt(),"coord_persones","id_persones");
 			Add_elements_dialog *add_element= new Add_elements_dialog(24,list.value(1).toInt());
 			add_element->setModal(true);
 			connect(add_element->deleteButton,SIGNAL(clicked()),this,SLOT(delete_pers()));
@@ -1309,40 +1332,50 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 		}
          // =============== для smi по персоналу ================================
         else if(list.value(0)=="dperssmi"){
-        Add_elements_dialog *add_element= new Add_elements_dialog(24,list.value(1).toInt());
-        add_element->setModal(true);
-        connect(add_element->deleteButton,SIGNAL(clicked()),this,SLOT(delete_pers()));
-        add_element->exec();
+            show_coordinates(list.value(0),list.value(1).toInt(),"coord_persones","id_persones");
+            Add_elements_dialog *add_element= new Add_elements_dialog(24,list.value(1).toInt());
+            add_element->setModal(true);
+            connect(add_element->deleteButton,SIGNAL(clicked()),this,SLOT(delete_pers()));
+            add_element->exec();
          }
 		//============== выбор для заполнения таблицы ====================================
 		else if(list.value(0)=="region"){
 			region_click(list.value(1).toInt());
+            show_coordinates(list.value(0),list.value(1).toInt(),"coord_region","id_region");
 		}
 		else if(list.value(0)=="reg"){
 			region_click(list.value(1).toInt());
+            show_coordinates(list.value(0),list.value(1).toInt(),"coord_region","id_region");
 		} // ================= в таблицу данные о СМИ =======================================
         else if(list.value(0)=="dsmi"){
 			smi_click(list.value(2).toInt());
 		} // ================= в таблицу данные о ВФ =======================
 		else if(list.value(0)=="dls"){
 			ls_click(list.value(1).toInt());
+            show_coordinates(list.value(0),list.value(1).toInt(),"coord_ls","id_ls");
 		} // ================= в таблицу данные о Организациях =======================
 		else if(list.value(0)=="dgr"){
-			gr_click(list.value(1).toInt());
+            gr_click(list.value(1).toInt());
+            show_coordinates(list.value(0),list.value(1).toInt(),"coord_groups","id_groups");
+
 		}	// ================= в таблицу данные о Условиях =======================
 		else if(list.value(0)=="dsc"){
 			sc_click(list.value(1).toInt());
+            show_coordinates(list.value(0),list.value(1).toInt(),"coord_spec_cond","id_special_conditions");
 		}//======================= в таблицу воинские формирования (подчиненные)======
 		else if(list.value(0)=="lss"){
 			ls_click(list.value(1).toInt());
+            show_coordinates(list.value(0),list.value(1).toInt(),"coord_ls","id_ls");
 		}
 		else if(list.value(0)=="chls"){
 			ls_click(list.value(1).toInt());
+            show_coordinates(list.value(0),list.value(1).toInt(),"coord_ls","id_ls");
 		} // ================= в таблицу данные о СРЕДСТВАХ =======================
 		else if(list.value(0)=="dmpo" || list.value(0)=="dmpos" || list.value(0)=="dmposmi" ){
 			mpo_click(list.value(1).toInt());
+            show_coordinates(list.value(0),list.value(1).toInt(),"coord_mpo_pso","id_mpo_pso");
 	   	}
-	}
+    }
 }
 //========================== ветка для воинских формирований ===========================================
 void Objectmanager::child_ls_objects(QStandardItem *parent_item,int parent_ls)
@@ -1976,28 +2009,6 @@ QSqlRelationalTableModel *model_region = new QSqlRelationalTableModel(this);
 	QSqlRelationalDelegate *delegat_ls=new QSqlRelationalDelegate(UI->property_object);
 	UI->property_object->setItemDelegate(delegat_ls);
 	UI->property_object->setItemDelegateForColumn(13,delegat_ls);
-
-	QSqlQuery query;
-		query.exec(QString("select id_coordinates,name_ls from ls where id_ls=%1").arg(id_ls));
-		int id_coordinates;
-		QString name_gr;
-		while (query.next()) 
-		{
-			id_coordinates=query.value(0).toInt();
-			name_gr = query.value(1).toString();
-		}
-
-	QSqlRelationalTableModel *model_coord = new QSqlRelationalTableModel(this);
-	model_coord->setTable("coordinates");
-	model_coord->setFilter(QString("id_coordinates=%1").arg(id_coordinates));
-	is = model_coord->select();
-	model_coord->setEditStrategy(QSqlTableModel::OnFieldChange);
-	model_coord->setHeaderData(1, Qt::Horizontal,"Координаты X");
-	model_coord->setHeaderData(2, Qt::Horizontal, "Координаты Y");
-	UI->coord_object->setModel(model_coord);
-//	UI->label_coord->setText("Координаты организации " + name_gr + ":");
-	UI->coord_object->hideColumn(0);
-
 }
 void Objectmanager::gr_click (int id_gr)
 {
@@ -2047,29 +2058,8 @@ QSqlRelationalTableModel *model_region = new QSqlRelationalTableModel(this);
 	QSqlRelationalDelegate *delegat_gr=new QSqlRelationalDelegate(UI->property_object);
 	UI->property_object->setItemDelegate(delegat_gr);
 	UI->property_object->setItemDelegateForColumn(13,delegat_gr);UI->property_object->setItemDelegateForColumn(14,delegat_gr);
-	
-
-		QSqlQuery query;
-		query.exec(QString("select id_coordinates,name_groups from groups where id_groups=%1").arg(id_gr));
-		int id_coordinates;
-		QString name_gr;
-		while (query.next()) 
-		{
-			id_coordinates=query.value(0).toInt();
-			name_gr = query.value(1).toString();
-		}
-
-	QSqlRelationalTableModel *model_coord = new QSqlRelationalTableModel(this);
-	model_coord->setTable("coordinates");
-	model_coord->setFilter(QString("id_coordinates=%1").arg(id_coordinates));
-	is = model_coord->select();
-	model_coord->setEditStrategy(QSqlTableModel::OnFieldChange);
-	model_coord->setHeaderData(1, Qt::Horizontal,"Координаты X");
-	model_coord->setHeaderData(2, Qt::Horizontal, "Координаты Y");
-	UI->coord_object->setModel(model_coord);
-//	UI->label_coord->setText("Координаты организации " + name_gr + ":");
-	UI->coord_object->hideColumn(0);
 }
+
 void Objectmanager::mpo_click (int id_mpo){
 QSqlRelationalTableModel *model_region = new QSqlRelationalTableModel(this);
 	
@@ -2107,26 +2097,6 @@ QSqlRelationalTableModel *model_region = new QSqlRelationalTableModel(this);
 	QSqlRelationalDelegate *delegat_mpo=new QSqlRelationalDelegate(UI->property_object);
 	UI->property_object->setItemDelegate(delegat_mpo);
 
-		QSqlQuery query;
-		query.exec(QString("select id_coordinates,name_mpo_pso from mpo_pso where id_mpo_pso=%1").arg(id_mpo));
-		int id_coordinates;
-		QString name_mpo;
-		while (query.next()) 
-		{
-			id_coordinates=query.value(0).toInt();
-			name_mpo = query.value(1).toString();
-		}
-
-	QSqlRelationalTableModel *model_coord = new QSqlRelationalTableModel(this);
-	model_coord->setTable("coordinates");
-	model_coord->setFilter(QString("id_coordinates=%1").arg(id_coordinates));
-	is = model_coord->select();
-	model_coord->setEditStrategy(QSqlTableModel::OnFieldChange);
-	model_coord->setHeaderData(1, Qt::Horizontal,"Координаты X");
-	model_coord->setHeaderData(2, Qt::Horizontal, "Координаты Y");
-	UI->coord_object->setModel(model_coord);
-//	UI->label_coord->setText("Координаты организации " + name_gr + ":");
-	UI->coord_object->hideColumn(0);
 }
 
 void Objectmanager::sc_click (int id_sc){
@@ -2166,41 +2136,10 @@ void Objectmanager::sc_click (int id_sc){
 	QSqlRelationalDelegate *delegat_sc=new QSqlRelationalDelegate(UI->property_object);
 	UI->property_object->setItemDelegate(delegat_sc);
 
-	QSqlRelationalTableModel *model_coord = new QSqlRelationalTableModel(this);
-		QSqlQuery query;
-		query.exec(QString("select id_coordinates from coord_spec_cond where id_special_conditions=%1 order by id_coordinates").arg(id_sc));
-		QVector<int> id_coordinates;
-		while (query.next()) {
-			id_coordinates.append(query.value(0).toInt());
-		}		
-		
-	
-		QString str_filterQuery;
-		for (int i=0; i<id_coordinates.size(); i++){	
-			if(i!=0)
-			{
-				str_filterQuery +=" or ";
-			}
-			str_filterQuery += " id_coordinates=";
-			str_filterQuery += QString::number(id_coordinates.at(i));
-		}
-		if (str_filterQuery == ""){
-			return;
-		}
-		model_coord->setTable("coordinates");
-		model_coord->setFilter(str_filterQuery);
-		model_coord->setHeaderData(1, Qt::Horizontal,"Координаты X");
-		model_coord->setHeaderData(2, Qt::Horizontal, "Координаты Y");
-				
-		is = model_coord->select();	
-		model_coord->setEditStrategy(QSqlTableModel::OnFieldChange);
-		UI->coord_object->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
-		UI->coord_object->setModel(model_coord);
-		UI->coord_object->hideColumn(0);
 }
 
-//==========================  удаление по нажатию контекстного меню ================================
 
+//==========================  удаление по нажатию контекстного меню ================================
 void Objectmanager::delete_region(){
 	QMessageBox msgBox;
 	msgBox.setWindowTitle("Предупреждение");
@@ -2311,7 +2250,8 @@ void Objectmanager::delete_ls(){
 	UI->columnView->model()->removeRow(index.row(),index.parent()); 
 	QMessageBox::StandardButton ret; ret = QMessageBox::information(this,"Предупреждение",("Удаление ВФ выполнено"),QMessageBox::Ok );
 	UI->property_object->setModel(0);
-	UI->coord_object->setModel(0);
+
+    clear_tableWidget(UI->coord_table);
 }
 void Objectmanager::delete_groups(){
 	QMessageBox msgBox;
@@ -2348,7 +2288,8 @@ void Objectmanager::delete_groups(){
 	UI->columnView->model()->removeRow(index.row(),index.parent()); 
 	QMessageBox::StandardButton ret; ret = QMessageBox::information(this,"Предупреждение",("Удаление организации выполнено"),QMessageBox::Ok );
 	UI->property_object->setModel(0);
-	UI->coord_object->setModel(0);
+    clear_tableWidget(UI->coord_table);
+
 }
 void Objectmanager::delete_mpo(){
 	QMessageBox msgBox;
@@ -2385,7 +2326,7 @@ void Objectmanager::delete_mpo(){
 	UI->columnView->model()->removeRow(index.row(),index.parent()); 
 	QMessageBox::StandardButton ret; ret = QMessageBox::information(this,"Предупреждение",("Удаление средства выполнено"),QMessageBox::Ok );
 	UI->property_object->setModel(0);
-	UI->coord_object->setModel(0);
+    clear_tableWidget(UI->coord_table);
 }
 void Objectmanager::delete_sc(){
 	QMessageBox msgBox;
@@ -2422,9 +2363,8 @@ void Objectmanager::delete_sc(){
 	UI->columnView->model()->removeRow(index.row(),index.parent()); 
 	QMessageBox::StandardButton ret; ret = QMessageBox::information(this,"Предупреждение",("Удаление особого условия выполнено"),QMessageBox::Ok );
 	UI->property_object->setModel(0);
-	UI->coord_object->setModel(0);
+    clear_tableWidget(UI->coord_table);
 }
-
 void Objectmanager::delete_pers(){
 	QMessageBox msgBox;
 	msgBox.setWindowTitle("Предупреждение");
@@ -2446,7 +2386,7 @@ void Objectmanager::delete_pers(){
 	 }
 	QSqlQuery query;
 
-	QModelIndex index = UI->columnView->currentIndex();
+    QModelIndex index = UI->columnView->currentIndex();
 	if(!index.data(Qt::UserRole).toBool()) return;
 	QString id_sc=index.data(Qt::UserRole).toString();
 	QStringList list=id_sc.split("_");
@@ -2460,10 +2400,9 @@ void Objectmanager::delete_pers(){
 	UI->columnView->model()->removeRow(index.row(),index.parent()); 
 	QMessageBox::StandardButton ret; ret = QMessageBox::information(this,"Предупреждение",("Удаление данных по персоналу выполнено"),QMessageBox::Ok );
 	UI->property_object->setModel(0);
-	UI->coord_object->setModel(0);
+    clear_tableWidget(UI->coord_table);
 }
-
-//============================================================================================
+//============================      отчеты    ================================================================
 void Objectmanager::otchet()
 {
     otch = new QDialog;
@@ -2556,7 +2495,6 @@ void Objectmanager::otchet()
     otch->setLayout(Grid);
     otch->show();
 }
-
 void Objectmanager::otchet_groups()
 {
     QModelIndex index = UI->columnView->currentIndex();
@@ -2587,8 +2525,6 @@ void Objectmanager::otchet_groups()
 }
 }
 // QString str = QString("select gr.name_groups,gr.counte_groups,gr.founder_group,gr.menegement_groups,gr.officce_groups,gr.description_groups,gr.propaganda_groups,tr.name_trend_groups,sph.name_sphere_groups, form.name_form_groups, reg.name_region FROM groups gr,trend_groups tr,sphere_groups sph, form_groups form, region reg where gr.id_trend=tr.id_trend_groups AND gr.id_sphere_groups=sph.id_sphere_groups AND gr.id_form_groups=form.id_form_groups AND gr.id_region = reg.id_region AND gr.id_groups=%1").arg(group_id);
-
-
 void Objectmanager::print_formul()
 {
     QTextDocument *doc = new QTextDocument;
@@ -3053,7 +2989,6 @@ void Objectmanager::print_formul()
 
     otch->close();
 }
-
 void Objectmanager::save_pdf()
 {
 QTextDocument *doc = new QTextDocument;
@@ -3526,6 +3461,7 @@ text->exportPdf(doc,"Сохранить формуляр",filename);
 otch->close();
 
 }
+//==============================   расчеты   =============================================================
 int Objectmanager::calc_info_for_region(QString id_region)
 {
     Calculate_K_omkrf calc;
@@ -3544,7 +3480,6 @@ int Objectmanager::calc_info_for_region(QString id_region)
         return -1;
     //return -678;
 }
-
 int Objectmanager::calc_mps_for_ls(float n)
 {
     if(n > 0 && n < 0.3)
@@ -3558,3 +3493,740 @@ int Objectmanager::calc_mps_for_ls(float n)
     if(n < 0 || n > 1)
         return -1;
 }
+
+void Objectmanager::add_new_coordinates()
+{
+     add_coord = new QDialog();
+
+     add_coord->setWindowTitle(tr("Добавить новые координаты"));
+
+     QModelIndex index = UI->columnView->currentIndex();
+     if(!index.data(Qt::UserRole).toBool()) return;
+     QString id_sc=index.data(Qt::UserRole).toString();
+     QStringList list=id_sc.split("_");
+     int id_obj = list.value(1).toInt();
+
+     QLabel *lab_wgs = new QLabel("<b>" + tr("WGS-84") + "</b>");
+     lab_wgs->setAlignment(Qt::AlignCenter);
+
+     QLabel *lab1 = new QLabel(tr("N ")+QChar(176)+" :");
+     QLabel *lab2 = new QLabel(tr("N ") + "' :");
+     QLabel *lab3 = new QLabel(tr("N ") + "\" :");
+     QLabel *lab4 = new QLabel(tr("E ")+QChar(176)+" :");
+     QLabel *lab5 = new QLabel(tr("E ") + "' :");
+     QLabel *lab6 = new QLabel(tr("E ") + "\" :");
+
+     QLabel *lab_rect = new QLabel("<b>" + tr("Прямоугольные") + "</b>");
+     lab_rect->setAlignment(Qt::AlignCenter);
+
+     QLabel *lab15 = new QLabel(tr("X ") + ":");
+     QLabel *lab16 = new QLabel(tr("Y ") + ":");
+
+     e1 = new QLineEdit();
+     e2 = new QLineEdit();
+     e3 = new QLineEdit();
+     e4 = new QLineEdit();
+     e5 = new QLineEdit();
+     e6 = new QLineEdit();
+     e15 = new QLineEdit();
+     e16 = new QLineEdit();
+
+     QPushButton *wgs_button = new QPushButton(tr("Перевести"));
+     QPushButton *plane_button = new QPushButton(tr("Перевести"));
+     connect(wgs_button,SIGNAL(clicked()),this,SLOT(WGS_to_other()));
+     connect(plane_button,SIGNAL(clicked()),this,SLOT(PLANE_to_other()));
+
+     QGridLayout *grid = new QGridLayout();
+
+     grid->addWidget(lab_wgs,0,0,1,2);
+
+     grid->addWidget(lab1,1,0);
+     grid->addWidget(e1,1,1);
+     grid->addWidget(lab2,2,0);
+     grid->addWidget(e2,2,1);
+     grid->addWidget(lab3,3,0);
+     grid->addWidget(e3,3,1);
+     grid->addWidget(lab4,4,0);
+     grid->addWidget(e4,4,1);
+     grid->addWidget(lab5,5,0);
+     grid->addWidget(e5,5,1);
+     grid->addWidget(lab6,6,0);
+     grid->addWidget(e6,6,1);
+
+     grid->addWidget(wgs_button,7,1);
+
+     grid->addWidget(lab_rect,0,3,1,2);
+     grid->addWidget(lab15,1,3);
+     grid->addWidget(e15,1,4);
+     grid->addWidget(lab16,2,3);
+     grid->addWidget(e16,2,4);
+     grid->addWidget(plane_button,3,4);
+
+
+     QPushButton *ok_button = new QPushButton("OK");
+     connect(ok_button,SIGNAL(clicked()),add_coord,SLOT(accept()));
+     QPushButton *cancel_button = new QPushButton("Отмена");
+     connect(cancel_button,SIGNAL(clicked()),add_coord,SLOT(close()));
+
+     QHBoxLayout *b_lay = new QHBoxLayout;
+     b_lay->addStretch();
+     b_lay->addWidget(ok_button);
+     b_lay->addWidget(cancel_button);
+
+     QVBoxLayout *main_layout = new QVBoxLayout;
+     main_layout->addLayout(grid);
+     main_layout->addLayout(b_lay);
+
+     add_coord->setLayout(main_layout);
+
+     if(list.value(0)=="nations" || list.value(0)=="nationss" || list.value(0)=="nat" || list.value(0)=="dsmi" || list.value(0)=="ran" || list.value(0)=="rankss"
+             || list.value(0)=="sexss" || list.value(0)=="sex" || list.value(0)=="se" || list.value(0)=="ag" || list.value(0)=="agess" || list.value(0)=="prof"
+             || list.value(0)=="profess" || list.value(0)=="confess" || list.value(0)=="confesss" || list.value(0)=="conf" || list.value(0)=="psmi"
+             || list.value(0)=="smi" || list.value(0)=="ls" || list.value(0)=="gr"){
+
+        QMessageBox::StandardButton ret;
+        ret = QMessageBox::critical (this,"Ошибка",("Нет возможности ввести координаты "),QMessageBox::Ok );
+     }
+     else if(add_coord->exec() == QDialog::Accepted)
+     {
+
+     QSqlQuery query;
+
+     query.prepare("INSERT INTO coordinates (latitude_wgs_84_g,latitude_wgs_84_m,latitude_wgs_84_s,longitude_wgs_84_g,longitude_wgs_84_m,longitude_wgs_84_s,x_coordinates,y_coordinates) VALUES (?,?,?,?,?,?,?,?)RETURNING id_coordinates");
+     query.addBindValue(e1->text().toInt());
+     query.addBindValue(e2->text().toInt());
+     query.addBindValue(e3->text().toFloat());
+     query.addBindValue(e4->text().toInt());
+     query.addBindValue(e5->text().toInt());
+     query.addBindValue(e6->text().toFloat());
+     query.addBindValue(e15->text().toFloat());
+     query.addBindValue(e16->text().toFloat());
+
+     if(!query.exec())
+      {
+        QString str22= query.lastError().databaseText();
+        return;
+      }
+// Определение последнего id_coordinates
+     int id_coordinates;
+     while (query.next())
+     {
+        id_coordinates=query.value(0).toInt();
+     }
+
+     if(list.value(0)=="dls" || list.value(0)=="chls" || list.value(0)=="lss" ){
+
+     query.clear();
+     query.prepare("INSERT INTO coord_ls (id_coordinates, id_ls) VALUES (?,?)");
+     query.addBindValue(id_coordinates);
+     query.addBindValue(id_obj);
+
+     if(!query.exec())
+     {
+         QString sds = query.lastError().text();
+     }
+
+     show_coordinates(list.value(0),list.value(1).toInt(),"coord_ls","id_ls");
+
+     return;
+     }
+
+     else if(list.value(0)=="dgr"){
+     query.clear();
+     query.prepare("INSERT INTO coord_groups (id_coordinates, id_groups) VALUES (?,?)");
+     query.addBindValue(id_coordinates);
+     query.addBindValue(id_obj);
+
+     if(!query.exec())
+     {
+         QString sds = query.lastError().text();
+     }
+     show_coordinates(list.value(0),list.value(1).toInt(),"coord_groups","id_groups");
+
+     return;
+     }
+     else if(list.value(0)=="region" || list.value(0)=="reg"){
+     query.clear();
+     query.prepare("INSERT INTO coord_region (id_coordinates, id_region) VALUES (?,?)");
+     query.addBindValue(id_coordinates);
+     query.addBindValue(id_obj);
+
+     if(!query.exec())
+     {
+         QString sds = query.lastError().text();
+     }
+     show_coordinates(list.value(0),list.value(1).toInt(),"coord_region","id_region");
+
+     return;
+
+     }
+     else if(list.value(0)=="dsc"){
+     query.clear();
+     query.prepare("INSERT INTO coord_spec_cond (id_coordinates, id_special_conditions) VALUES (?,?)");
+     query.addBindValue(id_coordinates);
+     query.addBindValue(id_obj);
+
+     if(!query.exec())
+     {
+         QString sds = query.lastError().text();
+     }
+     show_coordinates(list.value(0),list.value(1).toInt(),"coord_spec_cond","id_special_conditions");
+
+     return;
+
+     }
+     else if(list.value(0)=="dmpo" || list.value(0)=="dmpos" || list.value(0)=="dmposmi" ){
+     query.clear();
+     query.prepare("INSERT INTO coord_mpo_pso (id_coordinates, id_mpo_pso) VALUES (?,?)");
+     query.addBindValue(id_coordinates);
+     query.addBindValue(id_obj);
+
+     if(!query.exec())
+     {
+         QString sds = query.lastError().text();
+     }
+     show_coordinates(list.value(0),list.value(1).toInt(),"coord_mpo_pso","id_mpo_pso");
+
+     return;
+     }
+     else if(list.value(0)=="dpers" || list.value(0)=="dperssmi" || list.value(0)=="dpersls" ){
+     query.clear();
+     query.prepare("INSERT INTO coord_persones(id_coordinates, id_persones) VALUES (?,?)");
+     query.addBindValue(id_coordinates);
+     query.addBindValue(id_obj);
+
+     if(!query.exec())
+     {
+         QString sds = query.lastError().text();
+     }
+     show_coordinates(list.value(0),list.value(1).toInt(),"coord_persones","id_persones");
+
+     return;
+     }
+
+
+     return;
+    }
+}
+void Objectmanager::show_coordinates(QString ob_name,int id_object_for_coord,QString table_name,QString id_name){
+
+        clear_tableWidget(UI->coord_table);
+        get_coordinates(id_object_for_coord,ob_name,table_name,id_name);
+
+        int row_count = object_map.count();
+        int col_count = object_map["0"].count();
+        UI->coord_table->setColumnCount(col_count+1);
+        UI->coord_table->hideColumn(1);
+
+
+        QList<QString> header_list;
+        header_list.append(tr(""));
+        header_list.append(tr("id_coord"));
+        header_list.append(tr("N ")+QChar(176));
+        header_list.append(tr("N ") + "'");
+        header_list.append(tr("N ")+ "\"");
+        header_list.append(tr("E ")+QChar(176));
+        header_list.append(tr("E ") + "'");
+        header_list.append(tr("E ")+ "\"");
+
+        header_list.append(tr("X"));
+        header_list.append(tr("Y"));
+
+
+        UI->coord_table->setHorizontalHeaderLabels(header_list);
+
+        for(int row=0;row<row_count;row++)
+        {
+            UI->coord_table->insertRow(row);
+
+            item = new QTableWidgetItem();
+            item->setData(Qt::CheckStateRole, Qt::Unchecked);
+            UI->coord_table->setItem(row,0,item);
+
+            item = new QTableWidgetItem(object_map[QString::number(row)]["id_coordinates"]);
+            UI->coord_table->setItem(row,1,item);
+
+            item = new QTableWidgetItem(object_map[QString::number(row)]["lat_wgs_g"]);
+            UI->coord_table->setItem(row,2,item);
+
+            item = new QTableWidgetItem(object_map[QString::number(row)]["lat_wgs_m"]);
+            UI->coord_table->setItem(row,3,item);
+
+            item = new QTableWidgetItem(object_map[QString::number(row)]["lat_wgs_s"]);
+            UI->coord_table->setItem(row,4,item);
+
+            item = new QTableWidgetItem(object_map[QString::number(row)]["long_wgs_g"]);
+            UI->coord_table->setItem(row,5,item);
+
+            item = new QTableWidgetItem(object_map[QString::number(row)]["long_wgs_m"]);
+            UI->coord_table->setItem(row,6,item);
+
+            item = new QTableWidgetItem(object_map[QString::number(row)]["long_wgs_s"]);
+            UI->coord_table->setItem(row,7,item);
+
+            item = new QTableWidgetItem(object_map[QString::number(row)]["x"]);
+            UI->coord_table->setItem(row,8,item);
+
+            item = new QTableWidgetItem(object_map[QString::number(row)]["y"]);
+            UI->coord_table->setItem(row,9,item);
+
+
+            change_coord_system(0);
+        }
+}
+
+//========== Изменение отображения системы координат =========
+void Objectmanager::change_coord_system(int)
+{
+    for(int i=2;i<UI->coord_table->columnCount();i++)
+    {
+        UI->coord_table->showColumn(i);
+    }
+
+    switch(UI->coord_system_comboBox->currentIndex())
+        {
+                case 1:
+                    for(int i=8;i<=9;i++) UI->coord_table->hideColumn(i);
+                    break;
+                case 2:
+                    for(int i=2;i<=7;i++) UI->coord_table->hideColumn(i);
+                    break;
+        }
+    UI->coord_table->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    UI->coord_table->horizontalHeader()->setResizeMode(0,QHeaderView::Fixed);
+    UI->coord_table->setColumnWidth(0,20);
+}
+//======== Получение координат и сохранение их в ассоц. массиве opp_map<QString,QMap<QString,QString>> ==============
+void Objectmanager::get_coordinates(int id_object_coord, QString ob_name,QString table_name,QString id_name)
+{
+    object_map.clear();
+
+    QSqlQuery coord_query;
+
+    QString str = QString("SELECT coord.id_coordinates, coord.latitude_wgs_84_g,coord.latitude_wgs_84_m,coord.latitude_wgs_84_s,coord.longitude_wgs_84_g, coord.longitude_wgs_84_m,coord.longitude_wgs_84_s,coord.x_coordinates,coord.y_coordinates FROM coordinates coord, %2 cls WHERE cls.%3=%1 AND coord.id_coordinates = cls.id_coordinates  order by coord.id_coordinates").arg(id_object_coord).arg(table_name).arg(id_name);
+
+        if(!coord_query.exec(str))
+        {
+            QString sss = coord_query.lastError().text();
+            return;
+        }
+
+    QSqlRecord rec = coord_query.record();
+
+    int count = rec.count();
+    int i = 0;
+        while(coord_query.next())
+    {
+        coord_line.clear();
+
+        coord_line["id_coordinates"] = coord_query.value(rec.indexOf("id_coordinates")).toString();
+
+        coord_line["lat_wgs_g"] = coord_query.value(rec.indexOf("latitude_wgs_84_g")).toString();
+        coord_line["lat_wgs_m"] = coord_query.value(rec.indexOf("latitude_wgs_84_m")).toString();
+        coord_line["lat_wgs_s"] = coord_query.value(rec.indexOf("latitude_wgs_84_s")).toString();
+        coord_line["long_wgs_g"] = coord_query.value(rec.indexOf("longitude_wgs_84_g")).toString();
+        coord_line["long_wgs_m"] = coord_query.value(rec.indexOf("longitude_wgs_84_m")).toString();
+        coord_line["long_wgs_s"] = coord_query.value(rec.indexOf("longitude_wgs_84_s")).toString();
+
+        coord_line["x"] = coord_query.value(rec.indexOf("x_coordinates")).toString();
+        coord_line["y"] = coord_query.value(rec.indexOf("y_coordinates")).toString();
+
+        //coord_line["is_center"] = coord_query.value(rec.indexOf("is_object_center")).toString();
+
+        object_map.insert(QString::number(i),coord_line);
+
+        i++;
+    }
+}
+
+//========== Функция очищения таблицы (удаление всех строк и столбцов) ===============
+void Objectmanager::clear_tableWidget(QTableWidget *table)
+{
+    int count_rows = table->rowCount();
+    while(count_rows >= 0)
+    {
+        table->removeRow(count_rows);
+        count_rows--;
+    }
+
+    int count_cols = table->columnCount();
+    while(count_cols >= 0)
+    {
+        table->removeColumn(count_cols);
+        count_cols--;
+    }
+}
+//========== Удаление координат ============
+void Objectmanager::delete_coordinates()
+{
+    QModelIndex index = UI->columnView->currentIndex();
+    if(!index.data(Qt::UserRole).toBool()) return;
+    QString id_sc=index.data(Qt::UserRole).toString();
+    QStringList list=id_sc.split("_");
+    int id_obj = list.value(1).toInt();
+
+    int row_count = UI->coord_table->rowCount();
+    bool fl;
+    int f = 0;
+    for(int i=0;i<row_count;i++)
+    {
+        f = f + UI->coord_table->item(i,0)->data(Qt::CheckStateRole).toInt();
+    }
+        if(f > 0)
+        {
+            //================MessageBox===============================
+              QMessageBox msgBox;
+              msgBox.setWindowTitle("Внимание");
+              msgBox.setText(tr("Вы действительно хотите удалить координаты?"));
+              msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+              msgBox.setButtonText(QMessageBox::Yes, "Да");
+              msgBox.setButtonText(QMessageBox::No, "Нет");
+              switch (msgBox.exec()) {
+                 case QMessageBox::Yes:
+                     // yes was clicked
+                     break;
+                 case QMessageBox::No:
+                     return;
+                     break;
+                 default:
+                     return;
+                     break;
+                 }
+        }
+        else
+        {
+            //================MessageBox===============================
+              QMessageBox msgBox;
+              msgBox.setWindowTitle(tr("Сообщение"));
+              msgBox.setText(tr("Ни одна строка не выбрана!"));
+              msgBox.setStandardButtons(QMessageBox::Ok);
+                 switch (msgBox.exec()) {
+                 case QMessageBox::Yes:
+                     // yes was clicked
+                     return;
+                     break;
+                 }
+        }
+ //=========================================================
+
+ QSqlQuery query;
+
+ int id;
+ QString str;
+ for(int i=0;i<row_count;i++)
+    {
+        fl = UI->coord_table->item(i,0)->data(Qt::CheckStateRole).toBool();
+        if(fl == true)
+        {
+            id = (UI->coord_table->item(i,1)->text()).toInt();
+            str = QString("DELETE FROM coordinates WHERE id_coordinates = %1").arg(id);
+          if(!query.exec(str))
+          {
+           return;
+          }
+        }
+    }
+    if(list.value(0)=="dls" || list.value(0)=="chls" || list.value(0)=="lss" ){
+    show_coordinates(list.value(0),list.value(1).toInt(),"coord_ls","id_ls");
+    }
+    else if(list.value(0)=="dgr"){
+    show_coordinates(list.value(0),list.value(1).toInt(),"coord_groups","id_groups");
+    }
+    else if(list.value(0)=="region" || list.value(0)=="reg"){
+    show_coordinates(list.value(0),list.value(1).toInt(),"coord_region","id_region");
+    }
+    else if(list.value(0)=="dsc"){
+    show_coordinates(list.value(0),list.value(1).toInt(),"coord_spec_cond","id_special_conditions");
+    }
+    else if(list.value(0)=="dmpo" || list.value(0)=="dmpos" || list.value(0)=="dmposmi" ){
+    show_coordinates(list.value(0),list.value(1).toInt(),"coord_mpo_pso","id_mpo_pso");
+    }
+    else if(list.value(0)=="dpers" || list.value(0)=="dperssmi" || list.value(0)=="dpersls" ){
+    show_coordinates(list.value(0),list.value(1).toInt(),"coord_persones","id_persones");
+    }
+    return;
+}
+
+void Objectmanager::edit_coordinates_view()
+{
+
+    QModelIndex index = UI->columnView->currentIndex();
+    if(!index.data(Qt::UserRole).toBool()) return;
+    QString id_sc=index.data(Qt::UserRole).toString();
+    QStringList list=id_sc.split("_");
+    int id_obj = list.value(1).toInt();
+
+    int row_count = UI->coord_table->rowCount();
+    bool fl;
+    int f = 0;
+    for(int i=0;i<row_count;i++)
+    {
+        f = f + UI->coord_table->item(i,0)->data(Qt::CheckStateRole).toInt();
+
+    }
+        if(f > 0)
+        {
+            //================MessageBox===============================
+              QMessageBox msgBox;
+              msgBox.setWindowTitle("Внимание");
+              msgBox.setText(tr("Вы действительно хотите редактировать координаты?"));
+              msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+              msgBox.setButtonText(QMessageBox::Yes, "Да");
+              msgBox.setButtonText(QMessageBox::No, "Нет");
+                 switch (msgBox.exec()) {
+                 case QMessageBox::Yes:
+                     if(list.value(0)=="dls" || list.value(0)=="chls" || list.value(0)=="lss" ){
+                     edit_coordinates(list.value(0),list.value(1).toInt(),"coord_ls","id_ls");
+                     }
+                     else if(list.value(0)=="dgr"){
+                     edit_coordinates(list.value(0),list.value(1).toInt(),"coord_groups","id_groups");
+                     }
+                     else if(list.value(0)=="region" || list.value(0)=="reg"){
+                     edit_coordinates(list.value(0),list.value(1).toInt(),"coord_region","id_region");
+                     }
+                     else if(list.value(0)=="dsc"){
+                     edit_coordinates(list.value(0),list.value(1).toInt(),"coord_spec_cond","id_special_conditions");
+                     }
+                     else if(list.value(0)=="dmpo" || list.value(0)=="dmpos" || list.value(0)=="dmposmi" ){
+                     edit_coordinates(list.value(0),list.value(1).toInt(),"coord_mpo_pso","id_mpo_pso");
+                     }
+                     else if(list.value(0)=="dpers" || list.value(0)=="dperssmi" || list.value(0)=="dpersls" ){
+                     edit_coordinates(list.value(0),list.value(1).toInt(),"coord_persones","id_persones");
+                     }
+                      break;
+                 case QMessageBox::No:
+                     return;
+                     break;
+                 default:
+                     return;
+                     break;
+                 }
+        }
+        else
+        {
+            //================MessageBox===============================
+              QMessageBox msgBox;
+              msgBox.setWindowTitle(tr("Сообщение"));
+              msgBox.setText(tr("Ни одна строка не выбрана!"));
+              msgBox.setStandardButtons(QMessageBox::Ok);
+                 switch (msgBox.exec()) {
+                 case QMessageBox::Yes:
+                     // yes was clicked
+                     return;
+                     break;
+                 }
+        }
+
+
+}
+
+void Objectmanager::edit_coordinates(QString ob_name, int id_obj, QString table_name, QString id_name)
+{
+    add_coord = new QDialog();
+
+    add_coord->setWindowTitle(tr("Добавить новые координаты"));
+
+    QLabel *lab_wgs = new QLabel("<b>" + tr("WGS-84") + "</b>");
+    lab_wgs->setAlignment(Qt::AlignCenter);
+
+    QLabel *lab1 = new QLabel(tr("N ")+QChar(176)+" :");
+    QLabel *lab2 = new QLabel(tr("N ") + "' :");
+    QLabel *lab3 = new QLabel(tr("N ") + "\" :");
+    QLabel *lab4 = new QLabel(tr("E ")+QChar(176)+" :");
+    QLabel *lab5 = new QLabel(tr("E ") + "' :");
+    QLabel *lab6 = new QLabel(tr("E ") + "\" :");
+
+    QLabel *lab_rect = new QLabel("<b>" + tr("Прямоугольные") + "</b>");
+    lab_rect->setAlignment(Qt::AlignCenter);
+
+    QLabel *lab15 = new QLabel(tr("X ") + ":");
+    QLabel *lab16 = new QLabel(tr("Y ") + ":");
+
+    e1 = new QLineEdit();
+    e2 = new QLineEdit();
+    e3 = new QLineEdit();
+    e4 = new QLineEdit();
+    e5 = new QLineEdit();
+    e6 = new QLineEdit();
+    e15 = new QLineEdit();
+    e16 = new QLineEdit();
+
+    QPushButton *wgs_button = new QPushButton(tr("Перевести"));
+    QPushButton *plane_button = new QPushButton(tr("Перевести"));
+    connect(wgs_button,SIGNAL(clicked()),this,SLOT(WGS_to_other()));
+    connect(plane_button,SIGNAL(clicked()),this,SLOT(PLANE_to_other()));
+
+    QGridLayout *grid = new QGridLayout();
+
+    grid->addWidget(lab_wgs,0,0,1,2);
+
+    grid->addWidget(lab1,1,0);
+    grid->addWidget(e1,1,1);
+    grid->addWidget(lab2,2,0);
+    grid->addWidget(e2,2,1);
+    grid->addWidget(lab3,3,0);
+    grid->addWidget(e3,3,1);
+    grid->addWidget(lab4,4,0);
+    grid->addWidget(e4,4,1);
+    grid->addWidget(lab5,5,0);
+    grid->addWidget(e5,5,1);
+    grid->addWidget(lab6,6,0);
+    grid->addWidget(e6,6,1);
+
+    grid->addWidget(wgs_button,7,1);
+
+    grid->addWidget(lab_rect,0,3,1,2);
+    grid->addWidget(lab15,1,3);
+    grid->addWidget(e15,1,4);
+    grid->addWidget(lab16,2,3);
+    grid->addWidget(e16,2,4);
+    grid->addWidget(plane_button,3,4);
+
+
+    QPushButton *ok_button = new QPushButton("Сохранить");
+    connect(ok_button,SIGNAL(clicked()),add_coord,SLOT(accept()));
+    QPushButton *cancel_button = new QPushButton("Отмена");
+    connect(cancel_button,SIGNAL(clicked()),add_coord,SLOT(close()));
+
+    QHBoxLayout *b_lay = new QHBoxLayout;
+    b_lay->addStretch();
+    b_lay->addWidget(ok_button);
+    b_lay->addWidget(cancel_button);
+
+    QVBoxLayout *main_layout = new QVBoxLayout;
+    main_layout->addLayout(grid);
+    main_layout->addLayout(b_lay);
+
+    add_coord->setLayout(main_layout);
+
+    int row_count = UI->coord_table->rowCount();
+    int gr,m,m_,gr_,id_c;
+    float s,s_,x_,y_;
+    for(int i=0;i<row_count;i++)
+    {
+        id_c = UI->coord_table->item(i,1)->text().toInt();
+        gr = UI->coord_table->item(i,2)->text().toInt();
+        m = UI->coord_table->item(i,3)->text().toInt();
+        s = UI->coord_table->item(i,4)->text().toFloat();
+        gr_ = UI->coord_table->item(i,5)->text().toInt();
+        m_ = UI->coord_table->item(i,6)->text().toInt();
+        s_ = UI->coord_table->item(i,7)->text().toFloat();
+        x_ = UI->coord_table->item(i,8)->text().toFloat();
+        y_ = UI->coord_table->item(i,9)->text().toFloat();
+    }
+    e1->setText(QString::number(gr));
+    e2->setText(QString::number(m));
+    e3->setText(QString::number(s));
+    e4->setText(QString::number(gr_));
+    e5->setText(QString::number(m_));
+    e6->setText(QString::number(s_));
+    e15->setText(QString::number(x_));
+    e16->setText(QString::number(y_));
+
+
+    if(add_coord->exec() == QDialog::Accepted)
+    {
+
+    QSqlQuery query;
+    QString str = QString("UPDATE coordinates SET latitude_wgs_84_g='%1',latitude_wgs_84_m='%2',latitude_wgs_84_s='%3',longitude_wgs_84_g='%4',longitude_wgs_84_m='%5',longitude_wgs_84_s='%6',x_coordinates='%7',y_coordinates='%8' \
+                           WHERE id_coordinates=%9") \
+                          .arg(e1->text().toInt()).arg(e2->text().toInt()).arg(e3->text().toFloat()) \
+                          .arg(e4->text().toInt()).arg(e5->text().toInt()).arg(e6->text().toFloat()) \
+                          .arg(e15->text().toFloat()).arg(e16->text().toFloat()).arg(id_c);
+
+    if(!query.exec(str))
+     {
+        QString s = query.lastError().text();
+        return;
+     }
+
+    show_coordinates(ob_name,id_obj,table_name,id_name);
+ }
+return;
+}
+//=============== Автоперевод систем координат ====================
+void Objectmanager::WGS_to_other()
+{
+    //================MessageBox===============================
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Сообщение");
+    msgBox.setText(tr("You need a map to translate the object coordinates.\nDo you want to open the map?"));
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+     switch (msgBox.exec()) {
+     case QMessageBox::Yes:
+         // yes was clicked
+         break;
+     case QMessageBox::No:
+         return;
+         break;
+     default:
+         return;
+         break;
+     }
+  //==============================================================
+
+
+    QString File = QFileDialog::getOpenFileName(this, QString::null, QString::null,"Maps (*.map)" );
+    if (File.isEmpty()) return;//если карта не выбрана
+
+    MyMapAccess *map = new MyMapAccess();
+    hmap = 0;
+    hmap = map->mapOpen(File.toLocal8Bit().data(),0);
+    if(hmap == 0) return;
+
+    if(map->mapIsGeoSupported(hmap))
+    {
+        GEODEGREE N, E;
+        double N_rad, E_rad, H;
+
+        N.Degree = e1->text().toLong();
+        N.Minute = e2->text().toLong();
+        N.Second = e3->text().toFloat();
+
+        map->mapDegreeToRadian(&N, &N_rad);
+
+        E.Degree = e4->text().toLong();
+        E.Minute = e5->text().toLong();
+        E.Second = e6->text().toFloat();
+
+        map->mapDegreeToRadian(&E, &E_rad);
+
+        H = e7->text().toDouble();
+
+        //----- Перезаписываем введенные координаты в поля Edit для WGS-84------------
+        e1->setText(QString::number(N.Degree));
+        e2->setText(QString::number(N.Minute));
+        e3->setText(QString::number(N.Second,'f',2));
+        e4->setText(QString::number(E.Degree));
+        e5->setText(QString::number(E.Minute));
+        e6->setText(QString::number(E.Second,'f',2));
+        e7->setText(QString::number(H,'f',2));
+        //-----------------
+        map->mapGeoWGS84ToPlane3D(hmap,&N_rad,&E_rad,&H);
+
+        e15->setText(QString::number(N_rad,'f',2));
+        e16->setText(QString::number(E_rad,'f',2));
+        e17->setText(QString::number(H,'f',2));
+
+        map->mapPlaneToGeo423D(hmap,&N_rad,&E_rad,&H);
+        map->mapRadianToDegree(&N_rad, &N);
+        map->mapRadianToDegree(&E_rad, &E);
+
+        e8->setText(QString::number(N.Degree));
+        e9->setText(QString::number(N.Minute));
+        e10->setText(QString::number(N.Second,'f',2));
+        e11->setText(QString::number(E.Degree));
+        e12->setText(QString::number(E.Minute));
+        e13->setText(QString::number(E.Second,'f',2));
+        e14->setText(QString::number(H,'f',2));
+
+    }
+
+    if(hmap)
+    {
+        map->mapCloseData(hmap);
+    }
+
+    add_coord->raise();
+}
+
