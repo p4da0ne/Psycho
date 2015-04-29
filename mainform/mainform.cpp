@@ -1,4 +1,5 @@
 #include "mainform.h"
+#include "ui_main_form.h"
 
 #if defined Q_OS_WIN
 #define kodec QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Windows-1251"));
@@ -22,16 +23,15 @@ Mainform::Mainform(QMainWindow *parent, Qt::WFlags flags)
 	connect(this,SIGNAL(reopen_login()),this,SLOT(show_login_form()));
 	connect(this,SIGNAL(valid_user(int)),this,SLOT(create_user_menu(int)));
 	connect(this,SIGNAL(signalMainWindowShown()),this,SLOT(show_login_form()));
-//----------- Тестирование модуля вывода ---------
-	QTextCodec *codec = QTextCodec::codecForName("CP1251");
-	QTextCodec::setCodecForCStrings(codec);
-	Reports *r = new Reports;
-    QString report = r->create_object_formular(8);
-//----------------------------------------
-    if (test_db_connection())
-        {
-            connection_flag = true;
-        }
+
+    QTextCodec *codec = QTextCodec::codecForName("CP1251");
+    QTextCodec::setCodecForCStrings(codec);
+
+	if (test_db_connection())
+	{
+		connection_flag = true;
+	}
+
 	init_menu(0);
 }
 
@@ -45,7 +45,6 @@ void Mainform::show_connect_settings_dialog()
 {
  DB_dialog = new QDialog;
  DB_dialog->setWindowTitle("Настройки соединения с БД");
- DB_dialog->setWindowIcon(QIcon("./icons/db_settings.png"));
  DB_dialog->setFixedSize(400,250);
 
  //============== Создание элементов формы ====================
@@ -250,12 +249,16 @@ void Mainform::init_menu(int id_user_group)
 			settings_menu = new QMenu("Настройки");
 			add_menu_db_connection(settings_menu);
 			add_menu_manage_users(settings_menu);
-            add_menu_settings(settings_menu);
+			add_menu_map_settings(settings_menu);
 			UI->menuBar->addMenu(settings_menu);
+
+		//	DB_work_menu = new QMenu("Работа с БД");
+		//	UI->menuBar->addMenu(DB_work_menu);
 
 			oper_menu = new QMenu("Оперативная работа");
 			add_menu_supporting_tables(oper_menu);
 			add_menu_object_manager(oper_menu);
+			add_menu_calculation(oper_menu);
 			add_mapwork(oper_menu);
 			UI->menuBar->addMenu(oper_menu);
 			Mainform::setWindowTitle("Сатурн - сессия разработчика");
@@ -271,12 +274,16 @@ void Mainform::init_menu(int id_user_group)
 			settings_menu = new QMenu("Настройки");
 			add_menu_db_connection(settings_menu);
 			add_menu_manage_users(settings_menu);
-            add_menu_settings(settings_menu);
+			add_menu_map_settings(settings_menu);
 			UI->menuBar->addMenu(settings_menu);
+
+		//	DB_work_menu = new QMenu("Работа с БД");
+		//	UI->menuBar->addMenu(DB_work_menu);
 
 			oper_menu = new QMenu("Оперативная работа");
 			add_menu_supporting_tables(oper_menu);
 			add_menu_object_manager(oper_menu);
+			add_menu_calculation(oper_menu);
 			add_mapwork(oper_menu);
 			UI->menuBar->addMenu(oper_menu);
 
@@ -290,8 +297,13 @@ void Mainform::init_menu(int id_user_group)
 			add_menu_exit(menu);
 			UI->menuBar->addMenu(menu);
 			
+	//		DB_work_menu = new QMenu("Работа с БД");
+		//	UI->menuBar->addMenu(DB_work_menu);
+
 			oper_menu = new QMenu("Оперативная работа");
+		//	add_menu_supporting_tables(oper_menu);
 			add_menu_object_manager(oper_menu);
+			add_menu_calculation(oper_menu);
 			add_mapwork(oper_menu);
 			UI->menuBar->addMenu(oper_menu);
 
@@ -336,6 +348,14 @@ void Mainform::add_menu_db_connection(QMenu *settings_menu){
 	connect(sett_act1, SIGNAL(triggered()),this, SLOT(show_connect_settings_dialog()));
 }
 
+void Mainform::add_menu_map_settings(QMenu *settings_menu){
+	open_map_sett_action = new QAction("Размещение файлов карт",this);
+	open_map_sett_action->setIcon(QIcon("./icons/planet.png"));
+	settings_menu->addAction(open_map_sett_action);
+	connect(open_map_sett_action, SIGNAL(triggered()),this, SLOT(slotOpenMapSettingsDialog()));
+}
+
+
 void Mainform::add_menu_manage_users(QMenu *settings_menu){
 	sett_act4 = new QAction("Управление пользователями",this);
 	sett_act4->setIcon(QIcon("./icons/user_config.png"));
@@ -356,12 +376,11 @@ void Mainform::add_menu_object_manager(QMenu *oper_menu){
 	oper_menu->addAction(sett_act3);
 	connect(sett_act3, SIGNAL(triggered()),this, SLOT(show_object_manager_form()));
 }
-
-void Mainform::add_menu_settings(QMenu *oper_menu){
-    sett_act_setting = new QAction("Настройки",this);
-    sett_act_setting->setIcon(QIcon("./icons/text.png"));
-    oper_menu->addAction(sett_act_setting);
-    connect(sett_act_setting, SIGNAL(triggered()),this, SLOT(show_settings_form()));
+void Mainform::add_menu_calculation(QMenu *oper_menu){
+	sett_act5 = new QAction("Расчетные задачи",this);
+	sett_act5->setIcon(QIcon("./icons/text.png"));
+	oper_menu->addAction(sett_act5);
+	connect(sett_act5, SIGNAL(triggered()),this, SLOT(show_calculating_form()));
 }
 //============= Создание и открытие формы входа (смены) пользователя ==========
 void Mainform::show_login_form()
@@ -369,7 +388,6 @@ void Mainform::show_login_form()
  login_flag = false;
  login_form = new QDialog;
  login_form->setWindowTitle("Вход в систему");
- login_form->setWindowIcon(QIcon("./icons/metacontact.png"));
  
  login_form->setFixedSize(300,200);
  
@@ -422,7 +440,7 @@ void Mainform::show_login_form()
 	QString password =	login_password_edit->text();
 	if(!login(login_name,password))
 	{
-		login_message = "<p align = 'center'><font color='red'>Неверные имя пользователя или пароль.</font></p>";
+		login_message = "<p align = 'center'><font color='red'>" + tr("Login or password are incorrect.") + "</font></p>";
 		message_label->setText(login_message);
 		delete login_form;	 
 		reopen_login();
@@ -437,8 +455,6 @@ void Mainform::show_login_form()
  login_message = "";
  return;
 }
-
-
 
 
 //============== Функция проверки логина и пароля пользователя в БД ======================
@@ -525,10 +541,7 @@ void Mainform::create_user_menu(int id_user)
 	return;
 }
 
-void Mainform::show_settings_form(){
-    SettingsForm * sf = new SettingsForm();
-    sf->show();
-}
+
 
 
 //===================================================
@@ -544,10 +557,10 @@ void Mainform::show_user_form()
 //============= Открытие формы работы с картой ==============
 void Mainform::show_map_form()
 {
-	MapView * m = new MapView;
-	QMdiSubWindow * mapW = m_mdiArea->addSubWindow (m);
+    MapView *mapView = new MapView(this);
+    QMdiSubWindow * mapW = m_mdiArea->addSubWindow (mapView);
     mapW->setAttribute (Qt::WA_DeleteOnClose);
-    m->showMaximized();
+    mapView->showMaximized();
 	m_mdiArea->setActiveSubWindow (mapW);   
 
 }
@@ -561,12 +574,36 @@ void Mainform::show_supporting_tables_form(){
 }
 //================ Открытие формы управления объектами =================
 void Mainform::show_object_manager_form(){
-
-    Objectmanager *obman = new Objectmanager();
-    QMdiSubWindow * obmanager = m_mdiArea->addSubWindow (obman);
+	Objectmanager *obman = new Objectmanager();
+	QMdiSubWindow * obmanager = m_mdiArea->addSubWindow (obman);
 	obmanager->setAttribute (Qt::WA_DeleteOnClose);
-    obman->setWindowTitle("Управление объектами");
-    obman->showMaximized();
+	obman->setWindowTitle("Управление объектами");
+	obman->showMaximized();
 	m_mdiArea->setActiveSubWindow (obmanager);  
+
+}
+
+void Mainform::show_calculating_form(){
+	calc = new CalculatingProblemManager();
+	QMdiSubWindow * obmanager = m_mdiArea->addSubWindow (calc);
+	obmanager->setAttribute (Qt::WA_DeleteOnClose);
+	calc->setWindowTitle("Расчетные задачи");
+	calc->showMaximized();
+	m_mdiArea->setActiveSubWindow (obmanager);  
+}
+
+
+
+void Mainform::slotOpenMapSettingsDialog()
+{
+	MapSettingsDialog *settDlg = new MapSettingsDialog;
+
+    if(settDlg->exec() == QDialog::Accepted)
+    {
+		QString mapFilePath = settDlg->mapPathLineEdit.text();
+		QString rscFilePath = settDlg->rscPathLineEdit.text();
+        
+
+    }
 
 }

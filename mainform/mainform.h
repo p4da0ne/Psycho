@@ -2,24 +2,22 @@
 #define MAINFORM_H
 
 #include <QtGui>
-#include "ui_main_form.h"
-#include <manage_users.h>
-#include <output.h>
+#include <QMap>
+#include <QStringList>
+#include <QFile>
+
+#include "manage_users.h"
+#include "output.h"
 #include "mymdiarea.h"
-#include <QMdiArea>
-#include <QMdiSubWindow>
-#include <QMessageBox>
-#include <QFile> 
-#include <mapview.h>
-#include "QMap"
-#include "QStringList"
-#include <reports.h>
-#include <supporting_tables.h>
-#include <object_manager.h>
+#include "mapview.h"
+#include "reports.h"
+#include "supporting_tables.h"
+#include "object_manager.h"
 #include "settings.h"
-#include "settingsform.h"
+#include "calculatingproblemmanager.h"
 #include "db_saturn.h"
 #include "dataaccess.h"
+#include "mapsettingsdialog.h"
 
 
 namespace Ui
@@ -45,6 +43,7 @@ public:
 	QMdiArea * m_mdiArea;
     
 private slots:
+	void show_calculating_form();
 	void show_user_form();
 	void show_connect_settings_dialog();
 	void test_connection();
@@ -54,11 +53,10 @@ private slots:
 	void show_map_form();
 	void show_supporting_tables_form();
 	void show_object_manager_form();
-    void show_settings_form();
+	void slotOpenMapSettingsDialog();
 	//void show_dialog_add_new_region(int id_parent,bool is_parent_ko);
 
 private:
-
 	QMenu * menu;
 	QAction * action1;
 	QAction * action2;
@@ -69,13 +67,12 @@ private:
 	QAction * sett_act3;
 	QAction * sett_act4;
 	QAction * sett_act5;
-    QAction * sett_act_setting;
 	QMenu * DB_work_menu;
 	QMenu * oper_menu;
 	QAction * map_act;
-	QAction * opp_edit_action;
-	QAction * weapon_edit_action;
-	QAction * planer_action;
+	QAction * open_map_sett_action;
+
+
 	QLabel *message_label;
 	void init_menu(int id_user_group);
 	QDialog *DB_dialog;
@@ -88,6 +85,8 @@ private:
 	QLineEdit *login_password_edit;
 	QComboBox *ServDB_combobox;
 	Settings *settings;
+	CalculatingProblemManager *calc;
+   // MapView * mapView;
 
     bool create_connection(QString,QString,QString,QString,QString);
 	bool close_connection();
@@ -97,12 +96,13 @@ private:
 	void add_mapwork(QMenu *oper_menu);
 	void add_menu_db_connection(QMenu *settings_menu);
 	void add_menu_manage_users(QMenu *settings_menu);
+	void add_menu_map_settings(QMenu *settings_menu);
 	void add_menu_exit(QMenu *menu);
 	void add_menu_change_user(QMenu *menu);
 	void add_menu_enter_system(QMenu *menu);
 	void add_menu_supporting_tables(QMenu *oper_menu);
 	void add_menu_object_manager(QMenu *oper_menu);
-    void add_menu_settings(QMenu *oper_menu);
+	void add_menu_calculation(QMenu *oper_menu);
 	bool connection_flag;
 	db_saturn *db;
 	//add_object *reg;
@@ -111,4 +111,3 @@ private:
 };
 
 #endif // MAINFORM_H
-
