@@ -5657,7 +5657,7 @@ void Add_elements_dialog::otchet_pers()
 }
 
 
-void Add_elements_dialog::add_coord_special_cond_dlg()
+void Add_elements_dialog::  add_coord_special_cond_dlg()
 {
 	add_dlg = new QDialog;
 	add_dlg->setWindowTitle("Добавлении координат");
@@ -5855,6 +5855,7 @@ void Add_elements_dialog::save_edit_persones(){
 	 textEdit_propa->setStyleSheet("font:bold; color: black");
      label_foto->setDisabled(true);
      textEdit_propa->setReadOnly(false);
+     close();
 
    }
 

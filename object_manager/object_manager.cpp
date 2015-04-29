@@ -4147,86 +4147,86 @@ return;
 //=============== Àâòîïåğåâîä ñèñòåì êîîğäèíàò ====================
 void Objectmanager::WGS_to_other()
 {
-    //================MessageBox===============================
-    QMessageBox msgBox;
-    msgBox.setWindowTitle("Ñîîáùåíèå");
-    msgBox.setText(tr("You need a map to translate the object coordinates.\nDo you want to open the map?"));
-    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-     switch (msgBox.exec()) {
-     case QMessageBox::Yes:
-         // yes was clicked
-         break;
-     case QMessageBox::No:
-         return;
-         break;
-     default:
-         return;
-         break;
-     }
-  //==============================================================
+//    //================MessageBox===============================
+//    QMessageBox msgBox;
+//    msgBox.setWindowTitle("Ñîîáùåíèå");
+//    msgBox.setText(tr("You need a map to translate the object coordinates.\nDo you want to open the map?"));
+//    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+//     switch (msgBox.exec()) {
+//     case QMessageBox::Yes:
+//         // yes was clicked
+//         break;
+//     case QMessageBox::No:
+//         return;
+//         break;
+//     default:
+//         return;
+//         break;
+//     }
+//  //==============================================================
 
 
-    QString File = QFileDialog::getOpenFileName(this, QString::null, QString::null,"Maps (*.map)" );
-    if (File.isEmpty()) return;//åñëè êàğòà íå âûáğàíà
+//    QString File = QFileDialog::getOpenFileName(this, QString::null, QString::null,"Maps (*.map)" );
+//    if (File.isEmpty()) return;//åñëè êàğòà íå âûáğàíà
 
-    MyMapAccess *map = new MyMapAccess();
-    hmap = 0;
-    hmap = map->mapOpen(File.toLocal8Bit().data(),0);
-    if(hmap == 0) return;
+//    MyMapAccess *map = new MyMapAccess();
+//    hmap = 0;
+//    hmap = map->mapOpen(File.toLocal8Bit().data(),0);
+//    if(hmap == 0) return;
 
-    if(map->mapIsGeoSupported(hmap))
-    {
-        GEODEGREE N, E;
-        double N_rad, E_rad, H;
+//    if(map->mapIsGeoSupported(hmap))
+//    {
+//        GEODEGREE N, E;
+//        double N_rad, E_rad, H;
 
-        N.Degree = e1->text().toLong();
-        N.Minute = e2->text().toLong();
-        N.Second = e3->text().toFloat();
+//        N.Degree = e1->text().toLong();
+//        N.Minute = e2->text().toLong();
+//        N.Second = e3->text().toFloat();
 
-        map->mapDegreeToRadian(&N, &N_rad);
+//        map->mapDegreeToRadian(&N, &N_rad);
 
-        E.Degree = e4->text().toLong();
-        E.Minute = e5->text().toLong();
-        E.Second = e6->text().toFloat();
+//        E.Degree = e4->text().toLong();
+//        E.Minute = e5->text().toLong();
+//        E.Second = e6->text().toFloat();
 
-        map->mapDegreeToRadian(&E, &E_rad);
+//        map->mapDegreeToRadian(&E, &E_rad);
 
-        H = e7->text().toDouble();
+//        H = e7->text().toDouble();
 
-        //----- Ïåğåçàïèñûâàåì ââåäåííûå êîîğäèíàòû â ïîëÿ Edit äëÿ WGS-84------------
-        e1->setText(QString::number(N.Degree));
-        e2->setText(QString::number(N.Minute));
-        e3->setText(QString::number(N.Second,'f',2));
-        e4->setText(QString::number(E.Degree));
-        e5->setText(QString::number(E.Minute));
-        e6->setText(QString::number(E.Second,'f',2));
-        e7->setText(QString::number(H,'f',2));
-        //-----------------
-        map->mapGeoWGS84ToPlane3D(hmap,&N_rad,&E_rad,&H);
+//        //----- Ïåğåçàïèñûâàåì ââåäåííûå êîîğäèíàòû â ïîëÿ Edit äëÿ WGS-84------------
+//        e1->setText(QString::number(N.Degree));
+//        e2->setText(QString::number(N.Minute));
+//        e3->setText(QString::number(N.Second,'f',2));
+//        e4->setText(QString::number(E.Degree));
+//        e5->setText(QString::number(E.Minute));
+//        e6->setText(QString::number(E.Second,'f',2));
+//        e7->setText(QString::number(H,'f',2));
+//        //-----------------
+//        map->mapGeoWGS84ToPlane3D(hmap,&N_rad,&E_rad,&H);
 
-        e15->setText(QString::number(N_rad,'f',2));
-        e16->setText(QString::number(E_rad,'f',2));
-        e17->setText(QString::number(H,'f',2));
+//        e15->setText(QString::number(N_rad,'f',2));
+//        e16->setText(QString::number(E_rad,'f',2));
+//        e17->setText(QString::number(H,'f',2));
 
-        map->mapPlaneToGeo423D(hmap,&N_rad,&E_rad,&H);
-        map->mapRadianToDegree(&N_rad, &N);
-        map->mapRadianToDegree(&E_rad, &E);
+//        map->mapPlaneToGeo423D(hmap,&N_rad,&E_rad,&H);
+//        map->mapRadianToDegree(&N_rad, &N);
+//        map->mapRadianToDegree(&E_rad, &E);
 
-        e8->setText(QString::number(N.Degree));
-        e9->setText(QString::number(N.Minute));
-        e10->setText(QString::number(N.Second,'f',2));
-        e11->setText(QString::number(E.Degree));
-        e12->setText(QString::number(E.Minute));
-        e13->setText(QString::number(E.Second,'f',2));
-        e14->setText(QString::number(H,'f',2));
+//        e8->setText(QString::number(N.Degree));
+//        e9->setText(QString::number(N.Minute));
+//        e10->setText(QString::number(N.Second,'f',2));
+//        e11->setText(QString::number(E.Degree));
+//        e12->setText(QString::number(E.Minute));
+//        e13->setText(QString::number(E.Second,'f',2));
+//        e14->setText(QString::number(H,'f',2));
 
-    }
+//    }
 
-    if(hmap)
-    {
-        map->mapCloseData(hmap);
-    }
+//    if(hmap)
+//    {
+//        map->mapCloseData(hmap);
+//    }
 
-    add_coord->raise();
+//    add_coord->raise();
 }
 
