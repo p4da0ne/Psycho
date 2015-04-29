@@ -14,7 +14,6 @@
 #include "supporting_tables.h"
 #include "object_manager.h"
 #include "settings.h"
-#include "calculatingproblemmanager.h"
 #include "db_saturn.h"
 #include "dataaccess.h"
 #include "mapsettingsdialog.h"
@@ -23,7 +22,7 @@
 namespace Ui
 {
     class main_form;
-};
+}
 
 class Mainform : public QMainWindow
 {
@@ -43,7 +42,7 @@ public:
 	QMdiArea * m_mdiArea;
     
 private slots:
-	void show_calculating_form();
+
 	void show_user_form();
 	void show_connect_settings_dialog();
 	void test_connection();
@@ -66,7 +65,7 @@ private:
 	QAction * sett_act2;
 	QAction * sett_act3;
 	QAction * sett_act4;
-	QAction * sett_act5;
+
 	QMenu * DB_work_menu;
 	QMenu * oper_menu;
 	QAction * map_act;
@@ -85,7 +84,7 @@ private:
 	QLineEdit *login_password_edit;
 	QComboBox *ServDB_combobox;
 	Settings *settings;
-	CalculatingProblemManager *calc;
+//	CalculatingProblemManager *calc;
    // MapView * mapView;
 
     bool create_connection(QString,QString,QString,QString,QString);
@@ -102,7 +101,6 @@ private:
 	void add_menu_enter_system(QMenu *menu);
 	void add_menu_supporting_tables(QMenu *oper_menu);
 	void add_menu_object_manager(QMenu *oper_menu);
-	void add_menu_calculation(QMenu *oper_menu);
 	bool connection_flag;
 	db_saturn *db;
 	//add_object *reg;

@@ -258,7 +258,6 @@ void Mainform::init_menu(int id_user_group)
 			oper_menu = new QMenu("Оперативная работа");
 			add_menu_supporting_tables(oper_menu);
 			add_menu_object_manager(oper_menu);
-			add_menu_calculation(oper_menu);
 			add_mapwork(oper_menu);
 			UI->menuBar->addMenu(oper_menu);
 			Mainform::setWindowTitle("Сатурн - сессия разработчика");
@@ -283,7 +282,6 @@ void Mainform::init_menu(int id_user_group)
 			oper_menu = new QMenu("Оперативная работа");
 			add_menu_supporting_tables(oper_menu);
 			add_menu_object_manager(oper_menu);
-			add_menu_calculation(oper_menu);
 			add_mapwork(oper_menu);
 			UI->menuBar->addMenu(oper_menu);
 
@@ -303,7 +301,6 @@ void Mainform::init_menu(int id_user_group)
 			oper_menu = new QMenu("Оперативная работа");
 		//	add_menu_supporting_tables(oper_menu);
 			add_menu_object_manager(oper_menu);
-			add_menu_calculation(oper_menu);
 			add_mapwork(oper_menu);
 			UI->menuBar->addMenu(oper_menu);
 
@@ -376,12 +373,7 @@ void Mainform::add_menu_object_manager(QMenu *oper_menu){
 	oper_menu->addAction(sett_act3);
 	connect(sett_act3, SIGNAL(triggered()),this, SLOT(show_object_manager_form()));
 }
-void Mainform::add_menu_calculation(QMenu *oper_menu){
-	sett_act5 = new QAction("Расчетные задачи",this);
-	sett_act5->setIcon(QIcon("./icons/text.png"));
-	oper_menu->addAction(sett_act5);
-	connect(sett_act5, SIGNAL(triggered()),this, SLOT(show_calculating_form()));
-}
+
 //============= Создание и открытие формы входа (смены) пользователя ==========
 void Mainform::show_login_form()
 {
@@ -583,14 +575,14 @@ void Mainform::show_object_manager_form(){
 
 }
 
-void Mainform::show_calculating_form(){
-	calc = new CalculatingProblemManager();
-	QMdiSubWindow * obmanager = m_mdiArea->addSubWindow (calc);
-	obmanager->setAttribute (Qt::WA_DeleteOnClose);
-	calc->setWindowTitle("Расчетные задачи");
-	calc->showMaximized();
-	m_mdiArea->setActiveSubWindow (obmanager);  
-}
+//void Mainform::show_calculating_form(){
+//	calc = new CalculatingProblemManager();
+//	QMdiSubWindow * obmanager = m_mdiArea->addSubWindow (calc);
+//	obmanager->setAttribute (Qt::WA_DeleteOnClose);
+//	calc->setWindowTitle("Расчетные задачи");
+//	calc->showMaximized();
+//	m_mdiArea->setActiveSubWindow (obmanager);
+//}
 
 
 

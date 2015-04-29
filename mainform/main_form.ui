@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>main_form</class>
- <widget class="QMainWindow" name="main_form" >
-  <property name="geometry" >
+ <widget class="QMainWindow" name="main_form">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,54 +10,36 @@
     <height>600</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <property name="autoFillBackground" >
+  <property name="autoFillBackground">
    <bool>true</bool>
   </property>
-  <widget class="QWidget" name="centralwidget" >
-   <property name="geometry" >
-    <rect>
-     <x>0</x>
-     <y>20</y>
-     <width>800</width>
-     <height>561</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QStatusBar" name="statusbar" >
-   <property name="geometry" >
-    <rect>
-     <x>0</x>
-     <y>581</y>
-     <width>800</width>
-     <height>19</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QMenuBar" name="menuBar" >
-   <property name="geometry" >
+  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
-  <action name="action" >
-   <property name="text" >
+  <action name="action">
+   <property name="text">
     <string>Соединиться с БД</string>
    </property>
   </action>
-  <action name="action_2" >
-   <property name="text" >
+  <action name="action_2">
+   <property name="text">
     <string>Отключиться от БД</string>
    </property>
   </action>
-  <action name="action_3" >
-   <property name="text" >
+  <action name="action_3">
+   <property name="text">
     <string>Выход</string>
    </property>
   </action>
