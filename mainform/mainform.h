@@ -17,6 +17,7 @@
 #include "db_saturn.h"
 #include "dataaccess.h"
 #include "mapsettingsdialog.h"
+#include "dbbackup.h"
 
 
 namespace Ui
@@ -53,6 +54,7 @@ private slots:
 	void show_supporting_tables_form();
 	void show_object_manager_form();
 	void slotOpenMapSettingsDialog();
+	void slotOpenBackupDbDialog();
 	//void show_dialog_add_new_region(int id_parent,bool is_parent_ko);
 
 private:
@@ -70,6 +72,7 @@ private:
 	QMenu * oper_menu;
 	QAction * map_act;
 	QAction * open_map_sett_action;
+	QAction * backup_db_action;
 
 
 	QLabel *message_label;
@@ -96,6 +99,7 @@ private:
 	void add_menu_db_connection(QMenu *settings_menu);
 	void add_menu_manage_users(QMenu *settings_menu);
 	void add_menu_map_settings(QMenu *settings_menu);
+	void add_menu_backup_db(QMenu *settings_menu);
 	void add_menu_exit(QMenu *menu);
 	void add_menu_change_user(QMenu *menu);
 	void add_menu_enter_system(QMenu *menu);

@@ -250,6 +250,7 @@ void Mainform::init_menu(int id_user_group)
 			add_menu_db_connection(settings_menu);
 			add_menu_manage_users(settings_menu);
 			add_menu_map_settings(settings_menu);
+			add_menu_backup_db(settings_menu);
 			UI->menuBar->addMenu(settings_menu);
 
 		//	DB_work_menu = new QMenu("Работа с БД");
@@ -274,6 +275,7 @@ void Mainform::init_menu(int id_user_group)
 			add_menu_db_connection(settings_menu);
 			add_menu_manage_users(settings_menu);
 			add_menu_map_settings(settings_menu);
+			add_menu_backup_db(settings_menu);
 			UI->menuBar->addMenu(settings_menu);
 
 		//	DB_work_menu = new QMenu("Работа с БД");
@@ -350,6 +352,12 @@ void Mainform::add_menu_map_settings(QMenu *settings_menu){
 	open_map_sett_action->setIcon(QIcon("./icons/planet.png"));
 	settings_menu->addAction(open_map_sett_action);
 	connect(open_map_sett_action, SIGNAL(triggered()),this, SLOT(slotOpenMapSettingsDialog()));
+}
+void Mainform::add_menu_backup_db(QMenu *settings_menu){
+	backup_db_action = new QAction("Резервное копирование БД",this);
+	backup_db_action->setIcon(QIcon("./icons/database.png"));
+	settings_menu->addAction(backup_db_action);
+	connect(backup_db_action, SIGNAL(triggered()),this, SLOT(slotOpenBackupDbDialog()));
 }
 
 
@@ -595,6 +603,19 @@ void Mainform::slotOpenMapSettingsDialog()
 		QString mapFilePath = settDlg->mapPathLineEdit.text();
 		QString rscFilePath = settDlg->rscPathLineEdit.text();
         
+
+    }
+
+}
+
+
+void Mainform::slotOpenBackupDbDialog()
+{
+	DbBackup *backupDlg = new DbBackup;
+
+    if(backupDlg->exec() == QDialog::Accepted)
+    {
+       
 
     }
 
