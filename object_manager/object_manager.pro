@@ -16,7 +16,7 @@ DEPENDPATH +=  . \
                 ../my_mapaccess \
                 ../output \
                 ../reports
-LIBS += -L../build -lreports -loutput
+LIBS += -L../build -lreports -loutput -lmy_mapaccess
 
 DEFINES += __USE_DLL_XXXXX
 DEFINES += BUILD_DLL

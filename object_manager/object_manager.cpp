@@ -14,6 +14,7 @@
 #include "simledelegate.h"
 #include <QProgressDialog>
 #include <QStringList>
+#include <QSettings>
 #include "../reports/reports.h"
 #include "ui_add_object.h"
 #include "ui_object_manager_form.h"
@@ -4163,7 +4164,7 @@ void Objectmanager::edit_coordinates(QString ob_name, int id_obj, QString table_
     if(add_coord->exec() == QDialog::Accepted)
     {
 
-    QSqlQuery query;
+		QSqlQuery query;
     QString str = QString("UPDATE coordinates SET latitude_wgs_84_g='%1',latitude_wgs_84_m='%2',latitude_wgs_84_s='%3',longitude_wgs_84_g='%4',longitude_wgs_84_m='%5',longitude_wgs_84_s='%6',x_coordinates='%7',y_coordinates='%8' \
                            WHERE id_coordinates=%9") \
                           .arg(e1->text().toInt()).arg(e2->text().toInt()).arg(e3->text().toFloat()) \
@@ -4183,85 +4184,148 @@ return;
 //=============== Автоперевод систем координат ====================
 void Objectmanager::WGS_to_other()
 {
-//    //================MessageBox===============================
-//    QMessageBox msgBox;
-//    msgBox.setWindowTitle("Сообщение");
-//    msgBox.setText("You need a map to translate the object coordinates.\nDo you want to open the map?");
-//    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-//    msgBox.setButtonText(QMessageBox::Yes, "Да");
-//    msgBox.setButtonText(QMessageBox::No, "Нет");
+   	QSettings *settings = new QSettings("vka","saturnMap");
+	QString mapPath = settings->value("/mapSettings/mapPath","").toString();
 
-//     switch (msgBox.exec()) {
-//     case QMessageBox::Yes:
-//         // yes was clicked
-//         break;
-//     case QMessageBox::No:
-//         return;
-//         break;
-//     default:
-//         return;
-//         break;
-//     }
-//  //==============================================================
+	if(mapPath.isEmpty())
+	{
+		 //================MessageBox===============================
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Сообщение");
+    msgBox.setText("Вы должны открыть карту, чтобы перевести координаты объекта\nОткрыть карту?");
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setButtonText(QMessageBox::Yes, "Да");
+    msgBox.setButtonText(QMessageBox::No, "Нет");
 
-//    QString File = QFileDialog::getOpenFileName(this, QString::null, QString::null,"Maps (*.map)" );
-//    if (File.isEmpty()) return;//если карта не выбрана
+     switch (msgBox.exec()) {
+     case QMessageBox::Yes:
+         mapPath = QFileDialog::getOpenFileName(this, QString::null, QString::null,"Maps (*.map)" );
+         break;
+     case QMessageBox::No:
+         return;
+         break;
+     default:
+         return;
+         break;
+     }
+  //==============================================================
+	}
+	if(mapPath.isEmpty()) return;//если карта не выбрана
+	
+	MyMapAccess *map = new MyMapAccess();
+    hmap = 0;
+	hmap = map->mapOpen(mapPath.toStdString().c_str(),0);
+    if(hmap == 0) return;
 
-//    MyMapAccess *map = new MyMapAccess();
-//    hmap = 0;
-//    hmap = map->mapOpen(File.toLocal8Bit().data(),0);
-//    if(hmap == 0) return;
+    if(map->mapIsGeoSupported(hmap))
+    {
+        GEODEGREE N, E;
+        double N_rad, E_rad, H;
 
-//    if(map->mapIsGeoSupported(hmap))
-//    {
-//        GEODEGREE N, E;
-//        double N_rad, E_rad, H;
+        N.Degree = e1->text().toLong();
+        N.Minute = e2->text().toLong();
+        N.Second = e3->text().toFloat();
 
-//        N.Degree = e1->text().toLong();
-//        N.Minute = e2->text().toLong();
-//        N.Second = e3->text().toFloat();
+        map->mapDegreeToRadian(&N, &N_rad);
 
-//        map->mapDegreeToRadian(&N, &N_rad);
+        E.Degree = e4->text().toLong();
+        E.Minute = e5->text().toLong();
+        E.Second = e6->text().toFloat();
 
-//        E.Degree = e4->text().toLong();
-//        E.Minute = e5->text().toLong();
-//        E.Second = e6->text().toFloat();
+        map->mapDegreeToRadian(&E, &E_rad);
 
-//        map->mapDegreeToRadian(&E, &E_rad);
+        //----- Перезаписываем введенные координаты в поля Edit для WGS-84------------
+        e1->setText(QString::number(N.Degree));
+        e2->setText(QString::number(N.Minute));
+        e3->setText(QString::number(N.Second,'f',2));
+        e4->setText(QString::number(E.Degree));
+        e5->setText(QString::number(E.Minute));
+        e6->setText(QString::number(E.Second,'f',2));
+        //-----------------
+        map->mapGeoWGS84ToPlane3D(hmap,&N_rad,&E_rad,&H);
 
-//        //----- Перезаписываем введенные координаты в поля Edit для WGS-84------------
-//        e1->setText(QString::number(N.Degree));
-//        e2->setText(QString::number(N.Minute));
-//        e3->setText(QString::number(N.Second,'f',2));
-//        e4->setText(QString::number(E.Degree));
-//        e5->setText(QString::number(E.Minute));
-//        e6->setText(QString::number(E.Second,'f',2));
-//        //-----------------
-//        map->mapGeoWGS84ToPlane3D(hmap,&N_rad,&E_rad,&H);
+        e15->setText(QString::number(N_rad,'f',2));
+        e16->setText(QString::number(E_rad,'f',2));
 
-//        e15->setText(QString::number(N_rad,'f',2));
-//        e16->setText(QString::number(E_rad,'f',2));
-
-//        map->mapPlaneToGeo423D(hmap,&N_rad,&E_rad,&H);
-//        map->mapRadianToDegree(&N_rad, &N);
-//        map->mapRadianToDegree(&E_rad, &E);
+        map->mapPlaneToGeo423D(hmap,&N_rad,&E_rad,&H);
+        map->mapRadianToDegree(&N_rad, &N);
+        map->mapRadianToDegree(&E_rad, &E);
 
 
-//    }
+    }
 
-//    if(hmap)
-//    {
-//        map->mapCloseData(hmap);
-//    }
+    if(hmap)
+    {
+        map->mapCloseData(hmap);
+    }
 
-//    add_coord->raise();
+    add_coord->raise();
 }
 
-void Objectmanager::Plain_to_other()
+void Objectmanager::PLANE_to_other()
 {
+	QSettings *settings = new QSettings("vka","saturnMap");
+	QString mapPath = settings->value("/mapSettings/mapPath","").toString();
 
+	if(mapPath.isEmpty())
+	{
+		 //================MessageBox===============================
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Сообщение");
+    msgBox.setText("Вы должны открыть карту, чтобы перевести координаты объекта\nОткрыть карту??");
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setButtonText(QMessageBox::Yes, "Да");
+    msgBox.setButtonText(QMessageBox::No, "Нет");
 
+     switch (msgBox.exec()) {
+     case QMessageBox::Yes:
+         mapPath = QFileDialog::getOpenFileName(this, QString::null, QString::null,"Maps (*.map)" );
+         break;
+     case QMessageBox::No:
+         return;
+         break;
+     default:
+         return;
+         break;
+     }
+  //==============================================================
+	}
+	if(mapPath.isEmpty()) return;//если карта не выбрана
+	
+	MyMapAccess *map = new MyMapAccess();
+    hmap = 0;
+	hmap = map->mapOpen(mapPath.toStdString().c_str(),0);
+    if(hmap == 0) return;
 
+    if(map->mapIsGeoSupported(hmap))
+    {
+        GEODEGREE N, E;
+        double N_rad, E_rad, H;
+     
+        N_rad = e15->text().toDouble();
+        E_rad = e16->text().toDouble();
+                
+        e15->setText(QString::number(N_rad,'f',2));
+        e16->setText(QString::number(E_rad,'f',2));
+               
+        map->mapPlaneToGeoWGS843D(hmap,&N_rad,&E_rad,&H);
+		map->mapRadianToDegree(&N_rad,&N);
+		map->mapRadianToDegree(&E_rad,&E);
 
+        e1->setText(QString::number(N.Degree));
+        e2->setText(QString::number(N.Minute));
+        e3->setText(QString::number(N.Second,'f',2));
+        e4->setText(QString::number(E.Degree));
+        e5->setText(QString::number(E.Minute));
+        e6->setText(QString::number(E.Second,'f',2));    
+ 
+    }
+
+    if(hmap)
+    {
+        map->mapCloseData(hmap);
+    }
+
+    add_coord->raise();
 }
 

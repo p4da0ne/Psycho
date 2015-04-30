@@ -77,7 +77,7 @@ private slots:
     void delete_coordinates();
     void edit_coordinates_view();
     void WGS_to_other();
-    void Plain_to_other();
+    void PLANE_to_other();
 private:
     void edit_coordinates(QString,int id_obj,QString,QString);
     int calcul(int);
