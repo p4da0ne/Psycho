@@ -3868,10 +3868,23 @@ void Objectmanager::delete_coordinates()
     int row_count = UI->coord_table->rowCount();
     bool fl;
     int f = 0;
+
+
     for(int i=0;i<row_count;i++)
     {
         f = f + UI->coord_table->item(i,0)->data(Qt::CheckStateRole).toInt();
     }
+
+    if(list.value(0)=="nations" || list.value(0)=="nationss" || list.value(0)=="nat" || list.value(0)=="dsmi" || list.value(0)=="ran" || list.value(0)=="rankss"
+            || list.value(0)=="sexss" || list.value(0)=="sex" || list.value(0)=="se" || list.value(0)=="ag" || list.value(0)=="agess" || list.value(0)=="prof"
+            || list.value(0)=="profess" || list.value(0)=="confess" || list.value(0)=="confesss" || list.value(0)=="conf" || list.value(0)=="psmi"
+            || list.value(0)=="smi" || list.value(0)=="ls" || list.value(0)=="gr" || list.value(0)=="mpo" || list.value(0)=="perssmi" || list.value(0)=="persls"){
+
+       QMessageBox::StandardButton ret;
+       ret = QMessageBox::critical (this,"Ошибка",("Нет возможности  удалить координаты "),QMessageBox::Ok );
+
+    }
+    else
         if(f > 0)
         {
             //================MessageBox===============================
@@ -3922,10 +3935,13 @@ void Objectmanager::delete_coordinates()
             str = QString("DELETE FROM coordinates WHERE id_coordinates = %1").arg(id);
           if(!query.exec(str))
           {
-           return;
+              QString sss = query.lastError().text();
+              int a = 0;
+              return;
           }
         }
     }
+
     if(list.value(0)=="dls" || list.value(0)=="chls" || list.value(0)=="lss" ){
     show_coordinates(list.value(0),list.value(1).toInt(),"coord_ls","id_ls");
     }
@@ -3964,7 +3980,17 @@ void Objectmanager::edit_coordinates_view()
         f = f + UI->coord_table->item(i,0)->data(Qt::CheckStateRole).toInt();
 
     }
-        if(f > 0)
+
+    if(list.value(0)=="nations" || list.value(0)=="nationss" || list.value(0)=="nat" || list.value(0)=="dsmi" || list.value(0)=="ran" || list.value(0)=="rankss"
+            || list.value(0)=="sexss" || list.value(0)=="sex" || list.value(0)=="se" || list.value(0)=="ag" || list.value(0)=="agess" || list.value(0)=="prof"
+            || list.value(0)=="profess" || list.value(0)=="confess" || list.value(0)=="confesss" || list.value(0)=="conf" || list.value(0)=="psmi"
+            || list.value(0)=="smi" || list.value(0)=="ls" || list.value(0)=="gr" || list.value(0)=="mpo" || list.value(0)=="perssmi" || list.value(0)=="persls"){
+
+       QMessageBox::StandardButton ret;
+       ret = QMessageBox::critical (this,"Ошибка",("Нет возможности  редактировать координаты "),QMessageBox::Ok );
+
+    }else
+    if(f > 0)
         {
             //================MessageBox===============================
               QMessageBox msgBox;
@@ -4016,8 +4042,6 @@ void Objectmanager::edit_coordinates_view()
                      break;
                  }
         }
-
-
 }
 
 void Objectmanager::edit_coordinates(QString ob_name, int id_obj, QString table_name, QString id_name)
@@ -4099,30 +4123,42 @@ void Objectmanager::edit_coordinates(QString ob_name, int id_obj, QString table_
 
     add_coord->setLayout(main_layout);
 
-    int row_count = UI->coord_table->rowCount();
-    int gr,m,m_,gr_,id_c;
+    //int id_coord = UI->coord_table->item(row,1)->text().toInt();
+    int gr,m,m_,gr_,id_c,id;
     float s,s_,x_,y_;
+    bool fl;
+    int row_count = UI->coord_table->rowCount();
     for(int i=0;i<row_count;i++)
-    {
-        id_c = UI->coord_table->item(i,1)->text().toInt();
-        gr = UI->coord_table->item(i,2)->text().toInt();
-        m = UI->coord_table->item(i,3)->text().toInt();
-        s = UI->coord_table->item(i,4)->text().toFloat();
-        gr_ = UI->coord_table->item(i,5)->text().toInt();
-        m_ = UI->coord_table->item(i,6)->text().toInt();
-        s_ = UI->coord_table->item(i,7)->text().toFloat();
-        x_ = UI->coord_table->item(i,8)->text().toFloat();
-        y_ = UI->coord_table->item(i,9)->text().toFloat();
-    }
-    e1->setText(QString::number(gr));
-    e2->setText(QString::number(m));
-    e3->setText(QString::number(s));
-    e4->setText(QString::number(gr_));
-    e5->setText(QString::number(m_));
-    e6->setText(QString::number(s_));
-    e15->setText(QString::number(x_));
-    e16->setText(QString::number(y_));
+        {
+            fl = UI->coord_table->item(i,0)->data(Qt::CheckStateRole).toBool();
+            //if((fl == true) && (!UI->opp_coord_table->item(i,1))) continue;
 
+            if(fl == true)
+            {
+                id = (UI->coord_table->item(i,1)->text()).toInt();
+            }
+        }
+
+     QSqlQuery query;
+
+     QString str = QString("SELECT * FROM coordinates where id_coordinates=%1").arg(id);
+        if(!query.exec(str))
+        {
+            return;
+        }
+
+        QSqlRecord rec = query.record();
+        while(query.next())
+        {
+            e1->setText(query.value(rec.indexOf("latitude_wgs_84_g")).toString());
+            e2->setText(query.value(rec.indexOf("latitude_wgs_84_m")).toString());
+            e3->setText(query.value(rec.indexOf("latitude_wgs_84_s")).toString());
+            e4->setText(query.value(rec.indexOf("longitude_wgs_84_g")).toString());
+            e5->setText(query.value(rec.indexOf("longitude_wgs_84_m")).toString());
+            e6->setText(query.value(rec.indexOf("longitude_wgs_84_s")).toString());
+            e15->setText(query.value(rec.indexOf("x_coordinates")).toString());
+            e16->setText(query.value(rec.indexOf("y_coordinates")).toString());
+        }
 
     if(add_coord->exec() == QDialog::Accepted)
     {
@@ -4132,7 +4168,7 @@ void Objectmanager::edit_coordinates(QString ob_name, int id_obj, QString table_
                            WHERE id_coordinates=%9") \
                           .arg(e1->text().toInt()).arg(e2->text().toInt()).arg(e3->text().toFloat()) \
                           .arg(e4->text().toInt()).arg(e5->text().toInt()).arg(e6->text().toFloat()) \
-                          .arg(e15->text().toFloat()).arg(e16->text().toFloat()).arg(id_c);
+                          .arg(e15->text().toFloat()).arg(e16->text().toFloat()).arg(id);
 
     if(!query.exec(str))
      {
@@ -4147,86 +4183,85 @@ return;
 //=============== Автоперевод систем координат ====================
 void Objectmanager::WGS_to_other()
 {
-//    //================MessageBox===============================
-//    QMessageBox msgBox;
-//    msgBox.setWindowTitle("Сообщение");
-//    msgBox.setText(tr("You need a map to translate the object coordinates.\nDo you want to open the map?"));
-//    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-//     switch (msgBox.exec()) {
-//     case QMessageBox::Yes:
-//         // yes was clicked
-//         break;
-//     case QMessageBox::No:
-//         return;
-//         break;
-//     default:
-//         return;
-//         break;
-//     }
-//  //==============================================================
+    //================MessageBox===============================
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Сообщение");
+    msgBox.setText("You need a map to translate the object coordinates.\nDo you want to open the map?");
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setButtonText(QMessageBox::Yes, "Да");
+    msgBox.setButtonText(QMessageBox::No, "Нет");
+
+     switch (msgBox.exec()) {
+     case QMessageBox::Yes:
+         // yes was clicked
+         break;
+     case QMessageBox::No:
+         return;
+         break;
+     default:
+         return;
+         break;
+     }
+  //==============================================================
+
+    QString File = QFileDialog::getOpenFileName(this, QString::null, QString::null,"Maps (*.map)" );
+    if (File.isEmpty()) return;//если карта не выбрана
+
+    MyMapAccess *map = new MyMapAccess();
+    hmap = 0;
+    hmap = map->mapOpen(File.toLocal8Bit().data(),0);
+    if(hmap == 0) return;
+
+    if(map->mapIsGeoSupported(hmap))
+    {
+        GEODEGREE N, E;
+        double N_rad, E_rad, H;
+
+        N.Degree = e1->text().toLong();
+        N.Minute = e2->text().toLong();
+        N.Second = e3->text().toFloat();
+
+        map->mapDegreeToRadian(&N, &N_rad);
+
+        E.Degree = e4->text().toLong();
+        E.Minute = e5->text().toLong();
+        E.Second = e6->text().toFloat();
+
+        map->mapDegreeToRadian(&E, &E_rad);
+
+        //----- Перезаписываем введенные координаты в поля Edit для WGS-84------------
+        e1->setText(QString::number(N.Degree));
+        e2->setText(QString::number(N.Minute));
+        e3->setText(QString::number(N.Second,'f',2));
+        e4->setText(QString::number(E.Degree));
+        e5->setText(QString::number(E.Minute));
+        e6->setText(QString::number(E.Second,'f',2));
+        //-----------------
+        map->mapGeoWGS84ToPlane3D(hmap,&N_rad,&E_rad,&H);
+
+        e15->setText(QString::number(N_rad,'f',2));
+        e16->setText(QString::number(E_rad,'f',2));
+
+        map->mapPlaneToGeo423D(hmap,&N_rad,&E_rad,&H);
+        map->mapRadianToDegree(&N_rad, &N);
+        map->mapRadianToDegree(&E_rad, &E);
 
 
-//    QString File = QFileDialog::getOpenFileName(this, QString::null, QString::null,"Maps (*.map)" );
-//    if (File.isEmpty()) return;//если карта не выбрана
+    }
 
-//    MyMapAccess *map = new MyMapAccess();
-//    hmap = 0;
-//    hmap = map->mapOpen(File.toLocal8Bit().data(),0);
-//    if(hmap == 0) return;
+    if(hmap)
+    {
+        map->mapCloseData(hmap);
+    }
 
-//    if(map->mapIsGeoSupported(hmap))
-//    {
-//        GEODEGREE N, E;
-//        double N_rad, E_rad, H;
+    add_coord->raise();
+}
 
-//        N.Degree = e1->text().toLong();
-//        N.Minute = e2->text().toLong();
-//        N.Second = e3->text().toFloat();
+void Objectmanager::Plain_to_other()
+{
 
-//        map->mapDegreeToRadian(&N, &N_rad);
 
-//        E.Degree = e4->text().toLong();
-//        E.Minute = e5->text().toLong();
-//        E.Second = e6->text().toFloat();
 
-//        map->mapDegreeToRadian(&E, &E_rad);
 
-//        H = e7->text().toDouble();
-
-//        //----- Перезаписываем введенные координаты в поля Edit для WGS-84------------
-//        e1->setText(QString::number(N.Degree));
-//        e2->setText(QString::number(N.Minute));
-//        e3->setText(QString::number(N.Second,'f',2));
-//        e4->setText(QString::number(E.Degree));
-//        e5->setText(QString::number(E.Minute));
-//        e6->setText(QString::number(E.Second,'f',2));
-//        e7->setText(QString::number(H,'f',2));
-//        //-----------------
-//        map->mapGeoWGS84ToPlane3D(hmap,&N_rad,&E_rad,&H);
-
-//        e15->setText(QString::number(N_rad,'f',2));
-//        e16->setText(QString::number(E_rad,'f',2));
-//        e17->setText(QString::number(H,'f',2));
-
-//        map->mapPlaneToGeo423D(hmap,&N_rad,&E_rad,&H);
-//        map->mapRadianToDegree(&N_rad, &N);
-//        map->mapRadianToDegree(&E_rad, &E);
-
-//        e8->setText(QString::number(N.Degree));
-//        e9->setText(QString::number(N.Minute));
-//        e10->setText(QString::number(N.Second,'f',2));
-//        e11->setText(QString::number(E.Degree));
-//        e12->setText(QString::number(E.Minute));
-//        e13->setText(QString::number(E.Second,'f',2));
-//        e14->setText(QString::number(H,'f',2));
-
-//    }
-
-//    if(hmap)
-//    {
-//        map->mapCloseData(hmap);
-//    }
-
-//    add_coord->raise();
 }
 

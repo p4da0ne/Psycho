@@ -22,6 +22,7 @@
 #include "People_Losses.h"
 #include "textprinter.h"
 #include <QProgressDialog>
+#include <my_mapaccess.h>
 
 class simledelegate;
 
@@ -46,7 +47,7 @@ public:
     QMap<QString,QString> coord_line;
     QMap< QString, QMap<QString, QString> > object_map;
 	QPoint		pe;
-
+    HMAP hmap;
 public slots:
 	void customMenuTree(const QPoint &);
 	void customMenuView(const QPoint &);
@@ -76,7 +77,7 @@ private slots:
     void delete_coordinates();
     void edit_coordinates_view();
     void WGS_to_other();
-
+    void Plain_to_other();
 private:
     void edit_coordinates(QString,int id_obj,QString,QString);
     int calcul(int);

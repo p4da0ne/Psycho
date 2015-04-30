@@ -7,10 +7,13 @@ DESTDIR = ../build
 
 
 INCLUDEPATH += . \
-                 ../reports \
-                 ../output
+                ../include \
+                ../my_mapaccess \
+                ../reports \
+                ../output
 
 DEPENDPATH +=  . \
+                ../my_mapaccess \
                 ../output \
                 ../reports
 LIBS += -L../build -lreports -loutput
