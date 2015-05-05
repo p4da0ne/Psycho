@@ -20,7 +20,7 @@ public:
     ~MapScroll();
     int				mapOpen( const char *name );
     void			changePos(long int dx,long int dy);
-    void			changeScale(float ñhange, double poz_sbx, double poz_sby);
+    void			changeScale(float ñhange);
     void			closeMap();
 	void			changeFrame();
 	void			findObject(double *x, double *y);

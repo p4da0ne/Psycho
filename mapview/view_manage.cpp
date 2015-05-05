@@ -4,6 +4,7 @@
 #include <QsqlError>
 #include <QSqlRecord>
 #include <QVariant>
+#include <qmath.h>
 
 ViewManage::ViewManage(QObject *parent)
     : QObject(parent)
@@ -57,14 +58,58 @@ QList<SignData*> ViewManage::getSmiMeans()
 			QString semantika_digit2_mpo_pso = query.value(rec.indexOf("semantika_digit2")).toString();
 			QString semantika_1_mpo_pso = query.value(rec.indexOf("semantika_1")).toString();
 
+			
 			QList<Coord*> coordList;
 			Coord *coord = new Coord(x_coord,y_coord);	
 			coordList.append(coord);
+			
+			///////////////////////////////////
+			double radius;
+			double angle;
+			
+			if(semantika_digit1_mpo_pso > 0)
+			{
+				radius = semantika_digit1_mpo_pso.toDouble()*250;
+			}
+			if(semantika_digit2_mpo_pso > 0)
+			{
+				angle = 5*3.14/2 - (semantika_digit2_mpo_pso.toDouble()*3.14/180);
+			}
 
+		 
+			// если зачек радио-теле центра (свой или вражеский), то добавляем вторую метрику
+			if ((signCode=="V0000169007")||(signCode=="V0000169029"))
+			{	
+				coord = new Coord(x_coord,y_coord+radius);
+				coordList.append(coord);
+			}
+
+
+			if (signCode=="L00000060504") // самолет
+			{	
+				coord = new Coord(x_coord+120000,y_coord+140000);
+				coordList.append(coord);
+				coord = new Coord(x_coord+120000+70000,y_coord+140000-80000);
+				coordList.append(coord);
+			}
+
+
+			// если передвижная звуковещательная станция, то добавляем вторую метрику 
+			// (получаем ее как угол места и длину радиус-вектора, направленного из первой точки метрики)
+			if (signCode=="V0000060505")
+			{	
+				double xx=4*radius*qCos(angle);
+				double yy=4*radius*qSin(angle);
+				
+				coord = new Coord(x_coord+xx,y_coord+yy);
+				coordList.append(coord);
+			}
+			
+			
 			QMap<long int,QString> semantic_map;
 
 			semantic_map[17501] = id_mpo_pso;
-			semantic_map[17502] = SMI_MEANS;
+			semantic_map[17502] = QString::number(SMI_MEANS);
 			semantic_map[18]=semantika_digit1_mpo_pso;	// иногда это наполнение значка (в тех случаях, когда не "дальность")
 			semantic_map[19]=semantika_1_mpo_pso;	// подпись значка
 			semantic_map[32811]=semantika_digit1_mpo_pso;	//дальность действия средства
@@ -121,7 +166,7 @@ QList<SignData*> ViewManage::getFormationsMeans()
 			QMap<long int,QString> semantic_map;
 
 			semantic_map[17501] = id_mpo_pso;
-			semantic_map[17502] = SMI_MEANS;
+			semantic_map[17502] = QString::number(FORMATIONS_MEANS);
 			semantic_map[18]=semantika_digit1_mpo_pso;	// иногда это наполнение значка (в тех случаях, когда не "дальность")
 			semantic_map[19]=semantika_1_mpo_pso;	// подпись значка
 			semantic_map[32811]=semantika_digit1_mpo_pso;	//дальность действия средства
@@ -177,7 +222,7 @@ QList<SignData*> ViewManage::getGroupsMeans()
 			QMap<long int,QString> semantic_map;
 
 			semantic_map[17501] = id_mpo_pso;
-			semantic_map[17502] = SMI_MEANS;
+			semantic_map[17502] = QString::number(GROUPS_MEANS);
 			semantic_map[18]=semantika_digit1_mpo_pso;	// иногда это наполнение значка (в тех случаях, когда не "дальность")
 			semantic_map[19]=semantika_1_mpo_pso;	// подпись значка
 			semantic_map[32811]=semantika_digit1_mpo_pso;	//дальность действия средства
@@ -224,7 +269,7 @@ QList<SignData*> ViewManage::getFormations()
 			semantic_map[105] = shortNameLs;
 			semantic_map[19] = shortNameLs;
 			semantic_map[17501] = idLs;
-			semantic_map[17502] = FORMATIONS;
+			semantic_map[17502] = QString::number(FORMATIONS);
 
 			SignData *signData = new SignData(signCode,coordList,semantic_map);
 				
@@ -274,7 +319,7 @@ QList<SignData*> ViewManage::getSpecialConditions()
 			semantic_map[17] = Sem_1_spec_cond;
 			semantic_map[19] = Sem_2_spec_cond;
 			semantic_map[17501] = idSpecialConditions;
-			semantic_map[17502] = SPECIAL_CONDITIONS;
+			semantic_map[17502] = QString::number(SPECIAL_CONDITIONS);
 
 			SignData *signData = new SignData(signCode,coordList,semantic_map);
 				
