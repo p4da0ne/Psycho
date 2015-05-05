@@ -663,6 +663,20 @@ typedef struct GEODEGREE   // КООРДИНАТЫ ТОЧКИ В ГРАДУСАХ
 }
   GEODEGREE;
 
+typedef struct GEODEGREEXY   // КООРДИНАТЫ ТОЧКИ В ГРАДУСАХ
+{
+  long int Degree_x;         // Градусы
+  long int Minute_x;         // Минуты
+  float    Second_x;         // Секунды
+  long int Degree_y;         // Градусы
+  long int Minute_y;         // Минуты
+  float    Second_y;         // Секунды
+  double	   h_wgs;			 // высота
+  double	x;				//прямугольные
+  double	y;				//координаты
+  double	h;
+}
+  GEODEGREEXY;
 typedef struct SIGNDEGREE  // КООРДИНАТЫ ТОЧКИ В ГРАДУСАХ
 {
   long int Degree;         // Градусы

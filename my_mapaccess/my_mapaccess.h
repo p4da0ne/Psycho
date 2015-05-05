@@ -67,6 +67,10 @@ public:
 	HSITE mapCreateAndAppendSite(HMAP hMap, const char * mapname,const char * rscname, CREATESITE * createsite);
 	// Закрыть пользовательскую карту в заданном районе работ
 	HSITE mapCloseSiteForMap(HMAP hMap, HSITE hSite);
+	HSITE mapCloseSiteForMapByName(HMAP hMap,const char * name);
+
+
+
 	// Заполнение справочных данных в зависимости от типа карты
 	long int mapRegisterFromMapType(int maptype, MAPREGISTEREX * mapreg);
 	//добавление объекта на катру MAP, SIT, MTW, MTQ, RSW, MPT
@@ -89,6 +93,8 @@ public:
 		void mapSetTotalSelectFlag(HMAP hMap, long int flag=-1);
 	// Установить масштаб отображения (знаменатель масштаба)
 		long int mapSetViewScale(HMAP hMap, long int * x, long int * y, float scale);
+		 // Запросить округленный масштаб отображения карты
+		long int mapGetShowScale(HMAP);
 	//поиск объекта
 		//для поиска
 		void mapChangeViewScale(HMAP hMap, long int *x, long int *y, float Change);
@@ -101,9 +107,11 @@ public:
 		void mapViewSelect(HMAP hMap, HWND hWnd, DOUBLEPOINT * point, HSELECT select, COLORREF color, long int place = PP_MAP);
 	  // Удалить контекст (описание условий) поиска/отображения
 		void mapDeleteSelectContext(HSELECT select);
-		//перевод в координаты
+		//перевод в координаты в дискретах
 		void mapPictureToMap(HMAP hMap,double *x, double *y);
+		//из дискретов в метры
 		void mapMapToPlane(HMAP hmap, double * x, double *y);
+		//перевод в координаты в метрах
 		void mapPictureToPlane(HMAP hMap, double * x, double * y);
 	// Запросить название объекта по порядковому номеру (number)
 		const char * mapRscObjectNameInLayer(HMAP hmap,long int layer,long int number);
@@ -157,6 +165,14 @@ public:
 	long int mapObjectExcode(HOBJ info);
 	 // Запросить яркость карты (от -16 до +16)
 	long int mapGetBright(HMAP hMap);
+// Запросить контрастность (от -16 до +16)
+	long int	mapGetContrast(HMAP hMap);
+  // Установить контрастность (от -16 до +16)
+	long int	mapSetContrast(HMAP hMap, long int contrast);
+  // Запросить интенсивность заливки полигонов для       // 21/07/06
+	long int	mapGetIntensity(HMAP hMap);
+  // Установить интенсивность заливки полигонов для
+	long int	mapSetIntensity(HMAP hMap, long int intensity);
 	// Запросить контекст буфера окна
 	HDC mapGetImageDC(HIMAGE hImage);
 	 // Создать буфер карты в памяти для исключения мигания  
@@ -165,79 +181,41 @@ public:
 	void mapPaint95(HMAP hMap, HDC hdc,  long int erase, RECT * rect);
 	  // Установить идентификатор окна для приема сообщений
 	HWND mapGetHandleForMessage();
+	 // Вывести изображение карты в Image (массив)
+	long int	mapPaintToImage(HMAP hMap,  RGBQUAD * palette,  char * lpImage,  long int width, long int height,  RECT * rect);
 	//------------------------------------------------------------
-	// Преобразование из метров на местности (проекция карты)
- // в геодезические координаты в радианах (общеземной эллипсоид WGS84)
- // (поддерживается не для всех карт !)
+	// Преобразование из метров на местности (проекция карты) в геодезические координаты в радианах (общеземной эллипсоид WGS84)
 	long int mapPlaneToGeoWGS84(HMAP hmap,double *Bx, double *Ly);
 	long int mapPlaneToGeoWGS843D(HMAP hmap,double *Bx, double *Ly, double *H);
-
+	 // Преобразование из дискретов на карте (районе работ) в пикселы на изображении
+	void mapMapToPicture(HMAP hMap, double * x, double * y);
 	//  Преобразование из геодезических координат в радианах
- // (общеземной эллипсоид WGS84)
- //  в метры на местности в проекции карты
- // (поддерживается не для всех карт !)
- // hmap - идентификатор открытых данных
- // Bx,Ly,H  - преобразуемые координаты
- // на входе радианы, на выходе - метры
- // При ошибке возвращает ноль
-
   long int mapGeoWGS84ToPlane3D(HMAP hmap, double *Bx, double *Ly, double * H);
-
-   // Запрос - поддерживается ли пересчет к геодезическим
- // координатам из плоских прямоугольных и обратно
- // hmap - идентификатор открытых данных
- // Если нет - возвращает ноль
-
+   // Запрос - поддерживается ли пересчет к геодезическим координатам из плоских прямоугольных и обратно
 	long int mapIsGeoSupported(HMAP hmap);
-
 	// Преобразование координат из градусов в радианы
- // (для положительного значения)
- // degree - структура, содержащая координаты в градусах, минутах,
- // секундах. Описана в maptype.h
- // radian - значение в радианах
-
 	void mapDegreeToRadian(GEODEGREE * degree, double * radian);
-
-	 // Преобразование координат из радиан в градусы
- // (для положительного значения)
- // radian - значение в радианах
- // degree - структура, содержащая координаты в градусах, минутах,
- // секундах. Описана в maptype.h
-
-	void mapRadianToDegree(double * radian, GEODEGREE * degree);
-
-	 // Преобразование из геодезических координат в радианах
- // в метры на местности в соответствии с проекцией карты
- // (поддерживается не для всех карт !)
- // hmap - идентификатор открытых данных
- // Bx,Ly  - преобразуемые координаты
- // на входе радианы, на выходе - метры
- // При ошибке возвращает 0
-
+	 // Преобразование из геодезических координат в радианах  в метры на местности в соответствии с проекцией карты
 	long int mapGeoToPlane(HMAP hmap,double *Bx, double *Ly);
-
-	// Преобразование из метров на местности (проекция карты)
- // в геодезические координаты в радианах (эллипсоид Красовского)
- // (поддерживается не для всех карт !)
- // hmap  - идентификатор открытых данных
- // Bx,Ly - преобразуемые координаты
- // на входе метры, на выходе - радианы
- // H     - высота в точке (метры)
- // При ошибке возвращает ноль
-
+	// Преобразование из метров на местности (проекция карты) в геодезические координаты в радианах (эллипсоид Красовского)
 	long int mapPlaneToGeo42(HMAP hmap,double *Bx, double *Ly);
 	long int mapPlaneToGeo423D(HMAP hmap,double *Bx, double *Ly, double *H);
-
-    // Удалить объект карты
-    // Предыдущее состояние объекта сохраняется в резервных
-    // файлах и может быть восстановлено
-    // info  - идентификатор объекта карты в памяти
-    // Признак удаления записывается в памяти и в файле
-    // При ошибке возвращает ноль
-
-   long int mapDeleteObject(HOBJ info);
-
-
+	 // Преобразование координат из радиан в градусы
+	void	 mapRadianToDegree(double * radian,  GEODEGREE * degree);
+	 // Преобразование из метров на местности в дискреты на карте (районе работ)
+	void	 mapPlaneToMap(HMAP hMap,double * x, double * y);
+	HPRINTER prnLoadPrinter();
+	// Изменить значение кода семантической характеристики объекта
+	long int	mapSetSemanticCode(HOBJ info, long int number, long int code);
+ // Изменить значение семантической характеристики объекта
+	long int	mapSetSemanticValue(HOBJ info, long int number, char * place, long int maxsize);
+	
+	//РАСТР! ! ! ! ! ! ! ! ! ! ! ! ! !
+	//long int _MAPAPI mapOpenRstForMap(HMAP hMap, const char * rstname, long int mode);
+	 long int  openRstForMap(HMAP hMap, const char * rstname, long int mode);
+	 long int  closeRstForMap(HMAP hMap, long int number);
+	 // Запросить/Установить порядок отображения растра над картой
+	 long int  setRstViewOrder(HMAP hMap, long int number, long int order);
 protected:
     
 

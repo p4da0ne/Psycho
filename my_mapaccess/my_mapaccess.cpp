@@ -34,6 +34,25 @@ MyMapAccess::~MyMapAccess()
 //-------------------------------------------------------------
 // Перерисовка окна
 //-------------------------------------------------------------
+ // Вывести изображение карты в DIB
+ // Данная функция реализована только для платформы Windows !
+ // Выводится фрагмент карты, заданный параметром rect.
+ // Заполнется палитра,расположенная за BITMAINFOHEADER
+ // Изображение строится в текущем масштабе и составе объектов
+ // Размер точки 1,2,3 или 4 байт.
+ // Если размеры заданного DIB меньше размеров фрагмента -
+ // изображение строится в пределах размеров DIB.
+ //  hmap      - идентификатор открытых данных
+ //  dibinfo   - описатель создаваемого DIB в памяти
+ //  lpDibBits - адрес первого байта битовой области.
+ //  rect      - координаты фрагмента карты (Draw)
+ //              в изображении (Picture).
+ // Размер области DIB, задаваемый параметром dibinfo->biSizeImage,
+ // должен учитывать то, что каждая строка DIB должна быть
+ // кратна 4 байтам (32 битам):
+ //  dibinfo->biSizeImage = dibinfo->biHeight *
+ //    ((dibinfo->biWidth * dibinfo->biBitCount + 31) / 32) * 4;
+ // При ошибке в параметрах возвращает ноль
 int MyMapAccess::drawContents( HMAP hMap, 
 							  BITMAPINFOHEADER *lpDibInfo, 
 							  char *lpBits, 
@@ -166,7 +185,46 @@ long int MyMapAccess::mapGetBright(HMAP hMap)
   (FARPROC&) lpfn_mapGetBright = ::GetProcAddress(LibInst,"mapGetBright");
   return (*lpfn_mapGetBright)(hMap);
 }
-
+// Запросить контрастность (от -16 до +16)
+  // hmap - идентификатор открытых данных
+//_MAPIMP long int _MAPAPI mapGetContrast(HMAP hmap);
+long int MyMapAccess::mapGetContrast(HMAP hMap)
+{
+  long int (WINAPI * lpfn_mapGetContrast)(HMAP);
+  (FARPROC&) lpfn_mapGetContrast = ::GetProcAddress(LibInst,"mapGetContrast");
+  return (*lpfn_mapGetContrast)(hMap);
+}
+  // Установить контрастность (от -16 до +16)
+  // hmap - идентификатор открытых данных
+//_MAPIMP long int _MAPAPI mapSetContrast(HMAP hmap, long int contrast);
+long int MyMapAccess::mapSetContrast(HMAP hMap, 
+								   long int contrast)
+{	
+ long int (WINAPI * lpfn_mapSetContrast)(HMAP,long int);
+	(FARPROC&)lpfn_mapSetContrast = ::GetProcAddress(LibInst, "mapSetContrast");
+	return (*lpfn_mapSetContrast)(hMap, contrast);
+}
+  // Запросить интенсивность заливки полигонов для       // 21/07/06
+  // принтерного отображения (от 0 до 100)
+  // hmap - идентификатор открытых данных
+//_MAPIMP long int _MAPAPI mapGetIntensity(HMAP hmap);
+long int MyMapAccess::mapGetIntensity(HMAP hMap)
+{
+  long int (WINAPI * lpfn_mapGetIntensity)(HMAP);
+  (FARPROC&) lpfn_mapGetIntensity = ::GetProcAddress(LibInst,"mapGetIntensity");
+  return (*lpfn_mapGetIntensity)(hMap);
+}
+  // Установить интенсивность заливки полигонов для
+  // принтерного отображения (от 0 до 100)
+  // hmap - идентификатор открытых данных
+//*_MAPIMP long int _MAPAPI mapSetIntensity(HMAP hmap, long int intensity);
+long int MyMapAccess::mapSetIntensity(HMAP hMap, 
+								   long int intensity)
+{	
+ long int (WINAPI * lpfn_mapSetIntensity)(HMAP,long int);
+	(FARPROC&)lpfn_mapSetIntensity = ::GetProcAddress(LibInst, "mapSetIntensity");
+	return (*lpfn_mapSetIntensity)(hMap,intensity);
+}
 void  MyMapAccess::mapCloseData(HMAP hMap)
 {
 
@@ -395,16 +453,7 @@ const char * MyMapAccess::mapSegmentName(HOBJ info)
 	(FARPROC&)lpfn_mapGetHandleForEvent = ::GetProcAddress(LibInst, "mapGetHandleForEvent");   
 	return( * lpfn_mapGetHandleForEvent)(hMap); 
 }
-  // Создание буфера окна
-  // hwnd - идентификатор окна, в котором рисуется карта
-  // При ошибке возвращает ноль
-//_MAPIMP HIMAGE _MAPAPI mapCreateImage(HWND hwnd);
- HIMAGE MyMapAccess::mapCreateImage(HWND hwnd)
-{
-	 HIMAGE (WINAPI * lpfn_mapCreateImage)(HWND);          
-	(FARPROC&)lpfn_mapCreateImage = ::GetProcAddress(LibInst, "mapCreateImage");   
-	return( * lpfn_mapCreateImage)(hwnd); 
-}
+
  // Создать новый район (новую векторную карту)
   // mapname - полное имя файла карты
   // rscname - полное имя файла ресурсов
@@ -685,8 +734,7 @@ long int * MyMapAccess::mapRscObjectExcodeInLayer(HMAP hmap,long int layer,long 
  // name - адрес буфера для результата запроса
  // size - размер буфера
  // При ошибке возвращает ноль
-_MAPIMP const char * _MAPAPI mapObjectName(HOBJ info);
-
+//_MAPIMP const char * _MAPAPI mapObjectName(HOBJ info);
 const char * MyMapAccess::mapObjectName(HOBJ info)
 {
 	const char * (WINAPI * lpfn_mapObjectName)(HOBJ);          
@@ -850,6 +898,20 @@ long int MyMapAccess::mapAppendData(HMAP hMap,
 	(FARPROC&)lpfn_mapCloseSiteForMap = ::GetProcAddress(LibInst, "mapCloseSiteForMap");   
 	return( * lpfn_mapCloseSiteForMap)(hMap, hSite); 
 } 
+
+  // Закрыть пользовательскую карту в заданном районе работ
+  // hMap - идентификатор открытой карты
+  // name - имя паспорта пользовательской карты
+  // При ошибке возвращает ноль
+
+HSITE MyMapAccess::mapCloseSiteForMapByName(HMAP hMap, const char * sitename)
+{
+	HSITE (WINAPI * lpfn_mapCloseSiteForMapByName)(HMAP, const char *);          
+	(FARPROC&)lpfn_mapCloseSiteForMapByName = ::GetProcAddress(LibInst, "mapCloseSiteForMapByName");   
+	return( * lpfn_mapCloseSiteForMapByName)(hMap,sitename); 
+}
+
+
  // Преобразование из метров на местности (проекция карты)
  // в геодезические координаты в радианах (общеземной эллипсоид WGS84)
  // (поддерживается не для всех карт !)
@@ -933,7 +995,17 @@ void MyMapAccess::mapDegreeToRadian(GEODEGREE * degree,
 	(FARPROC&)lpfn_mapDegreeToRadian = ::GetProcAddress(LibInst, "mapDegreeToRadian");   
 	( * lpfn_mapDegreeToRadian)(degree, radian); 
 }
-
+ // Преобразование из метров на местности в дискреты
+ // на карте (районе работ)
+ // hmap - идентификатор открытых данных
+ // x,y  - преобразуемые координаты
+//_MAPIMP void _MAPAPI mapPlaneToMap(HMAP hmap,double * x, double * y);
+void MyMapAccess::mapPlaneToMap(HMAP hMap, double * x, double * y)
+{
+	void (WINAPI * lpfn_mapPlaneToMap)(HMAP ,double *, double *);          
+	(FARPROC&)lpfn_mapPlaneToMap = ::GetProcAddress(LibInst, "mapPlaneToMap");   
+	( * lpfn_mapPlaneToMap)(hMap, x, y); 
+}
  // Преобразование координат из радиан в градусы
  // (для положительного значения)
  // radian - значение в радианах
@@ -963,10 +1035,10 @@ long int MyMapAccess::mapGeoToPlane(HMAP hmap,
 {
 	long int (WINAPI * lpfn_mapGeoToPlane)(HMAP ,double *, double *);          
 	(FARPROC&)lpfn_mapGeoToPlane = ::GetProcAddress(LibInst, "mapGeoToPlane");   
-    return ( * lpfn_mapGeoToPlane)(hmap, Bx, Ly);
+	return ( * lpfn_mapGeoToPlane)(hmap, Bx, Ly); 
 }
 
- // Преобразование из метров на местности (проекция карты)
+	// Преобразование из метров на местности (проекция карты)
  // в геодезические координаты в радианах (эллипсоид Красовского)
  // (поддерживается не для всех карт !)
  // hmap  - идентификатор открытых данных
@@ -991,22 +1063,8 @@ long int MyMapAccess::mapPlaneToGeo423D(HMAP hMap,
 {
 	long int (WINAPI * lpfn_mapPlaneToGeo423D)(HMAP ,double *, double *, double *);          
 	(FARPROC&)lpfn_mapPlaneToGeo423D = ::GetProcAddress(LibInst, "mapPlaneToGeo423D");   
-    return ( * lpfn_mapPlaneToGeo423D)(hMap, Bx, Ly, H);
+	return ( * lpfn_mapPlaneToGeo423D)(hMap, Bx, Ly, H); 
 }
-
-// Удалить объект карты
-// Предыдущее состояние объекта сохраняется в резервных
-// файлах и может быть восстановлено
-// info  - идентификатор объекта карты в памяти
-// Признак удаления записывается в памяти и в файле
-// При ошибке возвращает ноль
-long int MyMapAccess::mapDeleteObject(HOBJ info)
-{
-    long int (WINAPI * lpfn_mapDeleteObject)(HOBJ);
-    (FARPROC&) lpfn_mapDeleteObject = ::GetProcAddress(LibInst, "mapDeleteObject");
-    return ( * lpfn_mapDeleteObject)(info);
-}
-
 
   // Запросить - может ли карта редактироваться
   // hMap  - идентификатор открытой карты
@@ -1126,6 +1184,36 @@ long int MyMapAccess::mapAvailableSemanticCode(HOBJ info,
 	long int (WINAPI * lpfn_mapAvailableSemanticCode)(HOBJ, int);          
 	( FARPROC&) lpfn_mapAvailableSemanticCode = ::GetProcAddress(LibInst, "mapAvailableSemanticCode");   
 	return ( * lpfn_mapAvailableSemanticCode)(info, number); 
+ }
+ // Изменить значение кода семантической характеристики объекта
+ // info    - идентификатор объекта карты в памяти
+ // number  - последовательный номер характеристики
+ // code    - внешний код характеристики
+ // При ошибке возвращает ноль,
+ // иначе - внутренний код семантики
+//_MAPIMP long int _MAPAPI mapSetSemanticCode(HOBJ info, long int number, long int code);
+long int MyMapAccess::mapSetSemanticCode(HOBJ info, long int number, long int code)
+{
+	long int (WINAPI * lpfn_mapSetSemanticCode)(HOBJ, long int, long int);          
+	( FARPROC&) lpfn_mapSetSemanticCode = ::GetProcAddress(LibInst, "mapSetSemanticCode");   
+	return ( * lpfn_mapSetSemanticCode)(info, number, code); 
+ }
+ // Изменить значение семантической характеристики объекта
+ // info    - идентификатор объекта карты в памяти
+ // number  - последовательный номер характеристики,
+ // place   - адрес строки, содержащей новое значение
+ //           в символьном виде; Для семантики типа "классификатор"
+ //           передается код значения в виде строки чисел,
+ //           то же - для типа "ссылка на объект".
+ // maxsize - длина передаваемой строки (для контроля)
+ // При ошибке возвращает ноль
+
+//_MAPIMP long int _MAPAPI mapSetSemanticValue(HOBJ info,long int number, char * place,long int maxsize);
+long int MyMapAccess::mapSetSemanticValue(HOBJ info, long int number, char * place, long int maxsize)
+{
+	long int (WINAPI * lpfn_mapSetSemanticValue)(HOBJ, long int, char *, long int);          
+	( FARPROC&) lpfn_mapSetSemanticValue = ::GetProcAddress(LibInst, "mapSetSemanticValue");   
+	return ( * lpfn_mapSetSemanticValue)(info, number, place, maxsize); 
  }
  // Запросить число слоев на карте
  // hmap - идентификатор открытых данных
@@ -1333,6 +1421,16 @@ long int MyMapAccess::mapSetObjectBotScale(HOBJ info,
 	( FARPROC&) lpfn_mapSetObjectBotScale = ::GetProcAddress(LibInst, "mapSetObjectBotScale");   
 	return ( * lpfn_mapSetObjectBotScale)(info, scale); 
  }
+  // Запросить округленный масштаб отображения карты
+  // hmap - идентификатор открытых данных
+  // Возвращает значение знаменателя масштаба
+//_MAPIMP long int _MAPAPI mapGetShowScale(HMAP hMap);
+long int MyMapAccess::mapGetShowScale(HMAP hMap)
+{
+	long int (WINAPI * lpfn_mapGetShowScale)(HMAP);          
+	( FARPROC&) lpfn_mapGetShowScale = ::GetProcAddress(LibInst, "mapGetShowScale");   
+	return ( * lpfn_mapGetShowScale)(hMap); 
+ }
  // Установить/сбросить/запросить признак "Не сжимать" объекта     14/12/05
  // press = 1 для установки признака "Не сжимать"
  //         0 для сброса признака
@@ -1423,6 +1521,17 @@ HIMAGE MyMapAccess::mapCreateImageEx(long int width,
 	( FARPROC&) lpfn_mapCreateImageEx = ::GetProcAddress(LibInst, "mapCreateImageEx");   
 	return ( * lpfn_mapCreateImageEx)(width, height); 
  }
+
+  // Создание буфера окна
+  // hwnd - идентификатор окна, в котором рисуется карта
+  // При ошибке возвращает ноль
+//_MAPIMP HIMAGE _MAPAPI mapCreateImage(HWND hwnd);
+ HIMAGE MyMapAccess::mapCreateImage(HWND hwnd)
+{
+	 HIMAGE (WINAPI * lpfn_mapCreateImage)(HWND);          
+	(FARPROC&)lpfn_mapCreateImage = ::GetProcAddress(LibInst, "mapCreateImage");   
+	return( * lpfn_mapCreateImage)(hwnd); 
+}
   // Установить идентификатор окна для приема сообщений
   // от "затяжных" процессов (перекодировка при открытии
   // карты, нарезка объектов по заданной границе,...)
@@ -1440,4 +1549,105 @@ HWND MyMapAccess::mapGetHandleForMessage()
 	HWND (WINAPI * lpfn_mapGetHandleForMessage)();          
 	( FARPROC&) lpfn_mapGetHandleForMessage = ::GetProcAddress(LibInst, "mapGetHandleForMessage");   
 	return ( * lpfn_mapGetHandleForMessage)(); 
+ }
+ // Преобразование из дискретов на карте (районе работ)
+ // в пикселы на изображении
+ // hmap - идентификатор открытых данных
+ // x,y  - преобразуемые координаты
+ // на входе дискреты, на выходе - пикселы.
+ // Применение :
+ // xpix = xdis; ypix = ydis;
+ // mapMapToPicture(xpix,ypix);
+//_MAPIMP void _MAPAPI mapMapToPicture(HMAP hmap,double * x, double * y);
+void MyMapAccess::mapMapToPicture(HMAP hMap, double * x, double * y)
+{
+	void (WINAPI * lpfn_mapMapToPicture)(HMAP, double *, double *);          
+	( FARPROC&) lpfn_mapMapToPicture = ::GetProcAddress(LibInst, "mapMapToPicture");   
+	( * lpfn_mapMapToPicture)(hMap, x, y); 
+ }
+
+ // Загрузить принтер
+//_MAPIMP HPRINTER _EXPORTAPI prnLoadPrinter();
+HPRINTER  MyMapAccess::prnLoadPrinter()
+{
+	HPRINTER  (WINAPI * lpfn_prnLoadPrinter)();          
+	( FARPROC&) lpfn_prnLoadPrinter = ::GetProcAddress(LibInst, "prnLoadPrinter");   
+	return ( * lpfn_prnLoadPrinter)(); 
+ }
+ // Вывести изображение карты в Image (массив)
+ // Данная функция реализована только для платформы Windows !
+ // Выводится фрагмент карты, заданный параметром rect.
+ // Заполняется палитра в поле palette.
+ // Изображение строится в текущем масштабе и составе объектов
+ // Палитра Image только 256 цветов, размер точки 1 байт !
+ // Если размеры заданного Image меньше размеров фрагмента -
+ // изображение строится в пределах размеров Image.
+ //  hmap          - идентификатор открытых данных
+ //  palette       - адрес палитры (256 RGBQUAD-цветов)
+ //  lpImage       - адрес первого байта области изображения.
+ //  width, height - ширина и высота Image.
+ //  rect          - координаты фрагмента карты (Draw)
+ //                  в изображении (Picture).
+ // При ошибке в параметрах возвращает ноль
+//_MAPIMP long int _MAPAPI mapPaintToImage(HMAP hmap, RGBQUAD * palette, char * lpImage, long int width,long int height,  RECT * rect);
+long int MyMapAccess::mapPaintToImage(HMAP hMap, 
+									  RGBQUAD * palette, 
+									  char * lpImage, 
+									  long int width,
+									  long int height,  
+									  RECT * rect)
+{
+	long int (WINAPI * lpfn_mapPaintToImage)(HMAP, RGBQUAD *, char *, long int, long int, RECT *);          
+	( FARPROC&) lpfn_mapPaintToImage = ::GetProcAddress(LibInst, "mapPaintToImage");   
+	return ( * lpfn_mapPaintToImage)(hMap, palette, lpImage, width, height, rect); 
+ }
+
+//=====================================================================================================
+
+							//РАСТР! ! ! ! ! ! ! ! ! ! ! ! ! !
+
+//=====================================================================================================
+// Открыть растровые данные в заданном районе работ
+  // (добавить в цепочку растров)
+  // Возвращает номер файла в цепочке растров
+  // hMap    - идентификатор открытой векторной карты
+  // rstname - имя файла растровой карты
+  // mode    - режим чтения/записи (GENERIC_READ, GENERIC_WRITE или 0)
+  // GENERIC_READ - все данные только на чтение
+  // При ошибке возвращает ноль
+//long int _MAPAPI mapOpenRstForMap(HMAP hMap, const char * rstname, long int mode);
+long int  MyMapAccess::openRstForMap(HMAP hMap,
+						const char * rstname, 
+						long int mode)
+{
+	long int (WINAPI * lpfn_openRstForMap)(HMAP, const char *, long int);          
+	( FARPROC&) lpfn_openRstForMap = ::GetProcAddress(LibInst, "mapOpenRstForMap");   
+	return ( * lpfn_openRstForMap)(hMap, rstname, mode); 
+ }
+  // Закрыть растровые данные в заданном районе работ
+  // hMap   - идентификатор открытой векторной карты
+  // number - номер растрового файла в цепочке
+  // Если number == 0, закрываются все растровые данные
+  // При ошибке возвращает ноль
+//_MAPIMP  long int _MAPAPI closeRstForMap(HMAP hMap, long int number);
+long int  MyMapAccess::closeRstForMap(HMAP hMap, long int number)
+{
+	long int (WINAPI * lpfn_closeRstForMap)(HMAP, long int);          
+	( FARPROC&) lpfn_closeRstForMap = ::GetProcAddress(LibInst, "mapCloseRstForMap");   
+	return ( * lpfn_closeRstForMap)(hMap, number); 
+ }
+// Запросить/Установить порядок отображения растра
+  // hMap   - идентификатор открытой векторной карты
+  // number - номер растрового файла в цепочке
+  //  (0 - под картой, 1 - над картой)
+  // При ошибке возвращает 0
+//_MAPIMP  long int _MAPAPI mapSetRstViewOrder(HMAP hMap, long int number, long int order);
+//_MAPIMP  long int _MAPAPI mapGetRstViewOrder(HMAP hMap, long int number);
+long int  MyMapAccess::setRstViewOrder(HMAP hMap, 
+									   long int number,
+										long int order)
+{
+	long int (WINAPI * lpfn_setRstViewOrder)(HMAP, long int, long int);          
+	( FARPROC&) lpfn_setRstViewOrder = ::GetProcAddress(LibInst, "mapSetRstViewOrder");   
+	return ( * lpfn_setRstViewOrder)(hMap, number, order); 
  }
