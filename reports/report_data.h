@@ -16,17 +16,25 @@ public:
     ~ReportData();
 
     QMap<int, QMap<QString, QString> > get_obj_info(int id_object = 0);
+    QMap<QString, QMap<QString, QString> > obj_info_coord(int id_object=0);
+
     QMap<QString,QString> pers_info(int id_object = 0);
+    QMap<QString, QMap<QString,QString> > pers_info_coord (int id_object = 0);
+
     QMap<int, QMap<QString, QString> > smi_info(int id_object = 0);
     QMap<int, QMap<QString, QString> > ls_info(int id_object = 0);
+    QMap<QString, QMap<QString, QString> > ls_info_coord(int id_object=0);
 //	QMultiMap<QString,QString> get_obj_v(int id_object = 0);
    
 private:
 
     QMap <int, QMap< QString,QString> > *obj_info;
     QMap<QString, QString> *pers_info_date;
+    QMap<QString,QMap<QString,QString> > *obj_elem;
+    QMap<QString,QMap<QString,QString> > *obj_elem_obj;
     QMap <int, QMap< QString,QString> > *smi_info_date;
     QMap <int, QMap< QString,QString> > *ls_info_date;
+    QMap<QString,QMap<QString,QString> > *ls_elem_obj;
 //	QMultiMap<QString,QString> *obj_info_v;
 };
 

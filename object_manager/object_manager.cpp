@@ -36,9 +36,9 @@ Objectmanager::Objectmanager(QWidget *parent) //int in_id_object
 	UI->delete_button->setEnabled(false);*/
 	UI->object_manager_tree->setContextMenuPolicy(Qt::CustomContextMenu);
 	UI->columnView->setContextMenuPolicy(Qt::CustomContextMenu);	
-    UI->add_coord_button->setIcon(QIcon("./icons/add.png"));
-    UI->del_coord_button->setIcon(QIcon("./icons/close.png"));
-    UI->edit_coord_button->setIcon(QIcon("./icons/edit.png"));
+    UI->add_coord_button->setIcon(QIcon("./icons/add_but.png"));
+    UI->del_coord_button->setIcon(QIcon("./icons/delete_but.png"));
+    UI->edit_coord_button->setIcon(QIcon("./icons/edit_but.png"));
 
 //==============================COMBOBOX 0 строка нафиг + работа с координатами ===============================
 

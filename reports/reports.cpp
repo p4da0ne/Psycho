@@ -24,11 +24,14 @@ QString Reports::create_object_formular(int id_object)
     QMap <int, QMap< QString,QString> > obj_data;
     obj_data = report_model->get_obj_info(id_object);
 
+    QMap<QString,QMap<QString,QString> > obj_data2;
+    obj_data2 = report_model->obj_info_coord(id_object);
     Output *out = new Output;
 
     QString s = out->createHtmlHeader();
     s.append(out->createHtmlH("‘ормул€р организации", 2));
     s.append(out->createHtmlTable_2(obj_data));
+    s.append(out->createHtmlTableM(obj_data2));
     s.append(out->createHtmlFooter());
     return s;
 }
@@ -38,11 +41,15 @@ QString Reports::create_object_formular_pers(int id_object)
     QMap<QString,QString> obj_data;
     obj_data = report_model->pers_info(id_object);
 
+    QMap<QString,QMap<QString,QString> > obj_data2;
+    obj_data2 = report_model->pers_info_coord(id_object);
+
     Output *out = new Output;
 
     QString s = out->createHtmlHeader();
     s.append(out->createHtmlH("‘ормул€р персоналии",2));
     s.append(out->createHtmlTable_3(obj_data));
+    s.append(out->createHtmlTableM(obj_data2));
     s.append(out->createHtmlFooter());
     return s;
 }
@@ -68,11 +75,15 @@ QString Reports::create_object_formular_ls(int id_object)
     QMap <int, QMap< QString,QString> > obj_data;
     obj_data = report_model->ls_info(id_object);
 
+    QMap<QString,QMap<QString,QString> > obj_data2;
+    obj_data2 = report_model->ls_info_coord(id_object);
+
     Output *out = new Output;
 
     QString s = out->createHtmlHeader();
     s.append(out->createHtmlH("‘ормул€р ¬оинского формировани€", 2));
     s.append(out->createHtmlTable_2(obj_data));
+    s.append(out->createHtmlTableM(obj_data2));
     s.append(out->createHtmlFooter());
     return s;
 }

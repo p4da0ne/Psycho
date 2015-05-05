@@ -314,21 +314,21 @@ break;
 		 checkbox_enemy = new QCheckBox(" [-V- враждебное]", this);
 		 label_5->setBuddy(checkbox_enemy);
 		 
-	     QGroupBox *configGroup = new QGroupBox("Прямоугольные координаты объекта:");
-		 QLabel *x_label = new QLabel("X:");
-		 lineEdit_x = new QLineEdit();
-		 QLabel *y_label = new QLabel("Y:");
-		 lineEdit_y = new QLineEdit();
+////	     QGroupBox *configGroup = new QGroupBox("Прямоугольные координаты объекта:");
+////		 QLabel *x_label = new QLabel("X:");
+////		 lineEdit_x = new QLineEdit();
+////		 QLabel *y_label = new QLabel("Y:");
+////		 lineEdit_y = new QLineEdit();
 		
-	 	 QHBoxLayout *coord_Layout = new QHBoxLayout;
-		 coord_Layout->addWidget(x_label);
-		 coord_Layout->addWidget(lineEdit_x);
-		 coord_Layout->addWidget(y_label);
-		 coord_Layout->addWidget(lineEdit_y);
+////	 	 QHBoxLayout *coord_Layout = new QHBoxLayout;
+////		 coord_Layout->addWidget(x_label);
+////		 coord_Layout->addWidget(lineEdit_x);
+////		 coord_Layout->addWidget(y_label);
+////		 coord_Layout->addWidget(lineEdit_y);
    
-		 QVBoxLayout *configLayout = new QVBoxLayout;
-		 configLayout->addLayout(coord_Layout);
-		 configGroup->setLayout(configLayout);
+//		 QVBoxLayout *configLayout = new QVBoxLayout;
+//		 configLayout->addLayout(coord_Layout);
+//		 configGroup->setLayout(configLayout);
 
 		 addButton = new QPushButton("Добавить");
 		 addButton->setDefault(true);
@@ -398,8 +398,8 @@ break;
 		 mainLayout->addLayout(leftLayout_9, 4, 0);
 		 mainLayout->addLayout(leftLayout_10, 4, 1);
 
-		 mainLayout->addWidget(configGroup, 5, 0, 1, 2);
-		 mainLayout->addLayout(buttonsLayout, 6, 0, 1, 2);
+//		 mainLayout->addWidget(configGroup, 5, 0, 1, 2);
+         mainLayout->addLayout(buttonsLayout, 5, 0, 1, 2);
 		 setLayout(mainLayout);
 		 setWindowTitle("Добавить воинское формирование");
          setWindowIcon(QIcon("./icons/weapon.png"));
@@ -462,21 +462,21 @@ break;
 		 cancelButton = new QPushButton("Отмена");
 		 connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
 
-		 QGroupBox *configGroup = new QGroupBox("Прямоугольные координаты объекта:");
-		 QLabel *x_label = new QLabel("X:");
-		 lineEdit_x = new QLineEdit();
-		 QLabel *y_label = new QLabel("Y:");
-		 lineEdit_y = new QLineEdit();
+//		 QGroupBox *configGroup = new QGroupBox("Прямоугольные координаты объекта:");
+//		 QLabel *x_label = new QLabel("X:");
+//		 lineEdit_x = new QLineEdit();
+//		 QLabel *y_label = new QLabel("Y:");
+//		 lineEdit_y = new QLineEdit();
 		
-	 	 QHBoxLayout *coord_Layout = new QHBoxLayout;
-		 coord_Layout->addWidget(x_label);
-		 coord_Layout->addWidget(lineEdit_x);
-		 coord_Layout->addWidget(y_label);
-		 coord_Layout->addWidget(lineEdit_y);
+//	 	 QHBoxLayout *coord_Layout = new QHBoxLayout;
+//		 coord_Layout->addWidget(x_label);
+//		 coord_Layout->addWidget(lineEdit_x);
+//		 coord_Layout->addWidget(y_label);
+//		 coord_Layout->addWidget(lineEdit_y);
    
-		 QVBoxLayout *configLayout = new QVBoxLayout;
-		 configLayout->addLayout(coord_Layout);
-		 configGroup->setLayout(configLayout);
+//		 QVBoxLayout *configLayout = new QVBoxLayout;
+//		 configLayout->addLayout(coord_Layout);
+//		 configGroup->setLayout(configLayout);
 
 		 QHBoxLayout *buttonsLayout = new QHBoxLayout;
 		 buttonsLayout->addStretch();
@@ -576,20 +576,20 @@ break;
 		 mainLayout->addLayout(leftLayout_6, 2, 1);
 		 mainLayout->addLayout(leftLayout_7, 3, 0);
 		 mainLayout->addLayout(leftLayout_8, 3, 1);
-		 mainLayout->addWidget(configGroup, 4, 0, 1, 2);
-		 mainLayout->addLayout(leftLayout_9, 6, 0);
-		 mainLayout->addLayout(leftLayout_10, 6, 1);
-		 mainLayout->addLayout(leftLayout_11, 5, 0);
-		 mainLayout->addLayout(leftLayout_12, 5, 1);
-		 mainLayout->addLayout(leftLayout_13, 7, 0);
-		 mainLayout->addLayout(leftLayout_14, 7, 1);
-		 mainLayout->addLayout(leftLayout_15, 8, 0);
-		 mainLayout->addLayout(leftLayout_16, 8, 1);
-		 mainLayout->addLayout(leftLayout_17, 9, 0);
-		 mainLayout->addLayout(leftLayout_18, 9, 1);
-		 mainLayout->addLayout(leftLayout_19, 10, 0);
-		 mainLayout->addLayout(leftLayout_20, 10, 1);
-		 mainLayout->addLayout(buttonsLayout, 13, 0, 1, 2);
+//		 mainLayout->addWidget(configGroup, 4, 0, 1, 2);
+         mainLayout->addLayout(leftLayout_9, 5, 0);
+         mainLayout->addLayout(leftLayout_10, 5, 1);
+         mainLayout->addLayout(leftLayout_11, 4, 0);
+         mainLayout->addLayout(leftLayout_12, 4, 1);
+         mainLayout->addLayout(leftLayout_13, 6, 0);
+         mainLayout->addLayout(leftLayout_14, 6, 1);
+         mainLayout->addLayout(leftLayout_15, 7, 0);
+         mainLayout->addLayout(leftLayout_16, 7, 1);
+         mainLayout->addLayout(leftLayout_17, 8, 0);
+         mainLayout->addLayout(leftLayout_18, 8, 1);
+         mainLayout->addLayout(leftLayout_19, 9, 0);
+         mainLayout->addLayout(leftLayout_20, 9, 1);
+         mainLayout->addLayout(buttonsLayout, 12, 0, 1, 2);
 
 
 		 setLayout(mainLayout);
@@ -655,21 +655,21 @@ case 5:{ //========== Воинские формирования ====================================
 		 checkbox_enemy = new QCheckBox(" [-V- враждебное]", this);
 		 label_5->setBuddy(checkbox_enemy);
 		 
-	     QGroupBox *configGroup = new QGroupBox("Прямоугольные координаты объекта:");
-		 QLabel *x_label = new QLabel("X:");
-		 lineEdit_x = new QLineEdit();
-		 QLabel *y_label = new QLabel("Y:");
-		 lineEdit_y = new QLineEdit();
+//	     QGroupBox *configGroup = new QGroupBox("Прямоугольные координаты объекта:");
+//		 QLabel *x_label = new QLabel("X:");
+//		 lineEdit_x = new QLineEdit();
+//		 QLabel *y_label = new QLabel("Y:");
+//		 lineEdit_y = new QLineEdit();
 		
-	 	 QHBoxLayout *coord_Layout = new QHBoxLayout;
-		 coord_Layout->addWidget(x_label);
-		 coord_Layout->addWidget(lineEdit_x);
-		 coord_Layout->addWidget(y_label);
-		 coord_Layout->addWidget(lineEdit_y);
+//	 	 QHBoxLayout *coord_Layout = new QHBoxLayout;
+//		 coord_Layout->addWidget(x_label);
+//		 coord_Layout->addWidget(lineEdit_x);
+//		 coord_Layout->addWidget(y_label);
+//		 coord_Layout->addWidget(lineEdit_y);
    
-		 QVBoxLayout *configLayout = new QVBoxLayout;
-		 configLayout->addLayout(coord_Layout);
-		 configGroup->setLayout(configLayout);
+//		 QVBoxLayout *configLayout = new QVBoxLayout;
+//		 configLayout->addLayout(coord_Layout);
+//		 configGroup->setLayout(configLayout);
 
 		 addButton = new QPushButton("Добавить");
 		 addButton->setDefault(true);
@@ -738,8 +738,8 @@ case 5:{ //========== Воинские формирования ====================================
 		 mainLayout->addLayout(leftLayout_8, 3, 1);
 		 mainLayout->addLayout(leftLayout_9, 4, 0);
 		 mainLayout->addLayout(leftLayout_10, 4, 1);
-		 mainLayout->addWidget(configGroup, 5, 0, 1, 2);
-		 mainLayout->addLayout(buttonsLayout, 6, 0, 1, 2);
+//		 mainLayout->addWidget(configGroup, 5, 0, 1, 2);
+         mainLayout->addLayout(buttonsLayout, 5, 0, 1, 2);
 		 setLayout(mainLayout);
 		 setWindowTitle("Добавить воинское формирование");
          setWindowIcon(QIcon("./icons/weapon.png"));
@@ -1004,21 +1004,21 @@ case 13: { //=========================== средства ==============================
 		 textEdit_desc->setFixedHeight(50);
 		 label_4->setBuddy(textEdit_desc);
 
-		 QGroupBox *configGroup = new QGroupBox("Прямоугольные координаты объекта:");
-		 QLabel *x_label = new QLabel("X:");
-		 lineEdit_x = new QLineEdit();
-		 QLabel *y_label = new QLabel("Y:");
-		 lineEdit_y = new QLineEdit();
+//		 QGroupBox *configGroup = new QGroupBox("Прямоугольные координаты объекта:");
+//		 QLabel *x_label = new QLabel("X:");
+//		 lineEdit_x = new QLineEdit();
+//		 QLabel *y_label = new QLabel("Y:");
+//		 lineEdit_y = new QLineEdit();
 		
-	 	 QHBoxLayout *coord_Layout = new QHBoxLayout;
-		 coord_Layout->addWidget(x_label);
-		 coord_Layout->addWidget(lineEdit_x);
-		 coord_Layout->addWidget(y_label);
-		 coord_Layout->addWidget(lineEdit_y);
+//	 	 QHBoxLayout *coord_Layout = new QHBoxLayout;
+//		 coord_Layout->addWidget(x_label);
+//		 coord_Layout->addWidget(lineEdit_x);
+//		 coord_Layout->addWidget(y_label);
+//		 coord_Layout->addWidget(lineEdit_y);
    
-		 QVBoxLayout *configLayout = new QVBoxLayout;
-		 configLayout->addLayout(coord_Layout);
-		 configGroup->setLayout(configLayout);
+//		 QVBoxLayout *configLayout = new QVBoxLayout;
+//		 configLayout->addLayout(coord_Layout);
+//		 configGroup->setLayout(configLayout);
 				 			 
 		 addButton = new QPushButton("Добавить");
 		 addButton->setDefault(true);
@@ -1076,9 +1076,9 @@ case 13: { //=========================== средства ==============================
 		 mainLayout->addLayout(leftLayout_6, 4, 1);
 		 mainLayout->addLayout(leftLayout_7, 5, 0);
 		 mainLayout->addLayout(leftLayout_8, 5, 1);
-		 mainLayout->addWidget(configGroup, 6, 0, 1, 2);
+//		 mainLayout->addWidget(configGroup, 6, 0, 1, 2);
 	
-		 mainLayout->addLayout(buttonsLayout, 7, 0, 1, 2);
+         mainLayout->addLayout(buttonsLayout, 6, 0, 1, 2);
 		 setLayout(mainLayout);
 		 setWindowTitle("Добавить средства");
          setWindowIcon(QIcon("./icons/connect_saturn.png"));
@@ -1106,21 +1106,21 @@ case 13: { //=========================== средства ==============================
 		 textEdit_desc->setFixedHeight(50);
 		 label_4->setBuddy(textEdit_desc);
 
-		 QGroupBox *configGroup = new QGroupBox("Прямоугольные координаты объекта:");
-		 QLabel *x_label = new QLabel("X:");
-		 lineEdit_x = new QLineEdit();
-		 QLabel *y_label = new QLabel("Y:");
-		 lineEdit_y = new QLineEdit();
+//		 QGroupBox *configGroup = new QGroupBox("Прямоугольные координаты объекта:");
+//		 QLabel *x_label = new QLabel("X:");
+//		 lineEdit_x = new QLineEdit();
+//		 QLabel *y_label = new QLabel("Y:");
+//		 lineEdit_y = new QLineEdit();
 		
-	 	 QHBoxLayout *coord_Layout = new QHBoxLayout;
-		 coord_Layout->addWidget(x_label);
-		 coord_Layout->addWidget(lineEdit_x);
-		 coord_Layout->addWidget(y_label);
-		 coord_Layout->addWidget(lineEdit_y);
+//	 	 QHBoxLayout *coord_Layout = new QHBoxLayout;
+//		 coord_Layout->addWidget(x_label);
+//		 coord_Layout->addWidget(lineEdit_x);
+//		 coord_Layout->addWidget(y_label);
+//		 coord_Layout->addWidget(lineEdit_y);
    
-		 QVBoxLayout *configLayout = new QVBoxLayout;
-		 configLayout->addLayout(coord_Layout);
-		 configGroup->setLayout(configLayout);
+//		 QVBoxLayout *configLayout = new QVBoxLayout;
+//		 configLayout->addLayout(coord_Layout);
+//		 configGroup->setLayout(configLayout);
 				 			 
 		 addButton = new QPushButton("Добавить");
 		 addButton->setDefault(true);
@@ -1178,9 +1178,9 @@ case 13: { //=========================== средства ==============================
 		 mainLayout->addLayout(leftLayout_6, 4, 1);
 		 mainLayout->addLayout(leftLayout_7, 5, 0);
 		 mainLayout->addLayout(leftLayout_8, 5, 1);
-		 mainLayout->addWidget(configGroup, 6, 0, 1, 2);
+//		 mainLayout->addWidget(configGroup, 6, 0, 1, 2);
 	
-		 mainLayout->addLayout(buttonsLayout, 7, 0, 1, 2);
+         mainLayout->addLayout(buttonsLayout, 6, 0, 1, 2);
 		 setLayout(mainLayout);
 		 setWindowTitle("Добавить средства");
          setWindowIcon(QIcon("./icons/connect_saturn.png"));
@@ -1208,21 +1208,21 @@ case 15: { //=========================== средства СМИ ==========================
 		 textEdit_desc->setFixedHeight(50);
 		 label_4->setBuddy(textEdit_desc);
 
-		 QGroupBox *configGroup = new QGroupBox("Прямоугольные координаты объекта:");
-		 QLabel *x_label = new QLabel("X:");
-		 lineEdit_x = new QLineEdit();
-		 QLabel *y_label = new QLabel("Y:");
-		 lineEdit_y = new QLineEdit();
+//		 QGroupBox *configGroup = new QGroupBox("Прямоугольные координаты объекта:");
+//		 QLabel *x_label = new QLabel("X:");
+//		 lineEdit_x = new QLineEdit();
+//		 QLabel *y_label = new QLabel("Y:");
+//		 lineEdit_y = new QLineEdit();
 		
-	 	 QHBoxLayout *coord_Layout = new QHBoxLayout;
-		 coord_Layout->addWidget(x_label);
-		 coord_Layout->addWidget(lineEdit_x);
-		 coord_Layout->addWidget(y_label);
-		 coord_Layout->addWidget(lineEdit_y);
+//	 	 QHBoxLayout *coord_Layout = new QHBoxLayout;
+//		 coord_Layout->addWidget(x_label);
+//		 coord_Layout->addWidget(lineEdit_x);
+//		 coord_Layout->addWidget(y_label);
+//		 coord_Layout->addWidget(lineEdit_y);
    
-		 QVBoxLayout *configLayout = new QVBoxLayout;
-		 configLayout->addLayout(coord_Layout);
-		 configGroup->setLayout(configLayout);
+//		 QVBoxLayout *configLayout = new QVBoxLayout;
+//		 configLayout->addLayout(coord_Layout);
+//		 configGroup->setLayout(configLayout);
 				 			 
 		 addButton = new QPushButton("Добавить");
 		 addButton->setDefault(true);
@@ -1280,9 +1280,9 @@ case 15: { //=========================== средства СМИ ==========================
 		 mainLayout->addLayout(leftLayout_6, 4, 1);
 		 mainLayout->addLayout(leftLayout_7, 5, 0);
 		 mainLayout->addLayout(leftLayout_8, 5, 1);
-		 mainLayout->addWidget(configGroup, 6, 0, 1, 2);
+//		 mainLayout->addWidget(configGroup, 6, 0, 1, 2);
 	
-		 mainLayout->addLayout(buttonsLayout, 7, 0, 1, 2);
+         mainLayout->addLayout(buttonsLayout, 6, 0, 1, 2);
 		 setLayout(mainLayout);
 		 setWindowTitle("Добавить средства");
          setWindowIcon(QIcon("./icons/connect_saturn.png"));
@@ -1316,23 +1316,20 @@ case 16://=============== Условия ============================================
 		 lineEdit_sem_2 = new QLineEdit;
 		 label_5->setBuddy(lineEdit_sem_2);
 		
-		 QGroupBox *configGroup = new QGroupBox("Координаты:");
-		 coord_view = new QTableWidget;
-		 coord_view->setFixedSize(400,300);
-		 addButton_1 = new QPushButton("Добавить координаты");
-		 addButton_1->setDefault(true);
-		 connect(addButton_1,SIGNAL(clicked()),this,SLOT(add_coord_special_cond_dlg()));
-
-	 	 QHBoxLayout *coord_Layout = new QHBoxLayout;
-		 coord_Layout->addWidget(coord_view);
-		 QHBoxLayout *coord_Layout_1 = new QHBoxLayout;
-		 coord_Layout_1->addWidget(addButton_1);
-		    
-		 QVBoxLayout *configLayout = new QVBoxLayout;
-		 configLayout->addLayout(coord_Layout);
-		 configLayout->addLayout(coord_Layout_1);
-
-		 configGroup->setLayout(configLayout);
+//		 QGroupBox *configGroup = new QGroupBox("Координаты:");
+//		 coord_view = new QTableWidget;
+//		 coord_view->setFixedSize(400,300);
+//		 addButton_1 = new QPushButton("Добавить координаты");
+//		 addButton_1->setDefault(true);
+//		 connect(addButton_1,SIGNAL(clicked()),this,SLOT(add_coord_special_cond_dlg()));
+//	 	 QHBoxLayout *coord_Layout = new QHBoxLayout;
+//		 coord_Layout->addWidget(coord_view);
+//		 QHBoxLayout *coord_Layout_1 = new QHBoxLayout;
+//		 coord_Layout_1->addWidget(addButton_1);
+//		 QVBoxLayout *configLayout = new QVBoxLayout;
+//		 configLayout->addLayout(coord_Layout);
+//		 configLayout->addLayout(coord_Layout_1);
+//		 configGroup->setLayout(configLayout);
 		 
 		 addButton = new QPushButton("Добавить");
 		 addButton->setDefault(true);
@@ -1400,15 +1397,15 @@ case 16://=============== Условия ============================================
 		 mainLayout->addLayout(leftLayout_8, 3, 1);
 		 mainLayout->addLayout(leftLayout_9, 4, 0);
 		 mainLayout->addLayout(leftLayout_10, 4, 1);
-		 mainLayout->addWidget(configGroup, 5, 0, 1, 2);
-		 mainLayout->addLayout(buttonsLayout, 6, 0, 1, 2);
+//		 mainLayout->addWidget(configGroup, 5, 0, 1, 2);
+         mainLayout->addLayout(buttonsLayout, 5, 0, 1, 2);
 
 		 setLayout(mainLayout);
 		 setWindowTitle("Добавить особое условие");
          setWindowIcon(QIcon("./icons/Stop2.png"));
 
-		// table_coord();
-		 connect(coord_view,SIGNAL(cellClicked(int,int)),this,SLOT(show_redaktor_coord(int,int)));
+    //   table_coord();
+    //	 connect(coord_view,SIGNAL(cellClicked(int,int)),this,SLOT(show_redaktor_coord(int,int)));
 
 		 break;
 		}
@@ -2389,17 +2386,17 @@ void Add_elements_dialog::add_groups(){
 	QString menegm = textEdit_menegm->toPlainText();
 	QString office = textEdit_office->toPlainText();
 	QString descr = textEdit_descr->toPlainText();
-	int x_object=lineEdit_x->text().toInt();
-	int y_object=lineEdit_y->text().toInt();
+//	int x_object=lineEdit_x->text().toInt();
+//	int y_object=lineEdit_y->text().toInt();
 	int id_reg = in_id_object;
 
 		QMap<QString,QString> map;
 		map.clear();
-		map.insert("x_coordinates",QString::number(x_object));
-		map.insert("y_coordinates",QString::number(y_object));
-		int id_coordinates=insert_in_table("coordinates",map,"id_coordinates");
+//		map.insert("x_coordinates",QString::number(x_object));
+//		map.insert("y_coordinates",QString::number(y_object));
+//		int id_coordinates=insert_in_table("coordinates",map,"id_coordinates");
 
-		if(id_coordinates<1)return; 
+//		if(id_coordinates<1)return;
 			
 		if (in_id_object<1) return;
 		map.clear();
@@ -2408,7 +2405,7 @@ void Add_elements_dialog::add_groups(){
 		map.insert("id_trend",QString::number(id_trend));
 		map.insert("id_form_groups",QString::number(id_form_groups));
 		map.insert("id_region",QString::number(id_reg));
-		map.insert("id_coordinates",QString::number(id_coordinates));
+//		map.insert("id_coordinates",QString::number(id_coordinates));
 		map.insert("counte_groups",QString::number(counte_groups));
 		map.insert("propaganda_groups",propa_groups);
 		map.insert("founder_group",founder);
@@ -2433,24 +2430,24 @@ void Add_elements_dialog::add_ls(){
 	int counte_ls_bd = lineEdit_counte_ls_bd->text().toInt();
 	bool enemy = checkbox_enemy->isChecked();
 	
-	int x_object=lineEdit_x->text().toInt();
-	int y_object=lineEdit_y->text().toInt();
+//	int x_object=lineEdit_x->text().toInt();
+//	int y_object=lineEdit_y->text().toInt();
 	
 	int id_reg = in_id_object;
 
 	QMap<QString,QString> map;
 	map.clear();
-	map.insert("x_coordinates",QString::number(x_object));
-	map.insert("y_coordinates",QString::number(y_object));
-	int id_coordinates=insert_in_table("coordinates",map,"id_coordinates");
+//	map.insert("x_coordinates",QString::number(x_object));
+//	map.insert("y_coordinates",QString::number(y_object));
+//	int id_coordinates=insert_in_table("coordinates",map,"id_coordinates");
 
-	if(id_coordinates<1)return; 
+//	if(id_coordinates<1)return;
 			
 		if (in_id_object<1) return;
 		map.clear();
 		map.insert("name_ls",name_ls);
 		map.insert("id_type_ls",QString::number(id_type_ls));
-		map.insert("id_coordinates",QString::number(id_coordinates));
+//		map.insert("id_coordinates",QString::number(id_coordinates));
 		map.insert("counte_ls",QString::number(counte_ls));
 		map.insert("counte_ls_bd",QString::number(counte_ls_bd));
 		map.insert("id_region",QString::number(id_reg));
@@ -2474,8 +2471,8 @@ void Add_elements_dialog::add_ls_parent(){
 	int counte_ls = lineEdit_counte_ls->text().toInt();
 	int counte_ls_bd = lineEdit_counte_ls_bd->text().toInt();
 	int parent = in_id_object;
-	int x_object=lineEdit_x->text().toInt();
-	int y_object=lineEdit_y->text().toInt();
+//	int x_object=lineEdit_x->text().toInt();
+//	int y_object=lineEdit_y->text().toInt();
 	bool enemy = checkbox_enemy->isChecked();
 	
 /*	QSqlQuery query_ls;
@@ -2487,17 +2484,17 @@ void Add_elements_dialog::add_ls_parent(){
 	int id_region = 501; 
 	QMap<QString,QString> map;
 	map.clear();
-	map.insert("x_coordinates",QString::number(x_object));
-	map.insert("y_coordinates",QString::number(y_object));
-	int id_coordinates=insert_in_table("coordinates",map,"id_coordinates");
+//	map.insert("x_coordinates",QString::number(x_object));
+//	map.insert("y_coordinates",QString::number(y_object));
+//	int id_coordinates=insert_in_table("coordinates",map,"id_coordinates");
 
-	if(id_coordinates<1)return; 
+//	if(id_coordinates<1)return;
 			
 		if (in_id_object<1) return;
 		map.clear();
 		map.insert("name_ls",name_ls);
 		map.insert("id_type_ls",QString::number(id_type_ls));
-		map.insert("id_coordinates",QString::number(id_coordinates));
+    //	map.insert("id_coordinates",QString::number(id_coordinates));
 		map.insert("counte_ls",QString::number(counte_ls));
 		map.insert("counte_ls_bd",QString::number(counte_ls_bd));
 		map.insert("parent_ls",QString::number(parent));
@@ -5377,8 +5374,8 @@ void Add_elements_dialog::add_mpo_pso()
 		QString counte_mpo = lineEdit_counte_mpo_pso->text();
 		QString desc_mpo = textEdit_desc->toPlainText();
 
-		float x_object=lineEdit_x->text().toFloat();
-	    float y_object=lineEdit_y->text().toFloat();
+//		float x_object=lineEdit_x->text().toFloat();
+//	    float y_object=lineEdit_y->text().toFloat();
 
 /*		if(pavComboBox->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Выберите тип программно-аппаратного воздействия "),QMessageBox::Ok );return;}
 		else if(vul_pavComboBox->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Выберите уязвимость "),QMessageBox::Ok );return;}
@@ -5393,17 +5390,17 @@ void Add_elements_dialog::add_mpo_pso()
 		{QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите нанесенный(планируемый) ущерб "),QMessageBox::Ok );return;} */	
 
 		QMap<QString,QString> map;
-		map.clear();
-		map.insert("x_coordinates",QString::number(x_object));
-		map.insert("y_coordinates",QString::number(y_object));
-		int id_coordinates=insert_in_table("coordinates",map,"id_coordinates");
+//		map.clear();
+//		map.insert("x_coordinates",QString::number(x_object));
+//		map.insert("y_coordinates",QString::number(y_object));
+//		int id_coordinates=insert_in_table("coordinates",map,"id_coordinates");
 	
 		if (in_id_object<1) return;
 		map.clear();
 		map.insert("name_mpo_pso",name_mpo);
 		map.insert("counte_mpo_pso",counte_mpo);
 		map.insert("description_mpo_pso",desc_mpo);
-		map.insert("id_coordinates",QString::number(id_coordinates));
+//		map.insert("id_coordinates",QString::number(id_coordinates));
 		map.insert("id_type_mpo_pso",QString::number(id_type_mpo_pso));
 		map.insert("id_ls",QString::number(in_id_object));
 	
@@ -5423,33 +5420,21 @@ void Add_elements_dialog::add_mpo_pso_groups()
 		QString counte_mpo = lineEdit_counte_mpo_pso->text();
 		QString desc_mpo = textEdit_desc->toPlainText();
 
-		float x_object=lineEdit_x->text().toFloat();
-	    float y_object=lineEdit_y->text().toFloat();
-
-/*		if(pavComboBox->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Выберите тип программно-аппаратного воздействия "),QMessageBox::Ok );return;}
-		else if(vul_pavComboBox->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Выберите уязвимость "),QMessageBox::Ok );return;}
-		else if(itv_pavComboBox->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Выберите воздействие "),QMessageBox::Ok );return;}
-		else if (lineEdit->text() == "")
-		{QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите наименование программно-аппаратного воздействия "),QMessageBox::Ok );return;}
-		else if (lineEdit_2->text() == "")
-		{QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите нарушаемые ТО "),QMessageBox::Ok );return;}
-		else if (textEdit->toPlainText() == "")
-		{QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите характеристику нарушения "),QMessageBox::Ok );return;}
-		else if (textEdit_2->toPlainText() == "")
-		{QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите нанесенный(планируемый) ущерб "),QMessageBox::Ok );return;} */	
+//		float x_object=lineEdit_x->text().toFloat();
+//	    float y_object=lineEdit_y->text().toFloat();
 
 		QMap<QString,QString> map;
-		map.clear();
-		map.insert("x_coordinates",QString::number(x_object));
-		map.insert("y_coordinates",QString::number(y_object));
-		int id_coordinates=insert_in_table("coordinates",map,"id_coordinates");
+//		map.clear();
+//		map.insert("x_coordinates",QString::number(x_object));
+//		map.insert("y_coordinates",QString::number(y_object));
+//		int id_coordinates=insert_in_table("coordinates",map,"id_coordinates");
 	
 		if (in_id_object<1) return;
 		map.clear();
 		map.insert("name_mpo_pso",name_mpo);
 		map.insert("counte_mpo_pso",counte_mpo);
 		map.insert("description_mpo_pso",desc_mpo);
-		map.insert("id_coordinates",QString::number(id_coordinates));
+//		map.insert("id_coordinates",QString::number(id_coordinates));
 		map.insert("id_type_mpo_pso",QString::number(id_type_mpo_pso));
 		map.insert("id_groups",QString::number(in_id_object));
 	
@@ -5467,8 +5452,8 @@ void Add_elements_dialog::add_mpo_pso_smi()
 		QString counte_mpo = lineEdit_counte_mpo_pso->text();
 		QString desc_mpo = textEdit_desc->toPlainText();
 
-		float x_object=lineEdit_x->text().toFloat();
-	    float y_object=lineEdit_y->text().toFloat();
+//		float x_object=lineEdit_x->text().toFloat();
+//	    float y_object=lineEdit_y->text().toFloat();
 
 /*		if(pavComboBox->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Выберите тип программно-аппаратного воздействия "),QMessageBox::Ok );return;}
 		else if(vul_pavComboBox->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Выберите уязвимость "),QMessageBox::Ok );return;}
@@ -5483,17 +5468,17 @@ void Add_elements_dialog::add_mpo_pso_smi()
 		{QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите нанесенный(планируемый) ущерб "),QMessageBox::Ok );return;} */	
 
 		QMap<QString,QString> map;
-		map.clear();
-		map.insert("x_coordinates",QString::number(x_object));
-		map.insert("y_coordinates",QString::number(y_object));
-		int id_coordinates=insert_in_table("coordinates",map,"id_coordinates");
+//		map.clear();
+//		map.insert("x_coordinates",QString::number(x_object));
+//		map.insert("y_coordinates",QString::number(y_object));
+//		int id_coordinates=insert_in_table("coordinates",map,"id_coordinates");
 	
 		if (in_id_object<1) return;
 		map.clear();
 		map.insert("name_mpo_pso",name_mpo);
 		map.insert("counte_mpo_pso",counte_mpo);
 		map.insert("description_mpo_pso",desc_mpo);
-		map.insert("id_coordinates",QString::number(id_coordinates));
+//		map.insert("id_coordinates",QString::number(id_coordinates));
 		map.insert("id_type_mpo_pso",QString::number(id_type_mpo_pso));
 		map.insert("id_smi",QString::number(in_id_object));
 	
@@ -5536,22 +5521,18 @@ void Add_elements_dialog::add_special_cond(){
 			
 		int id_sc=insert_in_table("special_conditions",map,"id_special_conditions");
 		
-		int  t = coord_view->rowCount(); //строка
-		int id_coord_spec_cond=0;
-		
-		  if (t == 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Неободимо добавить координаты особого условия "),QMessageBox::Ok);return;}
-		
-		  for (int i=0 ; i<t ; i++){
-		  int id_coord = coord_view->item(i,0)->text().toInt();
-		
-		  if(id_sc==0) return;
-			map.clear();
-			map.insert("id_special_conditions",QString::number(id_sc));
-			map.insert("id_coordinates",QString::number(id_coord));
-
-			id_coord_spec_cond=insert_in_table("coord_spec_cond",map,"id_coord_spec_cond");
-		 }
-			if(id_coord_spec_cond>0){
+        //int  t = coord_view->rowCount(); //строка
+        //int id_coord_spec_cond=0;
+        //  if (t == 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Неободимо добавить координаты особого условия "),QMessageBox::Ok);return;}
+        //  for (int i=0 ; i<t ; i++){
+        //  int id_coord = coord_view->item(i,0)->text().toInt();
+        //  if(id_sc==0) return;
+        //	map.clear();
+        //	map.insert("id_special_conditions",QString::number(id_sc));
+        //	map.insert("id_coordinates",QString::number(id_coord));
+        //	id_coord_spec_cond=insert_in_table("coord_spec_cond",map,"id_coord_spec_cond");
+         //}
+        if(id_sc>0){
 				this->done(id_sc);
 			}else{
 				this->done(0);
@@ -5559,7 +5540,7 @@ void Add_elements_dialog::add_special_cond(){
 	   
 }
 //================================ координаты для условий ============================================
-void Add_elements_dialog::table_coord(int id_coord) {
+/*void Add_elements_dialog::table_coord(int id_coord) {
 	coord_view->setColumnCount(4);
 	coord_view->hideColumn(0);
 	coord_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -5617,6 +5598,7 @@ void Add_elements_dialog::table_coord(int id_coord) {
    row++;
    //  coord_view->resizeColumnsToContents();
 }
+*/
 
 void Add_elements_dialog::open_file()
 {
@@ -5656,7 +5638,7 @@ void Add_elements_dialog::otchet_pers()
     r->show_preview_dialog(report);
 }
 
-
+/*
 void Add_elements_dialog::  add_coord_special_cond_dlg()
 {
 	add_dlg = new QDialog;
@@ -5752,7 +5734,7 @@ void Add_elements_dialog::show_redaktor_coord(int row,int column){
 		}
 		coord_view->removeRow(row);
 	 }
-}
+}*/
 //============================ персонал в организации ===============================================
 void Add_elements_dialog::add_persones_groups(){
 

@@ -25,11 +25,9 @@ QMap <int, QMap< QString,QString> > ReportData::get_obj_info(int id_object)
     obj_info = new QMap <int, QMap< QString,QString> >;
     obj_info->clear();
     QSqlQuery query;
-    query.prepare ("SELECT gr.name_groups,gr.counte_groups,gr.founder_group,gr.menegement_groups,gr.officce_groups,gr.description_groups,gr.propaganda_groups, tr.name_trend_groups,sph.name_sphere_groups, form.name_form_groups, reg.name_region, coord.x_coordinates,coord.y_coordinates \
-            FROM   groups gr,trend_groups tr,sphere_groups sph, form_groups form, region reg, coordinates coord \
-            WHERE  (id_groups = ?) and (gr.id_trend=tr.id_trend_groups)and \
-                   (gr.id_sphere_groups=sph.id_sphere_groups) and (gr.id_form_groups=form.id_form_groups) and \
-                  (gr.id_region = reg.id_region) and (gr.id_coordinates = coord.id_coordinates)");
+    query.prepare("SELECT gr.name_groups,gr.counte_groups,gr.founder_group,gr.menegement_groups,gr.officce_groups,gr.description_groups,gr.propaganda_groups,tr.name_trend_groups,sph.name_sphere_groups,form.name_form_groups,reg.name_region \
+                  FROM groups gr,trend_groups tr,sphere_groups sph, form_groups form, region reg \
+                  WHERE (gr.id_groups = ?) and (gr.id_trend=tr.id_trend_groups) and (gr.id_sphere_groups=sph.id_sphere_groups) and (gr.id_form_groups=form.id_form_groups) and (gr.id_region = reg.id_region)");
 
     query.addBindValue(id_object);
     if(!query.exec())
@@ -75,43 +73,85 @@ QMap <int, QMap< QString,QString> > ReportData::get_obj_info(int id_object)
         map.insert("11. name_form_groups",query.value(rec.indexOf("name_form_groups")).toString());
         obj_info->insert(11,map);
         map.clear();
-        QString w ="X= "+ query.value(rec.indexOf("x_coordinates")).toString()+";  Y= "+query.value(rec.indexOf("y_coordinates")).toString();
-        map.insert("12. Координаты объекта",w);
-        obj_info->insert(12,map);
 
    return *obj_info;
 
 }
+QMap<QString, QMap<QString, QString> > ReportData::obj_info_coord(int id_object)
+{
+           QString name_obj;
+           obj_elem_obj = new QMap <QString,QMap<QString,QString> >;
+           obj_elem_obj->clear();
+           QSqlQuery query;
 
+           QString str = "SELECT *\
+                          FROM    coord_groups gr, coordinates coord\
+                          WHERE  (gr.id_groups = ?)and \
+                          (gr.id_coordinates=coord.id_coordinates)";
+           query.prepare(str);
+           query.addBindValue(id_object);
+               if(!query.exec())
+               {
+                   QString sss = query.lastError().text();
+                   return *obj_elem_obj;
+               }
+           QSqlRecord rec = query.record();
+
+           QMap<QString, QString> map;
+           query.next();
+           name_obj="12. Координаты организации";
+                       map.clear();
+                       QString w = "X= ";
+                       w.append(query.value(rec.indexOf("x_coordinates")).toString());
+                       w.append("<br>Y= ");
+                       w.append(query.value(rec.indexOf("y_coordinates")).toString());
+                       map.insert("Прямоугольные координаты",w);
+
+                       QString q = "Широта: ";
+                       q.append(query.value(rec.indexOf("latitude_wgs_84_g")).toString());
+                       q.append("-");
+                       q.append(query.value(rec.indexOf("latitude_wgs_84_m")).toString());
+                       q.append("-");
+                       q.append(query.value(rec.indexOf("latitude_wgs_84_s")).toString());
+                       q.append("<br>Долгота: ");
+                       q.append(query.value(rec.indexOf("longitude_wgs_84_g")).toString());
+                       q.append("-");
+                       q.append(query.value(rec.indexOf("longitude_wgs_84_m")).toString());
+                       q.append("-");
+                       q.append(query.value(rec.indexOf("longitude_wgs_84_s")).toString());
+
+                       map.insert("Геодезические координаты",q);
+                       obj_elem_obj->insert(name_obj,map);
+
+            return *obj_elem_obj;
+  }
 QMap<QString, QString> ReportData::pers_info(int id_object)
 {
-	pers_info_date = new QMap<QString, QString>;
+    pers_info_date = new QMap<QString, QString>;
     pers_info_date->clear();
     QSqlQuery query;
-    query.prepare ("SELECT pers.name_persones,pers.age_persones,pers.contact_persones, pers.description_persones, pers.authority_persones, pers.opposition_persones, pers.rank_persones, image_persones \
-            FROM   persones pers  \
-            WHERE  id_persones = ?");
+    query.prepare ("SELECT pers.name_persones,pers.age_persones,pers.contact_persones, pers.description_persones, pers.authority_persones, pers.opposition_persones, pers.rank_persones, pers.image_persones FROM  persones pers WHERE pers.id_persones = ? ");
 
-	query.addBindValue(id_object);
+    query.addBindValue(id_object);
     if(!query.exec())
     {
         QString sss = query.lastError().text();
-		return *pers_info_date;
+        return *pers_info_date;
     }
     QMap<QString, QString> map;
     QSqlRecord rec = query.record();
     QString foto_name;
     query.next();
-	foto_name = query.value(rec.indexOf("image_persones")).toString();
-	QSettings settings("Saturn");
-	QString path_pict=settings.value("last_img").toString();
-        if(path_pict == QString::null){
-            path_pict="C:/projects/Saturn_500m/Saturn/icons2/" ;
-        }else{
-            path_pict=path_pict.append("/");
-        }
-        path_pict.append("foto_persones/");
-       QString path_foto = path_pict + foto_name;
+    foto_name = query.value(rec.indexOf("image_persones")).toString();
+//	QSettings settings("Saturn");
+//	QString path_pict=settings.value("last_img").toString();
+//        if(path_pict == QString::null){
+//            path_pict="" ;
+//        }else{
+//            path_pict=path_pict.append("/");
+//        }
+//       path_pict.append();
+       QString path_foto = "foto_persones/" + foto_name;
        pers_info_date->insert("1. Фотография:","<CENTER><IMG BORDER=\"0\" SRC=\""+path_foto+"\" width = '200' height = '200'> </CENTER>");
        pers_info_date->insert("2. Фамилия, Имя, Отчество",query.value(rec.indexOf("name_persones")).toString());
        pers_info_date->insert("3. Должность(звание)",query.value(rec.indexOf("rank_persones")).toString());
@@ -120,10 +160,58 @@ QMap<QString, QString> ReportData::pers_info(int id_object)
        pers_info_date->insert("6. Авторитет",query.value(rec.indexOf("authority_persones")).toString());
        pers_info_date->insert("7. Оппозиционность",query.value(rec.indexOf("opposition_persones")).toString());
 
-
        return *pers_info_date;
 
+
 }
+QMap<QString, QMap<QString, QString> > ReportData::pers_info_coord(int id_object)
+{
+           QString name_obj;
+           obj_elem = new QMap <QString,QMap<QString,QString> >;
+           obj_elem->clear();
+           QSqlQuery query;
+
+           QString str = "SELECT *\
+                          FROM    coord_persones pc, coordinates coord\
+                          WHERE  (pc.id_persones = ?)and \
+                          (pc.id_coordinates=coord.id_coordinates)";
+           query.prepare(str);
+           query.addBindValue(id_object);
+               if(!query.exec())
+               {
+                   QString sss = query.lastError().text();
+                   return *obj_elem;
+               }
+           QSqlRecord rec = query.record();
+
+           QMap<QString, QString> map;
+           query.next();
+           name_obj="8. Координаты персоны";
+                       map.clear();
+                       QString w = "X= ";
+                       w.append(query.value(rec.indexOf("x_coordinates")).toString());
+                       w.append("<br>Y= ");
+                       w.append(query.value(rec.indexOf("y_coordinates")).toString());
+                       map.insert("Прямоугольные координаты",w);
+
+                       QString q = "Широта: ";
+                       q.append(query.value(rec.indexOf("latitude_wgs_84_g")).toString());
+                       q.append("-");
+                       q.append(query.value(rec.indexOf("latitude_wgs_84_m")).toString());
+                       q.append("-");
+                       q.append(query.value(rec.indexOf("latitude_wgs_84_s")).toString());
+                       q.append("<br>Долгота: ");
+                       q.append(query.value(rec.indexOf("longitude_wgs_84_g")).toString());
+                       q.append("-");
+                       q.append(query.value(rec.indexOf("longitude_wgs_84_m")).toString());
+                       q.append("-");
+                       q.append(query.value(rec.indexOf("longitude_wgs_84_s")).toString());
+
+                       map.insert("Геодезические координаты",q);
+                       obj_elem->insert(name_obj,map);
+
+            return *obj_elem;
+  }
 
 QMap<int, QMap<QString, QString> > ReportData::smi_info(int id_object)
 {
@@ -209,9 +297,9 @@ QMap<int, QMap<QString, QString> > ReportData::ls_info(int id_object)
 
 
     QSqlQuery query;
-    query.prepare ("SELECT l.name_ls, l.enimy_ls, l.mpo_ls, l.counte_ls, l.counte_ls_bd, l.mps_priz_ls, l.mps_konrt_ls, l.mps_of_ls, l.short_name_ls, reg.name_region, tls.name_type_ls, coord.x_coordinates, coord.y_coordinates \
-                   FROM   ls l, region reg, type_ls tls, coordinates coord \
-                   WHERE  (id_ls = ?) and (l.id_type_ls = tls.id_type_ls) and (l.id_coordinates = coord.id_coordinates) \
+    query.prepare ("SELECT l.name_ls, l.enimy_ls, l.mpo_ls, l.counte_ls, l.counte_ls_bd, l.mps_priz_ls, l.mps_konrt_ls, l.mps_of_ls, l.short_name_ls, reg.name_region, tls.name_type_ls \
+                   FROM   ls l, region reg, type_ls tls \
+                   WHERE  (id_ls = ?) and (l.id_type_ls = tls.id_type_ls) \
                                         and (l.id_region = reg.id_region)");
 
     query.addBindValue(id_object);
@@ -255,14 +343,53 @@ QMap<int, QMap<QString, QString> > ReportData::ls_info(int id_object)
         map.insert("10. Краткое наименование формирования",query.value(rec.indexOf("short_name_ls")).toString());
         ls_info_date->insert(10,map);
         map.clear();
-        /*map.insert("11. name_type_ls",query.value(rec.indexOf("name_type_ls")).toString());
-        ls_info_date->insert(11,map);*/
-
-        map.clear();
-        QString w ="X= "+ query.value(rec.indexOf("x_coordinates")).toString()+";  Y= "+query.value(rec.indexOf("y_coordinates")).toString();
-        map.insert("12. Координаты формирования",w);
-        ls_info_date->insert(12,map);
-
         return *ls_info_date;
 }
+QMap<QString, QMap<QString, QString> > ReportData::ls_info_coord(int id_object)
+{
+           QString name_obj;
+           ls_elem_obj = new QMap <QString,QMap<QString,QString> >;
+           ls_elem_obj->clear();
+           QSqlQuery query;
 
+           QString str = "SELECT *\
+                          FROM    coord_ls cls, coordinates coord\
+                          WHERE  (cls.id_ls = ?)and \
+                          (cls.id_coordinates=coord.id_coordinates)";
+           query.prepare(str);
+           query.addBindValue(id_object);
+               if(!query.exec())
+               {
+                   QString sss = query.lastError().text();
+                   return *ls_elem_obj;
+               }
+           QSqlRecord rec = query.record();
+
+           QMap<QString, QString> map;
+           query.next();
+           name_obj="11. Координаты воинского формирования";
+                       map.clear();
+                       QString w = "X= ";
+                       w.append(query.value(rec.indexOf("x_coordinates")).toString());
+                       w.append("<br>Y= ");
+                       w.append(query.value(rec.indexOf("y_coordinates")).toString());
+                       map.insert("Прямоугольные координаты",w);
+
+                       QString q = "Широта: ";
+                       q.append(query.value(rec.indexOf("latitude_wgs_84_g")).toString());
+                       q.append("-");
+                       q.append(query.value(rec.indexOf("latitude_wgs_84_m")).toString());
+                       q.append("-");
+                       q.append(query.value(rec.indexOf("latitude_wgs_84_s")).toString());
+                       q.append("<br>Долгота: ");
+                       q.append(query.value(rec.indexOf("longitude_wgs_84_g")).toString());
+                       q.append("-");
+                       q.append(query.value(rec.indexOf("longitude_wgs_84_m")).toString());
+                       q.append("-");
+                       q.append(query.value(rec.indexOf("longitude_wgs_84_s")).toString());
+
+                       map.insert("Геодезические координаты",q);
+                       ls_elem_obj->insert(name_obj,map);
+
+            return *ls_elem_obj;
+  }
