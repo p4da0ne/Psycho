@@ -52,7 +52,10 @@ QString Output::createHtmlP(QString text,  int weight_italic,QString align)
 QString Output::createHtmlTable_3(QMap<QString,QString> table_data,int width)
 {
     QString r;
-    r.append("<TABLE WIDTH ='"+ QString::number(width)+ "%' BORDER='1' cellpadding=4 align = center>");
+  //  r.append("<TABLE WIDTH ='"+ QString::number(width)+ "%' BORDER='1' cellpadding=4 align = center>");
+    r.append("<TABLE style=\"border-color:#808080;\" border=\"1\" cellpadding=\"4\" cellspacing=\"1\" width='"+ QString::number(width)+ "%'>");
+
+
     QMap<QString,QString>::iterator it=table_data.begin();
     for (;it !=table_data.end(); ++it)
     {
@@ -163,7 +166,36 @@ QString Output::createHtmlLi(QStringList list, int type, int type_style)
 	ss.append("</" + type_n_m + ">");
 return ss;
 }
+//===== Формирование таблицы на основе массива QMap<QString,QMap<QString,QString>> (_,_,_) ======
+QString Output::createHtmlTableM(QMap<QString, QMap<QString, QString> > table_data,  int width)
+{
+    QString r;
 
+    r.append("<TABLE style=\"border-color:#808080;\" border=\"1\" cellpadding=\"4\" cellspacing=\"1\" width='"+ QString::number(width)+ "%'>");
+
+    QMap<QString,QString> map;
+
+    QMap<QString,QMap<QString,QString> >::iterator it=table_data.begin();
+    for (;it !=table_data.end(); ++it)
+    {
+        r.append("<TR><TD colspan=2 >");//width = 100%
+        r.append(it.key());
+        r.append("</TD></TR>");
+        map=it.value();
+
+        QMap<QString,QString> :: iterator it1=map.begin();
+        for (;it1 !=map.end(); ++it1)
+        {
+        r.append("<TR><TD width=35%>");
+        r.append(it1.key());
+        r.append("</TD><TD width=65%>");
+        r.append(it1.value());
+        r.append("</TD ></TR>");
+        }
+    }
+    r.append("</table>");
+return r;
+}
 //===== Закрытие HTML-документа ======
 QString Output::createHtmlFooter()
 {
