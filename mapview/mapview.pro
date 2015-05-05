@@ -2,25 +2,26 @@ TEMPLATE	= lib
 
 TARGET		= mapview
 
-CONFIG		+= qt warn_on
-
 DESTDIR = ../build
 
-QT += sql gui core
+QT += sql
 
 INCLUDEPATH += ./ \
-              ../my_mapaccess \
-              ../include
+				../include \
+			   ../my_mapaccess \
+			   ./calculatingClasses
+			   
+
 			   
 DEPENDPATH += 	. \
-              ../my_mapaccess
+				../my_mapaccess
 
 LIBPATH   += ../build
 
-LIBS += -L../build -lmy_mapaccess
+LIBS += -lmy_mapaccess
 
 
-DEFINES += __USE_DLL_MAPVIEW
+DEFINES += __USE_DLL_XXXXX
 DEFINES     += BUILD_DLL
 
 include(mapview.pri)

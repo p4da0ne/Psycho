@@ -1,15 +1,19 @@
 #include "view_manage.h"
+
 #include <QSqlQuery>
 #include <QsqlError>
 #include <QSqlRecord>
 #include <QVariant>
-#include <QMap>
 
 ViewManage::ViewManage(QObject *parent)
     : QObject(parent)
 {
-  
-    
+	//MainCodec = QTextCodec::codecForName("CP1251");
+	
+	
+
+	
+	
 }
 
 ViewManage::~ViewManage()
@@ -18,158 +22,264 @@ ViewManage::~ViewManage()
 }
 
 
-//========== Получение данных об объекте поражения по его id ===========
-QMap<QString,QString> ViewManage::get_obj_info(int id_object)
+//================================================================================
+//==== Метод возвращает список объектов SignData с информацией ===================
+//==== для нанесения на карту и инициализации условных знаков средств СМИ ========
+//================================================================================
+QList<SignData*> ViewManage::getSmiMeans()
 {
-    obj_info = new QMap<QString, QString>;
-	obj_info->clear();
-	
-		//от классифик-ции элем до уязвимых эл-тов
+	QList<SignData*> smiMeansList;
+
 	QSqlQuery query;
-	//QString str = QString("SELECT * FROM object_pattern WHERE id_object_pattern = %1").arg(id_object);
-/*QString str = "SELECT object_class.class_name, object_type_in_class.type_name, \
-			   object_pattern.unique_number, nationality.country_name, object_pattern.object_name, \
-			   additional_property.property_name, additional_property.property_value, object_pattern.size_x, \
-			   object_pattern.size_y, object_pattern.destroy_recomendation \
-			   FROM (object_class INNER JOIN object_type_in_class ON object_class.id_object_class = \
-			   object_type_in_class.id_object_class) INNER JOIN ((nationality INNER JOIN object_pattern ON \
-			   nationality.id_nationality = object_pattern.id_nationality) INNER JOIN additional_property ON \
-			   object_pattern.id_object_pattern = additional_property.id_object_pattern) ON object_type_in_class.id_type = \
-			   object_pattern.id_type\
-			   WHERE (((object_pattern.id_object_pattern)= ?))";*/
-QString str = "SELECT object_class.class_name, object_type_in_class.short_name, \
-			 object_pattern.unique_number, nationality.country_name, object_pattern.object_name, object_pattern.size_x, \
-			 object_pattern.size_y, object_pattern.destroy_recomendation \
-			 FROM object_class, object_type_in_class, nationality, object_pattern \
-			 WHERE object_type_in_class.id_type = object_pattern.id_type \
-			 AND nationality.id_nationality = object_pattern.id_nationality \
-			 AND object_class.id_object_class =  object_type_in_class.id_object_class \
-			 AND object_pattern.id_object_pattern = ?";
-	query.prepare(str);
-
-	query.addBindValue(id_object); 
-
-	if(!query.exec())
+	QString str=QString("SELECT name_type_mpo_pso, coordinates.x_coordinates, coordinates.y_coordinates, \
+						type_mpo_pso.excode_type_mpo_pso, id_mpo_pso, mpo_pso.semantika_digit1, mpo_pso.semantika_digit2, semantika_1 \
+						FROM mpo_pso, coordinates, type_mpo_pso \
+						WHERE mpo_pso.id_coordinates=coordinates.id_coordinates \
+						AND mpo_pso.id_type_mpo_pso=type_mpo_pso.id_type_mpo_pso \
+						AND type_mpo_pso.excode_type_mpo_pso <> '' \
+						AND coordinates.x_coordinates<>0 \
+						AND coordinates.y_coordinates<>0 \
+						AND mpo_pso.id_smi > 0");
+	if(query.exec(str))
 	{
-		QString sss = query.lastError().text();
-		return *obj_info;
+		QSqlRecord rec = query.record();
+		while (query.next())
+		{		
+			QString name_type_mpo_pso = query.value(rec.indexOf("name_type_mpo_pso")).toString();
+			long int x_coord=query.value(rec.indexOf("x_coordinates")).toInt();
+			long int y_coord=query.value(rec.indexOf("y_coordinates")).toInt();
+			QString signCode = query.value(rec.indexOf("excode_type_mpo_pso")).toString();
+			QString id_mpo_pso = query.value(rec.indexOf("id_mpo_pso")).toString();
+
+			// дальность (радиус) действия, километры
+			QString semantika_digit1_mpo_pso = query.value(rec.indexOf("semantika_digit1")).toString();
+			// угол (направление) относительно горизонта против часовой стрелки, градусы
+			QString semantika_digit2_mpo_pso = query.value(rec.indexOf("semantika_digit2")).toString();
+			QString semantika_1_mpo_pso = query.value(rec.indexOf("semantika_1")).toString();
+
+			QList<Coord*> coordList;
+			Coord *coord = new Coord(x_coord,y_coord);	
+			coordList.append(coord);
+
+			QMap<long int,QString> semantic_map;
+
+			semantic_map[17501] = id_mpo_pso;
+			semantic_map[17502] = SMI_MEANS;
+			semantic_map[18]=semantika_digit1_mpo_pso;	// иногда это наполнение значка (в тех случаях, когда не "дальность")
+			semantic_map[19]=semantika_1_mpo_pso;	// подпись значка
+			semantic_map[32811]=semantika_digit1_mpo_pso;	//дальность действия средства
+			semantic_map[32852]=semantika_digit2_mpo_pso;	//направление (угол) действия средства
+
+			SignData *signData = new SignData(signCode,coordList,semantic_map);
+				
+			smiMeansList.append(signData);
+		}
 	}
-
-	QSqlRecord rec = query.record();
-	query.next();
-
-	obj_info->insert("id_object",QString::number(id_object));
-	obj_info->insert("class_name",query.value(rec.indexOf("class_name")).toString());
-	obj_info->insert("type_name",query.value(rec.indexOf("short_name")).toString());
-	obj_info->insert("unique_number",query.value(rec.indexOf("unique_number")).toString());
-	obj_info->insert("country_name",query.value(rec.indexOf("country_name")).toString());
-	obj_info->insert("object_name",query.value(rec.indexOf("object_name")).toString());
-	obj_info->insert("description",query.value(rec.indexOf("description")).toString());
-	//-------- foreign keys -------
-	//obj_info->insert("property_value",query.value(rec.indexOf("property_value")).toString());
-	obj_info->insert("size_x",query.value(rec.indexOf("size_x")).toString());
-	obj_info->insert("size_y",query.value(rec.indexOf("size_y")).toString());
-	obj_info->insert("destroy_recomendation",query.value(rec.indexOf("destroy_recomendation")).toString());    
-	
-	//координаты местоположения
-//str = "SELECT object_coordinates.latitude_wgs_84_g FROM object_coordinates WHERE (((object_coordinates.id_object_pattern)=?))";
-
-	str = "SELECT DISTINCT ON (object_coordinates.id_object_pattern) \
-		  object_coordinates.latitude_wgs_84_g, object_coordinates.latitude_wgs_84_m, \
-		  object_coordinates.latitude_wgs_84_s, object_coordinates.longitude_wgs_84_g, \
-		  object_coordinates.longitude_wgs_84_m, object_coordinates.longitude_wgs_84_s, \
-		  object_coordinates.latitude_sk_42_g, object_coordinates.latitude_sk_42_m, \
-		  object_coordinates.latitude_sk_42_s, object_coordinates.longitude_sk_42_g, \
-		  object_coordinates.longitude_sk_42_m, object_coordinates.longitude_sk_42_s, \
-		  object_coordinates.x, object_coordinates.y, object_coordinates.h, object_coordinates.h_wgs_84, \
-		  object_coordinates.h_sk_42 FROM object_coordinates WHERE (((object_coordinates.id_object_pattern)=?))";
- 
-	query.prepare(str);
-
-	query.addBindValue(id_object);
-
-	if(!query.exec())
-	{
-		QString sss = query.lastError().text();
-		return *obj_info;
-	}
-
-	rec = query.record();
-	query.next();
-	//-----wgs_84
-	QString coordinates = query.value(rec.indexOf("latitude_wgs_84_g")).toString()+QChar(176)+\
-		query.value(rec.indexOf("latitude_wgs_84_m")).toString()+"'"+\
-		query.value(rec.indexOf("latitude_wgs_84_s")).toString()+"\"";
-	obj_info->insert("latitude_wgs_84",coordinates);
-	coordinates = query.value(rec.indexOf("longitude_wgs_84_g")).toString()+QChar(176)+\
-		query.value(rec.indexOf("longitude_wgs_84_m")).toString()+"'"+\
-		query.value(rec.indexOf("longitude_wgs_84_s")).toString()+"\"";
-	obj_info->insert("longitude_wgs_84",coordinates);
-	//------sk_42
-	coordinates = query.value(rec.indexOf("latitude_sk_42_g")).toString()+QChar(176)+\
-		query.value(rec.indexOf("latitude_sk_42_m")).toString()+"'"+\
-		query.value(rec.indexOf("latitude_sk_42_s")).toString()+"\"";
-	obj_info->insert("latitude_sk_42",coordinates);
-	coordinates = query.value(rec.indexOf("longitude_sk_42_g")).toString()+QChar(176)+\
-		query.value(rec.indexOf("longitude_sk_42_m")).toString()+"'"+\
-		query.value(rec.indexOf("longitude_sk_42_s")).toString()+"\"";
-	obj_info->insert("longitude_sk_42",coordinates);	
-	return *obj_info;
-
-
+	return smiMeansList;
 }
 
-//======= Выборка данных обо всех объектах поражения, попадающих в квадрат (x1,y1;x2,y2)  =========
-QMap<QString,QMap<QString,QString> > ViewManage::get_all_objects_info(double x1,double y1, double x2,double y2 )
+
+//===================================================================================
+//==== Метод возвращает список объектов SignData с информацией ======================
+//==== для нанесения на карту и инициализации условных знаков средств формирований ==
+//===================================================================================
+QList<SignData*> ViewManage::getFormationsMeans()
 {
- all_obj = new QMap<QString,QMap<QString,QString> >;
- all_obj->clear();
+	QList<SignData*> formationsMeansList;
 
- QSqlQuery query;
- QString str = QString("SELECT DISTINCT ON (c.id_object_pattern) o.id_object_pattern, c.x, c.y, o.id_sign \
-					   FROM object_coordinates c, object_pattern o, object_type_in_class t \
-					   WHERE (x > %1) AND (y > %2) AND (x < %3) AND (y < %4) \
-					   AND (c.id_object_pattern=o.id_object_pattern)").arg(x1).arg(y1).arg(x2).arg(y2);
-
-
-
-
-	if(!query.exec(str))
+	QSqlQuery query;
+	QString str=QString("SELECT name_type_mpo_pso, coordinates.x_coordinates, coordinates.y_coordinates, \
+						type_mpo_pso.excode_type_mpo_pso, id_mpo_pso, mpo_pso.semantika_digit1, mpo_pso.semantika_digit2, semantika_1 \
+						FROM mpo_pso, coordinates, type_mpo_pso \
+						WHERE mpo_pso.id_coordinates=coordinates.id_coordinates \
+						AND mpo_pso.id_type_mpo_pso=type_mpo_pso.id_type_mpo_pso \
+						AND type_mpo_pso.excode_type_mpo_pso <> '' \
+						AND coordinates.x_coordinates<>0 \
+						AND coordinates.y_coordinates<>0 \
+						AND mpo_pso.id_ls > 0");
+	if(query.exec(str))
 	{
-		QString sss = query.lastError().text();
-		return *all_obj;
+		QSqlRecord rec = query.record();
+		while (query.next())
+		{		
+			QString name_type_mpo_pso = query.value(rec.indexOf("name_type_mpo_pso")).toString();
+			long int x_coord=query.value(rec.indexOf("x_coordinates")).toInt();
+			long int y_coord=query.value(rec.indexOf("y_coordinates")).toInt();
+			QString signCode = query.value(rec.indexOf("excode_type_mpo_pso")).toString();
+			QString id_mpo_pso = query.value(rec.indexOf("id_mpo_pso")).toString();
+
+			// дальность (радиус) действия, километры
+			QString semantika_digit1_mpo_pso = query.value(rec.indexOf("semantika_digit1")).toString();
+			// угол (направление) относительно горизонта против часовой стрелки, градусы
+			QString semantika_digit2_mpo_pso = query.value(rec.indexOf("semantika_digit2")).toString();
+			QString semantika_1_mpo_pso = query.value(rec.indexOf("semantika_1")).toString();
+
+			QList<Coord*> coordList;
+			Coord *coord = new Coord(x_coord,y_coord);	
+			coordList.append(coord);
+
+			QMap<long int,QString> semantic_map;
+
+			semantic_map[17501] = id_mpo_pso;
+			semantic_map[17502] = SMI_MEANS;
+			semantic_map[18]=semantika_digit1_mpo_pso;	// иногда это наполнение значка (в тех случаях, когда не "дальность")
+			semantic_map[19]=semantika_1_mpo_pso;	// подпись значка
+			semantic_map[32811]=semantika_digit1_mpo_pso;	//дальность действия средства
+			semantic_map[32852]=semantika_digit2_mpo_pso;	//направление (угол) действия средства
+
+			SignData *signData = new SignData(signCode,coordList,semantic_map);
+				
+			formationsMeansList.append(signData);
+		}
 	}
+	return formationsMeansList;
+}
 
-	QSqlRecord rec = query.record();
+//===================================================================================
+//==== Метод возвращает список объектов SignData с информацией ======================
+//==== для нанесения на карту и инициализации условных знаков средств организаций ===
+//===================================================================================
+QList<SignData*> ViewManage::getGroupsMeans()
+{
+	QList<SignData*> groupsMeansList;
 
-	while(query.next())
+	QSqlQuery query;
+	QString str=QString("SELECT name_type_mpo_pso, coordinates.x_coordinates, coordinates.y_coordinates, \
+						type_mpo_pso.excode_type_mpo_pso, id_mpo_pso, mpo_pso.semantika_digit1, mpo_pso.semantika_digit2, semantika_1 \
+						FROM mpo_pso, coordinates, type_mpo_pso \
+						WHERE mpo_pso.id_coordinates=coordinates.id_coordinates \
+						AND mpo_pso.id_type_mpo_pso=type_mpo_pso.id_type_mpo_pso \
+						AND type_mpo_pso.excode_type_mpo_pso <> '' \
+						AND coordinates.x_coordinates<>0 \
+						AND coordinates.y_coordinates<>0 \
+						AND mpo_pso.id_groups > 0");
+	if(query.exec(str))
 	{
-		QMap<QString,QString> data;
-		data.insert("x",query.value(rec.indexOf("x")).toString());
-		data.insert("y",query.value(rec.indexOf("y")).toString());
+		QSqlRecord rec = query.record();
+		while (query.next())
+		{		
+			QString name_type_mpo_pso = query.value(rec.indexOf("name_type_mpo_pso")).toString();
+			long int x_coord=query.value(rec.indexOf("x_coordinates")).toInt();
+			long int y_coord=query.value(rec.indexOf("y_coordinates")).toInt();
+			QString signCode = query.value(rec.indexOf("excode_type_mpo_pso")).toString();
+			QString id_mpo_pso = query.value(rec.indexOf("id_mpo_pso")).toString();
 
-		
-	
-		if(query.value(rec.indexOf("id_sign")).isNull())
-		{
-		   data.insert("key","T693");
+			// дальность (радиус) действия, километры
+			QString semantika_digit1_mpo_pso = query.value(rec.indexOf("semantika_digit1")).toString();
+			// угол (направление) относительно горизонта против часовой стрелки, градусы
+			QString semantika_digit2_mpo_pso = query.value(rec.indexOf("semantika_digit2")).toString();
+			QString semantika_1_mpo_pso = query.value(rec.indexOf("semantika_1")).toString();
+
+			QList<Coord*> coordList;
+			Coord *coord = new Coord(x_coord,y_coord);	
+			coordList.append(coord);
+
+			QMap<long int,QString> semantic_map;
+
+			semantic_map[17501] = id_mpo_pso;
+			semantic_map[17502] = SMI_MEANS;
+			semantic_map[18]=semantika_digit1_mpo_pso;	// иногда это наполнение значка (в тех случаях, когда не "дальность")
+			semantic_map[19]=semantika_1_mpo_pso;	// подпись значка
+			semantic_map[32811]=semantika_digit1_mpo_pso;	//дальность действия средства
+			semantic_map[32852]=semantika_digit2_mpo_pso;	//направление (угол) действия средства
+
+			SignData *signData = new SignData(signCode,coordList,semantic_map);
+				
+			groupsMeansList.append(signData);
 		}
-		else
-		{
-			QSqlQuery query_sign;
-			str = QString("SELECT sign_key FROM object_signs WHERE id_sign = %1").arg(query.value(rec.indexOf("id_sign")).toInt());
-			if(!query_sign.exec(str))
-			{
-				data.insert("key","T693");
-			}
-
-			QSqlRecord rec_sign = query_sign.record();
-			query_sign.next();
-			data.insert("key",query_sign.value(rec_sign.indexOf("sign_key")).toString());
-		}
-
-		all_obj->insert(query.value(rec.indexOf("id_object_pattern")).toString(),data);
 	}
+	return groupsMeansList;
+}
 
-	return *all_obj;
+
+//================================================================================
+//==== Метод возвращает список объектов SignData с информацией ===================
+//==== для нанесения на карту и инициализации условных знаков формирований =======
+//================================================================================
+QList<SignData*> ViewManage::getFormations()
+{
+	QList<SignData*> formationsList;
+
+	QSqlQuery query;
+	QString str=QString("SELECT name_ls, coordinates.x_coordinates, coordinates.y_coordinates, type_ls.excode_type_ls, ls.short_name_ls, id_ls \
+						FROM ls, coordinates, type_ls WHERE ls.id_coordinates=coordinates.id_coordinates AND ls.id_type_ls=type_ls.id_type_ls\
+						AND type_ls.excode_type_ls <> '' AND coordinates.x_coordinates<>0 AND coordinates.y_coordinates<>0 AND ls.short_name_ls <> ''");
+	if(query.exec(str))
+	{
+		QSqlRecord rec = query.record();
+		while (query.next())
+		{
+			QString name_ls = query.value(rec.indexOf("name_ls")).toString();
+			long int x_coord=query.value(rec.indexOf("x_coordinates")).toInt();
+			long int y_coord=query.value(rec.indexOf("y_coordinates")).toInt();
+			QString signCode = query.value(rec.indexOf("excode_type_ls")).toString();
+			QString shortNameLs = query.value(rec.indexOf("short_name_ls")).toString();
+			QString idLs = query.value(rec.indexOf("id_ls")).toString();
+
+			QList<Coord*> coordList;
+			Coord *coord = new Coord(x_coord,y_coord);	
+			coordList.append(coord);
+
+			QMap<long int,QString> semantic_map;
+			semantic_map[105] = shortNameLs;
+			semantic_map[19] = shortNameLs;
+			semantic_map[17501] = idLs;
+			semantic_map[17502] = FORMATIONS;
+
+			SignData *signData = new SignData(signCode,coordList,semantic_map);
+				
+			formationsList.append(signData);
+		}
+	}
+	return formationsList;
+}
+
+
+
+//==================================================================================
+//==== Метод возвращает список объектов SignData с информацией =====================
+//==== для нанесения на карту и инициализации условных знаков специальных условий ==
+//==================================================================================
+QList<SignData*> ViewManage::getSpecialConditions()
+{
+	QList<SignData*> conditionsList;
+
+	QSqlQuery query;
+	QString str=QString("SELECT special_conditions.name_special_conditions, special_conditions.semantika_1, \
+						special_conditions.semantika_2 , type_special_conditions.excode_type_sc, \
+						coordinates.x_coordinates, coordinates.y_coordinates, special_conditions.id_special_conditions FROM special_conditions, \
+						region, type_special_conditions, coordinates, coord_spec_cond \
+						where special_conditions.id_region=region.id_region AND \
+						special_conditions.id_type_special_conditions=type_special_conditions.id_type_special_conditions \
+						AND coord_spec_cond.id_special_conditions=special_conditions.id_special_conditions \
+						AND coord_spec_cond.id_coordinates=coordinates.id_coordinates");
+	if(query.exec(str))
+	{
+		QSqlRecord rec = query.record();
+		while (query.next())
+		{
+			QString name_spec_cond = query.value(rec.indexOf("name_special_conditions")).toString();
+			long int x_coord=query.value(rec.indexOf("x_coordinates")).toInt();
+			long int y_coord=query.value(rec.indexOf("y_coordinates")).toInt();
+			QString signCode = query.value(rec.indexOf("excode_type_sc")).toString();
+			QString Sem_1_spec_cond = query.value(rec.indexOf("semantika_1")).toString();
+			QString Sem_2_spec_cond = query.value(rec.indexOf("semantika_2")).toString();
+			QString idSpecialConditions = query.value(rec.indexOf("id_special_conditions")).toString();
+
+			QList<Coord*> coordList;
+			Coord *coord = new Coord(x_coord,y_coord);	
+			coordList.append(coord);
+
+			QMap<long int,QString> semantic_map;
+			semantic_map[17] = Sem_1_spec_cond;
+			semantic_map[19] = Sem_2_spec_cond;
+			semantic_map[17501] = idSpecialConditions;
+			semantic_map[17502] = SPECIAL_CONDITIONS;
+
+			SignData *signData = new SignData(signCode,coordList,semantic_map);
+				
+			conditionsList.append(signData);
+		}
+	}
+	return conditionsList;
 }

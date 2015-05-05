@@ -1,1679 +1,3002 @@
+#include <QLayout>
+#include <QMenuBar>
+#include <QFileDialog>
+#include <QDialog>
+#include <QTextCodec>
+#include <QPaintDevice>
+#include <QPixmap>
+#include <QPicture>
+#include <QPaintEvent>
+#include <QToolButton>
+#include <QLabel>
+#include <QLineEdit>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QDialog>
+#include <QWidget>
+#include <QPushButton>
+#include <QtSql>
+#include <QSqlError>
+#include <QMessageBox>
+#include <QComboBox>
+#include <QMap>
+#include <cmath>
+#include <QFileInfo>
 #include "mapview.h"
 #include "view_manage.h"
+#include "signdata.h"
+#include "calculating_mps.h"
+#include "Calculate_K_omkrf.h"
+#include "People_Losses.h"
 
 
-MapView::MapView(QWidget * parent)
+MapView::MapView(QWidget *parent, const char *name)
     : QWidget(parent)
 {
+	MainCodec = QTextCodec::codecForName("CP1251");
+	setMouseTracking(true);  //включает режим отлавливания событий движения мыши без нажатой клавиши
+	rst_name_and_number.clear();
+	setWindowIcon(QIcon("./icons/mapwork.png"));
 
-    MainCodec = QTextCodec::codecForName("CP1251");
-    setMouseTracking(true);
-    setWindowIcon(QIcon("./icons/mapwork.png"));
+	settings = new QSettings(SETTINGS_ORGANIZATION,SETTINGS_APPLICATION);
 
-    QVBoxLayout *vertLayout = new QVBoxLayout();  //==== основной лэйаут
-    vertLayout->setMargin(1);
+	// === mapscroll ================================================================================================================================
+	mapwin = new MapScroll();
+	connect(mapwin,SIGNAL(signal_for_info(long int, long int)),this,SLOT(showShortInformationObject(long int, long int)));//mysignal - движение мыши
+	connect(mapwin,SIGNAL(signal_for_right_button(long int, QPoint, int, long int)),this,SLOT(mouseRightMenu(long int, QPoint, int, long int)));
+	connect(mapwin,SIGNAL(signalFor1Action(double, double)),this,SLOT(showPositionWGSMouseSlot(double, double)));
+	connect(mapwin,SIGNAL(signalFor2Action(double, double)),this,SLOT(showPositionHallMouseSlot(double, double)));
+	connect(mapwin,SIGNAL(signalFor3Action(long int)),this,SLOT(showAppointMouseSlot(long int)));
+	connect(mapwin,SIGNAL(signalFor4Action(double, double)),this,SLOT(redrawWithNewAngle(double, double)));
+	connect(mapwin,SIGNAL(signal_for_change_scale(QPoint)),this,SLOT(mouseRightSimpleMenu(QPoint)));
+	
+	// ===================================================================================================================================
+	vertLayout = new QVBoxLayout();  //==== основной лэйаут
+	vertLayout->setMargin(1);
+	
+	//==== формирование меню на основе QFrame и QToolButton's ====
+	
+	initToolButtonsPanel();
+	
+	//===================================================================
+    
+	centralLayout = new QHBoxLayout(); //======= лэйаут для размещения левой панели и mapview  
 
-    //==== формирование меню на основе QFrame и QToolButton's ====
-    QFrame *buttons_menu = new QFrame();
-    buttons_menu->setFrameStyle(QFrame::Panel | QFrame::Raised);
-    buttons_menu->setLineWidth(2);
+	initSaturnLeftMenu();
 
-    QToolButton *open_map_but = new QToolButton();
-    open_map_but->setIcon(QIcon("./icons/map_open.png"));
-    open_map_but->setIconSize(QSize(20,20));
-    open_map_but->setToolTip("Открыть карту");
-    connect(open_map_but, SIGNAL(clicked()), this, SLOT(open()));
-
-    //добавление пользовательского слоя
-    QToolButton *tool_button_test = new QToolButton();
-    tool_button_test->setIcon(QIcon("./icons/map_open.png"));
-    tool_button_test->setIconSize(QSize(20,20));
-    tool_button_test->setToolTip("Добавить слой");
-    connect(tool_button_test, SIGNAL(clicked()), this, SLOT(appendSit()));
-
-
-    QToolButton *close_map_but = new QToolButton();
-    close_map_but->setIcon(QIcon("./icons/map_close.png"));
-    close_map_but->setIconSize(QSize(20,20));
-    close_map_but->setToolTip("Закрыть карту и все данные");
-    connect(close_map_but, SIGNAL(clicked()), this, SLOT(closeMap()));
-    //яркость
-    QToolButton *set_map_bright1 = new QToolButton();
-    set_map_bright1->setIcon(QIcon("./icons/up.png"));
-    set_map_bright1->setIconSize(QSize(20,20));
-    set_map_bright1->setToolTip("Увеличить яркость карты");
-    connect(set_map_bright1, SIGNAL(clicked()), this, SLOT(changeBrihgtUp()));
-    //яркость
-    QToolButton *set_map_bright2 = new QToolButton();
-    set_map_bright2->setIcon(QIcon("./icons/down.png"));
-    set_map_bright2->setIconSize(QSize(20,20));
-    set_map_bright2->setToolTip("Уменьшить яркость карты");
-    connect(set_map_bright2, SIGNAL(clicked()), this, SLOT(changeBrihgtDown()));
-    QLabel *v_lab = new QLabel();
-
-
-    //уменьшить масштаб отображения карты
-    QToolButton *less_scale_but = new QToolButton();
-    less_scale_but->setIcon(QIcon("./icons/less_scale.jpg"));
-    less_scale_but->setIconSize(QSize(20,20));
-    less_scale_but->setToolTip("Уменьшить масштаб");
-    connect(less_scale_but, SIGNAL(clicked()), this, SLOT(LessScale()));
-    //увеличить масштаб отображения карты
-    QToolButton *greate_scale_but = new QToolButton();
-    greate_scale_but->setIcon(QIcon("./icons/greate_scale.jpg"));
-    greate_scale_but->setIconSize(QSize(20,20));
-    greate_scale_but->setToolTip("Увеличить масштаб");
-    connect(greate_scale_but, SIGNAL(clicked()), this, SLOT(GreateScale()));
-
-    v_lab->setFrameStyle(QFrame::VLine | QFrame::Raised);
-    v_lab->setLineWidth(2);
-
-    QHBoxLayout *menuLayout = new QHBoxLayout();
-    menuLayout->setAlignment(Qt::AlignLeft);
-    menuLayout->setMargin(2);
-    menuLayout->setSpacing(0);
-
-    menuLayout->addWidget(open_map_but);
-    menuLayout->addWidget(tool_button_test);
-    menuLayout->addWidget(close_map_but);
-    menuLayout->addWidget(set_map_bright1);
-    menuLayout->addWidget(set_map_bright2);
-    menuLayout->addWidget(v_lab);
-
-    menuLayout->addWidget(less_scale_but);
-    menuLayout->addWidget(greate_scale_but);
-
-    buttons_menu->setLayout(menuLayout);
-    vertLayout->addWidget(buttons_menu);
-    //===================================================================
-    QHBoxLayout *centralLayout = new QHBoxLayout();
-
-    QFrame *fr = new QFrame();
-    fr->setFrameStyle(QFrame::Box | QFrame::Raised);
-    fr->setLineWidth(2);
-
-    QLabel *left_panel_name = new QLabel("Работа с объектами");
-    left_panel_name->setAlignment(Qt::AlignCenter);
-    left_panel_name->setFont(QFont("Arial",8,QFont::Bold,false));
-
-    //------------------тест класса ViewManage------------------------------------
-    QPushButton *add_obj = new QPushButton("Показать средства");
-    connect(add_obj, SIGNAL(clicked()), this, SLOT(openMapSit1()));
-
-    QPushButton *show_obj_but = new QPushButton("Показать формирования");
-    connect(show_obj_but, SIGNAL(clicked()), this, SLOT(openMapSit()));
-
-    QPushButton *close_obj_but = new QPushButton("Скрыть все объекты");
-    connect(close_obj_but, SIGNAL(clicked()), this, SLOT(showCloseSitInfo()));
-
-    QPushButton *but_PL = new QPushButton("Психогенные потери");
-    connect(but_PL, SIGNAL(clicked()), this, SLOT(People_Losse()));
-
-    QPushButton *mps = new QPushButton("МПС своих войск");
-    connect(mps, SIGNAL(clicked()), this, SLOT(calc_mps()));
-
-    QPushButton *mps2 = new QPushButton("МПС войск противника");
-    connect(mps2, SIGNAL(clicked()), this, SLOT(calc_mps2()));
-
-    QVBoxLayout *left_layout = new QVBoxLayout();
-    left_layout->setAlignment(Qt::AlignTop);
-    left_layout->setMargin(2);
-    left_layout->addWidget(left_panel_name);
-    left_layout->addWidget(add_obj);
-    left_layout->addWidget(show_obj_but);
-
-    left_layout->addWidget(mps);
-    left_layout->addWidget(mps2);
-    left_layout->addWidget(but_PL);
-    left_layout->addWidget(close_obj_but);
-    fr->setLayout(left_layout);
-    centralLayout->addWidget(fr);
-    // === mapscroll ========================
-
-    mapwin = new MapScroll();
-
-    connect(mapwin,SIGNAL(signal_for_info_2_arg(QString, long int)),this,SLOT(showShortInformationObject_2arg(QString, long int)));
-    //connect(mapwin,SIGNAL(signal_for_info(long int)),this,SLOT(showShortInformationObject(long int)));//mysignal - движение мыши
-    connect(mapwin,SIGNAL(signal_for_right_button(HOBJ, long int, long int, QPoint, bool)),this,SLOT(mouseRightMenu(HOBJ, long int, long int, QPoint, bool)));
-    connect(mapwin,SIGNAL(signal_for_change_scale(QPoint,HOBJ, long int, long int, bool)),this,SLOT(mouseRightSimpleMenu(QPoint ,HOBJ , long int , long int , bool )));
+	// === mapscroll ========================
     centralLayout->addWidget(mapwin);
-    //========================================
-    vertLayout->addLayout(centralLayout);
-    //==============================================
-    QLineEdit *status_bar = new QLineEdit();
-    status_bar->setReadOnly(true);
-    vertLayout->addWidget(status_bar);
-    //=================================================
-    QHBoxLayout *coord_layout = new QHBoxLayout();
-    cursor_coord = new QLineEdit();
-    cursor_coord->setReadOnly(true);
-    QLineEdit *map_scale = new QLineEdit();
-    map_scale->setReadOnly(true);
-    QLineEdit *additional_info = new QLineEdit();
-    additional_info->setReadOnly(true);
-    coord_layout->addWidget(cursor_coord);
-    coord_layout->addWidget(map_scale);
-    coord_layout->addWidget(additional_info);
-    vertLayout->addLayout(coord_layout);
-    //=================================================
-    setLayout(vertLayout);
-    //=========================================
-    flag1=0;
-    flag2=FALSE;
-    flag=FALSE;
-    model = new ViewManage();
 
-    //открытие последней открытой карты с ситом (если он есть).
-    QSettings settings("Saturn");
-    QString path=settings.value("last_map").toString();
-    QString path_sit=settings.value("last_sit").toString();
-    if(QFile::exists(path)){
-        QMessageBox msgBox;
-        msgBox.setText("Do you want open last opened map?");
-        msgBox.setInformativeText(path);
-        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-        msgBox.setDefaultButton(QMessageBox::Yes);
-        int ret = msgBox.exec();
-        if(QMessageBox::Yes == ret){
-            mapwin->mapOpen(path.toStdString().c_str());
-            if(QFile::exists(path_sit)){
-                mapwin->appendData(path_sit.toStdString().c_str());
-            }
-        }
-    }
+	//========================================
+
+
+	vertLayout->addLayout(centralLayout);
+
+   //==============================================
+	status_bar = new QLineEdit();
+	status_bar->setReadOnly(true);
+	vertLayout->addWidget(status_bar);
+
+  //=================================================
+
+	QHBoxLayout *coord_layout = new QHBoxLayout();
+	cursor_coord = new QLineEdit();
+	cursor_coord->setReadOnly(true);
+	QLineEdit *map_scale = new QLineEdit();
+	map_scale->setReadOnly(true);
+	additional_info = new QLineEdit();
+	additional_info->setReadOnly(true);
+
+	coord_layout->addWidget(cursor_coord);
+	coord_layout->addWidget(map_scale);
+	coord_layout->addWidget(additional_info);
+
+	vertLayout->addLayout(coord_layout);
+
+//=================================================
+	setLayout(vertLayout);
+//=========================================
+	model = new ViewManage();
+	koef_mah1=1;
+	koef_mah2=1;
+	Id_coordinates =0;
+
+
+//////////////////////////////////////////////////
+	openMapFromSettings();
+/////////////////////////////////////////////////
 }
 
-MapView::~MapView(){
-        mapwin->dataClose(mapwin->hMap,hSite);
-		
-}
 
-void MapView::showCloseSitInfo()
+//=========================================================
+//====== Деструктор ========
+//========================================================
+MapView::~MapView()
 {
-    info_close_dialog = new QDialog;
-    info_close_dialog ->setWindowTitle("Информация");
-    QLabel * info_label01 = new QLabel("Все объекты удалены.");
-    //==========размещение объектов=================
-    QHBoxLayout *layout = new QHBoxLayout;		 //
-    layout->addStretch();				    	 //
-    layout->addWidget(info_label01);
-    layout->addStretch();
-    info_close_dialog->setLayout(layout);
-    //==============================================//закрываем данные на всех открытых пользовательских слоях
-    mapwin->dataClose(mapwin->hMap,hSite);
-    info_close_dialog->exec();
+	mapwin->~MapScroll();
 }
-//отклик на кнопку "-"
-void MapView::LessScale()
+
+
+
+//=========================================================
+//== Метод создания панели кнопок управления картой =======
+//=========================================================
+void MapView::initToolButtonsPanel()
 {
-    mapwin->ChangeScale(0.5);
+	QFrame *buttons_menu = new QFrame();
+	buttons_menu->setFrameStyle(QFrame::Panel | QFrame::Raised);
+	buttons_menu->setLineWidth(2);
+
+//Открыть карту
+	QToolButton *open_map_but = new QToolButton();
+	open_map_but->setIcon(QIcon("./icons/map_open.png"));
+	open_map_but->setIconSize(QSize(20,20));
+	open_map_but->setToolTip("Открыть карту");
+	connect(open_map_but, SIGNAL(clicked()), this, SLOT(openNewMap()));
+//Закрыть карту и все данные
+	QToolButton *close_map_but = new QToolButton();
+	close_map_but->setIcon(QIcon("./icons/map_close.png"));
+	close_map_but->setIconSize(QSize(20,20));
+	close_map_but->setToolTip("Закрыть карту и все данные");
+	connect(close_map_but, SIGNAL(clicked()), this, SLOT(closeMap()));
+//Увеличить яркость
+	QToolButton *set_map_bright1 = new QToolButton();
+	set_map_bright1->setIcon(QIcon("./icons/up_bright.png"));
+	set_map_bright1->setIconSize(QSize(20,20));
+	set_map_bright1->setToolTip("Увеличить яркость карты");
+	connect(set_map_bright1, SIGNAL(clicked()), this, SLOT(changeBrihgtUp()));
+//Уменьшить яркость
+	QToolButton *set_map_bright2 = new QToolButton();
+	set_map_bright2->setIcon(QIcon("./icons/down_bright.png"));
+	set_map_bright2->setIconSize(QSize(20,20));
+	set_map_bright2->setToolTip("Уменьшить яркость карты");
+	connect(set_map_bright2, SIGNAL(clicked()), this, SLOT(changeBrihgtDown()));
+//Увеличить контрастность
+	QToolButton *set_map_contrast1 = new QToolButton();
+	set_map_contrast1->setIcon(QIcon("./icons/contrast-up.png"));
+	set_map_contrast1->setIconSize(QSize(20,20));
+	set_map_contrast1->setToolTip("Увеличить контрастность карты");
+	connect(set_map_contrast1, SIGNAL(clicked()), this, SLOT(changeContrastUp()));
+//Уменьшить контрастность
+	QToolButton *set_map_contrast2 = new QToolButton();
+	set_map_contrast2->setIcon(QIcon("./icons/contrast-down.png"));
+	set_map_contrast2->setIconSize(QSize(20,20));
+	set_map_contrast2->setToolTip("Уменьшить контрастность карты");
+	connect(set_map_contrast2, SIGNAL(clicked()), this, SLOT(changeContrastDown()));
+//печать всей карты
+	QToolButton *print_map_but = new QToolButton();
+	print_map_but->setIcon(QIcon("./icons/print.png"));
+	print_map_but->setIconSize(QSize(20,20));
+	print_map_but->setToolTip("Печать всей карты");
+	connect(print_map_but, SIGNAL(clicked()), this, SLOT(PrintMapSlot()));
+//печать видимой области карты
+	QToolButton *print_screen_but = new QToolButton();
+	print_screen_but->setIcon(QIcon("./icons/print_part.png"));
+	print_screen_but->setIconSize(QSize(20,20));
+	print_screen_but->setToolTip("Печать видимой области карты");
+	connect(print_screen_but, SIGNAL(clicked()), this, SLOT(PrintScreenSlot()));
+//уменьшить масштаб отображения карты
+	QToolButton *less_scale_but = new QToolButton();
+	less_scale_but->setIcon(QIcon("./icons/less_scale.jpg"));
+	less_scale_but->setIconSize(QSize(20,20));
+	less_scale_but->setToolTip("Уменьшить масштаб");
+	connect(less_scale_but, SIGNAL(clicked()), this, SLOT(lessScale()));
+//увеличить масштаб отображения карты
+	QToolButton *greate_scale_but = new QToolButton();
+	greate_scale_but->setIcon(QIcon("./icons/greate_scale.jpg"));
+	greate_scale_but->setIconSize(QSize(20,20));
+	greate_scale_but->setToolTip("Увеличить масштаб");
+	connect(greate_scale_but, SIGNAL(clicked()), this, SLOT(greateScale()));
+
+//РАСТР! ! ! Открыть растр
+	QToolButton *open_rsc_but = new QToolButton();
+	open_rsc_but->setIcon(QIcon("./icons/foto.png"));
+	open_rsc_but->setIconSize(QSize(20,20));
+	open_rsc_but->setToolTip("Открыть растр");
+	connect(open_rsc_but, SIGNAL(clicked()), this, SLOT(openRST()));
+//закрыть растр
+	QToolButton *close_rsc_but = new QToolButton();
+	close_rsc_but->setIcon(QIcon("./icons/no_photo1.png"));
+	close_rsc_but->setIconSize(QSize(20,20));
+	close_rsc_but->setToolTip("Закрыть растр");
+	connect(close_rsc_but, SIGNAL(clicked()), this, SLOT(closeRST()));
+
+	QLabel *v_lab = new QLabel();
+
+	v_lab->setFrameStyle(QFrame::VLine | QFrame::Raised);
+	v_lab->setLineWidth(2);
+
+	QLabel *v_lab1 = new QLabel();
+
+	v_lab1->setFrameStyle(QFrame::VLine | QFrame::Raised);
+	v_lab1->setLineWidth(2);
+	
+	QLabel *v_lab2 = new QLabel();
+
+	v_lab2->setFrameStyle(QFrame::VLine | QFrame::Raised);
+	v_lab2->setLineWidth(2);
+
+	QLabel *v_lab3 = new QLabel();
+
+	v_lab3->setFrameStyle(QFrame::VLine | QFrame::Raised);
+	v_lab3->setLineWidth(2);
+
+	QLabel *v_lab4 = new QLabel();
+
+	v_lab4->setFrameStyle(QFrame::VLine | QFrame::Raised);
+	v_lab4->setLineWidth(2);
+
+	QLabel *v_lab5 = new QLabel();
+	v_lab5->setFrameStyle(QFrame::VLine | QFrame::Raised);
+	v_lab5->setLineWidth(2);
+
+	QLabel *v_lab6 = new QLabel();
+	v_lab6->setFrameStyle(QFrame::VLine | QFrame::Raised);
+	v_lab6->setLineWidth(2);
+
+	QHBoxLayout *menuLayout = new QHBoxLayout();
+	menuLayout->setAlignment(Qt::AlignLeft);
+	menuLayout->setMargin(2);
+	menuLayout->setSpacing(0);
+
+	menuLayout->addWidget(open_map_but);
+	menuLayout->addWidget(close_map_but);
+	menuLayout->addWidget(v_lab);
+	menuLayout->addWidget(set_map_bright1);
+	menuLayout->addWidget(set_map_bright2);
+	menuLayout->addWidget(v_lab1);
+	menuLayout->addWidget(set_map_contrast1);
+	menuLayout->addWidget(set_map_contrast2);
+	menuLayout->addWidget(v_lab2);
+	menuLayout->addWidget(print_map_but);
+	menuLayout->addWidget(print_screen_but);
+	menuLayout->addWidget(v_lab4);
+	menuLayout->addWidget(print_screen_but);
+	menuLayout->addWidget(v_lab3);
+	menuLayout->addWidget(less_scale_but);
+	menuLayout->addWidget(greate_scale_but);
+	menuLayout->addWidget(v_lab5);
+	menuLayout->addWidget(open_rsc_but);
+	menuLayout->addWidget(close_rsc_but);
+
+	buttons_menu->setLayout(menuLayout);
+
+	vertLayout->addWidget(buttons_menu);
 }
 
-//отклик на кнопку "+"
-void MapView::GreateScale()
+
+//================================================================================
+//============== Метод создания левой панели управления картой ===================
+//================================================================================
+void MapView::initSaturnLeftMenu()
 {
-    mapwin->ChangeScale(2);
+	QFrame *fr = new QFrame();
+	fr->setFrameStyle(QFrame::Box | QFrame::Raised);
+	fr->setLineWidth(2);
+	
+	//--------------- Панель "Фильтр объектов" ----------------------------------------
+	QLabel *means_label = new QLabel("Средства:");
+	QFont font("Arial",8);
+	font.setUnderline(true);
+	means_label->setFont(font);
+
+	smi_means_checkbox = new QCheckBox("СМИ");
+	smi_means_checkbox->setChecked(true);
+
+	formation_means_checkbox = new QCheckBox("Формирований");
+	formation_means_checkbox->setChecked(true);
+
+	organization_means_checkbox = new QCheckBox("Организаций");
+	organization_means_checkbox->setChecked(true);
+
+	//--------------------------------------------------------------
+	
+	formations_checkbox = new QCheckBox("Формирования");
+	formations_checkbox->setChecked(true);
+
+	conditions_checkbox = new QCheckBox("Особые условия");
+	conditions_checkbox->setChecked(true);
+	//-----------------------------------------------------
+
+	QPushButton * show_oper_obst_but = new QPushButton("Показать");
+	connect(show_oper_obst_but, SIGNAL(clicked()), this, SLOT(showCheckedObjects()));
+	
+	
+	QVBoxLayout *show_objects_layout = new QVBoxLayout;
+	
+	show_objects_layout->addWidget(means_label);
+	show_objects_layout->addWidget(smi_means_checkbox);
+	show_objects_layout->addWidget(formation_means_checkbox);
+	show_objects_layout->addWidget(organization_means_checkbox);
+
+	QLabel *lineLabel = new QLabel();
+	lineLabel->setFrameStyle(QFrame::HLine | QFrame::Raised);
+	lineLabel->setLineWidth(2);
+
+	show_objects_layout->addWidget(lineLabel);
+	show_objects_layout->addWidget(formations_checkbox);
+	show_objects_layout->addWidget(conditions_checkbox);
+
+	lineLabel = new QLabel();
+	lineLabel->setFrameStyle(QFrame::HLine | QFrame::Raised);
+	lineLabel->setLineWidth(2);
+	show_objects_layout->addWidget(lineLabel);
+	show_objects_layout->addWidget(show_oper_obst_but);
+	show_objects_layout->addStretch();
+	
+	QWidget *mapWorkWidget = new QWidget;
+	mapWorkWidget->setLayout(show_objects_layout);
+	//----------------------------------------------------------------------------------
+	
+	//--------------- Панель "Расчетные задачи" ----------------------------------------
+
+	mpo_regions_checkbox = new QCheckBox("МПО регионов");
+	mpo_regions_checkbox->setChecked(true);
+
+	mps_our_Mil_checkbox = new QCheckBox("МПС своих войск");
+	mps_our_Mil_checkbox->setChecked(true);
+
+	mps_enemy_checkbox = new QCheckBox("МПС противника");
+	mps_enemy_checkbox->setChecked(true);
+
+	psi_looses_checkbox = new QCheckBox("Психогенные потери");
+	psi_looses_checkbox->setChecked(true);
+
+	//-----------------------------------------------------
+
+	QPushButton * calc_button = new QPushButton("Рассчитать");
+	connect(calc_button, SIGNAL(clicked()), this, SLOT(showCheckedCalcResults()));
+	
+	
+	QVBoxLayout *calc_layout = new QVBoxLayout;
+	
+	calc_layout->addWidget(mpo_regions_checkbox);
+	calc_layout->addWidget(mps_our_Mil_checkbox);
+	calc_layout->addWidget(mps_enemy_checkbox);
+	calc_layout->addWidget(psi_looses_checkbox);
+
+	lineLabel = new QLabel();
+	lineLabel->setFrameStyle(QFrame::HLine | QFrame::Raised);
+	lineLabel->setLineWidth(2);
+
+	calc_layout->addWidget(lineLabel);
+	calc_layout->addWidget(calc_button);
+	calc_layout->addStretch();
+	
+	QWidget *calcWidget = new QWidget;
+	calcWidget->setLayout(calc_layout);
+	
+	//----------------------------------------------------------------
+	
+	QToolBox *mapWorkToolBox = new QToolBox;
+	mapWorkToolBox->addItem(mapWorkWidget,QIcon("./icons/map_search.png"),"Фильтр отображения");
+	mapWorkToolBox->addItem(calcWidget,QIcon("./icons/edit_1.png"),"Расчетные задачи");
+
+	QVBoxLayout *left_panel_layout = new QVBoxLayout();
+	left_panel_layout->setAlignment(Qt::AlignTop);
+	left_panel_layout->setMargin(2);
+	left_panel_layout->setContentsMargins(10,5,10,5);
+
+	left_panel_layout->addWidget(mapWorkToolBox);
+	left_panel_layout->addStretch();
+
+	fr->setLayout(left_panel_layout);
+	fr->setMaximumWidth(200);
+	centralLayout->addWidget(fr);
 }
 
-//отклик на пункт меню открыть
-void MapView::open()
+
+
+
+//====================================================================
+//======  Отклик на пункт меню открыть новую карту ===================
+//====================================================================
+void MapView::openNewMap()
 {
-    QString File = QFileDialog::getOpenFileName(this, QString::null, QString::null,
-                                                "Maps (*.map)" );
-
-    if (File.isEmpty()) return;//если карта не выбрана
-    //mapwin->mapOpen(File.toLatin1().data());
-    if(mapwin->mapOpen(File.toLocal8Bit().data()) == 0){
-        QSettings settings("Saturn");
-        settings.setValue("last_map",File);
-    }
+	openMap();
+}
+//====================================================================
+//==== Слот открытия карты, находящейся по пути в настройках =========
+//====================================================================
+void MapView::openMapFromSettings()
+{	
+	QString mapPath = settings->value("/mapSettings/mapPath","").toString();
+	openMap(mapPath);
 }
 
-// отклик на нажатие кнопки/пункта меню "Закрыть"
+
+//====================================================================
+//============= Метод открытия карты =================================
+//====================================================================
+bool MapView::openMap(QString mapFilepath)
+{
+	QString filePath = mapFilepath;
+	if(filePath == "")
+	{
+		filePath = QFileDialog::getOpenFileName(this, QString::null, QString::null, 
+                   "Maps (*.map)\n Sites (*.sit)\n Matrixes (*.mtw)\n Rasters (*.rsw)" );
+		if (filePath.isEmpty()) return false;//если карта не выбрана
+	}
+	if(mapwin->mapOpen(filePath.toLocal8Bit().data()))
+	{
+		//показать середину карты при ее открытии
+		long int b, sb;
+		b=mapwin->verticalScrollBar()->maximum();
+		sb=mapwin->verticalScrollBar()->value();
+		sb=(b-sb)/2;
+		mapwin->horizontalScrollBar()->setValue(0);
+		mapwin->verticalScrollBar()->setValue(sb);
+		mapwin->updateScreen();
+		setAdditionalInfo();
+
+		QSettings *settings = new QSettings("vka","saturnMap");
+		settings->setValue("/mapSettings/mapPath",filePath);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//====================================================================
+//=== Метод закрытия пользовательской карты по имени =================
+//====================================================================
+void MapView::closeSitByName(QString sitFileName)
+{
+	mapwin->closeSitByName(mapwin->hMap,sitFileName.toStdString().c_str());
+}
+
+
+//======================================================================
+//===== Слот открытия растра ===========================================
+//======================================================================
+void MapView::openRST()
+{
+	long int a = mapwin->IsActive(mapwin->hMap);
+	if (a)
+	{
+		QString File = QFileDialog::getOpenFileName(this, QString::null, QString::null, 
+					   "Maps (*.rsw)" );
+
+		if (File.isEmpty()) return;//если карта не выбрана
+		long int a1 = mapwin->openRstOnMap(File.toLocal8Bit().data());
+		long int a2 = mapwin->setRstOnMap(a1);
+		File+="+"+QString::number(a1);
+		rst_name_and_number.append(File);
+		mapwin->updateScreen();
+	}		
+	else
+	{
+		showInformationDialog("Не открыта карта местности\n для открытия растра необходимо открыть карту");
+	}
+}
+
+//=====================================================================
+//== Слот закрытия растра(ов) с диалогом выбора растров для закрытия ==
+//=====================================================================
+void MapView::closeRST()
+{
+	if (mapwin->IsActive(mapwin->hMap))
+	{
+		QString name;
+		QStringList number_list;
+		number_int.clear();
+		if (rst_name_and_number.size()==1)
+		{
+			name = rst_name_and_number.at(0);
+			QStringList number_list;
+			number_list = name.split("+");
+			if (number_list.size()>0) 
+				mapwin->closeRstForMap(number_list.at(1).toInt());
+			rst_name_and_number.removeAt(0);
+		}
+		if (rst_name_and_number.size()>1)
+		{
+			if (mapwin->IsActive(mapwin->hMap))
+			{	
+				QString name;
+				QStringList number_list;
+				int rsc_number;
+				closeRSTdialog = new QDialog(this);
+				closeRSTdialog->setAttribute(Qt::WA_DeleteOnClose);
+				closeRSTdialog->setWindowTitle("Выбор растров ");
+
+				//-------- построение таблицы-------
+				QHBoxLayout *horizontalLayout = new QHBoxLayout(closeRSTdialog);
+				QVBoxLayout *verticalLayout_1 = new QVBoxLayout();
+
+				horizontalLayout->setSpacing(3);
+				horizontalLayout->setMargin(11);
+
+				verticalLayout_1->setSpacing(6);
+				QLabel    *label = new QLabel(closeRSTdialog);
+
+				verticalLayout_1->addWidget(label);  
+				tableWidget = new 	QTableWidget(closeRSTdialog);
+				if (tableWidget->columnCount() < 3)
+					tableWidget->setColumnCount(3);
+				QTableWidgetItem * colItem = new QTableWidgetItem();
+				tableWidget->setHorizontalHeaderItem(0, colItem);
+				QTableWidgetItem * colItem1 = new QTableWidgetItem();
+				tableWidget->setHorizontalHeaderItem(1, colItem1);
+				QTableWidgetItem * colItem2 = new QTableWidgetItem();
+				tableWidget->setHorizontalHeaderItem(2, colItem2);
+			   
+				tableWidget->setMinimumSize(QSize(410,0));
+				tableWidget->setColumnCount(2);
+
+				verticalLayout_1->addWidget(tableWidget);
+				horizontalLayout->addLayout(verticalLayout_1);
+
+				tableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+				tableWidget->horizontalHeader()->setResizeMode(0,QHeaderView::Stretch);
+				tableWidget->horizontalHeader()->setResizeMode(1,QHeaderView::Fixed);
+				tableWidget->setColumnWidth(0,600);
+				tableWidget->setColumnWidth(1,50);
+
+				 tableWidget->horizontalHeaderItem(0)->setText("Название растра");
+				 tableWidget->hideColumn(1);
+				 //заполняем
+				  int row = 0;		
+				  
+				  for (row=0;row<rst_name_and_number.size(); row++) 
+				  {						
+				  tableWidget->insertRow(row);
+				  tableWidget->setRowHeight(row,30);
+				  name = rst_name_and_number.at(row);
+				  number_list = name.split("+");
+				  rsc_number = number_list.at(1).toInt();
+
+					
+					QTableWidgetItem  *item1 = new QTableWidgetItem();
+					QTableWidgetItem *item2 = new QTableWidgetItem(QString::number(rsc_number));
+
+					item1->setText(number_list.at(0));
+
+					tableWidget->setItem(row,1,item2);
+					item1->setData(Qt::CheckStateRole, Qt::Unchecked);
+					tableWidget->setItem(row,0,item1);
+				  }
+
+				QHBoxLayout *horizontal_layout_2 = new QHBoxLayout();
+				QVBoxLayout *v_button = new QVBoxLayout();
+				QPushButton *all_button = new QPushButton("Закрыть");
+				connect(all_button, SIGNAL(clicked()), this, SLOT(closeRST1()));
+				v_button->addWidget(all_button);
+				
+				QPushButton *close_all_button = new QPushButton("Закрыть все");
+				connect(close_all_button, SIGNAL(clicked()), this, SLOT(closeAllRST()));
+				v_button->addWidget(close_all_button);
+
+				horizontal_layout_2->addLayout(v_button);
+
+				horizontalLayout->addLayout(horizontal_layout_2);
+						
+				if(closeRSTdialog->exec() == QDialog::Rejected)
+				{	
+				}
+			}
+		}
+	}
+}
+
+//======================================================================
+//======= Слот закрытия выбранных растров ==========
+//======================================================================
+void MapView::closeRST1()
+{
+	for (int i=0; i<rst_name_and_number.size(); i++)
+	{
+		if (tableWidget->item(i,0)->data(Qt::CheckStateRole).toBool()==true)
+		{
+			number_int.append(tableWidget->item(i,1)->data(Qt::DisplayRole).toInt());
+			rst_name_and_number.removeAt(i);
+		}
+	}
+	for (int i=0; i<number_int.size(); i++)
+	{
+		mapwin->closeRstForMap(number_int.at(i));
+	}
+}
+
+//======================================================================
+//==================== Слот закрытия всех растров ======================
+//======================================================================
+void MapView::closeAllRST()
+{
+	if (mapwin->IsActive(mapwin->hMap))
+	{
+		QString name;
+		QStringList number_list;
+		if (rst_name_and_number.size()>1)
+		{
+			//закрыть все
+			for (int i=0; i<rst_name_and_number.count(); i++)
+			{
+				name = rst_name_and_number.at(i);
+				number_list = name.split("+");
+				long int a = mapwin->closeRstForMap(number_list.at(1).toInt());//???
+			}
+			for (int i=0; i<rst_name_and_number.count(); i++)
+			{
+				rst_name_and_number.removeAt(i);
+			}
+		}
+	}
+}
+
+//===============================================================
+// ==== Слот - отклик на нажатие кнопки/пункта меню "Закрыть" ===
+//===============================================================
 void MapView::closeMap()
 {
-    mapwin->closeMap();
-    flag2=FALSE;
+   mapwin->closeMap();
 }
-// затенение карты
-void MapView::opacityMap()
+
+
+//===============================================================
+//===== Слот - отклик на кнопку "<" =============================
+//===============================================================
+void MapView::lessScale()
 {
-
+	double poz_sbx=0,poz_sby=0;
+	if (mapwin->horizontalScrollBar()->value()!=0)
+	{
+		poz_sbx=mapwin->horizontalScrollBar()->maximum()- mapwin->horizontalScrollBar()->minimum()+ mapwin->horizontalScrollBar()->pageStep();
+		poz_sbx/=(mapwin->horizontalScrollBar()->value());
+		mapwin->dx=mapwin->horizontalScrollBar()->pageStep();
+	}
+	if (mapwin->verticalScrollBar()->value()!=0)
+	{
+		poz_sby=mapwin->verticalScrollBar()->maximum()- mapwin->verticalScrollBar()->minimum()+ mapwin->verticalScrollBar()->pageStep();
+		poz_sby/=(mapwin->verticalScrollBar()->value());
+		mapwin->dy=mapwin->verticalScrollBar()->pageStep();
+	}
+    mapwin->changeScale(0.5, poz_sbx,poz_sby);		
+	koef_mah1++;
 }
 
+//===============================================================
+//===== Слот - отклик на кнопку ">" =============================
+//===============================================================
+void MapView::greateScale()
+{
+	double poz_sbx=0,poz_sby=0;
+	if (mapwin->horizontalScrollBar()->value()!=0)
+	{
+		poz_sbx=mapwin->horizontalScrollBar()->maximum()+ mapwin->horizontalScrollBar()->pageStep();
+		poz_sbx/=(mapwin->horizontalScrollBar()->value());
+		mapwin->dx=mapwin->horizontalScrollBar()->pageStep();
+	}
+	if (mapwin->verticalScrollBar()->value()!=0)
+	{
+		poz_sby=mapwin->verticalScrollBar()->maximum()+ mapwin->verticalScrollBar()->pageStep();
+		poz_sby/=(mapwin->verticalScrollBar()->value());
+		mapwin->dy=mapwin->verticalScrollBar()->pageStep();
+	}
+    mapwin->changeScale(2, poz_sbx,poz_sby);		
+	koef_mah2++;
+}
+
+//===============================================================
+//===== Слот - отклик на кнопку "увеличить яркость" =============
+//===============================================================
+void MapView::changeBrihgtUp()
+{
+	long int bright = mapwin->getMapBright();
+	if (bright<16)
+	{
+		bright++;
+		mapwin->setMapBright(bright);
+		mapwin->updateScreen();
+	}
+	else
+	showInformationDialog("Яркость максимальная");
+}
+
+//===============================================================
+//===== Слот - отклик на кнопку "уменьшить яркость" =============
+//===============================================================
+void MapView::changeBrihgtDown()
+{
+	long int bright = mapwin->getMapBright();
+	if (bright>-16)
+	{
+		bright--;
+		mapwin->setMapBright(bright);
+		mapwin->updateScreen();
+	}
+	else
+	showInformationDialog("Яркость минимальная");
+}
+
+//===============================================================
+//===== Слот - отклик на кнопку "увеличить контрастность" =======
+//===============================================================
+void MapView::changeContrastUp()
+{
+	long int contrast = mapwin->getMapContrast();
+	if (contrast<16)
+	{
+		contrast++;
+		mapwin->setMapContrast(contrast);
+		mapwin->updateScreen();
+	}
+	else
+	showInformationDialog("Контрастность максимальная");
+}
+
+//===============================================================
+//===== Слот - отклик на кнопку "уменьшить контрастность" =======
+//===============================================================
+void MapView::changeContrastDown()
+{
+	long int contrast = mapwin->getMapContrast();
+	if (contrast>-16)
+	{
+		contrast--;
+		mapwin->setMapContrast(contrast);
+		mapwin->updateScreen();
+	}
+	else
+	showInformationDialog("Контрастность минимальная");
+}
+
+//============================================================================
+//===== Метод отображения текущего масштаба в правом нижнем углу карты =======
+//============================================================================
+//
+void MapView::setAdditionalInfo()
+{
+	QString info;
+	long int scale = mapwin->getScale();
+	info = "						  Масштаб отображения карты: 1:";
+	info +=QString::number(scale);
+
+	additional_info->setText(info);
+}
+
+//======================================================================
+//======= Метод обработки нажатия клавиш вверх-вниз ====================
+//======================================================================
 void MapView::keyPressEvent(QKeyEvent *e)
 {
-    if (e->key() == Qt::Key_Less || e->key() == Qt::Key_Comma)
-    {
-        LessScale();
-        return;
-    }
-    if (e->key() == Qt::Key_Greater || e->key() == Qt::Key_Period)
-    {
-        GreateScale();
-        return;
-    }
-
-    switch(e->key())
-    {
-    case Qt::Key_Left:
-        mapwin->ChangePos(-16,0);
-        return;
-    case Qt::Key_Up:
-        mapwin->ChangePos(0,-16);
-        return;
-    case Qt::Key_Right:
-        mapwin->ChangePos(16,0);
-        return;
-    case Qt::Key_Down:
-        mapwin->ChangePos(0,16);
-        return;
-    }
-
-    QWidget::keyPressEvent(e);
+  if (e->key() == Qt::Key_Less || e->key() == Qt::Key_Comma)
+  {
+    lessScale();
+	setAdditionalInfo();
+	setStatusInfo("info");
+    return;
+  }
+  if (e->key() == Qt::Key_Greater || e->key() == Qt::Key_Period)
+  {
+    greateScale();
+	setAdditionalInfo();
+	setStatusInfo("info");
+    return;
+  }
+  switch(e->key())
+  {
+     case Qt::Key_Left:
+       mapwin->changePos(-16,0);
+       return;
+     case Qt::Key_Up:
+       mapwin->changePos(0,-16);
+       return;
+     case Qt::Key_Right:
+       mapwin->changePos(16,0);
+       return;
+     case Qt::Key_Down:
+       mapwin->changePos(0,16);
+       return;
+  }
+  QWidget::keyPressEvent(e);
 }
 
-//отклик на пункт меню нанести объекты (СРЕДСТВА!!!)
-//===================================================
-HSITE MapView::openMapSit1()
-{	
-    QString fileRSC;
-    QSettings settings("Saturn");
-    long int a = mapwin->IsActive(mapwin->hMap);
-    if (a)
-    {
-        QDir dir;
-        curFile= dir.rootPath() + "saturn";
-        dir.setPath(curFile);
-        if (!dir.exists())
-        {
-            dir.mkdir(curFile);
-        }
-        curFile= curFile + "/sites";
-        dir.setPath(curFile);
-        if (!dir.exists())
-        {
-            dir.mkdir(curFile);
-            fileRSC = QFileDialog::getOpenFileName(this, QString::null, QString::null, "Классификатор (*.rsc)" );
-            if (fileRSC.isEmpty())
-            {
-                int ret = QMessageBox::critical(this, "Сатурн", "Не выбран классификатор! \n");
-            }else{
-                settings.setValue("last_rsc",fileRSC);
-            }
-        }
-        fileRSC=settings.value("last_rsc").toString();
-        if(!QFile::exists(fileRSC)){
-            QString fileRSC = QFileDialog::getOpenFileName(this, QString::null, QString::null, "Классификатор (*.rsc)" );
-            if (fileRSC.isEmpty())
-            {
-                int ret = QMessageBox::critical(this, "Сатурн", "Не выбран классификатор! \n");
-            }else{
-                settings.setValue("last_rsc",fileRSC);
-            }
-        }
-        curFile=curFile + "/sit_lear.sit";
-        QString str_mapname = "OBJECTS";
-
-        HSITE this_hsite;
-
-        memset((void*)&createsite,0,sizeof(createsite));
-        createsite.Length = sizeof(createsite);
-        strcpy(createsite.MapName, str_mapname.toLocal8Bit().data());
-        createsite.MapType=2;
-
-        this_hsite = mapwin->dataOpen(mapwin->hMap,curFile.toLocal8Bit().data(),fileRSC.toLocal8Bit().data(),&createsite);
-        mapwin->flag2=TRUE;
-        hSite=this_hsite;
-
-        createsite.Length = sizeof(createsite);
-        hSite=this_hsite;
-
-        selectAllObject1();
-        selectAllObject2();
-        showInformationDialog("Объекты нанесены на карту");
-        return this_hsite;
-    }
-    mapwin->UpdateScreen();
-    return 0;
-}
-//отклик на пункт меню нанести объекты (ФОРМИРОВАНИЯ, ФЛАЖКИ)
-//===============================================================================
-HSITE MapView::openMapSit(){	
-    QString fileRSC,fileMAP;
-    QSettings settings("Saturn");
-    long int a = mapwin->IsActive(mapwin->hMap);
-    if (a)
-    {
-        QDir dir;
-        curFile= dir.rootPath() + "saturn";
-        dir.setPath(curFile);
-        if (!dir.exists())
-        {
-            dir.mkdir(curFile);
-        }
-        curFile= curFile + "/sites";
-        dir.setPath(curFile);
-        if (!dir.exists())
-        {
-            dir.mkdir(curFile);
-            fileRSC = QFileDialog::getOpenFileName(this, QString::null, QString::null, "Классификатор (*.rsc)" );
-            if (fileRSC.isEmpty())
-            {
-                int ret = QMessageBox::critical(this, "Сатурн", "Не выбран классификатор! \n");
-            }else{
-                settings.setValue("last_rsc",fileRSC);
-            }
-        }
-        fileRSC=settings.value("last_rsc").toString();
-        if(!QFile::exists(fileRSC)){
-            QString fileRSC = QFileDialog::getOpenFileName(this, QString::null, QString::null, "Классификатор (*.rsc)" );
-            if (fileRSC.isEmpty())
-            {
-                int ret = QMessageBox::critical(this, "Сатурн", "Не выбран классификатор! \n");
-            }else{
-                settings.setValue("last_rsc",fileRSC);
-            }
-        }
-        curFile=curFile + "/sit_lear.sit";
-        QString str_mapname = "OBJECTS";
-
-        HSITE this_hsite;
-
-        memset((void*)&createsite,0,sizeof(createsite));
-        createsite.Length = sizeof(createsite);
-        strcpy(createsite.MapName, str_mapname.toLocal8Bit().data());
-        createsite.MapType=2;
-
-        this_hsite = mapwin->dataOpen(mapwin->hMap,curFile.toLocal8Bit().data(),fileRSC.toLocal8Bit().data(),&createsite);
-        mapwin->flag2=TRUE;
-        hSite=this_hsite;
-
-        createsite.Length = sizeof(createsite);
-        hSite=this_hsite;
-
-        selectAllObject();
-        showInformationDialog("Объекты нанесены на карту");
-        return this_hsite;
-    }
-    mapwin->UpdateScreen();
-    return 0;
-}
-//вычисление координат на катре с движением мыши
-void  MapView::mouseMoveEvent(QMouseEvent * event)
+//======================================================================
+//======= Метод обработки движения мыши по карте =======================
+//======= Заносит координаты в строку состояния =======================
+//======================================================================
+void MapView::mouseMoveEvent(QMouseEvent * event)
 {
-    if (event->Move)
-    {
-        QPoint a;
-        double x,y;
-        if (mapwin->hMap)
-        {
-            mouse_pos = event->pos();
-            x= mouse_pos.x();
-            y = mouse_pos.y();
-            a=mapwin->getXY(x, y);
-        }
-        QString s = "x: ";
-        s += QString::number(a.x());
-        s += " y: ";
-        s += QString::number(a.y());
-        cursor_coord->setText(s);
-    }
+	if (event->Move)
+	{
+		QPoint a;
+		double x,y;
+		if (mapwin->hMap)
+		{
+			mouse_pos = event->pos();
+			x= mouse_pos.x();
+			y = mouse_pos.y();
+			a=mapwin->getXY(x, y);
+		}
+		QString s = "x: ";
+		s += QString::number(a.x());
+		s += " y: ";
+		s += QString::number(a.y());
+		cursor_coord->setText(s);
+	}
 }
 
 
-//получаем информацию из базы для отображения информации
-void MapView::showInfoAboutObject(long int id_obj)
+//============================================================================
+//=== Метод открытия пользовательской карты ==================================
+//============================================================================
+HSITE MapView::openMapSit(QString sitFileName, QString rscFilePath)
+{				
+	HSITE this_hsite=0;
+	long int a = mapwin->IsActive(mapwin->hMap);
+	if(!a) return 0;
+
+	this_hsite = mapwin->openSit(mapwin->hMap,sitFileName.toLocal8Bit().data(),rscFilePath.toLocal8Bit().data());
+	mapwin->flag2=TRUE;
+	mapwin->createsite.Length = sizeof(mapwin->createsite);
+	mapwin->hSite=this_hsite;
+	
+	return this_hsite;
+}
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////
+////// Методы, специфичные для ПК "Сатурн" /////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////////////////
+
+
+//================================================================
+//== Слот отображения на карте выбранных пользователем объектов ==
+//== в соответствии с фильтром отображения объектов ==============
+//================================================================
+void MapView::showCheckedObjects()
 {
-    if (flag2)
-    {
-        if (flag1)
-        {
-            QString id_object, object_name, class_name, unique_number, country_name;
-            QString size_x, description, property_value, size_y;
-            QString destroy_recomendation, latitude_wgs_84;
-            QString longitude_wgs_84, latitude_sk_42, longitude_sk_42;
-            //===========================================================
-            info_dialog = new QDialog;
-            info_dialog ->setWindowTitle(tr("Information about object"));
-            QMap<QString, QString> obj_info;
-            obj_info = model->get_obj_info(id_obj);
-            //======================================
-            id_object = obj_info["id_object"];
-            object_name = obj_info["object_name"];
-            class_name = obj_info["class_name"];
-            unique_number = obj_info["unique_number"];
-            country_name = obj_info["country_name"];
-            description = obj_info["description"];
-            property_value = obj_info["property_value"];
-            size_x = obj_info["size_x"];
-            size_y = obj_info["size_y"];
-            destroy_recomendation = obj_info["destroy_recomendation"];
-            latitude_wgs_84 = obj_info["latitude_wgs_84"];
-            longitude_wgs_84 = obj_info["longitude_wgs_84"];
-            latitude_sk_42 = obj_info["latitude_sk_42"];
-            longitude_sk_42 = obj_info["longitude_sk_42"];
-            //----------------------------------------------------------------------------------
-            QLabel * info_label11 = new QLabel(tr("id_object"));
-            QLabel * info_label12 = new QLabel(id_object);
-            QLabel * info_label21 = new QLabel(tr("object_name"));
-            QLabel * info_label22 = new QLabel(object_name);
-            QLabel * info_label31 = new QLabel(tr("class_name "));
-            QLabel * info_label32 = new QLabel(class_name);
-            QLabel * info_label41 = new QLabel(tr("unique_number "));
-            QLabel * info_label42 = new QLabel(unique_number);
-            QLabel * info_label51 = new QLabel(tr("country_name "));
-            QLabel * info_label52 = new QLabel(country_name);
-            QLabel * info_label61 = new QLabel(tr("description "));
-            QLabel * info_label62 = new QLabel(description);
-            QLabel * info_label71 = new QLabel(tr("property_value "));
-            QLabel * info_label72 = new QLabel(property_value);
-            QLabel * info_label81 = new QLabel(tr("size_x "));
-            QLabel * info_label82 = new QLabel(size_x);
-            QLabel * info_label91 = new QLabel(tr("size_y "));
-            QLabel * info_label92 = new QLabel(size_y);
-            QLabel * info_label101 = new QLabel(tr("destroy_recomendation "));
-            QLabel * info_label102 = new QLabel(destroy_recomendation);
-            QLabel * info_label111 = new QLabel(tr("latitude_wgs_84 "));
-            QLabel * info_label112 = new QLabel(latitude_wgs_84);
-            QLabel * info_label121 = new QLabel(tr("longitude_wgs_84 "));
-            QLabel * info_label122 = new QLabel(longitude_wgs_84);
-            QLabel * info_label131 = new QLabel(tr("latitude_sk_42 "));
-            QLabel * info_label132 = new QLabel(latitude_sk_42);
-            QLabel * info_label141 = new QLabel(tr("longitude_sk_42 "));
-            QLabel * info_label142 = new QLabel(longitude_sk_42);
-            //==========размещение объектов=================
-            QGridLayout *gridLayout = new QGridLayout;   //
-            gridLayout->addWidget(info_label11,0,0);     //
-            gridLayout->addWidget(info_label12,0,1);     //
-            gridLayout->addWidget(info_label21,1,0);      //
-            gridLayout->addWidget(info_label22,1,1);     //
-            gridLayout->addWidget(info_label31,2,0);     //
-            gridLayout->addWidget(info_label32,2,1);     //
-            gridLayout->addWidget(info_label41,3,0);     //
-            gridLayout->addWidget(info_label42,3,1);     //
-            gridLayout->addWidget(info_label51,4,0);     //
-            gridLayout->addWidget(info_label52,4,1);     //
-            gridLayout->addWidget(info_label61,5,0);     //
-            gridLayout->addWidget(info_label62,5,1);     //
-            gridLayout->addWidget(info_label71,6,0);     //
-            gridLayout->addWidget(info_label72,6,1);     //
-            gridLayout->addWidget(info_label81,7,0);     //
-            gridLayout->addWidget(info_label82,7,1);     //
-            gridLayout->addWidget(info_label91,8,0);     //
-            gridLayout->addWidget(info_label92,8,1);     //
-            gridLayout->addWidget(info_label101,9,0);     //
-            gridLayout->addWidget(info_label102,9,1);     //
-            gridLayout->addWidget(info_label111,10,0);     //
-            gridLayout->addWidget(info_label112,10,1);     //
-            gridLayout->addWidget(info_label121,11,0);     //
-            gridLayout->addWidget(info_label122,11,1);     //
-            gridLayout->addWidget(info_label131,12,0);     //
-            gridLayout->addWidget(info_label132,12,1);     //
-            gridLayout->addWidget(info_label141,13,0);     //
-            gridLayout->addWidget(info_label142,13,1);     //
-            info_dialog->setLayout(gridLayout);			   //
-            //==============================================
-            info_dialog->exec();
-        }
-    }
+	if(mapwin->hMap==0)
+	{
+		openMapFromSettings();
+	}
+	
+	QString rscPath = settings->value("/mapSettings/rscPath","").toString();
+	QFileInfo *info = new QFileInfo(rscPath);
+	QString sitPath = info->absolutePath();
+	sitPath.append("/");
+	//-------------------------------------------------------------------------
+	QString smiMeansSitName = sitPath.append("smiMeans.sit");
+	QString formationMeansSitName = sitPath.append("formationMeans.sit");
+	QString organizationMeansSitName = sitPath.append("organizationMeans.sit");
+	QString formationsSitName = sitPath.append("formations.sit");
+	QString conditionsSitName = sitPath.append("conditions.sit");
+	//-------------------------------------------------------------------------
 
-}
-//отобразить все объекты на карте (воинские формирования)
-void MapView::selectAllObject()
-{
-    QSqlQuery query;
-    long int a11111=0;
-    QString str=QString("SELECT name_ls, coordinates.x_coordinates, coordinates.y_coordinates, type_ls.excode_type_ls, ls.short_name_ls, id_ls \
-                        FROM ls, coordinates, type_ls WHERE ls.id_coordinates=coordinates.id_coordinates AND ls.id_type_ls=type_ls.id_type_ls\
-            AND type_ls.excode_type_ls <> '' AND coordinates.x_coordinates<>0 AND coordinates.y_coordinates<>0 AND ls.short_name_ls <> ''");
-            if(query.exec(str))
-    {
-            while (query.next())
-    {
-            QString Name_ls = query.value(0).toString();
-            long int X_coord=query.value(1).toInt();
-    long int Y_coord=query.value(2).toInt();
-    QString kodeX = query.value(3).toString();
-    QString ShotName_ls = query.value(4).toString();
-    QString ID_ls = query.value(5).toString();
+	if (smi_means_checkbox->checkState())
+	{
+		//показать средства СМИ
+		closeSitByName(smiMeansSitName);
+		HSITE smiMeansSite = openMapSit(smiMeansSitName,rscPath);
+		showSmiMeans(smiMeansSite);
+	}
+	else
+	{
+		closeSitByName(smiMeansSitName);
+	}
 
+	//-------------------------------------------------------------------------
+	if (formation_means_checkbox->checkState())
+	{
+		//показать средства формирований
+		closeSitByName(formationMeansSitName);
+		HSITE formationMeansSite = openMapSit(formationMeansSitName,rscPath);
+		showFormationMeans(formationMeansSite);
+	
+	}
+	else
+	{
+		closeSitByName(formationMeansSitName);
+	}
 
-    if( query.value(1).isNull() || query.value(2).isNull() || query.value(3).isNull() || query.value(4).isNull())
-    {
-        int ret = QMessageBox::warning (this, tr("My Application"),  Name_ls,
-                                        QMessageBox::Save | QMessageBox::Discard
-                                        | QMessageBox::Cancel,
-                                        QMessageBox::Save);
-    }
-    else
-    {
+	//-------------------------------------------------------------------------
+	if (organization_means_checkbox->checkState())
+	{
+		
+		//показать средства организаций
+		closeSitByName(organizationMeansSitName);
+		HSITE organizationMeansSite = openMapSit(organizationMeansSitName,rscPath);
+		showOrganizationMeans(organizationMeansSite);
+	
+	}
+	else
+	{
+		closeSitByName(organizationMeansSitName);
+	}
 
+	//-------------------------------------------------------------------------
+	if (formations_checkbox->checkState())
+	{
+		//показать формирования
+		closeSitByName(formationsSitName);
+		HSITE formationsSite = openMapSit(formationsSitName,rscPath);
+		showFormations(formationsSite);
+	
+	}
+	else
+	{
+		closeSitByName(formationsSitName);
+	}
 
-        QMap<int,QString> semantic_map;
-        semantic_map[105]=ShotName_ls;
-        semantic_map[19]=ShotName_ls;
+	//-------------------------------------------------------------------------
+	if (conditions_checkbox->checkState())
+	{
+		//показать особые условия
+		closeSitByName(conditionsSitName);
+		HSITE conditionsSite = openMapSit(conditionsSitName,rscPath);
+		showConditions(conditionsSite);
+	
+	}
+	else
+	{
+		closeSitByName(conditionsSitName);
+	}
+	//-------------------------------------------------------------------------
 
-        semantic_map[32812]="ls";
-        semantic_map[32822]=ID_ls;
-
-
-        //	a11111 = mapwin->createObject(hSite,X_coord,Y_coord,kodeX.toLocal8Bit().data(),1, ShotName_ls.toLocal8Bit().data());
-        a11111 = mapwin->createObject(hSite,X_coord,Y_coord,kodeX.toLocal8Bit().data(),1, semantic_map);
-        //	a11111 = mapwin->createObject(hSite,X_coord,Y_coord,kodeX.toLocal8Bit().data(),1);
-
-    }
-}
-query.clear();
-}
-else
-{
-int ret = QMessageBox::warning(this, tr("My Application"),
-                               tr("Bla-Bla-Bla!!!.\n"
-                                  "Do you want to save your changes?"),
-                               QMessageBox::Save | QMessageBox::Discard
-                               | QMessageBox::Cancel,
-                               QMessageBox::Save);
+	if (mapwin->hMap) mapwin->updateScreen();
 }
 
 
-//   long int	qqq = mapwin->createObject(hSite,X_coord,Y_coord,kodeX.toLocal8Bit().data(),1, semantic_map);//
-//	                                      (long int hSit, double x, double y, const char * name_ff, long int id_obj, QMap<int,QString> semantic_map)
 
-
-
-}
-//========================================================================================================================================================
-//вывод средств
-void MapView::selectAllObject1()
-{
-    QSqlQuery query;
-    long int a11111=0;
-    QString str=QString("SELECT name_type_mpo_pso, coordinates.x_coordinates, coordinates.y_coordinates, type_mpo_pso.excode_type_mpo_pso, id_mpo_pso, mpo_pso.semantika_digit1, mpo_pso.semantika_digit2, semantika_1 FROM mpo_pso, coordinates, type_mpo_pso\
-                        WHERE mpo_pso.id_coordinates=coordinates.id_coordinates AND mpo_pso.id_type_mpo_pso=type_mpo_pso.id_type_mpo_pso \
-            AND type_mpo_pso.excode_type_mpo_pso <> '' AND coordinates.x_coordinates<>0 AND coordinates.y_coordinates<>0 AND excode_type_mpo_pso  IN ('V0000169007' , 'V0000169029')");
-            if(query.exec(str))
-    {
-            while (query.next())
-    {
-            QString Name_mpo_pso = query.value(0).toString();
-            long int X_coord=query.value(1).toInt();
-    long int Y_coord=query.value(2).toInt();
-    QString kodeX = query.value(3).toString();
-
-    QString ID_mpo_pso = query.value(4).toString();
-    // дальность (радиус) действия, километры
-    QString semantika_digit1_mpo_pso = query.value(5).toString();
-    //float sem1=query.value(5).toDouble();
-    // угол (направление) относительно горизонта против часовой стрелки, градусы
-    QString semantika_digit2_mpo_pso = query.value(6).toString();
-
-    QString semantika_1_mpo_pso = query.value(7).toString();
-
-
-    if( query.value(1).isNull() || query.value(2).isNull() || query.value(3).isNull())
-    {
-        int ret = QMessageBox::warning (this, tr("My Application"),  Name_mpo_pso,
-                                        QMessageBox::Save | QMessageBox::Discard
-                                        | QMessageBox::Cancel,
-                                        QMessageBox::Save);
-    }
-    else
-    {
-
-
-        QMap<int,QString> semantic_map;
-        semantic_map[32812]="mpo_pso";
-        semantic_map[32822]=ID_mpo_pso;
-
-        semantic_map[18]=semantika_digit1_mpo_pso;	// иногда это наполнение значка (в тех случаях, когда не "дальность")
-        semantic_map[19]=semantika_1_mpo_pso;	// подпись значка
-
-        semantic_map[32811]=semantika_digit1_mpo_pso;	//дальность действия средства
-        semantic_map[32852]=semantika_digit2_mpo_pso;	//направление (угол) действия средства
-
-        a11111 = mapwin->createObject(hSite,X_coord,Y_coord,kodeX.toLocal8Bit().data(),1, semantic_map);
-        //	a11111 = mapwin->createObject(hSite,X_coord,Y_coord,kodeX.toLocal8Bit().data(),1);
-
-    }
-}
-query.clear();
-}
-else
-{
-int ret = QMessageBox::warning(this, tr("My Application"),
-                               tr("Bla-Bla-Bla!!!.\n"
-                                  "Do you want to save your changes?"),
-                               QMessageBox::Save | QMessageBox::Discard
-                               | QMessageBox::Cancel,
-                               QMessageBox::Save);
-}
-
-QSqlQuery query1;
-
-QString str1=QString("SELECT name_type_mpo_pso, coordinates.x_coordinates, coordinates.y_coordinates, type_mpo_pso.excode_type_mpo_pso, id_mpo_pso, mpo_pso.semantika_digit1, mpo_pso.semantika_digit2, semantika_1 FROM mpo_pso, coordinates, type_mpo_pso\
-                     WHERE mpo_pso.id_coordinates=coordinates.id_coordinates AND mpo_pso.id_type_mpo_pso=type_mpo_pso.id_type_mpo_pso \
-        AND type_mpo_pso.excode_type_mpo_pso <> '' AND coordinates.x_coordinates<>0 AND coordinates.y_coordinates<>0 AND excode_type_mpo_pso NOT IN ('V0000169007', 'V0000169029')");
-        if(query1.exec(str1))
-{
-        while (query1.next())
-{
-        QString Name_mpo_pso = query1.value(0).toString();
-        long int X_coord=query1.value(1).toInt();
-long int Y_coord=query1.value(2).toInt();
-QString kodeX = query1.value(3).toString();
-
-QString ID_mpo_pso = query1.value(4).toString();
-// дальность (радиус) действия, километры
-QString semantika_digit1_mpo_pso = query1.value(5).toString();
-//float sem1=query.value(5).toDouble();
-// угол (направление) относительно горизонта против часовой стрелки, градусы
-QString semantika_digit2_mpo_pso = query1.value(6).toString();
-
-QString semantika_1_mpo_pso = query1.value(7).toString();
-
-
-if( query1.value(1).isNull() || query1.value(2).isNull() || query1.value(3).isNull())
-{
-    int ret = QMessageBox::warning (this, tr("My Application"),  Name_mpo_pso,
-                                    QMessageBox::Save | QMessageBox::Discard
-                                    | QMessageBox::Cancel,
-                                    QMessageBox::Save);
-}
-else
+//================================================================
+//== Метод отображения на карте средств СМИ ======================
+//================================================================
+void MapView::showSmiMeans(HSITE hSite)
 {
 
-
-QMap<int,QString> semantic_map;
-semantic_map[32812]="mpo_pso";
-semantic_map[32822]=ID_mpo_pso;
-
-semantic_map[18]=semantika_digit1_mpo_pso;	// иногда это наполнение значка (в тех случаях, когда не "дальность")
-semantic_map[19]=semantika_1_mpo_pso;	// подпись значка
-
-semantic_map[32811]=semantika_digit1_mpo_pso;	//дальность действия средства
-semantic_map[32852]=semantika_digit2_mpo_pso;	//направление (угол) действия средства
-
-a11111 = mapwin->createObject(hSite,X_coord,Y_coord,kodeX.toLocal8Bit().data(),1, semantic_map);
-//	a11111 = mapwin->createObject(hSite,X_coord,Y_coord,kodeX.toLocal8Bit().data(),1);
-
+	QList<SignData*> smiMeansSigns = model->getSmiMeans();
+	
+	for(int i=0;i<smiMeansSigns.count();i++)
+	{
+		mapwin->createObjectTest(hSite,&smiMeansSigns.at(i)->getMetricList(),
+								 smiMeansSigns.at(i)->getSignCode().toStdString().c_str(),
+								 &smiMeansSigns.at(i)->getSemanticList());
+	}
 }
-}
-query1.clear();
-}
-else
+
+//================================================================
+//== Метод отображения на карте средств формирований =============
+//================================================================
+void MapView::showFormationMeans(HSITE hSite)
 {
-int ret = QMessageBox::warning(this, tr("My Application"),
-                               tr("Bla-Bla-Bla!!!.\n"
-                                  "Do you want to save your changes?"),
-                               QMessageBox::Save | QMessageBox::Discard
-                               | QMessageBox::Cancel,
-                               QMessageBox::Save);
+	QList<SignData*> formationsMeansSigns = model->getFormationsMeans();
+	
+	for(int i=0;i<formationsMeansSigns.count();i++)
+	{
+		mapwin->createObjectTest(hSite,&formationsMeansSigns.at(i)->getMetricList(),
+								 formationsMeansSigns.at(i)->getSignCode().toStdString().c_str(),
+								 &formationsMeansSigns.at(i)->getSemanticList());
+	}
 }
 
-}
-
-//================================
-//вывод особых условий
-void MapView::selectAllObject2()
-{	
-    QSqlQuery query;
-    long int a11111=0;
-    QString str=QString("SELECT special_conditions.name_special_conditions, special_conditions.semantika_1, \
-                        special_conditions.semantika_2 , type_special_conditions.excode_type_sc, \
-                        coordinates.x_coordinates, coordinates.y_coordinates, special_conditions.id_special_conditions FROM special_conditions, \
-                        region, type_special_conditions, coordinates, coord_spec_cond \
-                        where special_conditions.id_region=region.id_region AND \
-            special_conditions.id_type_special_conditions=type_special_conditions.id_type_special_conditions \
-            AND coord_spec_cond.id_special_conditions=special_conditions.id_special_conditions \
-            AND coord_spec_cond.id_coordinates=coordinates.id_coordinates");
-            if(query.exec(str))
-    {
-            while (query.next())
-    {
-            QString Name_spec_cond = query.value(0).toString();
-            long int X_coord=query.value(4).toInt();
-    long int Y_coord=query.value(5).toInt();
-    QString kodeX = query.value(3).toString();
-
-    QString Sem_1_spec_cond = query.value(1).toString();
-    QString Sem_2_spec_cond = query.value(2).toString();
-    QString ID_special_conditions = query.value(6).toString();
-
-    if( query.value(3).isNull() || query.value(4).isNull() || query.value(5).isNull())
-    {
-        int ret = QMessageBox::warning (this, tr("My Application"),  Name_spec_cond,
-                                        QMessageBox::Save | QMessageBox::Discard
-                                        | QMessageBox::Cancel,
-                                        QMessageBox::Save);
-    }
-    else
-    {
-
-        QMap<int,QString> semantic_map;
-        semantic_map[17]=Sem_1_spec_cond;
-        semantic_map[19]=Sem_2_spec_cond;
-
-        semantic_map[32812]="special_conditions";
-        semantic_map[32822]=ID_special_conditions;
-
-
-        a11111 = mapwin->createObject(hSite,X_coord,Y_coord,kodeX.toLocal8Bit().data(),1, semantic_map);
-        //	a11111 = mapwin->createObject(hSite,X_coord,Y_coord,kodeX.toLocal8Bit().data(),1);
-
-    }
-}
-query.clear();
-}
-else
+//================================================================
+//== Метод отображения на карте средств организаций ==============
+//================================================================
+void MapView::showOrganizationMeans(HSITE hSite)
 {
-int ret = QMessageBox::warning(this, tr("My Application"),
-                               tr("Bla-Bla-Bla!!!.\n"
-                                  "Do you want to save your changes?"),
-                               QMessageBox::Save | QMessageBox::Discard
-                               | QMessageBox::Cancel,
-                               QMessageBox::Save);
+	QList<SignData*> groupsMeansSigns = model->getGroupsMeans();
+	
+	for(int i=0;i<groupsMeansSigns.count();i++)
+	{
+		mapwin->createObjectTest(hSite,&groupsMeansSigns.at(i)->getMetricList(),
+								 groupsMeansSigns.at(i)->getSignCode().toStdString().c_str(),
+								 &groupsMeansSigns.at(i)->getSemanticList());
+	}
 }
 
-}
-void MapView::selectLineObject()
+//================================================================
+//== Метод отображения на карте формирований =====================
+//================================================================
+void MapView::showFormations(HSITE hSite)
 {
-    long int x = 6470096, y = 4807576, id_obj = 1;
-    QString name_ff = "L1000000002";
-    long int a1 = mapwin->createLineObject(hSite, x, y, name_ff.toLocal8Bit().data(), id_obj);
+	QList<SignData*> formationsSigns = model->getFormations();
+	
+	for(int i=0;i<formationsSigns.count();i++)
+	{
+		mapwin->createObjectTest(hSite,&formationsSigns.at(i)->getMetricList(),
+								 formationsSigns.at(i)->getSignCode().toStdString().c_str(),
+								 &formationsSigns.at(i)->getSemanticList());
+	}
+
 }
-void MapView::errors_message(QString str)
+
+//================================================================
+//== Метод отображения на карте особых условий ===================
+//================================================================
+void MapView::showConditions(HSITE hSite)
 {
-    QMessageBox error;
-    QMessageBox::warning(this, tr("Warning!!!"),str,
-                         QMessageBox::Ok);
+	QList<SignData*> specialConditionsSigns = model->getSpecialConditions();
+
+	for(int i=0;i<specialConditionsSigns.count();i++)
+	{
+		mapwin->createObjectTest(hSite,&specialConditionsSigns.at(i)->getMetricList(),
+								 specialConditionsSigns.at(i)->getSignCode().toStdString().c_str(),
+								 &specialConditionsSigns.at(i)->getSemanticList());
+	}
+
 }
 
-void MapView::test_view_manage()
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////  Расчетные задачи  ////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+//================================================================
+//== Слот отображения на карте результатов расчетных задач, ======
+//== отобранных оператором для решения ===========================
+//================================================================
+void MapView::showCheckedCalcResults()
 {
-    QMap<QString,QString> obj_data;
-    QMap<QString,QString>::iterator i;
-    obj_data = model->get_obj_info(9);
+	if(mapwin->hMap==0)
+	{
+		openMapFromSettings();
+	}
+	
+	QString rscPath = settings->value("/mapSettings/rscPath","").toString();
+	QFileInfo *info = new QFileInfo(rscPath);
+	QString sitPath = info->absolutePath();
+	sitPath.append("/");
+	//-------------------------------------------------------------------------
+	QString mpoRegionsSitName = sitPath.append("mpoRegions.sit");
+	QString mpsOursSitName = sitPath.append("mpsOurs.sit");
+	QString mpsEnemiesSitName = sitPath.append("mpsEnemies.sit");
+	QString psiLoosesSitName = sitPath.append("psiLooses.sit");
+	//-------------------------------------------------------------------------
 
-    QTableWidget *table = new QTableWidget();
-    table->setColumnCount(2);
-    int row = 0;
+	if (mpo_regions_checkbox->checkState())
+	{
+		//показать результаты расчета МПО регионов
+		closeSitByName(mpoRegionsSitName);
+		HSITE mpoRegions = openMapSit(mpoRegionsSitName,rscPath);
+		////showSmiMeans(mpoRegions);
+	}
+	else
+	{
+		closeSitByName(mpoRegionsSitName);
+	}
 
-    for (i = obj_data.begin(); i != obj_data.end(); ++i)
-    {
-        table->insertRow(row);
+	//-------------------------------------------------------------------------
+	if (mps_our_Mil_checkbox->checkState())
+	{
+		//показать результаты расчета МПС наших войск
+		closeSitByName(mpsOursSitName);
+		HSITE mpsOursSite = openMapSit(mpsOursSitName,rscPath);
+		/////showFormationMeans(mpsOursSite);
+	
+	}
+	else
+	{
+		closeSitByName(mpsOursSitName);
+	}
 
-        QTableWidgetItem *item = new QTableWidgetItem(i.key());
-        table->setItem(row,0,item);
+	//-------------------------------------------------------------------------
+	if (mps_enemy_checkbox->checkState())
+	{
+		//показать результаты расчета МПС противника
+		closeSitByName(mpsEnemiesSitName);
+		HSITE mpsEnemiesSite = openMapSit(mpsEnemiesSitName,rscPath);
+		///showOrganizationMeans(mpsEnemiesSite);
+	
+	}
+	else
+	{
+		closeSitByName(mpsEnemiesSitName);
+	}
 
-        item = new QTableWidgetItem(i.value());
-        table->setItem(row,1,item);
-    }
-    QDialog *dlg = new QDialog;
-    QVBoxLayout *lay = new QVBoxLayout;
-    lay->addWidget(table);
-    dlg->setLayout(lay);
-    dlg->exec();
+	//-------------------------------------------------------------------------
+	if (psi_looses_checkbox->checkState())
+	{
+		//показать результаты расчета психогенных потерь
+		closeSitByName(psiLoosesSitName);
+		HSITE psiLoosesSite = openMapSit(psiLoosesSitName,rscPath);
+		//showFormations(psiLoosesSite);
+	
+	}
+	else
+	{
+		closeSitByName(psiLoosesSitName);
+	}
+
+	//-------------------------------------------------------------------------
+
+	if (mapwin->hMap) mapwin->updateScreen();
 }
-void MapView::test_view_manage2()
+
+
+//================================================================
+//== Метод отображения на карте МПОС регионов ====================
+//================================================================
+void MapView::showMpoRegions(HSITE hSite)
 {
-    QMap<QString,QMap<QString,QString> > obj_data2;
-    QMap<QString,QMap<QString,QString> >::iterator i;
-    obj_data2 = model->get_all_objects_info(0,0,7000000,7000000);
-    QMap<QString,QString> data_k;
-    QMap<QString,QString>::iterator k;
-    QTableWidget *table = new QTableWidget();
-    table->setColumnCount(3);
-    int row = 0;
 
-    for (i = obj_data2.begin(); i != obj_data2.end(); ++i)
-    {
-        data_k = i.value();
-        k = data_k.begin();
-        table->insertRow(row);
-
-        QTableWidgetItem *item = new QTableWidgetItem(i.key());
-        table->setItem(row,0,item);
-
-        int j = 0;
-        for ( k = data_k.begin(); j != 2, k != data_k.end(); ++j, ++k)
-        {
-            item = new QTableWidgetItem(k.key());
-            table->setItem(row,1,item);
-            item = new QTableWidgetItem(k.value());
-            table->setItem(row,2,item);
-            row++;
-            table->insertRow(row);
-
-        }
-        row++;//можно убрать
-    }
-    QDialog *dlg = new QDialog;
-    QVBoxLayout *lay = new QVBoxLayout;
-    lay->addWidget(table);
-    dlg->setLayout(lay);
-    dlg->exec();
+	//QList<SignData*> mpoRegionsSigns = model->getSmiMeans();
+	
+	/*for(int i=0;i<mpoRegionsSigns.count();i++)
+	{
+		mapwin->createObjectTest(hSite,&mpoRegionsSigns.at(i)->getMetricList(),
+								 mpoRegionsSigns.at(i)->getSignCode().toStdString().c_str(),
+								 &mpoRegionsSigns.at(i)->getSemanticList());
+	}*/
 }
+
+
+//================================================================
+//== Метод отображения на карте МПС наших войск ==================
+//================================================================
+void MapView::showMpsOurs(HSITE hSite)
+{
+
+	//QList<SignData*> mpoRegionsSigns = model->getSmiMeans();
+	
+	/*for(int i=0;i<mpoRegionsSigns.count();i++)
+	{
+		mapwin->createObjectTest(hSite,&mpoRegionsSigns.at(i)->getMetricList(),
+								 mpoRegionsSigns.at(i)->getSignCode().toStdString().c_str(),
+								 &mpoRegionsSigns.at(i)->getSemanticList());
+	}*/
+}
+
+
+//================================================================
+//== Метод отображения на карте МПС войск противника =============
+//================================================================
+void MapView::showMpsEnemies(HSITE hSite)
+{
+
+	//QList<SignData*> mpoRegionsSigns = model->getSmiMeans();
+	
+	/*for(int i=0;i<mpoRegionsSigns.count();i++)
+	{
+		mapwin->createObjectTest(hSite,&mpoRegionsSigns.at(i)->getMetricList(),
+								 mpoRegionsSigns.at(i)->getSignCode().toStdString().c_str(),
+								 &mpoRegionsSigns.at(i)->getSemanticList());
+	}*/
+}
+
+
+//================================================================
+//== Метод отображения на карте психогенных потерь ===============
+//================================================================
+void MapView::showPsiLooses(HSITE hSite)
+{
+
+	//QList<SignData*> mpoRegionsSigns = model->getSmiMeans();
+	
+	/*for(int i=0;i<mpoRegionsSigns.count();i++)
+	{
+		mapwin->createObjectTest(hSite,&mpoRegionsSigns.at(i)->getMetricList(),
+								 mpoRegionsSigns.at(i)->getSignCode().toStdString().c_str(),
+								 &mpoRegionsSigns.at(i)->getSemanticList());
+	}*/
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+//void	 MapView::showGroupBox()
+//{
+//	group_box2->show();
+//}
+//====== Фильтр отображения результатов целераспределения для средств поражения =======
+//void			MapView::showWeaponList()
+//{	
+//	if (mapwin->hMap)
+//	{
+//	   weapon_listdialog = new QDialog(this);	
+//	   weapon_listdialog->setWindowTitle("Выбор средств для отображения");
+//
+//		  QList <QString> list;			
+//		  QString str_version2;			
+//		  list = model->versionForComboboxWeapon();			
+//		  int k2 = list.size(), id_w;	
+//
+//		//-------- построение таблицы-------
+//		QHBoxLayout *horizontalLayout = new QHBoxLayout(weapon_listdialog);
+//		QVBoxLayout *verticalLayout_3 = new QVBoxLayout();
+//
+//		horizontalLayout->setSpacing(3);
+//		horizontalLayout->setMargin(11);
+//
+//		verticalLayout_3->setSpacing(6);
+//		QLabel    *label = new QLabel(weapon_listdialog);
+//
+//		verticalLayout_3->addWidget(label);  
+//		tableWidget = new 	QTableWidget(weapon_listdialog);
+//		if (tableWidget->columnCount() < 3)
+//			tableWidget->setColumnCount(3);
+//		QTableWidgetItem * colItem = new QTableWidgetItem();
+//		tableWidget->setHorizontalHeaderItem(0, colItem);
+//		QTableWidgetItem * colItem1 = new QTableWidgetItem();
+//		tableWidget->setHorizontalHeaderItem(1, colItem1);
+//		QTableWidgetItem * colItem2 = new QTableWidgetItem();
+//		tableWidget->setHorizontalHeaderItem(2, colItem2);
+//	   
+//		tableWidget->setMinimumSize(QSize(410,0));
+//		tableWidget->setColumnCount(2);
+//
+//		verticalLayout_3->addWidget(tableWidget);
+//
+//		horizontalLayout->addLayout(verticalLayout_3);
+//
+//		tableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+//		tableWidget->horizontalHeader()->setResizeMode(0,QHeaderView::Stretch);
+//		tableWidget->horizontalHeader()->setResizeMode(1,QHeaderView::Fixed);
+//		tableWidget->setColumnWidth(0,600);
+//		tableWidget->setColumnWidth(1,50);
+//
+//		 tableWidget->horizontalHeaderItem(0)->setText("Наименование средства поражения");
+//
+//		 tableWidget->hideColumn(1);
+//		 //заполняем
+//		  int row = 0;			
+//		  
+//		  for (row=0;row<k2; row++) 
+//		  {						
+//		  tableWidget->insertRow(row);
+//		  tableWidget->setRowHeight(row,30);
+//		  QString w_string = list.at(row);
+//		  QStringList kkk = w_string.split("_");
+//		  id_w = kkk.at(0).toInt();
+//
+//			
+//			QTableWidgetItem  *item1 = new QTableWidgetItem();
+//			QTableWidgetItem *item2 = new QTableWidgetItem(QString::number(id_w));
+//
+//			item1->setText(kkk.at(1));
+//
+//			tableWidget->setItem(row,1,item2);
+//			item1->setData(Qt::CheckStateRole, Qt::Unchecked);
+//			tableWidget->setItem(row,0,item1);
+//			//row++;
+//		  }
+//
+//		QHBoxLayout *horizontalLayout_2 = new QHBoxLayout();
+//		QVBoxLayout *v_button_lay = new QVBoxLayout();
+//		QPushButton *vse_button = new QPushButton("Показать");
+//		connect(vse_button, SIGNAL(clicked()), weapon_listdialog, SLOT(accept()));
+//		v_button_lay->addWidget(vse_button);
+//		
+//		QPushButton *all_select_button = new QPushButton("Выбрать все");
+//		connect(all_select_button, SIGNAL(clicked()), this, SLOT(select_all_weapons()));
+//		v_button_lay->addWidget(all_select_button);
+//		/*QHBoxLayout *horizontalLayout_2 = new QHBoxLayout();
+//		QPushButton *vse_button = new QPushButton("Показать");
+//		connect(vse_button, SIGNAL(clicked()), weapon_listdialog, SLOT(accept()));*/
+//
+//		horizontalLayout_2->addLayout(v_button_lay);
+//
+//		horizontalLayout->addLayout(horizontalLayout_2);
+//		if(weapon_listdialog->exec()==QDialog::Accepted)
+//		{
+//			group_weapon_list.clear();
+//			if (mapwin->hSite_p) mapwin->closeSit(mapwin->hMap, mapwin->hSite_p);
+//			if (mapwin->hSite_s) mapwin->closeSit(mapwin->hMap, mapwin->hSite_s);
+////			bool check1 = get_znaki_checkbox(), check2 = get_line_checkbox();
+//			if ((check1==false)&&(check2==false))
+//			{
+//				if (mapwin->hSite_p) mapwin->closeSit(mapwin->hMap, mapwin->hSite_p);
+//				if (mapwin->hSite_s) mapwin->closeSit(mapwin->hMap, mapwin->hSite_s);
+//				return;
+//			}
+//			for (int i=0; i<row; i++)
+//			{
+//				if (tableWidget->item(i,0)->data(Qt::CheckStateRole).toBool()==true)
+//				{
+//					group_weapon_list.append(tableWidget->item(i,1)->data(Qt::DisplayRole).toInt());
+//				}
+//			}
+//			if (check1)	
+//			{	
+//				paintPlaner();
+//				if (!check2) {if (mapwin->hSite_s) mapwin->closeSit(mapwin->hMap, mapwin->hSite_s);}	
+//			}
+//			if (check2)	
+//			{				
+//				joinObjectWithWeapon(); 
+//				if (!check1) {if (mapwin->hSite_p) mapwin->closeSit(mapwin->hMap, mapwin->hSite_p);}}
+//		}
+//	}
+//	else
+//	{
+//		showInformationDialog("Сначала необходимо открыть карту и нанести объекты!");
+//		showOpenMapDialog();
+//		return;
+//	}
+//}
+//
+////======== Выделение всех средств поражения в диалоге-фильтре ======
+//void			MapView::select_all_weapons()
+//{
+//	int row_count = tableWidget->rowCount();
+//	
+//	for(int row=0;row<row_count;row++)
+//	{
+//		tableWidget->item(row,0)->setData(Qt::CheckStateRole,true);
+//	}
+//
+//}
+//
+////выбор версии целераспределения combobox 1
+//int				MapView::get_targeting_version()
+//{
+//	int index = version_combobox->currentIndex();
+//	int id_targeting_version = version_combobox->itemData(index,Qt::UserRole).toInt();
+//	return id_targeting_version;
+//}
+////выбор версии operation combobox 3
+//int				MapView::get_operation_combo()
+//{
+//	int index = operation_combobox->currentIndex();
+//	int id_operation = operation_combobox->itemData(index,Qt::UserRole).toInt();
+//	return id_operation;
+//}
+//выбор версии direction combobox
+//int				MapView::getDirectionCombo()
+//{
+//	int index = direction_combobox->currentIndex();
+//	int id_direction = direction_combobox->itemData(index,Qt::UserRole).toInt();
+//	return id_direction;
+//}
+////запрос выбранного параметра в комбобокс
+//inline bool		MapView::get_object_checkbox()
+//{
+//	return object_checkbox->checkState();	 
+//}
+////запрос выбранного параметра в комбобокс
+//inline bool		MapView::get_weapon_checkbox()
+//{
+//	return weabon_checkbox->checkState();
+//}
+////запрос выбранного параметра в комбобокс
+//inline bool		MapView::get_lbs_checkbox()
+//{
+//	return lbs_checkbox->checkState();
+//}
+//inline bool		MapView::get_corr_checkbox()
+//{
+//	return corridors_checkbox->checkState();
+//}
+////запрос выбранного параметра в комбобокс
+//inline bool		MapView::get_znaki_checkbox()
+//{
+//	return znaki_checkbox->checkState();
+//}
+////запрос выбранного параметра в комбобокс
+//inline bool		MapView::get_line_checkbox()
+//{
+//	return line_checkbox->checkState();
+//}
+////запрос выбранного параметра в комбобокс
+//inline bool		MapView::getMarkDirCheckbox()
+//{
+//	return mark_checkbox_dir->checkState();
+//}
+////запрос выбранного параметра в комбобокс
+//inline bool		MapView::getLineDirCheckbox()
+//{
+//	return line_checkbox_dir->checkState();
+//}
+////при нажатии на "дополнительно"
+//void	MapView::showGroupBox1(int id_version)
+//{
+//	int id_targeting_version = get_targeting_version();
+//	if (id_targeting_version==0) 
+//	{
+//		group_box2->hide();
+//		group_box3->hide();
+//		return;
+//	}
+//	group_box2->show();
+//	group_box3->show();
+//}
+////
+//void	MapView::hideOperation(int id_operation)
+//{
+//	if (id_operation!=0)
+//	{
+//		group_box2->hide();
+//		group_box3->show();
+//	}
+//	else
+//		group_box2->show();
+//}
+////
+//void	MapView::hideDirection(int id_direction)
+//{
+//	if (id_direction!=0)
+//	{
+//		group_box2->show();
+//		group_box3->hide();
+//	}
+//	else
+//		group_box3->show();
+//}
+
+
+
+
+
+
+//для возможности отображения на карте средств поражения
+HSITE	 MapView::openMapSitWeapon()
+{				
+		HSITE this_hsite=0;
+		long int a = mapwin->IsActive(mapwin->hMap);
+		if (mapwin->hSite_w==0)
+		{
+			QString File = "C:/projects/new_sit/Rigel.rsc";
+			QString curFile = "C:/projects/new_sit/weapon.sit";
+			QString str_mapname = "weapon";
+			if (File.isEmpty()) return 0;//если карта не выбрана
+			this_hsite = mapwin->openSit(mapwin->hMap,curFile.toLocal8Bit().data(),File.toLocal8Bit().data());
+			mapwin->flag2=TRUE;
+			mapwin->createsite.Length = sizeof(mapwin->createsite);
+			mapwin->hSite_w=this_hsite;
+		}
+		return this_hsite;
+}
+
+//пользовательский слой для стрелок
+HSITE	 MapView::openMapSitFor()
+{
+	HSITE this_hsite=0;
+	long int a = mapwin->IsActive(mapwin->hMap);
+	if (a)
+	{
+		if (mapwin->hSite_s==0)
+		{
+			QString File = "C:/projects/new_sit/Rigel.rsc";
+			QString curFile = "C:/projects/new_sit/iSt.sit";
+			QString str_mapname = "cel";
+
+			if (File.isEmpty()) return 0;//если карта не выбрана
+		
+			this_hsite = mapwin->openSit(mapwin->hMap,curFile.toLocal8Bit().data(),File.toLocal8Bit().data());
+			mapwin->createsite.Length = sizeof(mapwin->createsite);
+			mapwin->hSite_s=this_hsite;
+		}
+		return this_hsite;
+	}
+	return 0;
+}
+
+//пользовательский слой для целераспределения картинками
+HSITE	 MapView::openMapSitForPicture()
+{
+	HSITE this_hsite=0;
+	long int a = mapwin->IsActive(mapwin->hMap);
+	if (a)
+	{
+		if (mapwin->hSite_p==0)
+		{
+			QString File = "C:/projects/new_sit/Rigel.rsc";
+			QString curFile = "C:/projects/new_sit/iPicture.sit";
+			QString str_mapname = "Picture";
+
+			if (File.isEmpty()) return 0;//если карта не выбрана
+			
+			this_hsite = mapwin->openSit(mapwin->hMap,curFile.toLocal8Bit().data(),File.toLocal8Bit().data());
+			mapwin->createsite.Length = sizeof(mapwin->createsite);
+			mapwin->hSite_p=this_hsite;
+		}
+		return this_hsite;
+	}
+	return 0;
+}
+//слой для "галочек"
+HSITE	 MapView::openMapSitForOkWeapon()
+{
+	HSITE this_hsite=0;
+	long int a = mapwin->IsActive(mapwin->hMap);
+	if (a)
+	{
+		if (mapwin->hSite_ok_weapon==0)
+		{
+			QString File = "C:/projects/new_sit/Rigel.rsc";
+			QString curFile = "C:/projects/new_sit/forOkWeapon.sit";
+			QString str_mapname = "forOkWeapon";
+
+			if (File.isEmpty()) return 0;//если карта не выбрана
+			
+			this_hsite = mapwin->openSit(mapwin->hMap,curFile.toLocal8Bit().data(),File.toLocal8Bit().data());
+			mapwin->createsite.Length = sizeof(mapwin->createsite);
+			mapwin->hSite_ok_weapon=this_hsite;
+		}
+		return this_hsite;
+	}
+	return 0;
+}
+//пользовательский слой для границ разграничения
+HSITE	 MapView::openMapSitForLine()
+{
+	HSITE this_hsite=0;
+	long int a = mapwin->IsActive(mapwin->hMap);
+	if (a)
+	{
+		if (mapwin->hSite_line==0)
+		{
+			QString File = "C:/projects/new_sit/Rigel.rsc";//currentDirectory QDir
+			QString curFile = "C:/projects/new_sit/iline.sit";
+			QString str_mapname = "line";
+
+			if (File.isEmpty()) return 0;//если карта не выбрана
+
+			this_hsite = mapwin->openSit(mapwin->hMap,curFile.toLocal8Bit().data(),File.toLocal8Bit().data());
+			mapwin->createsite.Length = sizeof(mapwin->createsite);
+			mapwin->hSite_line=this_hsite;
+		}
+		return this_hsite;
+	}
+	return 0;
+}
+//пользовательский слой для коридоров пролета
+HSITE MapView::openMapSitForCorridors()
+{
+	HSITE this_hsite=0;
+	long int a = mapwin->IsActive(mapwin->hMap);
+	if (a)
+	{
+			QString File = "c:/projects/new_sit/Rigel.rsc";//currentDirectory QDir
+			QString curFile = "c:/projects/new_sit/icorridors.sit";
+			QString str_mapname = "corridors";
+
+			if (File.isEmpty()) return 0;//если карта не выбрана
+
+			this_hsite = mapwin->openSit(mapwin->hMap,curFile.toLocal8Bit().data(),File.toLocal8Bit().data());
+			mapwin->createsite.Length = sizeof(mapwin->createsite);
+			mapwin->hSite_corr=this_hsite;
+		return this_hsite;
+	}
+	return 0;
+}
+
+//отмена целераспределения
+//void	 MapView::dissolutionPlan()
+//{
+//	int id_taget_version = get_targeting_version();
+//	model->deleteForDissolutionPlan(Id_obj, id_taget_version);
+//	bool p=0, p1=0;
+//	if (mapwin->hSite_s)
+//	{
+//		p=1;
+//		mapwin->closeSit(mapwin->hMap, mapwin->hSite_s);
+//	}
+//	if (mapwin->hSite_p) 
+//	{
+//		p1=1;
+//		mapwin->closeSit(mapwin->hMap, mapwin->hSite_p);
+//	}
+//	if (p)
+//	{ joinObjectWithWeapon();
+//	}
+//	if (p1)
+//	{ paintPlaner();
+//	}
+//	mapwin->updateScreen();
+//}
+
+ //получаем информацию из базы для отображения информации
+void	 MapView::showInfoAboutObject()
+{
+	//Reports *r = new Reports;
+	//QString report = r->create_object_formular(Id_obj);
+	//r->show_preview_dialog(report);
+}
+
+//отобразить все объекты поражения (противник) на карте
+void	 MapView::paintAllObject()
+{
+	//if (mapwin->hSite) mapwin->closeSit(mapwin->hMap, mapwin->hSite);
+	//openMapSit("","");		
+	//if (mapwin->hSite)
+	//{
+	//	int id_targeting_version = get_targeting_version();
+	//	QSqlQuery query;
+	//	QMap< QString,QMap< QString,QString > > objects_inmap;
+	//	double x1 = mapwin->getMapX1(mapwin->hMap);//получаем координаты карты
+	//	double y1 = mapwin->getMapY1(mapwin->hMap);
+	//	double x2 = mapwin->getMapX2(mapwin->hMap);
+	//	double y2 = mapwin->getMapY2(mapwin->hMap);
+	//	objects_inmap = model->get_all_objects_info(id_targeting_version, x1, y1, x2, y2);
+
+	//	QString  code, code1;
+	//	long int id_object, x, y;
+	//	long int a2=0, a1=0;
+	//	int len=0;
+	//	QMap <QString, QMap <QString,QString>>::iterator it = objects_inmap.begin(); 
+	//		for (;it != objects_inmap.end(); ++it) 
+	//		{	
+	//			code = it.key();
+	//			id_object = code.toLong();
+	//			code = it.value()["x"];
+	//			x = code.toDouble();
+	//			code = it.value()["y"];
+	//			y = code.toDouble();
+	//			code = it.value()["key"];
+	//			len=code.length();
+	//			code1=code;
+	//			if (code[len-1]==' ')//убираем пробел - ошибку при вводе
+	//			{
+	//				for (int i=0; i<len; i++)
+	//				{
+	//					if (code[i]!=' ')
+	//					{
+	//						code1[i]=code[i];
+	//					}
+	//				}
+	//			}
+	//			QString sem = it.value()["sem"];;
+	//			bool if_shtab = ifShtab(code1);
+	//			a2 = mapwin->createObject(mapwin->hSite, x, y , code1.toLocal8Bit().data(),id_object, 2.00,if_shtab,sem);	//
+	//		}	
+	//}
+	//else
+	//{
+	//	
+	//}
+}
+
+//отобразить средства поражения
+void	 MapView::paintWeapon()
+{
+	//openMapSitWeapon();
+	//if (mapwin->hSite_w)
+	//{
+	//	QList <QString> objects_inmap;
+	//	double x1 = mapwin->getMapX1(mapwin->hMap);
+	//	double y1 = mapwin->getMapY1(mapwin->hMap);
+	//	double x2 = mapwin->getMapX2(mapwin->hMap);
+	//	double y2 = mapwin->getMapY2(mapwin->hMap);
+	//	objects_inmap = model->get_all_objects_weapon(x1,y1,x2,y2);
+	//	QString  str_id_weapon, str_id_weapon_coordinates, sign_key, takt_number, str_x, str_y;
+	//	long int id_object, id_weapon_coordinates, id_weapon;
+	//	double x, y;
+	//	long int a2=0, count1, count2;
+	//	int i=0;
+	//	float angle=0;
+	//	while (i<objects_inmap.size())
+	//	{	
+	//			str_id_weapon = objects_inmap.at(i);
+	//			id_weapon = str_id_weapon.toLong();i++;
+	//			str_id_weapon_coordinates = objects_inmap.at(i);
+	//			id_weapon_coordinates = str_id_weapon_coordinates.toLong();
+	//			i++;
+	//			sign_key = objects_inmap.at(i);	i++;
+	//			takt_number = objects_inmap.at(i);	i++;
+	//			str_x = objects_inmap.at(i); i++;
+	//			str_y = objects_inmap.at(i); i++;
+	//			x = str_x.toDouble();
+	//			y = str_y.toDouble();
+	//			str_y = objects_inmap.at(i); i++;
+	//			angle = str_y.toDouble();
+	//			a2 = mapwin->createObject(mapwin->hSite_w, x, y , sign_key.toLocal8Bit().data(), id_weapon, 1.00, 0, takt_number, id_weapon_coordinates, angle);
+	//	}
+	//}
+}
+
+
+//граница !!
+void	 MapView::paintLine()
+{
+	/*openMapSitForLine();
+	mapwin->war_line_coord = model->getWarLine();
+	if (mapwin->hSite_line)
+	{
+		long int  id_obj = 1;
+		QString name_ff = "L0000500099";
+		long int a1 = mapwin->createLine(mapwin->hSite_line, name_ff.toLocal8Bit().data(), id_obj);
+	}*/
+}
+//------ Отображение коридоров пролета ---------
+void MapView::paintCorridors()
+{
+//	this->openMapSitForCorridors();
+//	if (mapwin->hSite_corr)
+//	{
+//		long int  id_obj = 5, id_coord;
+//		QString name_ff = "V0001304060";		
+////===========================
+//		QList <QString> corridors_coord;		
+//		corridors_coord = model->get_corridors_coordinates();
+//
+//		double x01, y01, x02, y02;
+//		
+//		int i=0;
+//		while (i<corridors_coord.size())//2 линии
+//		{	
+//			QStringList coord_list = corridors_coord.at(i).split("_");
+//			
+//			x01 = coord_list.at(0).toDouble();
+//			y01 = coord_list.at(1).toDouble();
+//			x02 = coord_list.at(2).toDouble();
+//			y02 = coord_list.at(3).toDouble();			
+//			id_coord = coord_list.at(4).toInt();
+//	    	long int a1 = mapwin->createV0(mapwin->hSite_corr,x01,y01,x02,y02,name_ff.toLocal8Bit().data(),id_obj, 3,id_coord);
+//			i++;	
+//		}	
+	//}
+//=============================
+}
+//значками!
+void	 MapView::paintPlaner()
+{
+	//if (mapwin->hSite)
+	//{
+	//	openMapSitForPicture();
+	//	if (mapwin->hSite_p)
+	//	{
+	//		QList <QStringList> result;
+	//		QStringList srt_list;
+	//		QString str_x, str_y, key, semantic, takt_number, id_object;
+	//		int id_weapon;
+	//		long int  X1_M=mapwin->getMapX1(mapwin->hMap);
+	//		long int  X2_M=mapwin->getMapX2(mapwin->hMap);
+	//		long int  Y1_M=mapwin->getMapY1(mapwin->hMap);
+	//		long int  Y2_M=mapwin->getMapY2(mapwin->hMap);
+	//		long int x,y;
+	//		//нужно выбрать в зависимости от combobox
+	//		int id_targeting_version = get_targeting_version();
+	//		int id_operation = get_operation_combo();
+	//		int size = group_weapon_list.size();
+	//		if (size==0)
+	//		{
+	//			return;
+	//		}
+	//		for (int j=0; j<size; j++)
+	//		{
+	//			id_weapon = group_weapon_list.at(j);
+	//			result = model->get_destroy_signs(id_targeting_version, id_weapon, id_operation);//vvv();
+	//				for (int i=0; i<result.size(); i++)
+	//				{
+	//					 srt_list = result.at(i);
+	//					 str_x = srt_list.at(0);
+	//					 str_y = srt_list.at(1);
+	//					 key = srt_list.at(2);
+	//					 semantic = srt_list.at(5); //takt_number
+	//					 semantic.append("_");						
+	//					 semantic.append(srt_list.at(4)); //id_object
+	//					 semantic.append("_");						
+	//					 semantic.append(srt_list.at(6)); //transfer_name
+	//					// takt_number = srt_list.at(4);
+	//					 //id_object = srt_list.at(5);
+	//					 x = str_x.toDouble();
+	//					 y = str_y.toDouble();
+	//				 if ((x>X1_M)&&(x<X2_M)&&(y<Y2_M)&&(y>Y1_M))
+	//				 {
+	//					 mapwin->createObject(mapwin->hSite_p,x,y,key.toLocal8Bit().data(),0,0,0,semantic);
+	//				 }
+	//				}
+	//		}
+	//	}
+	//}
+	//else
+	//{
+	//		showInformationDialog("Сначала нанесите объекты!");
+	//		return;
+	//}
+}
+
+//значками по направлениям
+void	 MapView::paintPlanerDirection()
+{
+	//if (mapwin->hSite)
+	//{
+	//	openMapSitForPicture();
+	//	if (mapwin->hSite_p)
+	//	{
+	//		QList <QStringList> result;
+	//		QStringList srt_list;
+	//		QString str_x, str_y, key, semantic, takt_number, id_object;
+	//		int id_weapon;
+	//		long int  X1_M=mapwin->getMapX1(mapwin->hMap);
+	//		long int  X2_M=mapwin->getMapX2(mapwin->hMap);
+	//		long int  Y1_M=mapwin->getMapY1(mapwin->hMap);
+	//		long int  Y2_M=mapwin->getMapY2(mapwin->hMap);
+	//		long int x,y;
+	//		//нужно выбрать в зависимости от combobox
+	//		int id_targeting_version = get_targeting_version();
+	//		int id_operation = get_operation_combo();
+	//		int id_direction = getDirectionCombo();
+	//		result = model->get_destroy_signs_direction(id_targeting_version, id_operation, id_direction);//vvv();
+	//		for (int i=0; i<result.size(); i++)
+	//		{
+	//			 srt_list = result.at(i);
+	//			 str_x = srt_list.at(0);
+	//			 str_y = srt_list.at(1);
+	//			 key = srt_list.at(2);
+	//			 semantic = srt_list.at(5); //takt_number
+	//			 semantic.append("_");						
+	//			 semantic.append(srt_list.at(4)); //id_object
+	//			 semantic.append("_");						
+	//			 semantic.append(srt_list.at(6)); //transfer_name
+	//			 x = str_x.toDouble();
+	//			 y = str_y.toDouble();
+	//		 if ((x>X1_M)&&(x<X2_M)&&(y<Y2_M)&&(y>Y1_M))
+	//		 {
+	//			 mapwin->createObject(mapwin->hSite_p,x,y,key.toLocal8Bit().data(),0,0,0,semantic);
+	//		 }
+	//		}
+	//	}
+	//}
+	//else
+	//{
+	//		showInformationDialog("Сначала нанесите объекты!");
+	//		return;
+	//}
+}
+//показать целераспределение линией от средства к объекту
+void	 MapView::joinObjectWithWeapon()
+{
+	//if (mapwin->hSite)
+	//{
+	//	openMapSitFor();
+	//	if (mapwin->hSite_s)
+	//	{			
+	//		long int  X1_M=mapwin->getMapX1(mapwin->hMap);//габариты карты
+	//		long int  X2_M=mapwin->getMapX2(mapwin->hMap);//габариты карты
+	//		long int  Y1_M=mapwin->getMapY1(mapwin->hMap);//габариты карты
+	//		long int  Y2_M=mapwin->getMapY2(mapwin->hMap);//габариты карты
+	//		//нужно выбрать в зависимости от combobox
+	//		int id_targeting_version = get_targeting_version();
+	//		int id_operation = get_operation_combo();
+	//		QList<QList<Coord*>> result;
+	//		QStringList lines_key;
+	//		QString str_x, str_y, key, semantic;
+	//		long int x1, y1, x2, y2;
+	//		long int  id_obj = 505;
+	//		lines_key.append("L0000200058");
+	//		lines_key.append("L0000200060");
+	//		lines_key.append("L0000200061");
+	//		lines_key.append("L0000200062");
+	//		lines_key.append("L0000200063");
+	//		lines_key.append("L0000200059");
+	//		int id_weapon, size = group_weapon_list.size();
+	//		if (size==0)
+	//		{
+	//			return;
+	//		}
+	//		if (id_operation==0) 
+	//		{
+	//			for (int j=1; j<7; j++)
+	//			{
+	//				for (int sc=0; sc<size; sc++)
+	//				{
+	//					id_weapon = group_weapon_list.at(sc);
+	//					result = model->getLinesCoordDirect(id_targeting_version, id_weapon, j);	
+	//					for(int i =0;i<result.count();i++)
+	//					{//центр формируется в view_manage
+	//						 QList<Coord*> temp;
+	//						 temp=result.at(i);
+	//						 Coord *t_point1= new Coord;
+	//						 t_point1 = temp.at(0);
+	//						 Coord *t_point2= new Coord;
+	//						 Coord *t_point3= new Coord;
+	//						 Coord *t_point4= new Coord;
+	//						 //t_point2 = temp.at(0);
+	//						 str_x = t_point1->get_X();
+	//						 str_y = t_point1->get_Y();
+	//						 x1 = str_x.toDouble();
+	//						 y1 = str_y.toDouble();
+	//						 if ((x1>X1_M)&&(x1<X2_M)&&(y1<Y2_M)&&(y1>Y1_M))
+	//						 {
+	//							 long int a1;
+	//							 t_point2 = temp.at(1);
+	//							 str_x = t_point2->get_X();
+	//							 str_y = t_point2->get_Y();
+	//							 x2 = str_x.toDouble();
+	//							 y2 = str_y.toDouble();	
+	//							if ((x2>X1_M)&&(x2<X2_M)&&(y2<Y2_M)&&(y2>Y1_M))
+	//							a1 = mapwin->createV0(mapwin->hSite_s, x2, y2, x1, y1, lines_key.at(j-1).toLocal8Bit().data(), id_obj);
+	//							if (temp.size()>2)
+	//							{
+	//								t_point3 = temp.at(2);
+	//								 str_x = t_point3->get_X();
+	//								 str_y = t_point3->get_Y();
+	//								 x1 = str_x.toDouble();
+	//								 y1 = str_y.toDouble();	
+	//								if ((x1>X1_M)&&(x1<X2_M)&&(y1<Y2_M)&&(y1>Y1_M))
+	//								a1 = mapwin->createV0(mapwin->hSite_s, x2, y2, x1, y1, lines_key.at(j-1).toLocal8Bit().data(), id_obj);
+	//								t_point4 = temp.at(3);
+	//								 str_x = t_point4->get_X();
+	//								 str_y = t_point4->get_Y();
+	//								 x2 = str_x.toDouble();
+	//								 y2 = str_y.toDouble();	
+	//								if ((x2>X1_M)&&(x2<X2_M)&&(y2<Y2_M)&&(y2>Y1_M))
+	//								a1 = mapwin->createV0(mapwin->hSite_s, x2, y2, x1, y1, lines_key.at(j-1).toLocal8Bit().data(), id_obj);
+	//							}
+	//						}
+	//					}
+	//				}
+	//			}
+	//			return;
+	//		}
+	//		for (int sc=0; sc<size; sc++)
+	//		{
+	//			id_weapon = group_weapon_list.at(sc);
+	//			result = model->getLinesCoordDirect(id_targeting_version, id_weapon, id_operation);	//vvv()			
+
+	//			id_obj = 5;
+	//			QString key1 = "L0000200058";
+	//			for(int i =0;i<result.count();i++)
+	//			{
+	//				 QList <Coord*> temp;
+	//				 temp=result.at(i);
+	//				 Coord *t_point1= new Coord;
+	//				 Coord *t_point2= new Coord;
+	//				 Coord *t_point3= new Coord;
+	//				 Coord *t_point4= new Coord;
+	//				 t_point1 = temp.at(0);
+	//				 t_point2 = temp.at(1);
+	//				 str_x = t_point1->get_X();
+	//				 str_y = t_point1->get_Y();
+	//				 x1 = str_x.toDouble();
+	//				 y1 = str_y.toDouble();
+	//				if ((x1>X1_M)&&(x1<X2_M)&&(y1<Y2_M)&&(y1>Y1_M))
+	//				 {
+	//				 str_x = t_point2->get_X();
+	//				 str_y = t_point2->get_Y();
+	//				 x2 = str_x.toDouble();
+	//				 y2 = str_y.toDouble();	
+	//				long int a1;
+	//				if ((x2>X1_M)&&(x2<X2_M)&&(y2<Y2_M)&&(y2>Y1_M))
+	//				a1 = mapwin->createV0(mapwin->hSite_s, x2, y2, x1, y1, key1.toLocal8Bit().data(), id_obj);		
+	//					if (temp.size()>2)
+	//					{
+	//						t_point3 = temp.at(2);
+	//						 str_x = t_point3->get_X();
+	//						 str_y = t_point3->get_Y();
+	//						 x1 = str_x.toDouble();
+	//						 y1 = str_y.toDouble();	
+	//						if ((x1>X1_M)&&(x1<X2_M)&&(y1<Y2_M)&&(y1>Y1_M))
+	//						a1 = mapwin->createV0(mapwin->hSite_s, x2, y2, x1, y1, key1.toLocal8Bit().data(), id_obj);
+	//						t_point4 = temp.at(3);
+	//						 str_x = t_point4->get_X();
+	//						 str_y = t_point4->get_Y();
+	//						 x2 = str_x.toDouble();
+	//						 y2 = str_y.toDouble();	
+	//						if ((x2>X1_M)&&(x2<X2_M)&&(y2<Y2_M)&&(y2>Y1_M))
+	//						a1 = mapwin->createV0(mapwin->hSite_s, x2, y2, x1, y1, key1.toLocal8Bit().data(), id_obj);
+	//					}
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
+	//else
+	//{
+	//		showInformationDialog("Сначала нанесите объекты!");
+	//}
+}
+//
+void	 MapView::joinObjectWithWeaponDirection()
+{
+	//if (mapwin->hSite)
+	//{
+	//	openMapSitFor();
+	//	if (mapwin->hSite_s)
+	//	{			
+	//		long int  X1_M=mapwin->getMapX1(mapwin->hMap);//габариты карты
+	//		long int  X2_M=mapwin->getMapX2(mapwin->hMap);//габариты карты
+	//		long int  Y1_M=mapwin->getMapY1(mapwin->hMap);//габариты карты
+	//		long int  Y2_M=mapwin->getMapY2(mapwin->hMap);//габариты карты
+	//		//нужно выбрать в зависимости от combobox
+	//		int id_targeting_version = get_targeting_version();
+	//		int id_operation = get_operation_combo();
+	//		int id_direction = getDirectionCombo();
+	//		QList<QList<Coord*>> result;
+	//		QStringList lines_key;
+	//		QString str_x, str_y, key, semantic;
+	//		long int x1, y1, x2, y2;
+	//		long int  id_obj = 505;
+	//		lines_key.append("L0000200058");
+	//		lines_key.append("L0000200060");
+	//		lines_key.append("L0000200061");
+	//		lines_key.append("L0000200062");
+	//		lines_key.append("L0000200063");
+	//		lines_key.append("L0000200059");
+	//			result = model->getLinesCoordDirect(id_targeting_version, 0, id_operation, id_direction);	//vvv()
+	//			id_obj = 5;
+	//			QString key1 = "L0000200058";
+	//			for(int i =0;i<result.count();i++)
+	//			{
+	//				 QList <Coord*> temp;
+	//				 temp=result.at(i);
+	//				 Coord *t_point1= new Coord;
+	//				 Coord *t_point2= new Coord;
+	//				 Coord *t_point3= new Coord;
+	//				 Coord *t_point4= new Coord;
+	//				 t_point1 = temp.at(0);
+	//				 t_point2 = temp.at(1);
+	//				 str_x = t_point1->get_X();
+	//				 str_y = t_point1->get_Y();
+	//				 x1 = str_x.toDouble();
+	//				 y1 = str_y.toDouble();
+	//				if ((x1>X1_M)&&(x1<X2_M)&&(y1<Y2_M)&&(y1>Y1_M))
+	//				 {
+	//				 str_x = t_point2->get_X();
+	//				 str_y = t_point2->get_Y();
+	//				 x2 = str_x.toDouble();
+	//				 y2 = str_y.toDouble();	
+	//				long int a1;
+	//				if ((x2>X1_M)&&(x2<X2_M)&&(y2<Y2_M)&&(y2>Y1_M))
+	//				a1 = mapwin->createV0(mapwin->hSite_s, x2, y2, x1, y1, key1.toLocal8Bit().data(), id_obj);		
+	//					if (temp.size()>2)
+	//					{
+	//						t_point3 = temp.at(2);
+	//						 str_x = t_point3->get_X();
+	//						 str_y = t_point3->get_Y();
+	//						 x1 = str_x.toDouble();
+	//						 y1 = str_y.toDouble();	
+	//						if ((x1>X1_M)&&(x1<X2_M)&&(y1<Y2_M)&&(y1>Y1_M))
+	//						a1 = mapwin->createV0(mapwin->hSite_s, x2, y2, x1, y1, key1.toLocal8Bit().data(), id_obj);
+	//						t_point4 = temp.at(3);
+	//						 str_x = t_point4->get_X();
+	//						 str_y = t_point4->get_Y();
+	//						 x2 = str_x.toDouble();
+	//						 y2 = str_y.toDouble();	
+	//						if ((x2>X1_M)&&(x2<X2_M)&&(y2<Y2_M)&&(y2>Y1_M))
+	//						a1 = mapwin->createV0(mapwin->hSite_s, x2, y2, x1, y1, key1.toLocal8Bit().data(), id_obj);
+	//					}
+	//				}
+	//			}
+	//		}
+	//}
+	//else
+	//{
+	//		showInformationDialog("Сначала нанесите объекты!");
+	//}
+}
+//проверяем, если это флаг, штаб, министерство обороны - чтобы менять направление флажка
+bool	 MapView::ifShtab(QString code)
+{
+	if ((code=="V0000000335")||(code=="L0100000546")||(code=="V0000001004")
+		||(code=="V3154100001")||(code=="V0000000076")||(code=="V0000000075")
+		||(code=="V0000000077")||(code=="V20000072")||(code=="V0000000072")
+		||(code=="V0000000076")||(code=="V0000000075")||(code=="V0000000077")
+		||(code=="V20000077")||(code=="V3154100001")||(code=="L0100007755")
+		||(code=="V20000077")||(code=="V0000001004")||(code=="V20000074")
+		||(code=="V20000074")||(code=="V20000075")||(code=="V20000077")
+		||(code=="L0100007755")||(code=="V0000001008")||(code=="V20000072")
+		||(code=="V20000072")||(code=="V20000074")||(code=="V20000075"))
+	{
+		return TRUE;
+	}
+	return FALSE;
+}
+void	 MapView::errors_message(QString str)
+{
+	QMessageBox error;
+	QMessageBox::warning(this, tr("Warning!!!"),str,
+		QMessageBox::Ok);
+}
+
 
 //меню по клику правой клавишей мыши
-void MapView::mouseRightMenu(HOBJ hobj, long int num_obj, long int id_obj, QPoint pe, bool reg)
-{    
-    this->hobj = hobj;
-    this->num_obj = num_obj;
-    this->id_obj = id_obj;
-    this->pe_menu = pe;
-    this->region = reg;
-    mouse_menu = new QMenu(this);
-    QAction *great_scale_act = new QAction("Увеличить масштаб карты  \">\"", this);
-    QAction *less_scale_act = new QAction("Уменьшить масштаб карты  \"<\"", this);
-    mouse_menu->addAction(great_scale_act);
-    connect(great_scale_act, SIGNAL(triggered()), this, SLOT(GreateScale()));
-    mouse_menu->addAction(less_scale_act);
-    connect(less_scale_act, SIGNAL(triggered()), this, SLOT(LessScale()));
-    if (region)
-    {
-        QAction *regionMPOact = new QAction("Рассчитать уровень МПО", this);
-        connect(regionMPOact, SIGNAL(triggered()), this, SLOT(regionMPOLevel()));
-        mouse_menu->addAction(regionMPOact);
-    }
-    else
-    {
-        QAction *formationDamageAct = new QAction("Рассчитать психогенные потери", this);
-        connect(formationDamageAct, SIGNAL(triggered()), this, SLOT(formatonDamage()));
-        mouse_menu->addAction(formationDamageAct);
-    }
-
-
-	const char * objectName=mapwin->getObjectName(hobj);
-    QString title(objectName);
-    QAction *deleteObject = new QAction("Удалить объект - " + title, this);
-    connect(deleteObject, SIGNAL(triggered()), this, SLOT(deleteObject()));
-    mouse_menu->addAction(deleteObject);
-    mouse_menu->exec(pe_menu);
-}
-
-//-- Расчетная задача "МПО региона" ---
-void MapView::regionMPOLevel(){
-    int id_region;
-    QString name_region;
-    QSqlQuery query;
-    query.exec(QString("SELECT name_region, id_region from region where excode_region = '%1'").arg(num_obj));
-    while (query.next())
-    {
-        name_region = query.value(0).toString();
-        id_region = query.value(1).toInt();
-    }
-
-    float rez = calc1.get_Rez_on_id_region(id_region);
-    QString str_id_obj;
-    if(rez > 0 && rez < 0.3)
-        str_id_obj="1";
-    if(rez >= 0.3 && rez < 0.5)
-        str_id_obj="2";
-    if(rez >=0.5 && rez <= 0.8)
-        str_id_obj="3";
-    if(rez == 0)
-        str_id_obj="4";
-    mapwin->RegionAppendSemantic(hobj, str_id_obj);
-    QMessageBox *wgt = new QMessageBox;
-    wgt->setWindowTitle("Уровень МПОб региона");
-    QString text = name_region + ": ";
-    text.append(QString::number(calc1.get_Rez_on_id_region(id_region)));
-    wgt->setText(text);
-    wgt->show();
-}
-
-//-- Расчетная задача "Психогенные потери формирования" ---
-void MapView::formatonDamage()
+void	 MapView::mouseRightMenu(long int id_obj, QPoint pe, int semantic_flag, long int id_coordinates)
 {
-    QSqlQuery query;
-    QString Name_ls;
-    QString str=QString("SELECT name_ls, enimy_ls, counte_ls FROM ls WHERE id_ls=%1").arg(id_obj);
-    if(query.exec(str))
-    {
-        while (query.next())
-        {
-            Name_ls = query.value(0).toString();
+		Id_obj=id_obj;//
+		Id_coordinates = id_coordinates;//?
+		mouse_menu = new QMenu(this); 
+		showAction = new QAction("Формуляр объекта", this);
+		
+		changeCoordObjectAction = new QAction("Переместить объект", this);
+		change_angle_action = new QAction("Повернуть объект", this);
+		appointWeapon = new QAction("Назначить средство поражения", this);
+		dissolutionPlanAction = new QAction("Отменить целераспределение", this);
+		QAction *great_scale_act = new QAction("Увеличить масштаб карты  \">\"", this);
+		QAction *less_scale_act = new QAction("Уменьшить масштаб карты  \"<\"", this);
 
-        }
-        query.clear();
+		if (semantic_flag==49)
+		{
+			mouse_menu->addAction(great_scale_act); 
+			connect(great_scale_act, SIGNAL(triggered()), this, SLOT(greateScale()));
 
-    }
-    People_Losses pl;
-    pl.get_losses(id_obj);
-    QMessageBox *wgt = new QMessageBox;
-    wgt->setWindowTitle("Психогенные потери");
-    wgt->setText(QString("Потери л/с  %9 - средние %1 - %2; \n%3 - %4\n%5 - %6\n%7 - %8").arg(pl.min[1][0]).arg(pl.max[1][0]).arg(pl.min[1][1]).arg(pl.max[1][1]).arg(pl.min[1][2]).arg(pl.max[1][2]).arg(pl.min[1][3]).arg(pl.max[1][3]).arg(Name_ls));
-    wgt->show();
+			mouse_menu->addAction(less_scale_act); 
+			connect(less_scale_act, SIGNAL(triggered()), this, SLOT(lessScale()));
+
+			mouse_menu->addAction(changeCoordObjectAction);
+			connect(changeCoordObjectAction, SIGNAL(triggered()), this, SLOT(changeObjectCoord()));
+
+			mouse_menu->addAction(change_angle_action);
+			connect(change_angle_action, SIGNAL(triggered()), this, SLOT(changeAngleWithMouse()));
+		}
+		if (semantic_flag==51)
+		{
+			mouse_menu->addAction(great_scale_act); 
+			connect(great_scale_act, SIGNAL(triggered()), this, SLOT(greateScale()));
+
+			mouse_menu->addAction(less_scale_act); 
+			connect(less_scale_act, SIGNAL(triggered()), this, SLOT(lessScale()));
+
+			mouse_menu->addAction(changeCoordObjectAction);
+			connect(changeCoordObjectAction, SIGNAL(triggered()), this, SLOT(changeHallCoord()));
+		}
+		if (semantic_flag==50) 
+		{	
+			mouse_menu->addAction(great_scale_act); 
+			connect(great_scale_act, SIGNAL(triggered()), this, SLOT(greateScale()));
+
+			mouse_menu->addAction(less_scale_act); 
+			connect(less_scale_act, SIGNAL(triggered()), this, SLOT(lessScale()));
+
+			mouse_menu->addAction(showAction); 
+			connect(showAction, SIGNAL(triggered()), this, SLOT(showInfoAboutObject()));
+
+			mouse_menu->addAction(dissolutionPlanAction);//отменить целераспределение
+			connect(dissolutionPlanAction, SIGNAL(triggered()), this, SLOT(dissolutionPlan()));
+
+			mouse_menu->addAction(appointWeapon);
+			connect(appointWeapon, SIGNAL(triggered()), this, SLOT(appointWeaponSlot()));
+		}	
+		mouse_menu->exec(pe);
 }
-
-void MapView::deleteObject()
-{
-    mapwin->deleteObject(this->hobj);
-    this->GreateScale();
-    this->LessScale();
-}
-
-void MapView::freeObject()
-{
-    mapwin->freeObject(this->hobj);
-}
-
 //меню по клику правой клавишей мыши в любом месте
-void	 MapView::mouseRightSimpleMenu(QPoint pe,HOBJ hobj, long int num_obj, long int id_object, bool region)
+void	 MapView::mouseRightSimpleMenu(QPoint pe)
 {
-    this->hobj = hobj;
-    this->num_obj = num_obj;
-    this->id_obj = id_object;
-    this->pe_menu = pe;
-    this->region = region;
-    mouse_menu = new QMenu(this);
-    QAction *great_scale_act = new QAction("Увеличить масштаб карты  \">\"", this);
-    QAction *less_scale_act = new QAction("Уменьшить масштаб карты  \"<\"", this);
+		mouse_menu = new QMenu(this); 
+		QAction *great_scale_act = new QAction("Увеличить масштаб карты  \">\"", this);
+		QAction *less_scale_act = new QAction("Уменьшить масштаб карты  \"<\"", this);
 
-    mouse_menu->addAction(great_scale_act);
-    connect(great_scale_act, SIGNAL(triggered()), this, SLOT(GreateScale()));
+			mouse_menu->addAction(great_scale_act); 
+			connect(great_scale_act, SIGNAL(triggered()), this, SLOT(greateScale()));
 
-    mouse_menu->addAction(less_scale_act);
-    connect(less_scale_act, SIGNAL(triggered()), this, SLOT(LessScale()));
+			mouse_menu->addAction(less_scale_act); 
+			connect(less_scale_act, SIGNAL(triggered()), this, SLOT(lessScale()));
+		//mouse_menu->addAction("&DeleteObject");  
+		mouse_menu->exec(pe);
+}
 
-    const char * objectName=mapwin->getObjectName(hobj);
-    QString title(objectName);
-    title.append(objectName);
-    QAction *deleteObject = new QAction("Удалить объект - " + title, this);
-    connect(deleteObject, SIGNAL(triggered()), this, SLOT(deleteObject()));
-    mouse_menu->addAction(deleteObject);
-    mouse_menu->exec(pe);
-}		
-
-void	MapView::showShortInformationObject(long int id_obj)
+//диалоговое окно для перемещения объекта c настоящими координатами
+void	 MapView::changeObjectCoord()
 {
-    short_info_dialog = new QDialog;
-    short_info_dialog ->setWindowTitle("Информация о регионе");
-    QLabel * info_label1 = new QLabel("АЭС");
-    QLabel * info_label2 = new QLabel("Германия");
-    QLabel * info_label30 = new QLabel("X = ");
-    QLabel * info_label31 = new QLabel("435433443");
-    QLabel * info_label40 = new QLabel("Y = ");
-    QLabel * info_label41 = new QLabel("535433443");
-    QLabel * info_label50 = new QLabel("3");
-    QLabel * info_label51 = new QLabel(" точки прицеливания");
+		/*mapwin->number_action=1;
+		change_coord_dialog = new QDialog;
+		change_coord_dialog->setWindowTitle("Перемещение объекта");
 
-    //==========размещение объектов=================
-    QHBoxLayout *hbox1_layout = new QHBoxLayout;   //
-    hbox1_layout->addStretch();
-    hbox1_layout->addWidget(info_label1);			//
-    hbox1_layout->addStretch();
-    //-----
-    QHBoxLayout *hbox2_layout = new QHBoxLayout;   //
-    hbox2_layout->addWidget(info_label30);			//
-    hbox2_layout->addWidget(info_label31);
-    //-----
-    QHBoxLayout *hbox3_layout = new QHBoxLayout;   //
-    hbox3_layout->addWidget(info_label40);			//
-    hbox3_layout->addWidget(info_label41);
-    //-----
-    QHBoxLayout *hbox4_layout = new QHBoxLayout;   //
-    hbox4_layout->addWidget(info_label50);			//
-    hbox4_layout->addWidget(info_label51);
-    //-----
-    QVBoxLayout *vbox_layout = new QVBoxLayout;   //
-    vbox_layout->addLayout(hbox1_layout);
-    vbox_layout->addWidget(info_label2);
-    vbox_layout->addLayout(hbox2_layout);
-    vbox_layout->addLayout(hbox3_layout);
-    vbox_layout->addLayout(hbox4_layout);
-    //vbox_layout->addLayout(hbox5_layout);
-    short_info_dialog->setLayout(vbox_layout);			   //
-    //==============================================
-    short_info_dialog->exec();
+		GEODEGREEXY G_XY= model->getObjectCoordinatesWGS(Id_coordinates);
+		if ((G_XY.Degree_x==0)&&(G_XY.Degree_y==0)&&(G_XY.x!=0)) 
+		{
+			double x = G_XY.x, y = G_XY.y, h = G_XY.h;
+			double *xx, *yy, *hh;
+			xx=&x; yy=&y; hh=&h;
+			G_XY = doubleToGeodegree(xx, yy, hh);
+		}
+		QLabel * infolabel1 = new QLabel("Введите координаты для средства\n координаты вводятся в WGS84: градусы, минуты, секунды");
+		QLabel * x_label = new QLabel("  X ");
+		QLabel * y_label = new QLabel("  Y ");
+		QLabel * g_label = new QLabel("Градусы");
+		QLabel * m_label = new QLabel("Минуты");
+		QLabel * s_label = new QLabel("Секунды");
+		QLabel * h_label = new QLabel("Высота");
+		x_edit_g = new QLineEdit(QString::number(G_XY.Degree_x));
+		x_edit_m = new QLineEdit(QString::number(G_XY.Minute_x));
+		x_edit_s = new QLineEdit(QString::number(G_XY.Second_x));
+		y_edit_g = new QLineEdit(QString::number(G_XY.Degree_y));
+		y_edit_m = new QLineEdit(QString::number(G_XY.Minute_y));
+		y_edit_s = new QLineEdit(QString::number(G_XY.Second_y));
+		h_edit_h = new QLineEdit(QString::number(G_XY.h_wgs));
+		QPushButton * new_cel_button = new QPushButton("Указать мышью");
+		 connect(new_cel_button, SIGNAL(clicked()), this, SLOT(closeDhangeDoordDialog()));
+		QPushButton * paint_button = new QPushButton("Нанести");
+		 connect(paint_button, SIGNAL(clicked()), change_coord_dialog, SLOT(accept()));
+
+		QVBoxLayout *layout1_1 = new QVBoxLayout;
+		layout1_1->addStretch();
+		layout1_1->addWidget(g_label);
+		layout1_1->addStretch();
+		layout1_1->addWidget(m_label);
+		layout1_1->addStretch();
+		layout1_1->addWidget(s_label);
+
+		QVBoxLayout *layout1_2 = new QVBoxLayout;
+		layout1_2->addWidget(x_label);
+		layout1_2->addWidget(x_edit_g);
+		layout1_2->addWidget(x_edit_m);
+		layout1_2->addWidget(x_edit_s);
+
+		QVBoxLayout *layout1_3 = new QVBoxLayout;
+		layout1_3->addWidget(y_label);
+		layout1_3->addWidget(y_edit_g);
+		layout1_3->addWidget(y_edit_m);
+		layout1_3->addWidget(y_edit_s);		
+
+		QHBoxLayout *layout1 = new QHBoxLayout;
+		layout1->addLayout(layout1_1);
+		layout1->addLayout(layout1_2);
+		layout1->addLayout(layout1_3);
+
+		QHBoxLayout *layout2 = new QHBoxLayout;
+		layout2->addWidget(h_label);
+		layout2->addStretch();
+		layout2->addWidget(h_edit_h);
+
+		QHBoxLayout *layout3 = new QHBoxLayout;
+		layout3->addWidget(new_cel_button);
+		layout3->addWidget(paint_button);
+
+		QVBoxLayout * main_layout = new QVBoxLayout;
+		main_layout->addWidget(infolabel1);
+		main_layout->addLayout(layout1);
+		main_layout->addLayout(layout2);
+		main_layout->addLayout(layout3);
+
+		change_coord_dialog->setLayout(main_layout);
+		if(change_coord_dialog->exec() == QDialog::Accepted)
+		{
+			apdateInDatabase();
+		}*/
+}
+//диалоговое окно для перемещения коридора пролета
+void	MapView::changeHallCoord()
+{
+		mapwin->number_action=2;
+		change_hall_dialog = new QDialog;
+		change_hall_dialog->setWindowTitle("Перемещение объекта");
+
+		QPushButton * button1 = new QPushButton("Указать мышью");
+		 connect(button1, SIGNAL(clicked()), this, SLOT(closeChangeHollCoordDialog()));
+		QPushButton * button2 = new QPushButton("Указать вручную");
+		 connect(button2, SIGNAL(clicked()), change_hall_dialog, SLOT(slot()));
+
+		 QVBoxLayout * main_layout = new QVBoxLayout;
+		main_layout->addWidget(button1);
+		//main_layout->addWidget(button2);
+
+		change_hall_dialog->setLayout(main_layout);
+		change_hall_dialog->exec();
+}
+//слот для изменения координат объекта в базе
+void	 MapView::apdateInDatabase()
+{
+	//пересчет во все координаты
+	WGS_to_other();
+}
+//по левой кнопке мыши, если противник (2) или если наш (1)//показать информацию по щелчку левой клавишей мыши на объекте/средстве поражении
+void	 MapView::showShortInformationObject(long int id_obj, long int flag)
+{
+	//QString country, takt_number, name, str_info50, str_but, destroy_information;
+	//int itog_num=0;
+	//QMap<QString, QList<Coord*>> mas;
+	//mas=model->get_obj_info4 (id_obj, flag);
+	//if (id_obj==5)
+	//{
+	//	showInformationDialog("Коридор пролета	бомбардировочной авиации");
+	//	return;
+	//}
+	//if (id_obj==505)
+	//{
+	//	//showInformationDialog("Траектория полета");
+	//	return;
+	//}
+	//if (flag==2)//если противник
+	//{
+	//	str_info50 = "   Число точек прицеливания:  ";
+	//	str_but = "Информация о поражении";
+	//	QString code, destroy_object;
+	//	QMap<QString, QList<Coord*>>::iterator it = mas.begin();
+
+	//	int count = mas.size();//class_name - country_name - description - destroy_recomendation - - id_object - latitude_sk_42 - element_name 
+	//	code = it.key();//latitude_wgs_84 - longitude_sk_42 - longitude_wgs_84 - object_name - property_value - size_x - size_y - type_name
+	//	QList<Coord*> temp;
+	//	Coord *t_point= new Coord;
+	//	temp = mas["type_name"];
+	//	t_point = temp.at(0);
+	//	 name = t_point->obj_val;
+	//	temp = mas["country_name"];
+	//	t_point = temp.at(0);
+	//	 country = t_point->obj_val;
+	//	temp = mas["element_name"];
+	//	t_point = temp.at(0);
+	//	 destroy_object = t_point->obj_val + ",";//число уязвимых элементов string
+	//	  temp = mas["object_name"];
+	//	  t_point = temp.at(0);
+	//	  name += " ";
+	//	  name += t_point->obj_val;		   
+	//	int s_size = destroy_object.length();
+	//	int kol=0;
+	//	for (int i=0; i<s_size; i++)
+	//	{
+	//		if (destroy_object[i]==',')	kol++;
+	//	}
+	//	/*QString element;
+	//	int k=0, k1=0, it_num=0;
+	//	for (int i=0; i<kol-1; i++)
+	//	{
+	//		while (destroy_object[k]!=',')
+	//		{
+	//			element[k1]=destroy_object[k];
+	//			k1++;
+	//			k++;
+	//		}
+	//		k++;
+	//		temp = mas[element];
+	//		it_num = temp.count();//координаты уязвимых элементов нужны?
+	//		itog_num+=it_num;
+	//		
+	//	}*/
+	//	itog_num=kol;
+	//	int id_targeting_version = get_targeting_version();
+	//	if (id_targeting_version!=0)
+	//	{
+	//		destroy_information = model->get_destroy_obj_info(id_targeting_version, id_obj);
+	//	}
+	//	else
+	//	{
+	//			destroy_information = " Нет информации о поражении объекта.\n";
+	//			destroy_information += " ";
+	//	}
+	//}
+	//if (flag==1)//если наш
+	//{
+	//	country = "____________________";
+	//	QString code, destroy_object, srt_id_obj;
+	//	srt_id_obj = QString::number(id_obj);
+	//	QMap<QString, QList<Coord*>>::iterator it = mas.begin();
+	//	
+	//	int count = mas.size(), n_point;
+	//	code = it.key();
+	//	QList<Coord*> temp;
+	//	Coord *t_point= new Coord;
+
+	//	temp = mas["takt_number"];
+	//	t_point = temp.at(0);
+	//	 takt_number = t_point->obj_val;
+	//		 if (takt_number=="")
+	//		 {
+	//			temp = mas["short_name_type"];
+	//			t_point = temp.at(0);
+	//			takt_number = t_point->obj_val;
+	//		 }
+	//	temp = mas["weapon_name"];//смерч, искандер
+	//	t_point = temp.at(0);
+	//	 name = t_point->obj_val;//str_info50
+	//	temp = mas[srt_id_obj];
+	//	int t_size=temp.size();
+	//	str_info50 = "Носители:\n";
+	//	if (t_size>1)
+	//	{
+	//		for (int i=0; i<t_size; i++)
+	//		{
+	//			t_point = temp.at(i);
+	//			str_info50 += t_point->obj_val;
+	//			//str_info50 += " - ";
+	//			//n_point = t_point->get_n_point();
+	//			//str_info50 += QString::number(n_point);
+	//			if (i<t_size-1) str_info50 += "\n";
+	//		}
+	//	}
+	//	else 
+	//	{
+	//		temp = mas["type_name"];//смерч, искандер
+	//		t_point = temp.at(0);
+	//		 str_info50 = t_point->obj_val;//str_info50
+	//	}
+	//	str_but = "не отображается)";
+	//	itog_num = 0;
+	//	destroy_information = "Не отображается";
+	//}
+	//	//---------------------------------------------------------------------------
+	//			short_info_dialog = new QDialog;
+	//			short_info_dialog ->setWindowTitle("Информация об объекте");
+	//			//short_info_dialog->setFixedSize(200,300);
+	//			QLabel * info_label1 = new QLabel(takt_number + " \"" + name + "\"");
+	//			QLabel * info_label2 = new QLabel(country);
+	//			/*QLabel * info_label30 = new QLabel("X = ");
+	//			QLabel * info_label31 = new QLabel("435433443");
+	//			QLabel * info_label40 = new QLabel("Y = ");
+	//			QLabel * info_label41 = new QLabel("535433443");*/
+	//			QLabel * info_label50 = new QLabel(str_info50);
+	//			QLabel * info_label51 = new QLabel(QString::number(itog_num));
+
+	//		  //==========размещение объектов=================
+	//			QHBoxLayout *hbox1_layout = new QHBoxLayout;   //
+	//			hbox1_layout->addStretch();
+	//			hbox1_layout->addWidget(info_label1);			//
+	//			hbox1_layout->addStretch();
+	//			//-----
+	//			/*QHBoxLayout *hbox2_layout = new QHBoxLayout;   //
+	//			hbox2_layout->addWidget(info_label30);			//
+	//			hbox2_layout->addWidget(info_label31);			
+	//			//-----
+	//			QHBoxLayout *hbox3_layout = new QHBoxLayout;   //
+	//			hbox3_layout->addWidget(info_label40);			//
+	//			hbox3_layout->addWidget(info_label41);			*/
+	//			//-----
+	//			QHBoxLayout *hbox4_layout = new QHBoxLayout; 
+	//			hbox4_layout->addStretch();
+	//			hbox4_layout->addWidget(info_label2);
+	//			hbox4_layout->addStretch();
+	//			//-----
+	//			QHBoxLayout *hbox5_layout = new QHBoxLayout;   //
+	//			hbox5_layout->addStretch();
+	//			hbox5_layout->addWidget(info_label50);			//
+	//			if (flag==2) hbox5_layout->addWidget(info_label51);	
+	//			hbox5_layout->addStretch();
+ //				//-----
+	//			more_but = new QPushButton(str_but);
+	//			connect(more_but,SIGNAL(clicked()),this,SLOT(moreButtonClicked()));
+ //				//-----
+	//			QVBoxLayout *vbox1_layout = new QVBoxLayout;   //координаты?
+	//			vbox1_layout->addLayout(hbox1_layout);
+	//			/*vbox_layout->addLayout(hbox2_layout);
+	//			vbox_layout->addLayout(hbox3_layout);*/
+	//			vbox1_layout->addLayout(hbox4_layout);
+	//			vbox1_layout->addLayout(hbox5_layout);
+	//			if (flag==2) vbox1_layout->addWidget(more_but);
+ //				//-----==============||||||||||||||||||||||||||||
+	//			QLabel * info_label0_1 = new QLabel(destroy_information);
+ //				//-----							
+	//			QHBoxLayout *hbox0_1_layout = new QHBoxLayout;   //
+	//			hbox0_1_layout->addStretch();					 //
+	//			hbox0_1_layout->addWidget(info_label0_1);		 //
+	//			hbox0_1_layout->addStretch();
+ //				//-----		
+
+	//			QGroupBox * primary_group_box = new QGroupBox;
+	//			primary_group_box->setLayout(vbox1_layout);
+	//			//===
+	//			secondary_group_box = new QGroupBox;
+	//			if (flag==2) secondary_group_box->setLayout(hbox0_1_layout);		
+	//			secondary_group_box->hide();
+	//			//======================
+	//			QVBoxLayout * vbox_layout = new QVBoxLayout;   //координаты?
+	//			vbox_layout->addWidget(primary_group_box);
+	//			vbox_layout->addWidget(secondary_group_box);
+	//		  //==============================================
+	//			short_info_dialog->setLayout(vbox_layout);
+	//			short_info_dialog->exec();
+}
+//открытие дополнительной информации о поражении объекта
+void	 MapView::moreButtonClicked()
+{
+		secondary_group_box->show();
+		more_but->hide();
+}
+//
+void	 MapView::showInformationDialog(QString information)
+{
+	create_object_dialog = new QDialog;
+	create_object_dialog ->setWindowTitle("Информация об объекте");
+	QLabel * info_label1 = new QLabel(information);
+	info_label1->setAlignment(Qt::AlignCenter);
+	QHBoxLayout *hbox1_layout = new QHBoxLayout;  
+	hbox1_layout->addStretch();
+	hbox1_layout->addWidget(info_label1);
+	hbox1_layout->addStretch();
+	create_object_dialog->setLayout(hbox1_layout);		
+	create_object_dialog->exec();
+}
+
+//отображать внизу карты в стаусе
+void	 MapView::setStatusInfo(QString status)
+{
+	/*double a,b;
+	status = "гориз: ";
+	if (mapwin->horizontalScrollBar()->isVisible()==true) 
+	{
+		//a=mapwin->horizontalScrollBar()->maximum()-mapwin->horizontalScrollBar()->minimum()+mapwin->horizontalScrollBar()->pageStep();
+		if (mapwin->horizontalScrollBar()->value() != 0)
+		{
+			a = mapwin->horizontalScrollBar()->maximum()- mapwin->horizontalScrollBar()->minimum()+ mapwin->horizontalScrollBar()->pageStep();
+			status +=QString::number(a);
+			a /=mapwin->horizontalScrollBar()->value();
+		}
+		else a =0;
+	}
+	else a=0;//
+	status +=" Вертик: ";
+	if (mapwin->verticalScrollBar()->isVisible()==true)
+	{
+		//b=mapwin->verticalScrollBar()->maximum()-mapwin->verticalScrollBar()->minimum()+mapwin->verticalScrollBar()->pageStep();
+		if (mapwin->verticalScrollBar()->value() != 0)
+		{
+			b = mapwin->verticalScrollBar()->maximum()- mapwin->verticalScrollBar()->minimum()+ mapwin->verticalScrollBar()->pageStep();
+			status +=QString::number(b);
+			b /=mapwin->verticalScrollBar()->value();
+		}
+		else b =0;
+	}
+	else b=0;//
+	status +=" - G: "+QString::number(a)+" V: "+QString::number(b);*/
+	status_bar->setText(status);
+}
+//=====нажатие на тулбаттон test ==================================
+void	 MapView::test()
+{
+		/*Qt::HANDLE hwnd;
+		long int a=8294400;
+		HWND	hWnd;
+		hWnd->unused;
+		long int width=1600;
+		long int height=1200;
+		QSqlQuery query;
+		HIMAGE hImage = mapwin->map->mapCreateImage(hWnd);
+		QString str = "SELECT sign_foto FROM object_signs WHERE id_sign=7";
+		query.prepare(str);
+
+		if(!query.exec())
+		{
+			QString sss = query.lastError().text();
+		}
+
+		QSqlRecord rec = query.record();
+		query.next();*/
+		setStatusInfo("test");
+}
+//// Запросить округленный масштаб отображения карты
+void	 MapView::appendSit_Test()
+{
+	//mapwin->emitSignalForPlanner(1,0);
+	setStatusInfo("q");
 }
 
 
-void	MapView::showInformationDialog(QString information)
+//
+void	 MapView::showOnlyUnAllocation()
 {
-    create_object_dialog = new QDialog;
-    create_object_dialog ->setWindowTitle("Информация");
-    QLabel * info_label1 = new QLabel(information);
-    QHBoxLayout *hbox1_layout = new QHBoxLayout;
-    hbox1_layout->addStretch();
-    hbox1_layout->addWidget(info_label1);
-    hbox1_layout->addStretch();
-    create_object_dialog->setLayout(hbox1_layout);
-    create_object_dialog->exec();
+	/*int id_targeting_version = get_targeting_version();
+	QList <int> id_unlocation = model->get_undestroing_objects(id_targeting_version);
+	int id_unlocation_object;
+	int size_list = id_unlocation.size();
+	int data;
+	for (int i=0; i<size_list; i++)
+	{
+		data = id_unlocation.at(i);
+	}
+	int size = id_unlocation.size();
+	if (size==0) 
+	{
+		showInformationDialog("Нет нераспределенных объектов");
+		return;
+	}
+	if (mapwin->hSite) mapwin->closeSit(mapwin->hMap, mapwin->hSite);
+	openMapSit("","");
+	QStringList info_unlocation;
+	for (int i=0; i<size; i++)
+	{
+		id_unlocation_object = id_unlocation.at(i);
+		info_unlocation = model->infoUnlocationObject(id_unlocation_object);
+		QString sign_key = info_unlocation.at(0);
+		long int x = info_unlocation.at(1).toLong();
+		long int y = info_unlocation.at(2).toLong();
+		int id_coord = info_unlocation.at(3).toInt();
+		bool if_shtab = ifShtab(sign_key);
+		mapwin->createObject(mapwin->hSite, x, y, sign_key.toLocal8Bit().data(), id_unlocation_object, 2, if_shtab, "", id_coord);
+	}
+	mapwin->updateScreen();*/
 }
-void	MapView::changeBrihgtUp()
+//
+void	 MapView::checkPaintCel()
 {
-    long int bright = mapwin->getmapBright();
-    if (bright<16)
-    {
-        bright++;
-        mapwin->setmapBright(bright);
+	if (mapwin->hMap==0)
+	{
+		showOpenMapDialog();
+	}
+//	bool znaki_bool = get_znaki_checkbox();
+//	bool line_bool = get_line_checkbox();
+	/*if (znaki_bool)
+	{
+		if (mapwin->hSite_p) mapwin->closeSit(mapwin->hMap, mapwin->hSite_p);
+		paintPlaner();
+	}
+	else	
+		mapwin->closeSit(mapwin->hMap, mapwin->hSite_p);
+	if (line_bool)
+	{
+		if (mapwin->hSite_s) mapwin->closeSit(mapwin->hMap, mapwin->hSite_s);
+		joinObjectWithWeapon();
+	}
+	else	
+		mapwin->closeSit(mapwin->hMap, mapwin->hSite_s);*/
 
-    }
-    else
-        showInformationDialog("Яркость максимальная");
+	mapwin->updateScreen();
+
 }
-void	MapView::changeBrihgtDown()
+//отобразить средства по направлениям
+void	 MapView::checkPaintDirection()
 {
-    long int bright = mapwin->getmapBright();
-    if (bright>-16)
-    {
-        bright--;
-        mapwin->setmapBright(bright);
+//	bool mark_bool = getMarkDirCheckbox();
+//	bool line_bool = getLineDirCheckbox();
+	//bool mark_bool = get_znaki_checkbox();
+	//bool line_bool = get_line_checkbox();
 
-    }
-    else
-        showInformationDialog("Яркость минимальная");
+	/*if (mark_bool)
+	{
+		if (mapwin->hSite_p) mapwin->closeSit(mapwin->hMap, mapwin->hSite_p);
+		paintPlanerDirection();
+	}
+	else	
+		mapwin->closeSit(mapwin->hMap, mapwin->hSite_p);
+	if (line_bool)
+	{
+		if (mapwin->hSite_s) mapwin->closeSit(mapwin->hMap, mapwin->hSite_s);
+		joinObjectWithWeaponDirection();
+	}
+	else	
+		mapwin->closeSit(mapwin->hMap, mapwin->hSite_s);*/
+	mapwin->updateScreen();
 }
-
-void    MapView::appendSit()
+//открытие карты при неправильном порядке работы (Для начала необходимо открыть карту)
+void	 MapView::showOpenMapDialog()
 {
-    QString name = QFileDialog::getOpenFileName(this, QString::null, QString::null, "Sites (*.sit)" );
-    long int a = mapwin->appendData(name.toLocal8Bit().data());
-    hSite1 = a;
+	openMapDialog = new QDialog;
+	openMapDialog ->setWindowTitle(tr("Information"));
+	QLabel * info_label1 = new QLabel("Для начала работы необходимо открыть карту. \n Открыть карту? ");
+	QPushButton * if_open_map = new QPushButton("Да");
+	connect(if_open_map, SIGNAL(clicked()), openMapDialog, SLOT(accept()));
+	QPushButton * if_no_open_map = new QPushButton("Нет");
+	connect(if_no_open_map, SIGNAL(clicked()), openMapDialog, SLOT(close()));
+	
+	QHBoxLayout *layout1 = new QHBoxLayout;
+	layout1->addWidget(if_open_map);
+	layout1->addWidget(if_no_open_map);
 
+	QVBoxLayout * layout2 = new QVBoxLayout;
+	layout2->addWidget(info_label1);
+	layout2->addLayout(layout1);
+
+	openMapDialog->setLayout(layout2);
+	if(openMapDialog->exec() == QDialog::Accepted)
+	{
+		openNewMap();
+	}
+	
 }
 
-void    MapView::showShortInformationObject_2arg(QString a,long int id_obj){
-    short_info_dialog = new QDialog;
-    short_info_dialog->setWindowTitle("Информация об объекте");
-    QSqlQuery query;
-    QString Name_ls;
-    QString Enimy;
-    QString Name_mpo_pso;
-    QString Pict;
-    QSettings settings("Saturn");
-    QString path_pict=settings.value("last_img").toString();
-    if(path_pict == QString::null){
-        path_pict="C:/projects/Saturn_500m/Saturn/icons2/" ;
-    }else{
-        path_pict=path_pict.append("/");
-    }
-
-    if (a=="region")
-    {
-        int id_region;
-        QString Name_region;
-        QString type_region_string;
-        QString counte_population_string;
-        QString density_population_string;
-        QString emmigration_population_string;
-        QString immigration_population_string;
-        QString birth_population_string;
-        QString dead_population_string;
-        QSqlQuery query;
-        QString str = QString("SELECT id_region, name_region, type_region, description_region, counte_population, density_population, emmigration_population, immigration_population, birth_population, dead_population FROM region WHERE excode_region = %1").arg(id_obj);
-        query.exec(str);
-
-        QSqlRecord data = query.record();
-
-        while(query.next())
-        {
-            id_region =  query.value(data.indexOf("id_region")).toInt();
-            Name_region = query.value(data.indexOf("name_region")).toString();
-            type_region_string = query.value(data.indexOf("type_region")).toString();
-            counte_population_string = query.value(data.indexOf("counte_population")).toString();
-            density_population_string = query.value(data.indexOf("density_population")).toString();
-            emmigration_population_string = query.value(data.indexOf("emmigration_population")).toString();
-            immigration_population_string = query.value(data.indexOf("immigration_population")).toString();
-            birth_population_string = query.value(data.indexOf("birth_population")).toString();
-            dead_population_string = query.value(data.indexOf("dead_population")).toString();
-        }
-
-        /*		Печатные издания*/
-        QString	print;
-        QString	radio;
-        QString	tv;
-        QString	internet;
-        QString	information_agency;
-        QString	oposition_smi;
-        QString	extrimism_smi;
-        QString	penicitar_group;
-        QString	flag_country;
-
-        int id_type_smi=1;
-        QSqlQuery query1;
-        QString str1 = QString("SELECT count(smi_region.id_smi) FROM smi_region, smi WHERE smi_region.id_region= %1  AND smi.id_smi=smi_region.id_smi AND smi.id_type_smi= %2").arg(id_region).arg(id_type_smi);
-        query1.exec(str1);
-        while (query1.next())
-        {
-            print = query1.value(0).toString();
-        }
-
-        /*Радиовещание*/
-
-        id_type_smi=2;
-
-        str1 = QString("SELECT count(smi_region.id_smi) FROM smi_region, smi WHERE smi_region.id_region= %1  AND smi.id_smi=smi_region.id_smi AND smi.id_type_smi= %2").arg(id_region).arg(id_type_smi);
-        query1.exec(str1);
-        while (query1.next())
-        {
-            radio = query1.value(0).toString();
-        }
-
-        /*		Телевидение	*/
-
-        id_type_smi=3;
-
-        str1 = QString("SELECT count(smi_region.id_smi) FROM smi_region, smi WHERE smi_region.id_region= %1  AND smi.id_smi=smi_region.id_smi AND smi.id_type_smi= %2").arg(id_region).arg(id_type_smi);
-        query1.exec(str1);
-        while (query1.next())
-        {
-            tv = query1.value(0).toString();
-        }
-
-        /*		Интернет издания		*/
-        id_type_smi=4;
-        str1 = QString("SELECT count(smi_region.id_smi) FROM smi_region, smi WHERE smi_region.id_region= %1  AND smi.id_smi=smi_region.id_smi AND smi.id_type_smi= %2").arg(id_region).arg(id_type_smi);
-        query1.exec(str1);
-        while (query1.next())
-        {
-            internet = query1.value(0).toString();
-        }
-        /*      Информационные агенства		*/
-        id_type_smi=5;
-        str1 = QString("SELECT count(smi_region.id_smi) FROM smi_region, smi WHERE smi_region.id_region= %1  AND smi.id_smi=smi_region.id_smi AND smi.id_type_smi= %2").arg(id_region).arg(id_type_smi);
-        query1.exec(str1);
-        while (query1.next())
-        {
-            information_agency = query1.value(0).toString();
-        }
-
-        /*		Оппозиционные СМИ	*/
-
-        int id_position_smi=3;
-        str1 = QString("SELECT count(smi.id_smi)FROM smi_region,smi WHERE smi_region.id_region = %1 AND smi_region.id_smi = smi.id_smi AND smi.id_position_smi = %2").arg(id_region).arg(id_position_smi);
-        query1.exec(str1);
-        while (query1.next())
-        {
-            oposition_smi = query1.value(0).toString();
-        }
-
-        /*		Экстримистские СМИ  */
-        id_position_smi=5;
-        str1 = QString("SELECT count(smi.id_smi)FROM smi_region,smi WHERE smi_region.id_region = %1 AND smi_region.id_smi = smi.id_smi AND smi.id_position_smi = %2").arg(id_region).arg(id_position_smi);
-        query1.exec(str1);
-        while (query1.next())
-        {
-            extrimism_smi = query1.value(0).toString();
-        }
-
-        /*      Пенецитарные учреждения		*/
-        int id_sphere_group=6;
-        str1 = QString("SELECT count(groups.id_groups) FROM groups WHERE groups.id_region = %1 AND groups.id_sphere_groups = %2").arg(id_region).arg(id_sphere_group);
-        query1.exec(str1);
-        while (query1.next())
-        {
-            penicitar_group = query1.value(0).toString();
-        }
-        int parent_region = id_region;
-        while (!(parent_region == 0))
-        {
-            str1 = QString("SELECT id_region, parent_region, id_country FROM region WHERE id_region = %1").arg(parent_region);
-            query1.exec(str1);
-            while (query1.next())
-            {
-                id_region = query1.value(0).toInt();
-                parent_region = query1.value(1).toInt();
-            }
-
-        }
-
-        /*      Выбор названия файла флага   */
-        str1 = QString("SELECT country.flag FROM region, country WHERE region.id_country =country.id_country AND region.id_region = %1 ").arg(id_region);
-        query1.exec(str1);
-        while (query1.next())
-        {
-            flag_country = query1.value(0).toString();
-        }
-
-        Pict=path_pict.append("/").append(flag_country);
-        QLabel *bred = new QLabel(
-                    "<H2><CENTER>"+Name_region+"</CENTER></H2>"
-                    "<CENTER><IMG BORDER=\"0\" SRC=\""+Pict+"\"></CENTER>"
-                    "<OL><LI><H3><B>Тип региона:    "+type_region_string+"</B></H3></LI>"
-                    "<OL><LI><H3><B>Население</B></H3></LI>"
-                    "<H4>Численность – "+counte_population_string+"  чел.</H4>"
-                    "<H4>Плотность – "+density_population_string+"  чел. на км2</H4>"
-                    "<H4>Уровень рождаемости – "+birth_population_string+"  чел.</H4>"
-                    "<H4>Уровень смертности – "+dead_population_string+"  чел.</H4>"
-                    "<H4>Уровень эммиграции – "+emmigration_population_string+"  чел.</H4>"
-                    "<H4>Уровень иммиграции – "+immigration_population_string+"  чел.</H4>"
-                    "<LI><H3><B>СМИ</B></H3></LI>"
-                    "<H3><B>Всего:</B></H3>"
-                    "<H4>Печатные издания (   "+print+"   )</H4>"
-                    "<H4>Радиовещание (   "+radio+"   )</H4>"
-                    "<H4>Телевидение (   "+tv+"   )</H4>"
-                    "<H4>Интернет издания (   "+internet+"   )</H4>"
-                    "<H4>Информационные агенства (   "+information_agency+"   )</H4>"
-                    "<H3><B>Из них:</B></H3>"
-                    "<H4>Оппозиционные -  (   "+oposition_smi+"   )</H4>"
-                    "<H4>Экстремистские - (   "+extrimism_smi+"   )</H4>"
-                    "<LI><H3>Организации</H3></LI>"
-                    "<H3><B>Всего:</B></H3>"
-                    "<H4>Пеницитарные -  (   "+penicitar_group+"   )</H4>"
-                    "</OL>"
-                    );
-        bred->setWordWrap(true);
-        QHBoxLayout *lo = new QHBoxLayout();
-        lo->addWidget(bred);
-        short_info_dialog->setLayout(lo);
-        short_info_dialog->exec();
-
-    }
-    /*		Воинские формирования    */
-    if (a=="ls")
-    {
-        int id_ls1 = id_obj;
-        // Запрос информации об объекте из базы
-        QSqlQuery query1;
-        QString counte_ls;
-        QString flag_country;
-        QString name_country;
-        QString name_blok;
-        QString emblem_blok;
-        QString id_root_ls;
-        QString str1;
-        int id_region;
-        int id_ls;
-        int id_country;
-        QString str=QString("SELECT name_ls, enimy_ls, counte_ls FROM ls WHERE id_ls=%1").arg(id_obj);
-        if(query.exec(str))
-        {
-            while (query.next())
-            {
-                Name_ls = query.value(0).toString();
-                Enimy = query.value(1).toString();
-                counte_ls = query.value(2).toString();
-                /*long int X_coord=query.value(1).toInt();
-                    long int Y_coord=query.value(2).toInt();
-                    QString kodeX = query.value(3).toString();*/
-            }
-            query.clear();
-        }
-
-        /*	Нахождение корневого формирования   */
-        int parent_ls = id_obj;
-        while (!parent_ls == 0)
-        {
-            str1 = QString("SELECT id_ls, parent_ls, id_region, name_ls FROM ls WHERE id_ls = %1").arg(parent_ls);
-            query1.exec(str1);
-            while (query1.next())
-            {
-                id_ls = query1.value(0).toInt();
-                parent_ls = query1.value(1).toInt();
-                id_region = query1.value(2).toInt();
-                id_root_ls = query1.value(3).toString();
-            }
-
-        }
-
-        /*	Нахождение корневого региона для формиования   */
-
-        int parent_region = id_region;
-
-        while (!(parent_region == 0))
-        {
-            str1 = QString("SELECT id_region, parent_region, id_country FROM region WHERE id_region = %1").arg(parent_region);
-            query1.exec(str1);
-            while (query1.next())
-            {
-                id_region = query1.value(0).toInt();
-                parent_region = query1.value(1).toInt();
-
-            }
-
-        }
-        /*	Выбор названия файла флага   */
-        str1 = QString("SELECT country.flag,  country.name_country, country.id_country FROM region, country WHERE region.id_country =country.id_country AND region.id_region = %1 ").arg(id_region);
-        query1.exec(str1);
-        while (query1.next())
-        {
-            flag_country = query1.value(0).toString();
-            name_country = query1.value(1).toString();
-            id_country = query1.value(2).toInt();
-
-
-        }
-
-        /*	Выбор названия блока и  файла эблемы блока*/
-
-        str1 = QString("SELECT blok.name_blok, blok.emblem_blok FROM blok , blok_country WHERE blok.id_blok = blok_country.id_blok AND blok_country.id_country = %1 ").arg(id_country);
-        query1.exec(str1);
-        while (query1.next()){
-            name_blok = query1.value(0).toString();
-            emblem_blok = query1.value(1).toString();
-
-        }
-
-        /*	Выбор средств формирования(Вооружение)*/
-        QString list_mpo_pso = "";
-        str1 = QString("SELECT name_mpo_pso FROM mpo_pso WHERE mpo_pso.id_ls = %1 ").arg(id_ls1);
-        query1.exec(str1);
-        while (query1.next())
-        {
-            list_mpo_pso = list_mpo_pso + query1.value(0).toString()+"; ";
-
-
-        }
-        //	list_mpo_pso = list_mpo_pso;
-        QString  Pict1;
-        Pict = path_pict.append("/").append(flag_country);
-        Pict1 = path_pict.append("/").append(emblem_blok);
-        QLabel *bred = new QLabel(
-                    "<H2><CENTER>"+Name_ls+"</CENTER></H2>"
-                    "<H3><B>Страна:       "+name_country+"</B></H3>"
-                    "<CENTER><IMG BORDER=\"0\" SRC=\""+Pict+"\"></CENTER>"
-                    "<H3><B>Блок:        "+name_blok+"</B></H3>"
-                    "<CENTER><IMG BORDER=\"0\" SRC=\""+Pict1+"\"></CENTER>"
-                    "<H3><B>Численность - "+counte_ls+"</B></H3>"
-                    "<H3><B>Средства ПсО: "+list_mpo_pso+"</B></H3>"
-                    "<H3>Подчиненность:  "+id_root_ls+"</H3></li>"
-                    );
-        bred->setWordWrap(true);
-        QHBoxLayout *lo = new QHBoxLayout();
-        lo->addWidget(bred);
-        short_info_dialog->setLayout(lo);
-        short_info_dialog->exec();
-
-    }
-    /*		Средства     */
-    if (a=="mpo_pso")
-    {
-
-        QSqlQuery		query1;
-        QString			counte_mpo_pso;
-        QString			description_mpo_pso;
-        QString			image_mpo_pso;
-        QString			name_org;
-        QString			name_type_mpo_pso;
-        QString			str1;
-        int			id_ls;
-        int			id_smi;
-        int			id_groups;
-
-
-
-        // Запрос информации об объекте из базы
-        QString str=QString("SELECT mpo_pso.name_mpo_pso, mpo_pso.counte_mpo_pso, mpo_pso.description_mpo_pso, mpo_pso.image_mpo_pso, mpo_pso.id_ls, mpo_pso.id_smi, mpo_pso.id_groups, type_mpo_pso.name_type_mpo_pso FROM mpo_pso , type_mpo_pso WHERE mpo_pso.id_type_mpo_pso = type_mpo_pso.id_type_mpo_pso AND mpo_pso.id_mpo_pso = %1").arg(id_obj);
-        if(query.exec(str))
-        {
-            while (query.next())
-            {
-                Name_mpo_pso = query.value(0).toString();
-                counte_mpo_pso = query.value(1).toString();
-                description_mpo_pso = query.value(2).toString();
-                image_mpo_pso = query.value(3).toString();
-                id_ls = query.value(4).toInt();
-                id_smi = query.value(5).toInt();
-                id_groups = query.value(6).toInt();
-                name_type_mpo_pso = query.value(7).toString();
-
-                /*long int X_coord=query.value(1).toInt();
-                    long int Y_coord=query.value(2).toInt();
-                    QString kodeX = query.value(3).toString();*/
-            }
-            query.clear();
-        }
-
-        /*	Определение подчиненности средства			*/
-
-
-
-        if (!(id_ls == 0))
-        {
-            str1 = QString("SELECT name_ls FROM ls WHERE id_ls = %1 ").arg(id_ls);
-            query1.exec(str1);
-            while (query1.next())
-            {
-                name_org = query1.value(0).toString();
-
-            }
-        }
-
-        if (!(id_smi == 0))
-        {
-            str1 = QString("SELECT name_smi FROM smi WHERE id_smi = %1 ").arg(id_smi);
-            query1.exec(str1);
-            while (query1.next())
-            {
-                name_org = query1.value(0).toString();
-
-            }
-        }
-
-        if (!(id_groups == 0))
-        {
-            str1 = QString("SELECT name_groups FROM groups WHERE id_groups = %1 ").arg(id_groups);
-            query1.exec(str1);
-            while (query1.next())
-            {
-                name_org = query1.value(0).toString();
-
-            }
-        }
-
-        Pict = path_pict.append("/").append(image_mpo_pso);
-        QLabel *bred = new QLabel(
-                    "<H2><CENTER>"+Name_mpo_pso+"</CENTER></H2>"
-                    "<CENTER><IMG BORDER=\"0\" SRC=\""+Pict+"\"></CENTER>"
-                    "<H3>Тип объекта:  "+name_type_mpo_pso+"</H3></LI>"
-                    "<H3>Количество:  "+counte_mpo_pso+"</H3></LI>"
-                    "<H3>Подчиненность:  "+name_org+"</H3></LI>"
-                    "<H3><B>Описание:</B></H3>"
-                    "<H3><B>"+description_mpo_pso+"</B></H3>"
-
-                    ) ;
-
-
-        bred->setWordWrap(true);
-        QHBoxLayout *lo = new QHBoxLayout();
-
-        lo->addWidget(bred);
-        //	lo->setGeometry(QRect(100,100,100,100));
-
-        short_info_dialog->setLayout(lo);
-
-
-        short_info_dialog->exec();
-
-
-    }
-    /*       Особые условия      */
-    if (a=="special_conditions")
-    {
-        QString	Name_special_conditions;
-        QString description_special_conditions;
-        QString image_special_conditions;
-
-
-        // Запрос информации об объекте из базы
-        QString str=QString("SELECT name_special_conditions, description_special_conditions, image_special_conditions FROM special_conditions WHERE id_special_conditions=%1").arg(id_obj);
-        if(query.exec(str))
-        {
-            while (query.next())
-            {
-                Name_special_conditions = query.value(0).toString();
-                description_special_conditions = query.value(1).toString();
-                image_special_conditions = query.value(2).toString();
-            }
-            query.clear();
-        }
-
-        Pict=path_pict.append("/").append(image_special_conditions);
-        QLabel *bred = new QLabel(
-                    "<H2><CENTER>"+Name_special_conditions+"</CENTER></H2>"
-                    "<CENTER><IMG BORDER=\"0\" SRC=\""+Pict+"\"></CENTER>"
-                    "<H3><B>Описание:</B></H3>"
-                    "<H3><B>"+description_special_conditions+"</B></H3>"
-                    );
-        bred->setWordWrap(true);
-        QHBoxLayout *lo = new QHBoxLayout();
-        lo->addWidget(bred);
-        short_info_dialog->setLayout(lo);
-        short_info_dialog->exec();
-    }
-}
-
-void	MapView::calc_mps()
+//перевод координат при перемещении средства поражения - в базе
+void	 MapView::WGS_to_other()
 {
-    calculating_mps calc;
-    QSqlQuery query;
-    QString str=QString("SELECT name_ls, coordinates.x_coordinates, coordinates.y_coordinates, type_ls.excode_type_ls,ls.short_name_ls, id_ls FROM ls, coordinates, type_ls WHERE ls.id_coordinates=coordinates.id_coordinates AND ls.id_type_ls=type_ls.id_type_ls	AND type_ls.excode_type_ls <> '' AND coordinates.x_coordinates<>0 AND coordinates.y_coordinates<>0 AND ls.short_name_ls <> '' and enimy_ls=FALSE");
-
-    long int a = mapwin->IsActive(mapwin->hMap);
-    if (a){
-        if(query.exec(str))
-        {
-            while (query.next())
-            {
-                int id_ls = query.value(5).toInt();
-                long int X_coord=query.value(1).toInt();
-                long int Y_coord=query.value(2).toInt();
-                QString excode_type_ls = query.value(3).toString();
-
-                float MPS=calc.calculating(id_ls);
-                float MPS_kont=calc.get_mps_kont();
-                float MPS_ofec=calc.get_mps_ofec();
-                float MPS_priz=calc.get_mps_priz();
-
-                if (MPS!=-1)
-                {
-                    QMap<int,QString> semantic_map;
-                    // показатель подразделения
-                    semantic_map[60004]=QString::number(MPS);
-                    // принадлежность
-                    semantic_map[60028]="6";
-                    semantic_map[60001]=QString::number(MPS_ofec);
-                    semantic_map[60002]=QString::number(MPS_kont);
-                    semantic_map[60003]=QString::number(MPS_priz);
-
-                    // вид стрелки
-                    if (MPS < 0.3)					semantic_map[60012]="4";
-                    if ((MPS >= 0.3)&&(MPS <= 0.7))	semantic_map[60012]="5";
-                    if ((MPS > 0.7)&&(MPS <= 1.0))	semantic_map[60012]="3";
-
-                    QString kodeX = "V00000000312";
-
-                    // если значкт формирований - авиа или военно-морские базы, то стрелка знака МПС рисуется левее и ниже
-                    if ((excode_type_ls=="1311701001")||(excode_type_ls=="0006701004")||(excode_type_ls=="0006701003")||(excode_type_ls=="V0000001118")) mapwin->createObject(hSite,X_coord-3000,Y_coord-6000,kodeX.toLocal8Bit().data(),1, semantic_map);
-                    // иначе просто левее флажка формирования
-                    else mapwin->createObject(hSite,X_coord,Y_coord-3000,kodeX.toLocal8Bit().data(),1, semantic_map);
-                }
-            }
-            query.clear();
-        }
-    }
-    showInformationDialog("Информация нанесена на карту");
-    return;
+//	if (mapwin->hSite_s) mapwin->closeSit(mapwin->hMap, mapwin->hSite_s);
+//	if (mapwin->hSite_p) mapwin->closeSit(mapwin->hMap, mapwin->hSite_p);
+//
+//	mapwin->number_action=0;
+//	if(mapwin->isGeoSupported())
+//	{
+//		GEODEGREE N, E, W, Wy;
+//		double N_rad, E_rad, H;
+//		double N_rad42, E_rad42;		
+//		N.Degree = x_edit_g->text().toLong();
+//		N.Minute = x_edit_m->text().toLong();
+//		N.Second = x_edit_s->text().toFloat();
+//		W.Degree = N.Degree;
+//		W.Minute = N.Minute;
+//		W.Second = N.Second;
+//		mapwin->degreeToRadian(&N, &N_rad); //из градусов в радианы
+//
+//		E.Degree = y_edit_g->text().toLong();
+//		E.Minute = y_edit_m->text().toLong();
+//		E.Second = y_edit_s->text().toFloat();
+//
+//		Wy.Degree = E.Degree;
+//		Wy.Minute = E.Minute;
+//		Wy.Second = E.Second;
+//
+//		mapwin->degreeToRadian(&E, &E_rad); //из градусов в радианы
+//
+//		H = h_edit_h->text().toDouble();
+//		//-----------------
+//		mapwin->geoWGS84ToPlane3D(mapwin->hMap, &N_rad, &E_rad, &H); //из геодезических координат в радианах WGS84 в метры на местности в проекции карты
+//		N_rad42 = N_rad;
+//		E_rad42 = E_rad;
+//		mapwin->planeToGeo423D(&N_rad42, &E_rad42, &H); // Преобразование из метров на местности (проекция карты) в геодезические координаты в радианах (эллипсоид Красовского)
+//		mapwin->radianToDegree(&N_rad42, &N);
+//		mapwin->radianToDegree(&E_rad42, &E);
+//
+//		model->add_new_coord (W, Wy, N_rad, E_rad, H, N, E, Id_obj, Id_coordinates);
+////		int id_targeting_version = get_targeting_version();
+//		//allocation->begin_targeting_for_mapview(id_targeting_version);
+//		if (mapwin->hSite_w) mapwin->closeSit(mapwin->hMap, mapwin->hSite_w);
+//		paintWeapon();
+//		if (mapwin->hMap) mapwin->updateScreen();
+//	}		
 }
 
-void	MapView::calc_mps2()
+
+//печать всей карты
+void	 MapView::PrintMapSlot()
 {
-    calculating_mps calc;
-    QSqlQuery query;
-    QString str=QString("SELECT name_ls, coordinates.x_coordinates, coordinates.y_coordinates, type_ls.excode_type_ls, ls.short_name_ls, id_ls FROM ls, coordinates, type_ls WHERE ls.id_coordinates=coordinates.id_coordinates AND ls.id_type_ls=type_ls.id_type_ls AND type_ls.excode_type_ls <> '' AND coordinates.x_coordinates<>0 AND coordinates.y_coordinates<>0 AND ls.short_name_ls <> '' and enimy_ls=TRUE");
-    long int a = mapwin->IsActive(mapwin->hMap);
-    if (a)
-    {
-        if(query.exec(str))
-        {
-            while (query.next())
-            {
-                int id_ls = query.value(5).toInt();
-                long int X_coord=query.value(1).toInt();
-                long int Y_coord=query.value(2).toInt();
-                QString excode_type_ls = query.value(3).toString();
-                float MPS=calc.calculating(id_ls);
-                float MPS_kont=calc.get_mps_kont();
-                float MPS_ofec=calc.get_mps_ofec();
-                float MPS_priz=calc.get_mps_priz();
-                if (MPS!=-1)
-                {
-                    QMap<int,QString> semantic_map;
-                    // показатель подразделения
-                    semantic_map[60004]=QString::number(MPS);
-                    // принадлежность
-                    semantic_map[60028]="7";
-                    semantic_map[60001]=QString::number(MPS_ofec);
-                    semantic_map[60002]=QString::number(MPS_kont);
-                    semantic_map[60003]=QString::number(MPS_priz);
-                    // вид стрелки
-                    if (MPS < 0.3)					semantic_map[60012]="4";
-                    if ((MPS >= 0.3)&&(MPS <= 0.7))	semantic_map[60012]="5";
-                    if ((MPS > 0.7)&&(MPS <= 1.0))	semantic_map[60012]="3";
-                    QString kodeX = "V00000000313";
-                    // если значкт формирований - авиа или военно-морские базы, то стрелка знака МПС рисуется правее и ниже
-                    if ((excode_type_ls=="L1900000115")||(excode_type_ls=="V1234500048")||(excode_type_ls=="V1900000111")||(excode_type_ls=="L1900000052")) mapwin->createObject(hSite,X_coord-3000,Y_coord+6000,kodeX.toLocal8Bit().data(),1, semantic_map);
-                    // иначе просто правее флажка формирования
-                    else mapwin->createObject(hSite,X_coord,Y_coord+3000,kodeX.toLocal8Bit().data(),1, semantic_map);
-                }
-            }
-            query.clear();
-        }
+	showInformationDialog("\n			ВНИМАНИЕ! \n Перед печатью лучше увеличить яркость и контрастность карты\n");
+	
+	QPrinter printer(QPrinter::HighResolution);
+	QPrintDialog *dialog = new QPrintDialog(&printer, this);
+	if (dialog->exec() == QDialog::Accepted)
+	 {
+		QPainter painter(&printer);
+		QRect rect = painter.viewport();
+		hdc = painter.paintEngine()->getDC();
+		RECT r;
+		int k=1;
+		r.bottom = rect.bottom()*k;
+		r.left = rect.left()*k;
+		r.right = rect.right()*k;
+		r.top = rect.top()*k;
+		mapwin->paintInDevice(hdc, &r);
     }
-    showInformationDialog("Информация нанесена на карту");
-    return;
 }
-
-void	MapView::People_Losse()
+//печать видимой области карты
+void	 MapView::PrintScreenSlot()
 {
-    QSqlQuery query;
-    QDate date;
-    QString StrDate=date.currentDate().toString("dd.MM.yyyy");
-    QString str=QString("SELECT name_ls, coordinates.x_coordinates, coordinates.y_coordinates, type_ls.excode_type_ls, ls.short_name_ls, id_ls FROM ls, coordinates, type_ls WHERE ls.id_coordinates=coordinates.id_coordinates AND ls.id_type_ls=type_ls.id_type_ls AND type_ls.excode_type_ls <> '' AND coordinates.x_coordinates<>0 AND coordinates.y_coordinates<>0 AND ls.short_name_ls <> '' and enimy_ls=FALSE");
-    long int a = mapwin->IsActive(mapwin->hMap);
-    if (a)
-    {
-        if(query.exec(str))
-        {
-            while (query.next())
-            {
-                int id_ls = query.value(5).toInt();
-                long int X_coord=query.value(1).toInt();
-                long int Y_coord=query.value(2).toInt();
-                QString excode_type_ls = query.value(3).toString();
-
-                /*float MPS=calc.calculating(id_ls);*/
-                People_Losses pl;
-                pl.get_losses(id_ls);
-                /*float MPS_kont=calc.get_mps_kont();
-                float MPS_ofec=calc.get_mps_ofec();
-                float MPS_priz=calc.get_mps_priz();*/
-
-                QMap<int,QString> semantic_map;
-                // показатель подразделения
-
-
-                // принадлежность
-                /*semantic_map[60028]="7";	*/
-
-                semantic_map[60006]=StrDate;
-                semantic_map[60007]=QString::number(pl.max[1][0]);
-                semantic_map[60008]=QString::number(pl.max[1][1]);
-                semantic_map[60009]=QString::number(pl.max[1][2]);
-                semantic_map[60010]=QString::number(pl.max[1][3]);
-                //// вид стрелки
-                //if (MPS < 0.3)					semantic_map[60012]="4";
-                //if ((MPS >= 0.3)&&(MPS <= 0.7))	semantic_map[60012]="5";
-                //if ((MPS > 0.7)&&(MPS <= 1.0))	semantic_map[60012]="3";
-
-                QString kodeX = "V0000000032";
-
-                // если значек формирований - авиа или военно-морские базы, то стрелка знака МПС рисуется правее и ниже
-                if ((excode_type_ls=="1311701001")||(excode_type_ls=="0006701004")||(excode_type_ls=="0006701003")||(excode_type_ls=="V0000001118")) mapwin->createObject(hSite,X_coord+13500,Y_coord-7500,kodeX.toLocal8Bit().data(),1, semantic_map);
-                // если значек - большой флаг
-                if (excode_type_ls=="V00911000078")  mapwin->createObject(hSite,X_coord+17000,Y_coord-4500,kodeX.toLocal8Bit().data(),1, semantic_map);
-                // иначе просто левее флажка формирования
-                if ((excode_type_ls!="1311701001")&&(excode_type_ls!="0006701004")&&(excode_type_ls!="0006701003")&&(excode_type_ls!="V0000001118")&&(excode_type_ls!="V00911000078")) mapwin->createObject(hSite,X_coord+17000,Y_coord-4500,kodeX.toLocal8Bit().data(),1, semantic_map);
-
-            }
-            query.clear();
-        }
+	QPrinter printer(QPrinter::HighResolution);
+	printer.setOrientation(QPrinter::Landscape);
+	QPrintDialog *dialog = new QPrintDialog(&printer, this);
+	if (dialog->exec() == QDialog::Accepted)
+	 {
+		 QPainter painter(&printer);
+		hdc = painter.paintEngine()->getDC();
+		RECT r;
+		int k1=6; int k2 =4;
+		r.left = (mapwin->horizontalScrollBar()->value())*k1;//rect.left()*k;
+		r.right = (r.left + mapwin->horizontalScrollBar()->pageStep())*k1;//rect.right()*k;
+		r.top = (mapwin->verticalScrollBar()->value())*k2;//rect.top()*k;
+		r.bottom = (r.top+mapwin->verticalScrollBar()->pageStep())*k2;//rect.bottom()*k;
+		mapwin->paintInDevice(hdc, &r);
     }
-    showInformationDialog("Информация нанесена на карту");
-    return;
-
-
 }
+
+//перевод координат DOUBLEPOINT GEODEGREE
+//на входе x,y в метрах
+//на выходе x,y в радианах
+GEODEGREEXY	 MapView::doubleToGeodegree(double *x, double *y, double *h)
+{
+	GEODEGREEXY G_XY;
+	//GEODEGREE * G_X;
+	//GEODEGREE * G_Y;
+	//long int a1 = mapwin->planeToGeoWGS843D(x, y, h);
+	//if (a1) 
+	//{
+	//	mapwin->radianToDegree(x, G_X);
+	//	mapwin->radianToDegree(y, G_Y);
+	//}
+	//G_XY.Degree_x = G_X->Degree;
+	//G_XY.Degree_y = G_Y->Degree;
+	//G_XY.Minute_x = G_X->Minute;
+	//G_XY.Minute_y = G_Y->Minute;
+	//G_XY.Second_x = G_X->Second;
+	//G_XY.Second_y = G_Y->Second;
+	//model->furtherCoordInBase(Id_coordinates, G_XY);
+	return G_XY;
+}
+
+//выбор места для средства по клику мыши
+void	 MapView::showPositionWGSMouseSlot(double X, double Y, double H)
+{
+	double *x, *y, *h;
+	double xx=X, yy=Y, hh=H;
+	x = &xx;//-
+	y = &yy;//-- чтобы не менять X Y H
+	h = &hh;//-
+	GEODEGREEXY G_XY = mapwin->pictureToWGS(x, y, h);
+	x_edit_g->setText(QString::number(G_XY.Degree_x));
+	x_edit_m->setText(QString::number(G_XY.Minute_x));
+	x_edit_s->setText(QString::number(G_XY.Second_x));
+	y_edit_g->setText(QString::number(G_XY.Degree_y));
+	y_edit_m->setText(QString::number(G_XY.Minute_y));
+	y_edit_s->setText(QString::number(G_XY.Second_y));
+	WGS_to_other();
+}
+//пересчет координат
+void	 MapView::showPositionHallMouseSlot(double X, double Y, double H)
+{
+	//mapwin->number_action=0;
+	//QStringList G_XY= model->getHallCoordinatesWGS(Id_coordinates);
+	//long int d1,d2,x1,x2,x3,y1,y2,y3;//коридор:
+	//x1 = G_XY.at(0).toLong();					//x2, y2							x3, y3
+	//y1 = G_XY.at(1).toLong();					//		\\\						///
+	//x2 = G_XY.at(2).toLong();					//			\\\				///
+	//y2 = G_XY.at(3).toLong();					//				------------
+	//x3 = G_XY.at(4).toLong();					//				____________
+	//y3 = G_XY.at(5).toLong();					//			///				\\\					/**/
+	//d1 = (x3-x1)*0.5;						//		///						\\\				/**/
+	//d2 = (y3-y1)*0.5;						//x1, y1							x4, y4
+	//x1 = X-d1;
+	//y1 = Y-d2;
+	//x3 = X+d1;
+	//y3 = Y+d2;
+	//model->apdateHollCoord(x1, y1, x3, y3, Id_coordinates);
+	//if (mapwin->hSite_corr) mapwin->closeSit(mapwin->hMap, mapwin->hSite_corr);
+	//paintCorridors();
+	//if (mapwin->hMap) mapwin->updateScreen();
+}
+void	 MapView::showAppointMouseSlot(long int id_object)
+{
+	mapwin->number_action=0;//дальше только обычный поиск
+	if (mapwin->hSite_ok_weapon) mapwin->closeSit(mapwin->hMap, mapwin->hSite_ok_weapon);
+	if (mapwin->hSite_p) mapwin->closeSit(mapwin->hMap, mapwin->hSite_p);
+	if (mapwin->hSite_s) mapwin->closeSit(mapwin->hMap, mapwin->hSite_s);
+	//запрос в базу
+	/*country = "____________________";
+		QString code, destroy_object, srt_id_obj;
+		srt_id_obj = QString::number(id_obj);
+		QMap<QString, QList<Coord*>>::iterator it = mas.begin();
+		
+		int count = mas.size(), n_point;
+		code = it.key();
+		QList<Coord*> temp;
+		Coord *t_point= new Coord;
+
+		temp = mas["takt_number"];
+		t_point = temp.at(0);
+		 takt_number = t_point->obj_val;
+			 if (takt_number=="")
+			 {
+				temp = mas["short_name_type"];
+				t_point = temp.at(0);
+				takt_number = t_point->obj_val;
+			 }
+		temp = mas["weapon_name"];//смерч, искандер
+		t_point = temp.at(0);
+		 name = t_point->obj_val;//str_info50
+		temp = mas[srt_id_obj];
+		int t_size=temp.size();
+		str_info50 = "Носители:\n";
+		if (t_size>1)
+		{
+			for (int i=0; i<t_size; i++)
+			{
+				t_point = temp.at(i);
+				str_info50 += t_point->obj_val;
+				//str_info50 += " - ";
+				//n_point = t_point->get_n_point();
+				//str_info50 += QString::number(n_point);
+				if (i<t_size-1) str_info50 += "\n";
+			}
+		}*/
+	shortOfGunDialog();
+	//paintCorridors();
+	//if (mapwin->hMap) mapwin->updateScreen();
+}
+void				MapView::shortOfGunDialog()
+{
+	//рассчеты можно ли применить данное средство
+	short_gun_dialog = new QDialog;
+	short_gun_dialog->setWindowTitle("Добавить боеприпасы");
+	QHBoxLayout *main_layout = new QHBoxLayout;
+	QLabel *label0 = new QLabel("Добавить боеприпасы?");
+	QPushButton *new_gun_button = new QPushButton("Да");
+	connect(new_gun_button, SIGNAL(clicked()), short_gun_dialog, SLOT(close()));
+
+	QPushButton *cancel_button = new QPushButton("Нет");
+	connect(cancel_button, SIGNAL(clicked()), short_gun_dialog, SLOT(close()));
+	main_layout->addWidget(label0);
+	main_layout->addWidget(new_gun_button);
+	main_layout->addStretch();
+	main_layout->addWidget(cancel_button);
+
+	short_gun_dialog->setLayout(main_layout);
+	short_gun_dialog->exec();
+}
+///указать мышью средство
+void				MapView::closeDhangeDoordDialog()
+{
+	if (mapwin->hSite_s) mapwin->closeSit(mapwin->hMap, mapwin->hSite_s);
+	if (mapwin->hSite_p) mapwin->closeSit(mapwin->hMap, mapwin->hSite_p);
+	change_coord_dialog->close();
+}
+//
+void				MapView::closeAppointDialog()
+{
+	if (mapwin->hSite_s) mapwin->closeSit(mapwin->hMap, mapwin->hSite_s);
+	if (mapwin->hSite_p) mapwin->closeSit(mapwin->hMap, mapwin->hSite_p);
+	appointWeaponDialog->close();
+}
+//указать мышью коридор
+void				MapView::closeChangeHollCoordDialog()
+{
+	if (mapwin->hSite_s) mapwin->closeSit(mapwin->hMap, mapwin->hSite_s);
+	if (mapwin->hSite_p) mapwin->closeSit(mapwin->hMap, mapwin->hSite_p);
+	change_hall_dialog->close();
+}
+//повернуть средство поражения
+void				MapView::changeAngleWithMouse()
+{
+	//данные, необходимые для рассчетов угла!
+	//G_XY_c= model->getObjectCoordinatesWGS(Id_coordinates);//получение координат объекта=центр
+	//
+	//mapwin->x_for_change_angle; //
+	//mapwin->y_for_change_angle; 
+	//mapwin->number_action=4;
+}
+void				MapView::redrawWithNewAngle(double X, double Y)
+{
+	//mapwin->number_action=0;
+	////рассчеты!
+	//double x0=G_XY_c.x+10000, y0=G_XY_c.y;
+	//double a = X - G_XY_c.x;
+	//double b = Y - G_XY_c.y;
+	//double angle=atan(abs(a)/abs(b));//в угле!
+	//angle = 180*angle/M_PI;//перевод из радиан в угол
+	//if (a>0&&b>0)//1я четверть
+	//{ angle = 90-angle;
+	//}
+	//if (a>0&&b<0)
+	//{ angle+= 270;
+	//}
+	//if (a<0&&b>0)
+	//{ angle+= 90;
+	//}
+	//if (a<0&&b<0)
+	//{ angle = 270-angle;
+	//}
+	////status_bar->setText(QString::number(angle));
+	//model->apdateAngle(Id_coordinates, angle);
+	//if (mapwin->hSite_w) mapwin->closeSit(mapwin->hMap, mapwin->hSite_w);
+	//paintWeapon();
+	//mapwin->updateScreen();
+}
+
+

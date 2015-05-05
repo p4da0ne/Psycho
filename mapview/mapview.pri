@@ -1,14 +1,19 @@
 HEADERS		= config_mapview.h \
-                 mapview.h \
-                 mapscroll.h \
-                 view_manage.h \
-                 Calculate_K_omkrf.h \
-                 calculating_mps.h	\
-                People_Losses.h
+			  mapview.h \
+			  coord.h \
+			  mapscroll.h \
+			  view_manage.h \
+			  signdata.h \
+			  calculatingClasses/calculating_mps.h \
+			  calculatingClasses/Calculate_K_omkrf.h \
+			  calculatingClasses/People_Losses.h
 			  
 SOURCES		= mapview.cpp \
-                mapscroll.cpp \
-                view_manage.cpp \
-                Calculate_K_omkrf.cpp \
-                calculating_mps.cpp \
-                People_Losses.cpp
+			  mapscroll.cpp \
+			  coord.cpp \
+			  view_manage.cpp \
+			  signdata.cpp \
+			  calculatingClasses/calculating_mps.cpp \
+			  calculatingClasses/Calculate_K_omkrf.cpp \
+			  calculatingClasses/People_Losses.cpp
+			  

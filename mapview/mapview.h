@@ -1,149 +1,225 @@
 #ifndef MAPVIEW_H
 #define MAPVIEW_H
 
-
 #include <QWidget>
 #include <QLineEdit>
 #include <QDialog>
 #include <QStatusBar>
-#include <QDate>
-#include <QLayout>
-#include <QMenuBar>
-#include <QFileDialog>
-#include <QTextCodec>
-#include <QPaintDevice>
-#include <QPixmap>
-#include <QPicture>
-#include <QPaintEvent>
-#include <QToolButton>
-#include <QLabel>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QPushButton>
-#include <QtSql>
-#include <QMessageBox>
-#include <QMap>
+#include <QCheckBox>
 
-
-#include <mapapi.h>
 #include "config_mapview.h"
 #include "mapscroll.h"
 #include "view_manage.h"
-#include "calculating_mps.h"
-#include "People_Losses.h"
-#include "my_mapaccess.h"
-//#include "Calculate_K_omkrf.h"
+#include <QPrinter>
+
+#define SETTINGS_ORGANIZATION "vka"
+#define SETTINGS_APPLICATION "saturnMap"
+
 
 class __EXPORT_MAPVIEW MapView : public QWidget
 {
     Q_OBJECT
 
 public:
-    MapView( QWidget *parent=0);
+    MapView( QWidget *parent=0, const char *name=0 );
     ~MapView();
-    void	keyPressEvent(QKeyEvent *e);
-	void	mouseMoveEvent(QMouseEvent * event);
-	void	selectAllObject();
-	void	selectAllObject1();
-	void	selectAllObject2();
-
+	void			keyPressEvent(QKeyEvent *e);
+	void			mouseMoveEvent(QMouseEvent * event);
+	void			selectAllObject();
 private:
-	void	showInformationDialog(QString information);
+	void initToolButtonsPanel();
+	void initSaturnLeftMenu();
+
+	bool			openMap(QString mapFilepath = "");
+	HSITE			openMapSit(QString sitFileName, QString rscFilePath);
+	void			closeSitByName(QString sitFileName);
+
+	//------ Методы отображения знаков на карте в соответствии с фильтром ----
+	void			showSmiMeans(HSITE hSite);
+	void			showFormationMeans(HSITE hSite);
+	void			showOrganizationMeans(HSITE hSite);
+	void			showFormations(HSITE hSite);
+	void			showConditions(HSITE hSite);
+
+	//------Методы отображения результатов расчетных задач на карте в соответствии с фильтром----
+	void			showMpoRegions(HSITE hSite);
+	void			showMpsOurs(HSITE hSite);
+	void			showMpsEnemies(HSITE hSite);
+	void			showPsiLooses(HSITE hSite);
+	//------------------------------------------------------------------------
+	
+	
+	void			showInformationDialog(QString information);
+	void			setAdditionalInfo();
+	void			setStatusInfo(QString status);
+
+	HSITE   		openMapSitWeapon();
+	HSITE   		openMapSitForLine();
+	HSITE			openMapSitForCorridors();
+	HSITE			openMapSitForPicture();
+	HSITE			openMapSitForOkWeapon();
+	HSITE			openMapSitFor();
+	bool			ifShtab(QString code);
+	//int				get_targeting_version();
+	//int				get_operation_combo();
+	//int				getDirectionCombo();
+	void			showOpenMapDialog();
+	void			shortOfGunDialog();
+	//inline bool		get_object_checkbox();
+	//inline bool		get_weapon_checkbox();
+	//inline bool		get_corr_checkbox();
+	//inline bool		get_lbs_checkbox();
+	//inline bool		get_znaki_checkbox();//знаки - mark
+	//inline bool		get_line_checkbox();
+	//inline bool		getMarkDirCheckbox();
+	//inline bool		getLineDirCheckbox();
+	void			paintAllObject();
+	void			paintWeapon();
+	void			paintLine();
+	void			paintCorridors();
+	void			paintPlaner();
+	void			paintPlanerDirection();
+	void			joinObjectWithWeapon();
+	void			joinObjectWithWeaponDirection();
+	void			WGS_to_other();
+	void			apdateInDatabase();
+	GEODEGREEXY		doubleToGeodegree(double *x, double *y, double *h);
 
 public slots://на запросы
-	void	errors_message(QString str);
-	void	showInfoAboutObject(long int id_obj);
-	void	mouseRightMenu(HOBJ hobj, long int id_object, long int id_obj, QPoint pe, bool region);
-    void    mouseRightSimpleMenu(QPoint pe, HOBJ hobj=0, long int num_obj=0, long int id_object=0, bool region=false);
+	void			errors_message(QString str);
+	void			showInfoAboutObject();
+
+	void			mouseRightMenu(long int id_obj, QPoint pe, int semantic_flag, long int id_coordinates);
+	void			mouseRightSimpleMenu(QPoint pe);
+	void			showPositionWGSMouseSlot(double X, double Y, double H=0);
+	void			showPositionHallMouseSlot(double X, double Y, double H=0);
+	void			showAppointMouseSlot(long int id_object);
+
 private slots:
 
-//======= функции (слоты) расчетных задач, вызываемых из контекстного меню ===============
-
-//-- Расчетная задача "МПО региона" ---
-void regionMPOLevel();
-//-- Расчетная задача "Психогенные потери формирования" ---
-void formatonDamage();
-//-- Удаление объекта с пользовательского слоя
-void deleteObject();
-
-void freeObject();
-//==========================================
-
-	void	selectLineObject();
-    void	open();
-    void	LessScale();
-    void	GreateScale();
-    void	closeMap();
-	void	showCloseSitInfo();
-	void	changeBrihgtUp();
-	void    appendSit();
-	void	changeBrihgtDown();
-
-	void	calc_mps();
-	void	calc_mps2();
-	void	People_Losse();
+	void			openNewMap();
+	void			openMapFromSettings();
+	void			openRST();
+	void			closeRST();
+	void			closeRST1();
+    void			lessScale();
+    void			greateScale();
+    void			closeMap();
+	void			closeAllRST();
+	void			changeBrihgtUp();
+	void			changeBrihgtDown();
+	void			changeContrastUp();
+	void			changeContrastDown();
 	//==========================
-	void	opacityMap();
-	/////////////////////////////
-	void test_view_manage();
-	void test_view_manage2();
-	void showShortInformationObject(long int id_obj);
-	void showShortInformationObject_2arg(QString a,long int id_obj);
-	HSITE   openMapSit();
-	HSITE   openMapSit1();
+	void			showShortInformationObject(long int id_obj, long int flag);
+	void			moreButtonClicked();
+	void			test();
 
+	void			appendSit_Test();
 
-	//void slotCalcRegionMPO();
-	//void slotCalcFormationDamage();
+	void showCheckedObjects();
+	void showCheckedCalcResults();
+	
+	void			showOnlyUnAllocation();
+	void			checkPaintCel();
+	void			checkPaintDirection();
+	void			changeObjectCoord();
+	void			redrawWithNewAngle(double X, double Y);
+	void			changeAngleWithMouse();
+	void			changeHallCoord();
+	void			PrintMapSlot();
+	void			PrintScreenSlot();
+	void			closeDhangeDoordDialog();
+	void			closeAppointDialog();
+	void			closeChangeHollCoordDialog();
 public:
-	MyMapAccess * map;
-    QTextCodec  * MainCodec;
-    MapScroll	* mapwin;
-	ViewManage  * model;
-	CREATESITE    createsite;
-	HSITE		  hSite;
-	HSITE		  hSite1;
+    QTextCodec		* MainCodec;
+    MapScroll		* mapwin;
+	ViewManage		* model;
+	QLineEdit		* cursor_coord;
+	QPoint			mouse_pos;
+	QStatusBar		* statusBar;
+	QDialog			* info_dialog;
+	QDialog			* create_object_dialog;
+	QDialog			* bright_dialog;
+	QDialog			* openMapDialog;
+	QDialog			* change_coord_dialog;
+	long int		Id_obj;
+	long int		Id_coordinates;
+	bool			if_open_sit;
+	QPoint			pe;
+	HDC				hdc;
 
-	//HMAP		hMap;  // Идентификатор карты
-	//HSELECT		select;
-	HOBJ		info;
-
-	QLineEdit	* cursor_coord;
-	QPoint		  mouse_pos;
-	QWidget		* MyViewport;
-	QStatusBar  * statusBar;
-	QDialog		* info_dialog;
-	QDialog		* create_object_dialog;
-	QDialog		* bright_dialog;
-		long int	flag1; //true - если семантика 17501 в объекте заполнена
-	bool		flag2;//true - если открыт хоть один пользовательский слой
-	bool		flag;//если при нажатии правой клавишей мыши на нашем объекте - TRUE, иначе FALSE
-	bool		if_open_sit;
-	bool		if_create;
-	QPoint		pe;
-    double		screenX, screenY;
 protected:
-	QString		curFile;
-	QString		File;
-	QLineEdit	* lineEdit;
+	double			koef_mah1;
+	double			koef_mah2;
+
 private: 
-	QMenu		* mouse_menu;
-	QLabel		* mouse_x; 
-	QLabel		* mouse_y; 
-	QDialog		* info_close_dialog;
-	QDialog		* short_info_dialog;
-	Calculate_K_omkrf calc1;
-	/*calculating_mps		calc;*/
-//	QLabel      * lbl;
+	QVBoxLayout *vertLayout;
+	QHBoxLayout *centralLayout;
+
+	//---- Чекбоксы фильтра отображения -----
+	QCheckBox *smi_means_checkbox;
+	QCheckBox *formation_means_checkbox;
+	QCheckBox *organization_means_checkbox;
+	QCheckBox *formations_checkbox;
+	QCheckBox *conditions_checkbox;
+	//---- Чекбоксы фильтра расчетных задач -----
+	QCheckBox *mpo_regions_checkbox;
+	QCheckBox *mps_our_Mil_checkbox;
+	QCheckBox *mps_enemy_checkbox;
+	QCheckBox *psi_looses_checkbox;
+	//--------------------------------------
+
+	QSettings *settings;
+
+	QMenu			* mouse_menu;
+	QLabel			* mouse_x; 
+	QLabel			* mouse_y; 
+	QDialog			* info_close_dialog;
+	QDialog			* short_info_dialog;
+	QDialog			* appointWeaponDialog;
+	QDialog			* weapon_listdialog;
+	QDialog			* short_gun_dialog;
+	QDialog			* closeRSTdialog;
+	QAction			* showAction;
+	QDialog			* change_hall_dialog;
+	QAction			* changeCoordObjectAction;
+	QAction			* appointWeapon;
+	QAction			* dissolutionPlanAction;
+	QAction			* change_angle_action;
+	QGroupBox		* secondary_group_box;
+	QGroupBox		* group_box1;
+	QGroupBox		* group_box2;
+	QGroupBox		* group_box3;
+	QLineEdit		* additional_info;
+	QLineEdit		* status_bar;
+	QPushButton		* more_but;
+	QComboBox		* weapon_combobox;
+	QComboBox		* version_combobox;
+	QComboBox		* operation_combobox;
+	QComboBox		* direction_combobox;
+	QString			curFile;
+	QLineEdit		* lineEdit;
+
+	QLineEdit		* x_edit_g;//--
+	QLineEdit		* x_edit_m;// --
+	QLineEdit		* x_edit_s;//  --
+	QLineEdit		* y_edit_g;//   -- для перемещения объекта
+	QLineEdit		* y_edit_m;//  --
+	QLineEdit		* y_edit_s;// --
+	QLineEdit		* h_edit_h;//--
+	QTableWidget	* tableWidget;
+	QScrollArea		* scrollarea;
+	QList <int>		group_weapon_list;
+	QList <int>		number_int;
+	QStringList		rst_name_and_number;  //открытых растров
+	GEODEGREEXY		G_XY_c;//центр при повороте знака
+	
+	
 
 
-//------------------
-//для меню
-	HOBJ hobj;
-	long int num_obj, id_obj;
-	QPoint pe_menu;
-	bool region;
-//-------------------
+	
 };
 
 #endif
