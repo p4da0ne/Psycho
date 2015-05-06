@@ -1,10 +1,12 @@
 #include "view_manage.h"
 
 #include <QSqlQuery>
-#include <QsqlError>
+#include <QSqlError>
 #include <QSqlRecord>
 #include <QVariant>
 #include <qmath.h>
+#include <QSettings>
+#include <my_mapaccess.h>
 
 ViewManage::ViewManage(QObject *parent)
     : QObject(parent)
@@ -23,11 +25,48 @@ ViewManage::~ViewManage()
 }
 
 
+//======================================================================================
+//========= Метод перевода геодезических координат (WGS84) в прямоугольные =============
+//======================================================================================
+Coord* ViewManage::WGStoPlane(long int hMap,Coord *coordObject)
+{
+   Coord *tempCoord = new Coord;
+   
+   if(hMap == 0) return 0;
+
+	MyMapAccess *map = new MyMapAccess;
+
+   if(map->mapIsGeoSupported(hMap))
+    {
+        GEODEGREE N, E;
+        double N_rad, E_rad, H;
+
+		N.Degree = coordObject->getLatDegrees();
+		N.Minute = coordObject->getLatMinutes();
+		N.Second = coordObject->getLatSeconds();
+
+        map->mapDegreeToRadian(&N, &N_rad);
+
+		E.Degree = coordObject->getLongDegrees();
+		E.Minute = coordObject->getLongMinutes();
+		E.Second = coordObject->getLongSeconds();
+
+        map->mapDegreeToRadian(&E, &E_rad);
+
+        map->mapGeoWGS84ToPlane3D(hMap,&N_rad,&E_rad,&H);
+
+        tempCoord->setX(N_rad);
+		tempCoord->setY(E_rad);
+		tempCoord->setH(H);
+    }
+	return tempCoord;
+}
+
 //================================================================================
 //==== Метод возвращает список объектов SignData с информацией ===================
 //==== для нанесения на карту и инициализации условных знаков средств СМИ ========
 //================================================================================
-QList<SignData*> ViewManage::getSmiMeans()
+QList<SignData*> ViewManage::getSmiMeans(double x1,double y1,double x2,double y2)
 {
 	QList<SignData*> smiMeansList;
 
@@ -46,9 +85,19 @@ QList<SignData*> ViewManage::getSmiMeans()
 		QSqlRecord rec = query.record();
 		while (query.next())
 		{		
-			QString name_type_mpo_pso = query.value(rec.indexOf("name_type_mpo_pso")).toString();
+			
 			long int x_coord=query.value(rec.indexOf("x_coordinates")).toInt();
 			long int y_coord=query.value(rec.indexOf("y_coordinates")).toInt();
+			
+			///получить из запроса 6 параметров координат WGS
+			Coord c1(48,46,58.7,38,23,14.44);
+			
+			Coord *c2 = model->WGStoPlane(mapwin->hMap,&c1);
+
+			//str = "X = " + QString::number(c3->getX(),'f',10) + "\nY = " + QString::number(c3->getY(),'f',10);
+			
+			
+			QString name_type_mpo_pso = query.value(rec.indexOf("name_type_mpo_pso")).toString();
 			QString signCode = query.value(rec.indexOf("excode_type_mpo_pso")).toString();
 			QString id_mpo_pso = query.value(rec.indexOf("id_mpo_pso")).toString();
 

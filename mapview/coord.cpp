@@ -1,6 +1,13 @@
 #include "coord.h"
 
 
+Coord::Coord()
+{
+	this->x = 0;
+	this->y = 0;
+	this->h = 0;
+}
+
 Coord::Coord(double x, double y, double h)
 {
 	this->x = x;
@@ -145,3 +152,4 @@ QString Coord::longitudeToString()
 	longitude.append(QString::number(latSeconds));
 	return longitude;
 }
+

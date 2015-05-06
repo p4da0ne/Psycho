@@ -22,7 +22,7 @@ public:
     void			changePos(long int dx,long int dy);
     void			changeScale(float сhange);
     void			closeMap();
-	void			changeFrame();
+	void			changeFrame(int pixels=50);
 	void			findObject(double *x, double *y);
 	HSITE			openSit(HMAP hMap, const char * mapname,const char * rscname);
 	long int		appendData(const char* sitname);
@@ -51,6 +51,9 @@ public:
 	long int		objectTopScale(HOBJ hobj);
 	long int		objectByMap(HMAP hMap, HOBJ object);
 	QStringList		getHobj(double *x, double *y);
+
+	QStringList		getObjectIdAndTypeInfo(double *x, double *y);
+
 	int				HScrollBarValue();
 	int				VScrollBarValue();
 	long int		getLayerCount();
@@ -95,6 +98,10 @@ signals:
 	void		signalForPlanner(long int id_targeting_version, long int id);
 	void		signal_for_change_scale(QPoint pe);
 
+	//------ Сигналы для обработки нажатий кнопок мыши --------------
+	void leftButtonClicked(QPoint pe, int idOdject=0, int objectType=0);
+	void rightButtonClicked(QPoint pe, int idOdject=0, int objectType=0);
+	//---------------------------------------------------------------
 protected:
     bool  eventFilter (QObject * watched, QEvent * event);
     void  drawContents( QPainter* p, int cx, int cy, int cw, int ch);
@@ -102,6 +109,7 @@ protected:
 	//void  addStatusBar();
 
 public:
+	enum ReservedSemantics {ID_OBJECT = 17501, OBJECT_TYPE = 17502};
 	MyMapAccess						* map;
 	HMAP							hMap;  // Идентификатор карты
 	CREATESITE						createsite;
