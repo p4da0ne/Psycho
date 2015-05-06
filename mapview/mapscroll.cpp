@@ -181,7 +181,7 @@ void MapScroll::closeMap()
 //====================================================================
 //==== Метод изменения масштаба "<" ">" отображения карты ============
 //====================================================================
-void MapScroll::changeScale(float сhange, double poz_sbx, double poz_sby)
+void MapScroll::changeScale(float сhange)
 {
 	if (hMap == 0) return;
 	long int X,Y;
@@ -190,36 +190,24 @@ void MapScroll::changeScale(float сhange, double poz_sbx, double poz_sby)
 	//вычислим текущий центр
 	X = horizontalScrollBar()->value() + viewport()->width() / 2;
 	Y = verticalScrollBar()->value() + viewport()->height() / 2;
-	x1 = (double)X;
-	y1 = (double)X;
-	map->mapPictureToMap(hMap, &x1, &y1);
-	X = (long int)x1;
-	Y = (long int)y1;
+	
 	map->mapChangeViewScale(hMap,&X,&Y,сhange);
-	map->mapGetPictureSize(hMap,&mapW,&mapH);//map->mapMapToPicture(hMap, &x1, &y1);
+	map->mapGetPictureSize(hMap,&mapW,&mapH);
+	
 	MyViewport->hide();
 	//изменение размеров содержимого
 	MyViewport->resize(mapW, mapH);
-	MyViewport->show();
-	//вычислим новый центр - (!) центр не по мыши, а середина MapScroll (!)
-	X=0; Y=0;
-	if ((horizontalScrollBar()->isVisible()==true) && (verticalScrollBar()->isVisible()==true))
-	{
-		a = horizontalScrollBar()->maximum()+ horizontalScrollBar()->pageStep();
-		b = verticalScrollBar()->maximum()+ verticalScrollBar()->pageStep();
-		if (poz_sbx !=0)
-		{
-			X = a/poz_sbx;
-		}
-		X+=dx/4;
-		if (poz_sby !=0)
-		{
-			Y = b/poz_sby;
-		}
-		Y+=dy/4;
-	}
+	
+	
+	//вычислим новый центр
+	X = X - viewport()->width() / 2;
+	if(X<0) X = 0;
+	Y = Y - viewport()->height() / 2;
+	if(Y<0) Y = 0;
+
 	horizontalScrollBar()->setValue(X);
 	verticalScrollBar()->setValue(Y);
+	MyViewport->show();
 }
 
 //==================================================================
@@ -862,7 +850,8 @@ long int	MapScroll::objectInfoFromRsc(HOBJ Info, const char * name)
 long int	MapScroll::createObjectTest(long int hSit,  QList<Coord*> *coordinates, const char * rscKey, QMap<long int,QString> *semantics)
 {
 	info = map->mapCreateSiteObject(hMap,hSit);
-	
+	objectTopScale(info);
+
 	if(semantics)
 	{
 		QMap<long int,QString>::iterator it = semantics->begin(); 

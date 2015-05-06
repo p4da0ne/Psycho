@@ -640,21 +640,7 @@ void MapView::closeMap()
 //===============================================================
 void MapView::lessScale()
 {
-	double poz_sbx=0,poz_sby=0;
-	if (mapwin->horizontalScrollBar()->value()!=0)
-	{
-		poz_sbx=mapwin->horizontalScrollBar()->maximum()- mapwin->horizontalScrollBar()->minimum()+ mapwin->horizontalScrollBar()->pageStep();
-		poz_sbx/=(mapwin->horizontalScrollBar()->value());
-		mapwin->dx=mapwin->horizontalScrollBar()->pageStep();
-	}
-	if (mapwin->verticalScrollBar()->value()!=0)
-	{
-		poz_sby=mapwin->verticalScrollBar()->maximum()- mapwin->verticalScrollBar()->minimum()+ mapwin->verticalScrollBar()->pageStep();
-		poz_sby/=(mapwin->verticalScrollBar()->value());
-		mapwin->dy=mapwin->verticalScrollBar()->pageStep();
-	}
-    mapwin->changeScale(0.5, poz_sbx,poz_sby);		
-	koef_mah1++;
+    mapwin->changeScale(0.5);		
 }
 
 //===============================================================
@@ -662,21 +648,7 @@ void MapView::lessScale()
 //===============================================================
 void MapView::greateScale()
 {
-	double poz_sbx=0,poz_sby=0;
-	if (mapwin->horizontalScrollBar()->value()!=0)
-	{
-		poz_sbx=mapwin->horizontalScrollBar()->maximum()+ mapwin->horizontalScrollBar()->pageStep();
-		poz_sbx/=(mapwin->horizontalScrollBar()->value());
-		mapwin->dx=mapwin->horizontalScrollBar()->pageStep();
-	}
-	if (mapwin->verticalScrollBar()->value()!=0)
-	{
-		poz_sby=mapwin->verticalScrollBar()->maximum()+ mapwin->verticalScrollBar()->pageStep();
-		poz_sby/=(mapwin->verticalScrollBar()->value());
-		mapwin->dy=mapwin->verticalScrollBar()->pageStep();
-	}
-    mapwin->changeScale(2, poz_sbx,poz_sby);		
-	koef_mah2++;
+    mapwin->changeScale(2.0);		
 }
 
 //===============================================================
@@ -838,6 +810,20 @@ HSITE MapView::openMapSit(QString sitFileName, QString rscFilePath)
 }
 
 
+//============================================================================
+//== Метод отображения на карте объектов с помощью условных знаков ===========
+//== Первый параметр - номер пользовательской карты (*.sit), второй ==========
+//== параметр - список объектов SignData с информацией о знаке ===============
+//============================================================================
+void MapView::createSitObjects(HSITE hSite, QList<SignData*> signsList)
+{
+	for(int i=0;i<signsList.count();i++)
+	{
+		mapwin->createObjectTest(hSite,&signsList.at(i)->getMetricList(),
+								 signsList.at(i)->getSignCode().toStdString().c_str(),
+								 &signsList.at(i)->getSemanticList());
+	}
+}
 
 
 
@@ -862,11 +848,11 @@ void MapView::showCheckedObjects()
 	QString sitPath = info->absolutePath();
 	sitPath.append("/");
 	//-------------------------------------------------------------------------
-	QString smiMeansSitName = sitPath.append("smiMeans.sit");
-	QString formationMeansSitName = sitPath.append("formationMeans.sit");
-	QString organizationMeansSitName = sitPath.append("organizationMeans.sit");
-	QString formationsSitName = sitPath.append("formations.sit");
-	QString conditionsSitName = sitPath.append("conditions.sit");
+	QString smiMeansSitName = sitPath + "smiMeans.sit";
+	QString formationMeansSitName = sitPath + "formationMeans.sit";
+	QString organizationMeansSitName = sitPath + "organizationMeans.sit";
+	QString formationsSitName = sitPath + "formations.sit";
+	QString conditionsSitName = sitPath +"conditions.sit";
 	//-------------------------------------------------------------------------
 
 	if (smi_means_checkbox->checkState())
@@ -874,7 +860,8 @@ void MapView::showCheckedObjects()
 		//показать средства СМИ
 		closeSitByName(smiMeansSitName);
 		HSITE smiMeansSite = openMapSit(smiMeansSitName,rscPath);
-		showSmiMeans(smiMeansSite);
+		QList<SignData*> smiMeansSigns = model->getSmiMeans();
+		createSitObjects(smiMeansSite, smiMeansSigns);
 	}
 	else
 	{
@@ -887,8 +874,8 @@ void MapView::showCheckedObjects()
 		//показать средства формирований
 		closeSitByName(formationMeansSitName);
 		HSITE formationMeansSite = openMapSit(formationMeansSitName,rscPath);
-		showFormationMeans(formationMeansSite);
-	
+		QList<SignData*> formationsMeansSigns = model->getFormationsMeans();
+		createSitObjects(formationMeansSite, formationsMeansSigns);
 	}
 	else
 	{
@@ -898,12 +885,11 @@ void MapView::showCheckedObjects()
 	//-------------------------------------------------------------------------
 	if (organization_means_checkbox->checkState())
 	{
-		
 		//показать средства организаций
 		closeSitByName(organizationMeansSitName);
 		HSITE organizationMeansSite = openMapSit(organizationMeansSitName,rscPath);
-		showOrganizationMeans(organizationMeansSite);
-	
+		QList<SignData*> groupsMeansSigns = model->getGroupsMeans();
+		createSitObjects(organizationMeansSite, groupsMeansSigns);
 	}
 	else
 	{
@@ -916,8 +902,8 @@ void MapView::showCheckedObjects()
 		//показать формирования
 		closeSitByName(formationsSitName);
 		HSITE formationsSite = openMapSit(formationsSitName,rscPath);
-		showFormations(formationsSite);
-	
+		QList<SignData*> formationsSigns = model->getFormations();
+		createSitObjects(formationsSite, formationsSigns);
 	}
 	else
 	{
@@ -930,8 +916,8 @@ void MapView::showCheckedObjects()
 		//показать особые условия
 		closeSitByName(conditionsSitName);
 		HSITE conditionsSite = openMapSit(conditionsSitName,rscPath);
-		showConditions(conditionsSite);
-	
+		QList<SignData*> specialConditionsSigns = model->getSpecialConditions();
+		createSitObjects(conditionsSite, specialConditionsSigns);
 	}
 	else
 	{
@@ -942,85 +928,6 @@ void MapView::showCheckedObjects()
 	if (mapwin->hMap) mapwin->updateScreen();
 }
 
-
-
-//================================================================
-//== Метод отображения на карте средств СМИ ======================
-//================================================================
-void MapView::showSmiMeans(HSITE hSite)
-{
-
-	QList<SignData*> smiMeansSigns = model->getSmiMeans();
-	
-	for(int i=0;i<smiMeansSigns.count();i++)
-	{
-		mapwin->createObjectTest(hSite,&smiMeansSigns.at(i)->getMetricList(),
-								 smiMeansSigns.at(i)->getSignCode().toStdString().c_str(),
-								 &smiMeansSigns.at(i)->getSemanticList());
-	}
-}
-
-//================================================================
-//== Метод отображения на карте средств формирований =============
-//================================================================
-void MapView::showFormationMeans(HSITE hSite)
-{
-	QList<SignData*> formationsMeansSigns = model->getFormationsMeans();
-	
-	for(int i=0;i<formationsMeansSigns.count();i++)
-	{
-		mapwin->createObjectTest(hSite,&formationsMeansSigns.at(i)->getMetricList(),
-								 formationsMeansSigns.at(i)->getSignCode().toStdString().c_str(),
-								 &formationsMeansSigns.at(i)->getSemanticList());
-	}
-}
-
-//================================================================
-//== Метод отображения на карте средств организаций ==============
-//================================================================
-void MapView::showOrganizationMeans(HSITE hSite)
-{
-	QList<SignData*> groupsMeansSigns = model->getGroupsMeans();
-	
-	for(int i=0;i<groupsMeansSigns.count();i++)
-	{
-		mapwin->createObjectTest(hSite,&groupsMeansSigns.at(i)->getMetricList(),
-								 groupsMeansSigns.at(i)->getSignCode().toStdString().c_str(),
-								 &groupsMeansSigns.at(i)->getSemanticList());
-	}
-}
-
-//================================================================
-//== Метод отображения на карте формирований =====================
-//================================================================
-void MapView::showFormations(HSITE hSite)
-{
-	QList<SignData*> formationsSigns = model->getFormations();
-	
-	for(int i=0;i<formationsSigns.count();i++)
-	{
-		mapwin->createObjectTest(hSite,&formationsSigns.at(i)->getMetricList(),
-								 formationsSigns.at(i)->getSignCode().toStdString().c_str(),
-								 &formationsSigns.at(i)->getSemanticList());
-	}
-
-}
-
-//================================================================
-//== Метод отображения на карте особых условий ===================
-//================================================================
-void MapView::showConditions(HSITE hSite)
-{
-	QList<SignData*> specialConditionsSigns = model->getSpecialConditions();
-
-	for(int i=0;i<specialConditionsSigns.count();i++)
-	{
-		mapwin->createObjectTest(hSite,&specialConditionsSigns.at(i)->getMetricList(),
-								 specialConditionsSigns.at(i)->getSignCode().toStdString().c_str(),
-								 &specialConditionsSigns.at(i)->getSemanticList());
-	}
-
-}
 
 
 
@@ -1044,18 +951,20 @@ void MapView::showCheckedCalcResults()
 	QString sitPath = info->absolutePath();
 	sitPath.append("/");
 	//-------------------------------------------------------------------------
-	QString mpoRegionsSitName = sitPath.append("mpoRegions.sit");
-	QString mpsOursSitName = sitPath.append("mpsOurs.sit");
-	QString mpsEnemiesSitName = sitPath.append("mpsEnemies.sit");
-	QString psiLoosesSitName = sitPath.append("psiLooses.sit");
+	QString mpoRegionsSitName = sitPath + "mpoRegions.sit";
+	QString mpsOursSitName = sitPath + "mpsOurs.sit";
+	QString mpsEnemiesSitName = sitPath + "mpsEnemies.sit";
+	QString psiLoosesSitName = sitPath + "psiLooses.sit";
 	//-------------------------------------------------------------------------
 
 	if (mpo_regions_checkbox->checkState())
 	{
 		//показать результаты расчета МПО регионов
 		closeSitByName(mpoRegionsSitName);
-		HSITE mpoRegions = openMapSit(mpoRegionsSitName,rscPath);
-		////showSmiMeans(mpoRegions);
+		HSITE mpoRegionsSite = openMapSit(mpoRegionsSitName,rscPath);
+		
+		//QList<SignData*> mpoRegionsSigns = model->getMpoRegions();		//раскомментировать после реализации функции в модели
+		//createSitObjects(mpoRegionsSite, mpoRegionsSigns);
 	}
 	else
 	{
@@ -1068,8 +977,8 @@ void MapView::showCheckedCalcResults()
 		//показать результаты расчета МПС наших войск
 		closeSitByName(mpsOursSitName);
 		HSITE mpsOursSite = openMapSit(mpsOursSitName,rscPath);
-		/////showFormationMeans(mpsOursSite);
-	
+		//QList<SignData*> mpsOursSigns = model->getMpsOurs();			//раскомментировать после реализации функции в модели
+		//createSitObjects(mpsOursSite, mpsOursSigns);
 	}
 	else
 	{
@@ -1082,7 +991,8 @@ void MapView::showCheckedCalcResults()
 		//показать результаты расчета МПС противника
 		closeSitByName(mpsEnemiesSitName);
 		HSITE mpsEnemiesSite = openMapSit(mpsEnemiesSitName,rscPath);
-		///showOrganizationMeans(mpsEnemiesSite);
+		//QList<SignData*> mpsEnemiesSigns = model->getMpsEnemies();			//раскомментировать после реализации функции в модели
+		//createSitObjects(mpsEnemiesSite, mpsEnemiesSigns);
 	
 	}
 	else
@@ -1096,7 +1006,8 @@ void MapView::showCheckedCalcResults()
 		//показать результаты расчета психогенных потерь
 		closeSitByName(psiLoosesSitName);
 		HSITE psiLoosesSite = openMapSit(psiLoosesSitName,rscPath);
-		//showFormations(psiLoosesSite);
+		//QList<SignData*> psiLoosesSigns = model->getPsiLooses();			//раскомментировать после реализации функции в модели
+		//createSitObjects(psiLoosesSite, psiLoosesSigns);
 	
 	}
 	else
@@ -1108,106 +1019,6 @@ void MapView::showCheckedCalcResults()
 
 	if (mapwin->hMap) mapwin->updateScreen();
 }
-
-
-//================================================================
-//== Метод отображения на карте МПОС регионов ====================
-//================================================================
-void MapView::showMpoRegions(HSITE hSite)
-{
-
-	//QList<SignData*> mpoRegionsSigns = model->getSmiMeans();
-	
-	/*for(int i=0;i<mpoRegionsSigns.count();i++)
-	{
-		mapwin->createObjectTest(hSite,&mpoRegionsSigns.at(i)->getMetricList(),
-								 mpoRegionsSigns.at(i)->getSignCode().toStdString().c_str(),
-								 &mpoRegionsSigns.at(i)->getSemanticList());
-	}*/
-}
-
-
-//================================================================
-//== Метод отображения на карте МПС наших войск ==================
-//================================================================
-void MapView::showMpsOurs(HSITE hSite)
-{
-
-	//QList<SignData*> mpoRegionsSigns = model->getSmiMeans();
-	
-	/*for(int i=0;i<mpoRegionsSigns.count();i++)
-	{
-		mapwin->createObjectTest(hSite,&mpoRegionsSigns.at(i)->getMetricList(),
-								 mpoRegionsSigns.at(i)->getSignCode().toStdString().c_str(),
-								 &mpoRegionsSigns.at(i)->getSemanticList());
-	}*/
-}
-
-
-//================================================================
-//== Метод отображения на карте МПС войск противника =============
-//================================================================
-void MapView::showMpsEnemies(HSITE hSite)
-{
-
-	//QList<SignData*> mpoRegionsSigns = model->getSmiMeans();
-	
-	/*for(int i=0;i<mpoRegionsSigns.count();i++)
-	{
-		mapwin->createObjectTest(hSite,&mpoRegionsSigns.at(i)->getMetricList(),
-								 mpoRegionsSigns.at(i)->getSignCode().toStdString().c_str(),
-								 &mpoRegionsSigns.at(i)->getSemanticList());
-	}*/
-}
-
-
-//================================================================
-//== Метод отображения на карте психогенных потерь ===============
-//================================================================
-void MapView::showPsiLooses(HSITE hSite)
-{
-
-	//QList<SignData*> mpoRegionsSigns = model->getSmiMeans();
-	
-	/*for(int i=0;i<mpoRegionsSigns.count();i++)
-	{
-		mapwin->createObjectTest(hSite,&mpoRegionsSigns.at(i)->getMetricList(),
-								 mpoRegionsSigns.at(i)->getSignCode().toStdString().c_str(),
-								 &mpoRegionsSigns.at(i)->getSemanticList());
-	}*/
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

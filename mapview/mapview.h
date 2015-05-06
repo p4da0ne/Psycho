@@ -34,18 +34,8 @@ private:
 	HSITE			openMapSit(QString sitFileName, QString rscFilePath);
 	void			closeSitByName(QString sitFileName);
 
-	//------ Методы отображения знаков на карте в соответствии с фильтром ----
-	void			showSmiMeans(HSITE hSite);
-	void			showFormationMeans(HSITE hSite);
-	void			showOrganizationMeans(HSITE hSite);
-	void			showFormations(HSITE hSite);
-	void			showConditions(HSITE hSite);
-
-	//------Методы отображения результатов расчетных задач на карте в соответствии с фильтром----
-	void			showMpoRegions(HSITE hSite);
-	void			showMpsOurs(HSITE hSite);
-	void			showMpsEnemies(HSITE hSite);
-	void			showPsiLooses(HSITE hSite);
+	//------ Метод для отрисовки условных знаков на пользовательской карте -------------
+	void			createSitObjects(HSITE hSite,QList<SignData*> signsList);
 	//------------------------------------------------------------------------
 	
 	
