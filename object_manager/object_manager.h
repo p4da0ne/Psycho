@@ -71,6 +71,7 @@ private slots:
     void print_formul();
 
     void add_new_coordinates();
+    void show_dialog_add_file();
     void get_coordinates(int,QString,QString,QString);
 
     void change_coord_system(int);

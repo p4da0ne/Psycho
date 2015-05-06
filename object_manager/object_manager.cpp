@@ -45,11 +45,13 @@ Objectmanager::Objectmanager(QWidget *parent) //int in_id_object
     QListView* listView = qobject_cast<QListView*>(UI->coord_system_comboBox->view());
     Q_CHECK_PTR(listView);
     listView->setRowHidden(0, true);
+	UI->add_many_coord_button->setEnabled(false);
 
     connect(UI->coord_system_comboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(change_coord_system(int)));
     connect(UI->add_coord_button,SIGNAL(clicked()),this,SLOT(add_new_coordinates()));
     connect(UI->del_coord_button,SIGNAL(clicked()),this,SLOT(delete_coordinates()));
     connect(UI->edit_coord_button,SIGNAL(clicked()),this,SLOT(edit_coordinates_view()));
+    connect(UI->add_many_coord_button,SIGNAL(clicked()),this,SLOT(show_dialog_add_file()));
 //==============================================================================================================
 
 	connect(UI->object_manager_tree,SIGNAL(clicked(const QModelIndex &)),this,SLOT(show_objects ( const QModelIndex & )));
@@ -519,7 +521,7 @@ void Objectmanager::show_objects(const QModelIndex &index)
 	if (id.type() == QVariant::String) { 
     QString user_data=id.toString();
 
-
+	UI->add_many_coord_button->setEnabled(true);
     QProgressDialog progress("Формирование информации о регионах", "Отмена", 0, 100);
     progress.setWindowModality(Qt::WindowModal);
     progress.setWindowTitle("Формирование информации о регионах");
@@ -1343,10 +1345,12 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 		else if(list.value(0)=="region"){
 			region_click(list.value(1).toInt());
             show_coordinates(list.value(0),list.value(1).toInt(),"coord_region","id_region");
+			UI->add_many_coord_button->setEnabled(true);
 		}
 		else if(list.value(0)=="reg"){
 			region_click(list.value(1).toInt());
             show_coordinates(list.value(0),list.value(1).toInt(),"coord_region","id_region");
+			UI->add_many_coord_button->setEnabled(true);
 		} // ================= в таблицу данные о СМИ =======================================
         else if(list.value(0)=="dsmi"){
 			smi_click(list.value(2).toInt());
@@ -3596,12 +3600,12 @@ void Objectmanager::add_new_coordinates()
      query.prepare("INSERT INTO coordinates (latitude_wgs_84_g,latitude_wgs_84_m,latitude_wgs_84_s,longitude_wgs_84_g,longitude_wgs_84_m,longitude_wgs_84_s,x_coordinates,y_coordinates) VALUES (?,?,?,?,?,?,?,?)RETURNING id_coordinates");
      query.addBindValue(e1->text().toInt());
      query.addBindValue(e2->text().toInt());
-     query.addBindValue(e3->text().toFloat());
+     query.addBindValue(e3->text().toDouble());
      query.addBindValue(e4->text().toInt());
      query.addBindValue(e5->text().toInt());
-     query.addBindValue(e6->text().toFloat());
-     query.addBindValue(e15->text().toFloat());
-     query.addBindValue(e16->text().toFloat());
+     query.addBindValue(e6->text().toDouble());
+     query.addBindValue(e15->text().toDouble());
+     query.addBindValue(e16->text().toDouble());
 
      if(!query.exec())
       {
@@ -3704,10 +3708,155 @@ void Objectmanager::add_new_coordinates()
 
      return;
      }
-
-
      return;
-    }
+     }
+}
+//========================== добавление списка координат =================================
+void Objectmanager::show_dialog_add_file()
+{
+	int id_obj = 0;
+    QModelIndex index = UI->columnView->currentIndex();
+    if(!index.data(Qt::UserRole).toBool()) return;
+    QString id_sc=index.data(Qt::UserRole).toString();
+    QStringList list_id=id_sc.split("_");
+    id_obj = list_id.value(1).toInt();
+	
+
+
+    QString filepath = QFileDialog::getOpenFileName(this,
+         "Открыть txt-файл", "../", tr("Text Files (*.txt *.csv)"));
+
+///============== проверку сделать на пустой стринг ========================================
+
+    QFile file(filepath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+             return;
+	
+    QSqlQuery query;
+    if(list_id.value(0)=="region" || list_id.value(0)=="reg"){
+
+	query.clear();
+	QString str = QString("SELECT id_coordinates FROM coord_region where id_region=%1").arg(id_obj);
+	query.prepare(str);
+	if(!query.exec())
+		{
+			QString err = query.lastError().text();
+			return;
+		}
+		QSqlRecord rec = query.record();
+		while(query.next())
+		{
+			int id_coord = query.value(rec.indexOf("id_coordinates")).toInt();
+		QSqlQuery query1;
+		query1.prepare("DELETE FROM coordinates WHERE id_coordinates = ?");
+		query1.addBindValue(id_coord);
+			if(!query1.exec())
+			{
+			QString err = query1.lastError().text();
+			return;	
+			}
+		}
+	QSettings *settings = new QSettings("vka","saturnMap");
+    QString mapPath = settings->value("/mapSettings/mapPath","").toString();
+	if(mapPath.isEmpty())
+			{
+				 //================MessageBox===============================
+			QMessageBox msgBox;
+			msgBox.setWindowTitle("Сообщение");
+			msgBox.setText("Вы должны открыть карту, чтобы перевести координаты объекта\nОткрыть карту??");
+			msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+			msgBox.setButtonText(QMessageBox::Yes, "Да");
+			msgBox.setButtonText(QMessageBox::No, "Нет");
+
+			 switch (msgBox.exec()) {
+			 case QMessageBox::Yes:
+				 mapPath = QFileDialog::getOpenFileName(this, QString::null, QString::null,"Maps (*.map)" );
+				 break;
+			 case QMessageBox::No:
+				 return;
+				 break;
+			 default:
+				 return;
+				 break;
+			 }
+		  //==============================================================
+			}
+		
+		if(!query.exec(str))   {
+            QString err = query.lastError().text();
+            int sa=0;
+            return;
+        }
+
+        while (!file.atEnd())  {
+            QString line = file.readLine();
+            QStringList list = line.split("   ");
+			if (list.value(0)=="" || list.value(1) == ""){
+				QMessageBox::StandardButton ret;
+				ret = QMessageBox::critical (this,"Ошибка",("В файле нет координат "),QMessageBox::Ok );
+			return;
+			}
+
+		MyMapAccess *map = new MyMapAccess();
+		hmap = 0;
+		hmap = map->mapOpen(mapPath.toStdString().c_str(),0);
+		if(hmap == 0) return;
+		int nD,nM,eD,eM;
+		double nS,eS;
+			if(map->mapIsGeoSupported(hmap)){
+				GEODEGREE N, E;
+				double N_rad, E_rad, H;
+				N_rad = list.value(0).toDouble();;
+				E_rad = list.value(1).toDouble();;
+				map->mapPlaneToGeoWGS843D(hmap,&N_rad,&E_rad,&H);
+				map->mapRadianToDegree(&N_rad,&N);
+				map->mapRadianToDegree(&E_rad,&E);
+			    nD = N.Degree;	 
+				nM = N.Minute;
+				nS = N.Second;
+				eD = E.Degree;
+				eM = E.Minute;
+				eS = E.Second;
+			}
+				 
+			if(hmap){
+				 map->mapCloseData(hmap);
+			}
+ 	 
+			query.clear();
+            query.prepare("INSERT INTO coordinates(latitude_wgs_84_g,latitude_wgs_84_m,latitude_wgs_84_s,longitude_wgs_84_g,longitude_wgs_84_m,longitude_wgs_84_s) VALUES (?,?,?,?,?,?)RETURNING id_coordinates");
+			
+            query.addBindValue(nD);
+            query.addBindValue(nM);
+			query.addBindValue(nS);
+			query.addBindValue(eD);
+			query.addBindValue(eM);
+			query.addBindValue(eS);
+			
+			if(!query.exec()) {
+                QString err = query.lastError().text();
+                return;
+            }
+			int id_coordinates=0;
+			
+			while (query.next()){
+			 id_coordinates=query.value(0).toInt();
+			}
+			query.prepare("INSERT INTO coord_region (id_coordinates, id_region) VALUES (?,?)");
+			query.addBindValue(id_coordinates);
+			query.addBindValue(id_obj);
+			
+			if(!query.exec()) {
+                QString err = query.lastError().text();
+                return;
+            }
+			
+		}
+				
+        show_coordinates(list_id.value(0),list_id.value(1).toInt(),"coord_region","id_region");
+		 return;
+
+        }
 }
 void Objectmanager::show_coordinates(QString ob_name,int id_object_for_coord,QString table_name,QString id_name){
 
@@ -4126,7 +4275,7 @@ void Objectmanager::edit_coordinates(QString ob_name, int id_obj, QString table_
 
     //int id_coord = UI->coord_table->item(row,1)->text().toInt();
     int gr,m,m_,gr_,id_c,id;
-    float s,s_,x_,y_;
+    double s,s_,x_,y_;
     bool fl;
     int row_count = UI->coord_table->rowCount();
     for(int i=0;i<row_count;i++)
@@ -4167,9 +4316,9 @@ void Objectmanager::edit_coordinates(QString ob_name, int id_obj, QString table_
 		QSqlQuery query;
     QString str = QString("UPDATE coordinates SET latitude_wgs_84_g='%1',latitude_wgs_84_m='%2',latitude_wgs_84_s='%3',longitude_wgs_84_g='%4',longitude_wgs_84_m='%5',longitude_wgs_84_s='%6',x_coordinates='%7',y_coordinates='%8' \
                            WHERE id_coordinates=%9") \
-                          .arg(e1->text().toInt()).arg(e2->text().toInt()).arg(e3->text().toFloat()) \
-                          .arg(e4->text().toInt()).arg(e5->text().toInt()).arg(e6->text().toFloat()) \
-                          .arg(e15->text().toFloat()).arg(e16->text().toFloat()).arg(id);
+                          .arg(e1->text().toInt()).arg(e2->text().toInt()).arg(e3->text().toDouble()) \
+                          .arg(e4->text().toInt()).arg(e5->text().toInt()).arg(e6->text().toDouble()) \
+                          .arg(e15->text().toDouble()).arg(e16->text().toDouble()).arg(id);
 
     if(!query.exec(str))
      {
@@ -4224,13 +4373,13 @@ void Objectmanager::WGS_to_other()
 
         N.Degree = e1->text().toLong();
         N.Minute = e2->text().toLong();
-        N.Second = e3->text().toFloat();
+        N.Second = e3->text().toDouble();
 
         map->mapDegreeToRadian(&N, &N_rad);
 
         E.Degree = e4->text().toLong();
         E.Minute = e5->text().toLong();
-        E.Second = e6->text().toFloat();
+        E.Second = e6->text().toDouble();
 
         map->mapDegreeToRadian(&E, &E_rad);
 
@@ -4250,10 +4399,7 @@ void Objectmanager::WGS_to_other()
         map->mapPlaneToGeo423D(hmap,&N_rad,&E_rad,&H);
         map->mapRadianToDegree(&N_rad, &N);
         map->mapRadianToDegree(&E_rad, &E);
-
-
     }
-
     if(hmap)
     {
         map->mapCloseData(hmap);
