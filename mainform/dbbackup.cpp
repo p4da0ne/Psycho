@@ -1,5 +1,10 @@
 #include "dbbackup.h"
+#include <QDesktopServices>
+#include <QUrl>
+#include <QDir>
+#include <QDateTime>
 
+#include "../mainform/settings.h"
 
 DbBackup::DbBackup(QWidget *parent) :
    QDialog(parent)
@@ -108,9 +113,65 @@ void DbBackup::saveSettings()
 //===================================================
 void DbBackup::slotCreateBackup()
 {
-	//////////////////////////////////////
 	
-	//////////////////////////////////////
-	messageToUser("Слава, делай бэкап");
+//===========================================================================
+//===== Выбор настроек для формирования скрипта резервного копирования БД ===
+//===========================================================================
+	Settings *dbSettings = new Settings(this);
+
+	QString host = dbSettings->host();
+	QString user = dbSettings->user_name();
+	QString dbName = dbSettings->db_name();
+	QString password = dbSettings->user_password();
+
+	QString backupQuery;
+//=========================================================
+//===== Формирование скрипта резервного копирования БД ====
+//=========================================================
+
+	QDir dir;
+	QString currentPath = dir.currentPath();
+
+	QString pathStr = currentPath + "/recovery/pg_dump.exe";
+
+	backupQuery.append(pathStr);
+	backupQuery.append(" --host=");
+	backupQuery.append(host);
+	backupQuery.append(" --username=");
+	backupQuery.append(user);
+	backupQuery.append(" ");
+	backupQuery.append(dbName);
+	backupQuery.append(" > ");
+	backupQuery.append(backupDir);
+	backupQuery.append("/");
+	backupQuery.append("saturn");
+
+	QDateTime dt;
+	QString dateTime = dt.currentDateTime().toString("dd" "MM" "yyyy" "hh" "mm" "ss");
+
+	backupQuery.append(dateTime);
+	backupQuery.append(".backup");
+//=========================================================
+//===== Запись сформированной строки в bat-файл ===========
+//=========================================================
+	QString tempFilePath = currentPath + "/recovery/backup.bat";
+	QFile tempFile(tempFilePath);
+	
+	if (!tempFile.open(QIODevice::WriteOnly | QIODevice::Text))
+	{
+		return;
+	}
+	tempFile.write(backupQuery.toStdString().c_str());
+	tempFile.close();
+
+//=========================================================
+//===== Выполнение bat-файла ==============================
+//=========================================================
+	QDesktopServices::openUrl(QUrl::fromLocalFile(QString(tempFilePath)));
+
+//==============================================================
+//========= Сообщение пользователю в диалоговом окне ===========
+//==============================================================
+	messageToUser(QString("Создан файл резервной копии БД с именем %1").arg("saturn"+dateTime+".backup"));
 
 }
