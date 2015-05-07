@@ -53,6 +53,7 @@ Objectmanager::Objectmanager(QWidget *parent) //int in_id_object
     connect(UI->del_coord_button,SIGNAL(clicked()),this,SLOT(delete_coordinates()));
     connect(UI->edit_coord_button,SIGNAL(clicked()),this,SLOT(edit_coordinates_view()));
     connect(UI->add_many_coord_button,SIGNAL(clicked()),this,SLOT(show_dialog_add_file()));
+
 //==============================================================================================================
 
 	connect(UI->object_manager_tree,SIGNAL(clicked(const QModelIndex &)),this,SLOT(show_objects ( const QModelIndex & )));
