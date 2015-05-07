@@ -7,12 +7,14 @@
 #include <qmath.h>
 #include <QSettings>
 #include <my_mapaccess.h>
+#include "mapview.h"
 
 ViewManage::ViewManage(QObject *parent)
     : QObject(parent)
 {
 	//MainCodec = QTextCodec::codecForName("CP1251");
-	
+  	
+	mapwin = new MapScroll();
 	
 
 	
@@ -66,37 +68,40 @@ Coord* ViewManage::WGStoPlane(long int hMap,Coord *coordObject)
 //==== Метод возвращает список объектов SignData с информацией ===================
 //==== для нанесения на карту и инициализации условных знаков средств СМИ ========
 //================================================================================
-QList<SignData*> ViewManage::getSmiMeans(double x1,double y1,double x2,double y2)
+QList<SignData*> ViewManage::getSmiMeans(long int hMap,double x1,double y1,double x2,double y2)
 {
 	QList<SignData*> smiMeansList;
 
 	QSqlQuery query;
-	QString str=QString("SELECT name_type_mpo_pso, coordinates.x_coordinates, coordinates.y_coordinates, \
-						type_mpo_pso.excode_type_mpo_pso, id_mpo_pso, mpo_pso.semantika_digit1, mpo_pso.semantika_digit2, semantika_1 \
-						FROM mpo_pso, coordinates, type_mpo_pso \
-						WHERE mpo_pso.id_coordinates=coordinates.id_coordinates \
+	QString str=QString("SELECT DISTINCT name_type_mpo_pso, coordinates.latitude_wgs_84_g,coordinates.latitude_wgs_84_m,coordinates.latitude_wgs_84_s,coordinates.longitude_wgs_84_g, \
+						coordinates.longitude_wgs_84_m,coordinates.longitude_wgs_84_s, \
+						type_mpo_pso.excode_type_mpo_pso, mpo_pso.id_mpo_pso, mpo_pso.semantika_digit1, mpo_pso.semantika_digit2, semantika_1 \
+						FROM mpo_pso, coord_mpo_pso cmp, coordinates, type_mpo_pso \
+						WHERE cmp.id_coordinates=coordinates.id_coordinates \
 						AND mpo_pso.id_type_mpo_pso=type_mpo_pso.id_type_mpo_pso \
 						AND type_mpo_pso.excode_type_mpo_pso <> '' \
-						AND coordinates.x_coordinates<>0 \
-						AND coordinates.y_coordinates<>0 \
-						AND mpo_pso.id_smi > 0");
+						AND mpo_pso.id_smi > 0 ");
 	if(query.exec(str))
 	{
 		QSqlRecord rec = query.record();
 		while (query.next())
 		{		
-			
-			long int x_coord=query.value(rec.indexOf("x_coordinates")).toInt();
-			long int y_coord=query.value(rec.indexOf("y_coordinates")).toInt();
-			
+			int wgs_g = query.value(rec.indexOf("latitude_wgs_84_g")).toInt();
+			int wgs_m = query.value(rec.indexOf("latitude_wgs_84_m")).toInt();
+			double wgs_s = query.value(rec.indexOf("latitude_wgs_84_s")).toDouble();
+			int long_wgs_g = query.value(rec.indexOf("longitude_wgs_84_g")).toInt();
+			int long_wgs_m = query.value(rec.indexOf("longitude_wgs_84_m")).toInt();
+			double long_wgs_s = query.value(rec.indexOf("longitude_wgs_84_s")).toDouble();
+					
 			///получить из запроса 6 параметров координат WGS
-			Coord c1(48,46,58.7,38,23,14.44);
-			///
+			Coord c1(wgs_g,wgs_m,wgs_s,long_wgs_g,long_wgs_m,long_wgs_s);
 			
-			Coord *c2 = model->WGStoPlane(mapwin->hMap,&c1);
-
-			//str = "X = " + QString::number(c3->getX(),'f',10) + "\nY = " + QString::number(c3->getY(),'f',10);
+			Coord *c2 = WGStoPlane(hMap,&c1);		
 			
+			double x_coord = c2->getX();
+			double y_coord = c2->getY();
+			
+			if(((x_coord > x1) && (y_coord > y1)) && ((x_coord < x2) && (y_coord < y2))) continue;	
 			
 			QString name_type_mpo_pso = query.value(rec.indexOf("name_type_mpo_pso")).toString();
 			QString signCode = query.value(rec.indexOf("excode_type_mpo_pso")).toString();
@@ -108,7 +113,6 @@ QList<SignData*> ViewManage::getSmiMeans(double x1,double y1,double x2,double y2
 			QString semantika_digit2_mpo_pso = query.value(rec.indexOf("semantika_digit2")).toString();
 			QString semantika_1_mpo_pso = query.value(rec.indexOf("semantika_1")).toString();
 
-			
 			QList<Coord*> coordList;
 			Coord *coord = new Coord(x_coord,y_coord);	
 			coordList.append(coord);
