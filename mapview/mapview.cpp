@@ -1042,16 +1042,9 @@ void MapView::showCheckedCalcResults()
 void MapView::slotMouseLeftButtonClicked(QPoint pe, int idObject, int objectType)
 {
 	QString str;
-	//str = "Идентификатор объекта: " + QString::number(idObject) + "\n"; 
-	//str = str + "Тип объекта: " + QString::number(objectType); 
+	str = "Идентификатор объекта: " + QString::number(idObject) + "\n"; 
+	str = str + "Тип объекта: " + QString::number(objectType); 
 	
-	
-	Coord c1(48,46,58.7,38,23,14.44);
-	Coord c2(48,31,54.99,38,47,07.28);
-
-	Coord *c3 = model->WGStoPlane(mapwin->hMap,&c2);
-
-	str = "X = " + QString::number(c3->getX(),'f',10) + "\nY = " + QString::number(c3->getY(),'f',10);
 	errors_message(str);
 
 }
