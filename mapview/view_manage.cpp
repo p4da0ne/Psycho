@@ -91,6 +91,7 @@ QList<SignData*> ViewManage::getSmiMeans(double x1,double y1,double x2,double y2
 			
 			///получить из запроса 6 параметров координат WGS
 			Coord c1(48,46,58.7,38,23,14.44);
+			///
 			
 			Coord *c2 = model->WGStoPlane(mapwin->hMap,&c1);
 
