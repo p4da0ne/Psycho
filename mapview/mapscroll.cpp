@@ -183,7 +183,7 @@ void MapScroll::closeMap()
 //====================================================================
 //==== Метод изменения масштаба "<" ">" отображения карты ============
 //====================================================================
-void MapScroll::changeScale(float change)
+void MapScroll::changeScale(float сhange)
 {
 	if (hMap == 0) return;
 	long int X,Y;
@@ -193,7 +193,7 @@ void MapScroll::changeScale(float change)
 	X = horizontalScrollBar()->value() + viewport()->width() / 2;
 	Y = verticalScrollBar()->value() + viewport()->height() / 2;
 	
-    map->mapChangeViewScale(hMap,&X,&Y,change);
+	map->mapChangeViewScale(hMap,&X,&Y,сhange);
 	map->mapGetPictureSize(hMap,&mapW,&mapH);
 	
 	MyViewport->hide();
