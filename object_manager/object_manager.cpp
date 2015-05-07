@@ -39,6 +39,7 @@ Objectmanager::Objectmanager(QWidget *parent) //int in_id_object
     UI->add_coord_button->setIcon(QIcon("./icons/add_but.png"));
     UI->del_coord_button->setIcon(QIcon("./icons/delete_but.png"));
     UI->edit_coord_button->setIcon(QIcon("./icons/edit_but.png"));
+    UI->add_many_coord_button->setIcon(QIcon("./icons/open.png"));
 
 //==============================COMBOBOX 0 строка нафиг + работа с координатами ===============================
 
