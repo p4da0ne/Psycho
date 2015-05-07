@@ -50,6 +50,8 @@ MapView::MapView(QWidget *parent, const char *name)
 	connect(mapwin,SIGNAL(signalFor4Action(double, double)),this,SLOT(redrawWithNewAngle(double, double)));
 	connect(mapwin,SIGNAL(signal_for_change_scale(QPoint)),this,SLOT(mouseRightSimpleMenu(QPoint)));
 	
+	connect(mapwin,SIGNAL(leftButtonClicked(QPoint, int, int)),this,SLOT(slotMouseLeftButtonClicked(QPoint, int, int)));
+	connect(mapwin,SIGNAL(rightButtonClicked(QPoint, int, int)),this,SLOT(slotMouseRightButtonClicked(QPoint, int, int)));
 	// ===================================================================================================================================
 	vertLayout = new QVBoxLayout();  //==== основной лэйаут
 	vertLayout->setMargin(1);
@@ -842,7 +844,13 @@ void MapView::showCheckedObjects()
 	{
 		openMapFromSettings();
 	}
-	
+	//------ Получение координат углов карты ---------
+	/*double x1 = mapwin->getMapX1(mapwin->hMap);
+	double y1 = mapwin->getMapY1(mapwin->hMap);
+	double x2 = mapwin->getMapX2(mapwin->hMap);
+	double y2 = mapwin->getMapY2(mapwin->hMap);*/
+	//-------------------------------------------------
+
 	QString rscPath = settings->value("/mapSettings/rscPath","").toString();
 	QFileInfo *info = new QFileInfo(rscPath);
 	QString sitPath = info->absolutePath();
@@ -1028,12 +1036,61 @@ void MapView::showCheckedCalcResults()
 
 
 
+//============================================================================
+//==== Слот обработки нажатия левой кнопки мыши ==============================
+//============================================================================
+void MapView::slotMouseLeftButtonClicked(QPoint pe, int idObject, int objectType)
+{
+	QString str;
+	str = "Идентификатор объекта: " + QString::number(idObject) + "\n"; 
+	str = str + "Тип объекта: " + QString::number(objectType); 
+	
+	errors_message(str);
+
+}
 
 
 
+//============================================================================
+//==== Слот обработки нажатия правой кнопки мыши ==============================
+//============================================================================
+void MapView::slotMouseRightButtonClicked(QPoint pe, int idObject, int objectType)
+{
+	if(!idObject || !objectType)
+	{
+		mouseRightSimpleMenu(pe);
+	}
+	else
+	{
+		switch(objectType)
+		{
+			case ViewManage::FORMATIONS:
+				//
+				break;
+			
+			case ViewManage::SPECIAL_CONDITIONS:
+				///
+				break;
+			
+			case ViewManage::SMI_MEANS:
+				////
+				break;
+			
+			case ViewManage::FORMATIONS_MEANS:
+				///
+				break;
+			
+			case ViewManage::GROUPS_MEANS:
+				///
+				break;
+		}
+	
+	}
+		
+		
+		
 
-
-
+}
 
 
 

@@ -16,7 +16,9 @@ class ViewManage : public QObject
 
 	
 public:
-	QList<SignData*> getSmiMeans();
+	Coord * WGStoPlane(long int hMap,Coord *coordObject);
+	
+	QList<SignData*> getSmiMeans(double x1,double y1,double x2,double y2);
 	QList<SignData*> getFormationsMeans();
 	QList<SignData*> getGroupsMeans();
 	QList<SignData*> getFormations();

@@ -11,6 +11,7 @@ class Coord
 	double latSeconds, longSeconds; //секунды в геодезической СК
 	double xRad, yRad; //X и Y в радианах
 public:
+	Coord();
 	Coord(double x, double y, double h=0);
 	//Coord(double xRad, double yRad);
 	Coord(int latDegrees, int latMinutes, double latSeconds, int longDegrees, int longMinutes, double longSeconds);
@@ -40,6 +41,7 @@ public:
 
 	QString latitudeToString();
 	QString longitudeToString();
+
 
 };
 

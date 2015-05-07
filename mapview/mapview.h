@@ -101,6 +101,9 @@ private slots:
 	void			changeContrastUp();
 	void			changeContrastDown();
 	//==========================
+	void			slotMouseLeftButtonClicked(QPoint pe, int idObject, int objectType);
+	void			slotMouseRightButtonClicked(QPoint pe, int idObject, int objectType);
+	//======================================================
 	void			showShortInformationObject(long int id_obj, long int flag);
 	void			moreButtonClicked();
 	void			test();

@@ -141,7 +141,9 @@ int			MapScroll::mapOpen(  const char *name )
    if (hMap)
    {
       long int	mapW, mapH;
-	  setViewScale(16000000);//установить масштаб, с каким изначально откроется карта
+	  //setViewScale(16000000);//установить масштаб, с каким изначально откроется карта
+	  
+	 
 	  map->mapGetPictureSize(hMap,&mapW,&mapH);
      
       if (MyViewport == 0)  
@@ -242,41 +244,40 @@ void MapScroll::mousePressEvent(QMouseEvent * event)
 {
 	if (hMap)
 	{
-		if (event->button())
+		if(event->button())
 		{
 
-				pe = event->pos();
-				screenX= pe.x(); 
-				screenY= pe.y(); 
-				screenX+= horizontalScrollBar()->value();
-				screenY+= verticalScrollBar()->value();
-				map->mapPictureToPlane(hMap, &screenX, &screenY);
+			pe = event->pos();
+			screenX= pe.x(); 
+			screenY= pe.y(); 
+			screenX+= horizontalScrollBar()->value();
+			screenY+= verticalScrollBar()->value();
+			map->mapPictureToPlane(hMap, &screenX, &screenY);
+			pe = event->globalPos();
 			
-			if (event->button() == Qt::RightButton)  //правая клавиша мыши
+			QStringList semList = getObjectIdAndTypeInfo(&screenX, &screenY);
+			if(!semList.isEmpty())
 			{
-				QStringList list = getHobj(&screenX, &screenY);
-				long int id_odject = list.at(0).toInt();
-				long int semantic_flag = list.at(1).toInt();
-				long int id_coordinates = list.at(2).toInt();
-				pe = event->globalPos();
-				switch (flag)
-				{
-					case 0: emit signal_for_change_scale(pe); break;
-					case 1: emit signal_for_right_button(id_odject, pe, semantic_flag, id_coordinates); break;
+				long int idOdject = semList.at(0).toInt();
+				long int objectType = semList.at(1).toInt();
+				
+				if (event->button() == Qt::LeftButton)//левая клавиша мыши
+				{					
+					emit leftButtonClicked(pe,idOdject,objectType); return;	
 				}
-				flag=0;
+				if (event->button() == Qt::RightButton)  //правая клавиша мыши
+				{
+					emit rightButtonClicked(pe,idOdject,objectType); return;	
+				}
+			
 			}
-
-			if (event->button() == Qt::LeftButton)//левая клавиша мыши
-			{					
-				switch (number_action)
+			else
+			{
+				if (event->button() == Qt::RightButton)  //правая клавиша мыши
 				{
-				 case 0: findObject(&screenX, &screenY); return;
-				 case 1: changeObjCoord(); return;
-				 case 2: changeHallCoord(); return;
-				 case 3: appointWeapon(&screenX, &screenY); return;
-				 case 4: changeAngleWithMouse(&screenX, &screenY); return;
+					emit rightButtonClicked(pe,0,0); return; //клик на пустом метсе (где нет объектов)	
 				}
+				return;
 			}
 		}
 	}
@@ -347,12 +348,42 @@ QStringList	MapScroll::getHobj(double *x, double *y)
 		return list;
 }
 
-void MapScroll::changeFrame()
+//=====================================================================
+//===== Метод возвращает список значений семантик знака с ключами: ====
+//===== 17501 - idObject; 17502 - тип объекта =========================
+//=====================================================================
+QStringList	MapScroll::getObjectIdAndTypeInfo(double *x, double *y)
 {
-	dframe.X1 = screenX+50;
-	dframe.X2 = screenX-50;
-	dframe.Y1 = screenY+50;
-	dframe.Y2 = screenY-50;
+	QStringList semList;
+	info=map->mapCreateObject(hMap);
+	changeFrame(50);  // расширение области поиска объекта
+	info=map->mapWhatObject(hMap,info,&frame,WO_LAST,PP_PLANE);
+
+	double idObject, objectType;
+	int idObjectSemNumber, objectTypeSemNumber;
+
+	if(info)
+	{
+		idObject = map->mapSemanticCodeDoubleValue(info,ID_OBJECT,1);
+		objectType = map->mapSemanticCodeDoubleValue(info,OBJECT_TYPE,1);
+		
+
+		semList.append(QString::number((int)idObject));
+		semList.append(QString::number((int)objectType));
+	}
+	return semList;
+}
+
+
+//================================================================================
+//==== Метод изменения области поиска объекта, начиная от координат клика мыши ===
+//================================================================================
+void MapScroll::changeFrame(int pixels)
+{
+	dframe.X1 = screenX+pixels;
+	dframe.X2 = screenX-pixels;
+	dframe.Y1 = screenY+pixels;
+	dframe.Y2 = screenY-pixels;
 	frame = dframe;
 }
 
@@ -365,7 +396,8 @@ HSITE		MapScroll::openSit(HMAP hMap, const char * mapname, const char * rscname)
 
 	createsite.MapType=COUNTGEOG;//обзорно-географическая
 	createsite.MaterialProjection=CONICALORTHOMORPHIC;//каноническая равноугольная
-	long int scale = 5000000;//mapwin->getScale();
+	//long int scale = 5000000;//mapwin->getScale();
+	long int scale = getScale();
 	createsite.Scale = scale;
 	map->mapCreateAndAppendSite(hMap,mapname,rscname,&createsite);
 	return  map->mapOpenSiteForMap(hMap,mapname,0);
@@ -386,7 +418,9 @@ void		MapScroll::closeSit(HMAP hMap, HSITE hsite)
 		flag2=0;
 }
 
-//Закрытие пользовательской карты по её имени (пути к файлу)
+//======================================================================
+//==== Закрытие пользовательской карты по её имени (пути к файлу) ======
+//======================================================================
 void MapScroll::closeSitByName(HMAP hMap, const char * sitName)
 {
 	map->mapCloseSiteForMapByName(hMap,sitName);
