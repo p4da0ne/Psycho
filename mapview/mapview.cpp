@@ -845,10 +845,10 @@ void MapView::showCheckedObjects()
 		openMapFromSettings();
 	}
 	//------ Получение координат углов карты ---------
-	/*double x1 = mapwin->getMapX1(mapwin->hMap);
+	double x1 = mapwin->getMapX1(mapwin->hMap);
 	double y1 = mapwin->getMapY1(mapwin->hMap);
 	double x2 = mapwin->getMapX2(mapwin->hMap);
-	double y2 = mapwin->getMapY2(mapwin->hMap);*/
+	double y2 = mapwin->getMapY2(mapwin->hMap);
 	//-------------------------------------------------
 
 	QString rscPath = settings->value("/mapSettings/rscPath","").toString();
@@ -868,7 +868,7 @@ void MapView::showCheckedObjects()
 		//показать средства СМИ
 		closeSitByName(smiMeansSitName);
 		HSITE smiMeansSite = openMapSit(smiMeansSitName,rscPath);
-		QList<SignData*> smiMeansSigns = model->getSmiMeans();
+		QList<SignData*> smiMeansSigns = model->getSmiMeans(x1,y1,x2,y2);
 		createSitObjects(smiMeansSite, smiMeansSigns);
 	}
 	else
