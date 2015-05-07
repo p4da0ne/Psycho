@@ -17,6 +17,7 @@ class MyLabel;
 #include <QSqlRelationalTableModel>
 #include "mylabel.h"
 
+
 class Add_elements_dialog : public QDialog
 {
 	Q_OBJECT

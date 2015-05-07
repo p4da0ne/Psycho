@@ -20,7 +20,7 @@ public:
     ~MapScroll();
     int				mapOpen( const char *name );
     void			changePos(long int dx,long int dy);
-    void			changeScale(float сhange);
+    void			changeScale(float change);
     void			closeMap();
 	void			changeFrame(int pixels=50);
 	void			findObject(double *x, double *y);
@@ -139,7 +139,7 @@ public:
 	HOBJ							hObj;
 	QPoint							pe;
 	double							screenX, screenY;
-	QList <QList<double>>			war_line_coord;
+    QList <QList<double> >			war_line_coord;
 	//delete
 	long int						flag1; //true - если семантика 17501 в объекте заполнена
 	bool							flag2; //true - если открыт хоть один пользовательский слой

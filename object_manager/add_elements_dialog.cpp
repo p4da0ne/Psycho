@@ -112,6 +112,7 @@ Add_elements_dialog::Add_elements_dialog(int type_element,int id_object,QWidget 
 			 			
 			 label_8 = new QLabel("Аудитория СМИ:");
 			 lineEdit_aud = new QLineEdit;
+
 			 label_8->setBuddy(lineEdit_aud);
 			 label_9 = new QLabel("Тираж СМИ:");
 			 lineEdit_tirag = new QLineEdit;
@@ -2311,18 +2312,26 @@ void Add_elements_dialog::add_smi()
 		QString freq_smi = lineEdit_freq->text();
 		
 
-/*		if(pavComboBox->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Выберите тип программно-аппаратного воздействия "),QMessageBox::Ok );return;}
-		else if(vul_pavComboBox->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Выберите уязвимость "),QMessageBox::Ok );return;}
-		else if(itv_pavComboBox->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Выберите воздействие "),QMessageBox::Ok );return;}
-		else if (lineEdit->text() == "")
-		{QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите наименование программно-аппаратного воздействия "),QMessageBox::Ok );return;}
-		else if (lineEdit_2->text() == "")
-		{QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите нарушаемые ТО "),QMessageBox::Ok );return;}
-		else if (textEdit->toPlainText() == "")
-		{QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите характеристику нарушения "),QMessageBox::Ok );return;}
-		else if (textEdit_2->toPlainText() == "")
-		{QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите нанесенный(планируемый) ущерб "),QMessageBox::Ok );return;}
-*/		
+//        if(comboBox->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Выберите тип СМИ "),QMessageBox::Ok );return;}
+//        else if(comboBox_2->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Выберите представительство СМИ "),QMessageBox::Ok );return;}
+//        else if(comboBox_3->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Выберите способ вещания "),QMessageBox::Ok );return;}
+//        else if (lineEdit_name->text() == "")
+//        {QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите наименование СМИ "),QMessageBox::Ok );return;}
+//        else if (lineEdit_broad->text() == "")
+//        {QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите мощность сигнала "),QMessageBox::Ok );return;}
+//        else if (textEdit_desc->toPlainText() == "")
+//        {QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите описание СМИ "),QMessageBox::Ok );return;}
+//        else if (lineEdit_site->text() == "")
+//        {QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите сайт СМИ "),QMessageBox::Ok );return;}
+//        else if (lineEdit_aud->text() == "")
+//        {QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите аудиторию СМИ "),QMessageBox::Ok );return;}
+//        else if (lineEdit_tirag->text() == "")
+//        {QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите тираж СМИ "),QMessageBox::Ok );return;}
+//        else if (lineEdit_freq->text() == "")
+//        {QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите частоту вещания СМИ "),QMessageBox::Ok );return;}
+
+
+
 		if (in_id_object<1) return;
 		QMap<QString,QString> map;
 		map.clear();
@@ -2348,7 +2357,7 @@ void Add_elements_dialog::add_smi()
 			map.insert("id_region",QString::number(in_id_object));
 			int id_smi_region=insert_in_table("smi_region",map,"id_smi_region");
 			if(id_smi_region>0){
-				this->done(id_smi);
+                this->done(id_smi_region);
 			}else{
 				this->done(0);
 			}
