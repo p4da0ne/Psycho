@@ -22,8 +22,8 @@ public:
 	QList<SignData*> getSmiMeans(long int hMap,double x1,double y1,double x2,double y2);
 	QList<SignData*> getFormationsMeans(long int hMap,double x1,double y1,double x2,double y2);
 	QList<SignData*> getGroupsMeans(long int hMap,double x1,double y1,double x2,double y2);
-	QList<SignData*> getFormations();
-	QList<SignData*> getSpecialConditions();
+	QList<SignData*> getFormations(long int hMap,double x1,double y1,double x2,double y2);
+	QList<SignData*> getSpecialConditions(long int hMap,double x1,double y1,double x2,double y2);
 
 	enum SignObjectsTypes {FORMATIONS = 1, SPECIAL_CONDITIONS = 2, SMI_MEANS = 3, FORMATIONS_MEANS = 4, GROUPS_MEANS = 5};
 };
