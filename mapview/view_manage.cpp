@@ -14,9 +14,7 @@ ViewManage::ViewManage(QObject *parent)
 {
 	//MainCodec = QTextCodec::codecForName("CP1251");
   	
-	mapwin = new MapScroll();
 	
-
 	
 	
 }
@@ -71,7 +69,7 @@ Coord* ViewManage::WGStoPlane(long int hMap,Coord *coordObject)
 QList<SignData*> ViewManage::getSmiMeans(long int hMap,double x1,double y1,double x2,double y2)
 {
 	QList<SignData*> smiMeansList;
-
+///
 	QSqlQuery query;
 	QString str=QString("SELECT DISTINCT name_type_mpo_pso, coordinates.latitude_wgs_84_g,coordinates.latitude_wgs_84_m,coordinates.latitude_wgs_84_s,coordinates.longitude_wgs_84_g, \
 						coordinates.longitude_wgs_84_m,coordinates.longitude_wgs_84_s, \
@@ -79,6 +77,7 @@ QList<SignData*> ViewManage::getSmiMeans(long int hMap,double x1,double y1,doubl
 						FROM mpo_pso, coord_mpo_pso cmp, coordinates, type_mpo_pso \
 						WHERE cmp.id_coordinates=coordinates.id_coordinates \
 						AND mpo_pso.id_type_mpo_pso=type_mpo_pso.id_type_mpo_pso \
+						AND mpo_pso.id_mpo_pso = cmp.id_mpo_pso \
 						AND type_mpo_pso.excode_type_mpo_pso <> '' \
 						AND mpo_pso.id_smi > 0 ");
 	if(query.exec(str))
@@ -94,14 +93,16 @@ QList<SignData*> ViewManage::getSmiMeans(long int hMap,double x1,double y1,doubl
 			double long_wgs_s = query.value(rec.indexOf("longitude_wgs_84_s")).toDouble();
 					
 			///получить из запроса 6 параметров координат WGS
+
 			Coord c1(wgs_g,wgs_m,wgs_s,long_wgs_g,long_wgs_m,long_wgs_s);
 			
 			Coord *c2 = WGStoPlane(hMap,&c1);		
 			
 			double x_coord = c2->getX();
 			double y_coord = c2->getY();
+
 			
-			if(((x_coord > x1) && (y_coord > y1)) && ((x_coord < x2) && (y_coord < y2))) continue;	
+			if(!((x_coord > x1) && (y_coord > y1) && (x_coord < x2) && (y_coord < y2))) continue;	
 			
 			QString name_type_mpo_pso = query.value(rec.indexOf("name_type_mpo_pso")).toString();
 			QString signCode = query.value(rec.indexOf("excode_type_mpo_pso")).toString();

@@ -27,19 +27,21 @@ public:
 	void			mouseMoveEvent(QMouseEvent * event);
 	void			selectAllObject();
 private:
-	void initToolButtonsPanel();
-	void initSaturnLeftMenu();
+	void initToolButtonsPanel();																//++++++
+	void initSaturnLeftMenu();																	//++++++			
 
-	bool			openMap(QString mapFilepath = "");
-	HSITE			openMapSit(QString sitFileName, QString rscFilePath);
-	void			closeSitByName(QString sitFileName);
+	bool			openMap(QString mapFilepath = "");											//++++++
+	HSITE			openMapSit(QString sitFileName, QString rscFilePath);						//++++++
+	void			closeSitByName(QString sitFileName);										//++++++
 
 	//------ Метод для отрисовки условных знаков на пользовательской карте -------------
-	void			createSitObjects(HSITE hSite,QList<SignData*> signsList);
+	void			createSitObjects(HSITE hSite,QList<SignData*> signsList);					//++++++
 	//------------------------------------------------------------------------
-	
+	QMenu* createGreateLessScaleMenu();															//++++++
+
 	
 	void			showInformationDialog(QString information);
+	
 	void			setAdditionalInfo();
 	void			setStatusInfo(QString status);
 
@@ -53,8 +55,8 @@ private:
 	//int				get_targeting_version();
 	//int				get_operation_combo();
 	//int				getDirectionCombo();
-	void			showOpenMapDialog();
-	void			shortOfGunDialog();
+	void			showOpenMapDialog();					
+	void			shortOfGunDialog();			
 	//inline bool		get_object_checkbox();
 	//inline bool		get_weapon_checkbox();
 	//inline bool		get_corr_checkbox();
@@ -80,7 +82,9 @@ public slots://на запросы
 	void			showInfoAboutObject();
 
 	void			mouseRightMenu(long int id_obj, QPoint pe, int semantic_flag, long int id_coordinates);
-	void			mouseRightSimpleMenu(QPoint pe);
+	
+
+
 	void			showPositionWGSMouseSlot(double X, double Y, double H=0);
 	void			showPositionHallMouseSlot(double X, double Y, double H=0);
 	void			showAppointMouseSlot(long int id_object);
@@ -101,9 +105,22 @@ private slots:
 	void			changeContrastUp();
 	void			changeContrastDown();
 	//==========================
+	//------------ Обработчики нажатий на кнопки мыши (общие для разных программных комплексов) ------------------
 	void			slotMouseLeftButtonClicked(QPoint pe, int idObject, int objectType);
 	void			slotMouseRightButtonClicked(QPoint pe, int idObject, int objectType);
+	void			mouseRightSimpleMenu(QPoint pe);
 	//======================================================
+
+	//---- Меню по нажатию правой кнопки мыши (специфичные для конкретного программного комплекса) -------------------
+	void			mouseRightFormationsMenu(QPoint pe,int idObject, int objectType);
+	void			mouseRightSpecialConditionsMenu(QPoint pe,int idObject, int objectType);
+	void			mouseRightSmiMeansMenu(QPoint pe,int idObject, int objectType);
+	void			mouseRightFormationsMeansMenu(QPoint pe,int idObject, int objectType);
+	void			mouseRightGroupsMeansMenu(QPoint pe,int idObject, int objectType);
+	//----------------------------------------------------------------------
+
+
+
 	void			showShortInformationObject(long int id_obj, long int flag);
 	void			moreButtonClicked();
 	void			test();

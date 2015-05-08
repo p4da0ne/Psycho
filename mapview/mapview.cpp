@@ -422,12 +422,18 @@ bool MapView::openMap(QString mapFilepath)
 	if(mapwin->mapOpen(filePath.toLocal8Bit().data()))
 	{
 		//показать середину карты при ее открытии
-		long int b, sb;
-		b=mapwin->verticalScrollBar()->maximum();
+		//long int b, sb;
+		int width = mapwin->width();
+		int height = mapwin->height();
+
+		int width_middle = width/2;
+		int heigth_middle = height/2;
+		/*b=mapwin->verticalScrollBar()->maximum();
 		sb=mapwin->verticalScrollBar()->value();
-		sb=(b-sb)/2;
-		mapwin->horizontalScrollBar()->setValue(0);
-		mapwin->verticalScrollBar()->setValue(sb);
+		sb=(b-sb)/2;*/
+
+		mapwin->horizontalScrollBar()->setValue(width_middle);
+		mapwin->verticalScrollBar()->setValue(heigth_middle);
 		mapwin->updateScreen();
 		setAdditionalInfo();
 
@@ -812,6 +818,34 @@ HSITE MapView::openMapSit(QString sitFileName, QString rscFilePath)
 }
 
 
+//======================================================================================
+//====== Метод формирует меню увеличения/уменьшения масштаба отображения карты =========
+//======================================================================================
+QMenu* MapView::createGreateLessScaleMenu()
+{
+	QMenu *mouse_menu = new QMenu; 
+	QAction *great_scale_act = new QAction("Увеличить масштаб карты  \">\"", this);
+	QAction *less_scale_act = new QAction("Уменьшить масштаб карты  \"<\"", this);
+
+	mouse_menu->addAction(great_scale_act); 
+	connect(great_scale_act, SIGNAL(triggered()), this, SLOT(greateScale()));
+
+	mouse_menu->addAction(less_scale_act); 
+	connect(less_scale_act, SIGNAL(triggered()), this, SLOT(lessScale()));
+	
+	return mouse_menu;
+}
+
+//=================================================================================================
+//========= Меню по клику правой клавишей мыши в любом месте карты ================================
+//=================================================================================================
+void MapView::mouseRightSimpleMenu(QPoint pe)
+{
+	mouse_menu = createGreateLessScaleMenu(); 
+	mouse_menu->exec(pe);
+}
+
+
 //============================================================================
 //== Метод отображения на карте объектов с помощью условных знаков ===========
 //== Первый параметр - номер пользовательской карты (*.sit), второй ==========
@@ -826,6 +860,10 @@ void MapView::createSitObjects(HSITE hSite, QList<SignData*> signsList)
 								 &signsList.at(i)->getSemanticList());
 	}
 }
+
+
+
+
 
 
 
@@ -868,7 +906,7 @@ void MapView::showCheckedObjects()
 		//показать средства СМИ
 		closeSitByName(smiMeansSitName);
 		HSITE smiMeansSite = openMapSit(smiMeansSitName,rscPath);
-		QList<SignData*> smiMeansSigns = model->getSmiMeans(x1,y1,x2,y2);
+		QList<SignData*> smiMeansSigns = model->getSmiMeans(mapwin->hMap,x1,y1,x2,y2);
 		createSitObjects(smiMeansSite, smiMeansSigns);
 	}
 	else
@@ -1041,18 +1079,19 @@ void MapView::showCheckedCalcResults()
 //============================================================================
 void MapView::slotMouseLeftButtonClicked(QPoint pe, int idObject, int objectType)
 {
+	if(!idObject || !objectType) return;
+	
 	QString str;
 	str = "Идентификатор объекта: " + QString::number(idObject) + "\n"; 
 	str = str + "Тип объекта: " + QString::number(objectType); 
 	
-	errors_message(str);
-
+	showInformationDialog(str);
 }
 
 
 
 //============================================================================
-//==== Слот обработки нажатия правой кнопки мыши ==============================
+//============ Слот обработки нажатия правой кнопки мыши =====================
 //============================================================================
 void MapView::slotMouseRightButtonClicked(QPoint pe, int idObject, int objectType)
 {
@@ -1065,23 +1104,23 @@ void MapView::slotMouseRightButtonClicked(QPoint pe, int idObject, int objectTyp
 		switch(objectType)
 		{
 			case ViewManage::FORMATIONS:
-				//
+				mouseRightFormationsMenu(pe,idObject,objectType);
 				break;
 			
 			case ViewManage::SPECIAL_CONDITIONS:
-				///
+				mouseRightSpecialConditionsMenu(pe,idObject,objectType);
 				break;
 			
 			case ViewManage::SMI_MEANS:
-				////
+				mouseRightSmiMeansMenu(pe,idObject,objectType);
 				break;
 			
 			case ViewManage::FORMATIONS_MEANS:
-				///
+				mouseRightFormationsMeansMenu(pe,idObject,objectType);
 				break;
-			
+							
 			case ViewManage::GROUPS_MEANS:
-				///
+				mouseRightGroupsMeansMenu(pe,idObject,objectType);
 				break;
 		}
 	
@@ -1092,16 +1131,96 @@ void MapView::slotMouseRightButtonClicked(QPoint pe, int idObject, int objectTyp
 
 }
 
+//===================================================================================
+//===== Метод создания и отображения контекстного меню для формирования =============
+//===================================================================================
+void MapView::mouseRightFormationsMenu(QPoint pe,int idObject, int objectType)
+{
+	//------------------------------------------------------------------------------
+	mouse_menu = createGreateLessScaleMenu(); 
+	mouse_menu->exec(pe);
+
+	//--- Добавление в меню специфичных действий для фомирования ---------
+
+}
+
+
+//===================================================================================
+//===== Метод создания и отображения контекстного меню для особых условий =============
+//===================================================================================
+void MapView::mouseRightSpecialConditionsMenu(QPoint pe,int idObject, int objectType)
+{
+	//------------------------------------------------------------------------------
+	mouse_menu = createGreateLessScaleMenu(); 
+	mouse_menu->exec(pe);
+
+	//--- Добавление в меню специфичных действий для особых условий ---------
+
+}
+
+
+//===================================================================================
+//===== Метод создания и отображения контекстного меню для средств СМИ ==============
+//===================================================================================
+void MapView::mouseRightSmiMeansMenu(QPoint pe,int idObject, int objectType)
+{
+	//------------------------------------------------------------------------------
+	mouse_menu = createGreateLessScaleMenu(); 
+	mouse_menu->exec(pe);
+
+	//--- Добавление в меню специфичных действий для средств СМИ ---------
+
+}
+
+
+//===================================================================================
+//===== Метод создания и отображения контекстного меню для средств формирований =====
+//===================================================================================
+void MapView::mouseRightFormationsMeansMenu(QPoint pe,int idObject, int objectType)
+{
+	//------------------------------------------------------------------------------
+	mouse_menu = createGreateLessScaleMenu(); 
+	mouse_menu->exec(pe);
+
+	//--- Добавление в меню специфичных действий для средств формирований ---------
+
+}
+
+
+//===================================================================================
+//===== Метод создания и отображения контекстного меню для средств организаций ======
+//===================================================================================
+void MapView::mouseRightGroupsMeansMenu(QPoint pe,int idObject, int objectType)
+{
+	//------------------------------------------------------------------------------
+	mouse_menu = createGreateLessScaleMenu(); 
+	mouse_menu->exec(pe);
+
+	//--- Добавление в меню специфичных действий для средств организаций ----------
+
+}
 
 
 
 
 
-
-
-
-
-
+//===============================================================================
+//============== Диалоговое окно с информацией об объекте =======================
+//===============================================================================
+void MapView::showInformationDialog(QString information)
+{
+	create_object_dialog = new QDialog;
+	create_object_dialog->setMinimumSize(250,150);
+	create_object_dialog->setWindowTitle("Информация об объекте");
+	QLabel * info_label = new QLabel(information);
+	info_label->setAlignment(Qt::AlignCenter);
+	QHBoxLayout *hbox_layout = new QHBoxLayout;  
+	hbox_layout->addStretch();
+	hbox_layout->addWidget(info_label);
+	hbox_layout->addStretch();
+	create_object_dialog->setLayout(hbox_layout);		
+	create_object_dialog->exec();
+}
 
 
 
@@ -2073,21 +2192,7 @@ void	 MapView::mouseRightMenu(long int id_obj, QPoint pe, int semantic_flag, lon
 		}	
 		mouse_menu->exec(pe);
 }
-//меню по клику правой клавишей мыши в любом месте
-void	 MapView::mouseRightSimpleMenu(QPoint pe)
-{
-		mouse_menu = new QMenu(this); 
-		QAction *great_scale_act = new QAction("Увеличить масштаб карты  \">\"", this);
-		QAction *less_scale_act = new QAction("Уменьшить масштаб карты  \"<\"", this);
 
-			mouse_menu->addAction(great_scale_act); 
-			connect(great_scale_act, SIGNAL(triggered()), this, SLOT(greateScale()));
-
-			mouse_menu->addAction(less_scale_act); 
-			connect(less_scale_act, SIGNAL(triggered()), this, SLOT(lessScale()));
-		//mouse_menu->addAction("&DeleteObject");  
-		mouse_menu->exec(pe);
-}
 
 //диалоговое окно для перемещения объекта c настоящими координатами
 void	 MapView::changeObjectCoord()
@@ -2395,20 +2500,7 @@ void	 MapView::moreButtonClicked()
 		secondary_group_box->show();
 		more_but->hide();
 }
-//
-void	 MapView::showInformationDialog(QString information)
-{
-	create_object_dialog = new QDialog;
-	create_object_dialog ->setWindowTitle("Информация об объекте");
-	QLabel * info_label1 = new QLabel(information);
-	info_label1->setAlignment(Qt::AlignCenter);
-	QHBoxLayout *hbox1_layout = new QHBoxLayout;  
-	hbox1_layout->addStretch();
-	hbox1_layout->addWidget(info_label1);
-	hbox1_layout->addStretch();
-	create_object_dialog->setLayout(hbox1_layout);		
-	create_object_dialog->exec();
-}
+
 
 //отображать внизу карты в стаусе
 void	 MapView::setStatusInfo(QString status)

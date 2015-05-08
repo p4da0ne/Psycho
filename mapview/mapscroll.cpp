@@ -275,7 +275,7 @@ void MapScroll::mousePressEvent(QMouseEvent * event)
 			{
 				if (event->button() == Qt::RightButton)  //правая клавиша мыши
 				{
-					emit rightButtonClicked(pe,0,0); return; //клик на пустом метсе (где нет объектов)	
+					emit rightButtonClicked(pe,0,0); return; //клик на пустом месте (где нет объектов)	
 				}
 				return;
 			}
