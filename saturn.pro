@@ -15,7 +15,8 @@ SUBDIRS += \
         db_saturn \
         supporting_tables \
         object_manager \
-        mainform
+        mainform \
+		signs_edit
 	
 
 INSTALLS += transl
