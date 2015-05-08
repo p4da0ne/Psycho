@@ -18,11 +18,10 @@ class ViewManage : public QObject
 	
 public:
 	Coord * WGStoPlane(long int hMap,Coord *coordObject);
-	
-	MapScroll *mapwin;
+
 	QList<SignData*> getSmiMeans(long int hMap,double x1,double y1,double x2,double y2);
-	QList<SignData*> getFormationsMeans();
-	QList<SignData*> getGroupsMeans();
+	QList<SignData*> getFormationsMeans(long int hMap,double x1,double y1,double x2,double y2);
+	QList<SignData*> getGroupsMeans(long int hMap,double x1,double y1,double x2,double y2);
 	QList<SignData*> getFormations();
 	QList<SignData*> getSpecialConditions();
 

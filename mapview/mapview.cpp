@@ -920,7 +920,7 @@ void MapView::showCheckedObjects()
 		//показать средства формирований
 		closeSitByName(formationMeansSitName);
 		HSITE formationMeansSite = openMapSit(formationMeansSitName,rscPath);
-		QList<SignData*> formationsMeansSigns = model->getFormationsMeans();
+		QList<SignData*> formationsMeansSigns = model->getFormationsMeans(mapwin->hMap,x1,y1,x2,y2);
 		createSitObjects(formationMeansSite, formationsMeansSigns);
 	}
 	else
@@ -934,7 +934,7 @@ void MapView::showCheckedObjects()
 		//показать средства организаций
 		closeSitByName(organizationMeansSitName);
 		HSITE organizationMeansSite = openMapSit(organizationMeansSitName,rscPath);
-		QList<SignData*> groupsMeansSigns = model->getGroupsMeans();
+		QList<SignData*> groupsMeansSigns = model->getGroupsMeans(mapwin->hMap,x1,y1,x2,y2);
 		createSitObjects(organizationMeansSite, groupsMeansSigns);
 	}
 	else
