@@ -18,6 +18,7 @@
 #include "dataaccess.h"
 #include "mapsettingsdialog.h"
 #include "dbbackup.h"
+#include "signs_edit.h"
 
 
 namespace Ui
@@ -53,6 +54,7 @@ private slots:
 	void show_map_form();
 	void show_supporting_tables_form();
 	void show_object_manager_form();
+    void show_signs_edit();
 	void slotOpenMapSettingsDialog();
 	void slotOpenBackupDbDialog();
 	//void show_dialog_add_new_region(int id_parent,bool is_parent_ko);
@@ -67,6 +69,7 @@ private:
 	QAction * sett_act2;
 	QAction * sett_act3;
 	QAction * sett_act4;
+    QAction * sett_act5;
 
 	QMenu * DB_work_menu;
 	QMenu * oper_menu;
@@ -100,6 +103,7 @@ private:
 	void add_menu_manage_users(QMenu *settings_menu);
 	void add_menu_map_settings(QMenu *settings_menu);
 	void add_menu_backup_db(QMenu *settings_menu);
+    void add_menu_signs_edit(QMenu *settings_menu);
 	void add_menu_exit(QMenu *menu);
 	void add_menu_change_user(QMenu *menu);
 	void add_menu_enter_system(QMenu *menu);
