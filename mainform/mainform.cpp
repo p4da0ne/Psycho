@@ -251,10 +251,8 @@ void Mainform::init_menu(int id_user_group)
 			add_menu_manage_users(settings_menu);
 			add_menu_map_settings(settings_menu);
 			add_menu_backup_db(settings_menu);
+            add_menu_signs_edit(settings_menu);
 			UI->menuBar->addMenu(settings_menu);
-
-		//	DB_work_menu = new QMenu("Работа с БД");
-		//	UI->menuBar->addMenu(DB_work_menu);
 
 			oper_menu = new QMenu("Оперативная работа");
 			add_menu_supporting_tables(oper_menu);
@@ -268,7 +266,7 @@ void Mainform::init_menu(int id_user_group)
 			UI->menuBar->clear();
 			menu = new QMenu("Файл");
 			add_menu_change_user(menu);
-			add_menu_exit(menu);		
+            add_menu_exit(menu);
 			UI->menuBar->addMenu(menu);
 
 			settings_menu = new QMenu("Настройки");
@@ -276,10 +274,8 @@ void Mainform::init_menu(int id_user_group)
 			add_menu_manage_users(settings_menu);
 			add_menu_map_settings(settings_menu);
 			add_menu_backup_db(settings_menu);
+            add_menu_signs_edit(settings_menu);
 			UI->menuBar->addMenu(settings_menu);
-
-		//	DB_work_menu = new QMenu("Работа с БД");
-		//	UI->menuBar->addMenu(DB_work_menu);
 
 			oper_menu = new QMenu("Оперативная работа");
 			add_menu_supporting_tables(oper_menu);
@@ -295,13 +291,9 @@ void Mainform::init_menu(int id_user_group)
 			menu = new QMenu("Файл");
 			add_menu_change_user(menu);
 			add_menu_exit(menu);
-			UI->menuBar->addMenu(menu);
-			
-	//		DB_work_menu = new QMenu("Работа с БД");
-		//	UI->menuBar->addMenu(DB_work_menu);
 
-			oper_menu = new QMenu("Оперативная работа");
-		//	add_menu_supporting_tables(oper_menu);
+			UI->menuBar->addMenu(menu);
+            oper_menu = new QMenu("Оперативная работа");
 			add_menu_object_manager(oper_menu);
 			add_mapwork(oper_menu);
 			UI->menuBar->addMenu(oper_menu);

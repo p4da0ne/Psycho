@@ -62,8 +62,10 @@ void SignsEdit::show_object_types(){
     UI->object_types_treeView->setModel(model);
 }
 
-
-//===== Отображение информации о знаках выбранного типа объекта поражения =======
+/*!
+Отображение информации о знаках выбранного типа объектов
+void SignsEdit::show_signs_table(const QModelIndex &index)
+*/
 void SignsEdit::show_signs_table(const QModelIndex &index){
     //---------- Обработка нажатия на элемент дерева типов объектов поражения -----------
     int id_type = index.data(Qt::UserRole).toInt();
@@ -76,53 +78,66 @@ void SignsEdit::show_signs_table(const QModelIndex &index){
     //------------------------------------------------
 }
 
-
-//====== Построение таблицы знаков объекта поражения =========
+/*!
+Построение таблицы знаков объектов
+void SignsEdit::create_signs_table(const QModelIndex &index)
+*/
 void SignsEdit::create_signs_table(const QModelIndex &index)
 {
+    if(index.data(Qt::UserRole).type() == QVariant::String){
+        return;
+    }
     clear_tableWidget(UI->object_signs_table);
     UI->object_signs_table->setColumnCount(5);
     UI->object_signs_table->hideColumn(0);
     QStringList h_list;
     h_list << "" << tr("Sign") << tr("Code") << tr("Sign name") <<tr("Delete");
     UI->object_signs_table->setHorizontalHeaderLabels(h_list);
-    int id_sign = index.data(Qt::UserRole).toInt();
-
-    QSqlQuery query;
-    QString str = QString("select id_sign, sign_name, sign_key, sign_picture from signs where id_sign = %1").arg(id_sign);
-    if(!query.exec(str))
-    {
+    //ЗАпрос на выдачу id_sign из выбранной таблицы
+    QString table_type=index.parent().data(Qt::UserRole).toString();
+    QSqlQuery query,query_sign;
+    QString str = QString("select id_%1, name_%1, id_sign from %1 where id_%1 = %2").arg(table_type).arg(index.data(Qt::UserRole).toInt());
+    if(!query_sign.exec(str)){
         return;
     }
-    QSqlRecord rec = query.record();
-    int i = 0;
-
-    while(query.next())
+    while(query_sign.next())
     {
-        UI->object_signs_table->insertRow(i);
-        UI->object_signs_table->setRowHeight(i,80);
+        int id_sign = query.value(2).toInt();
+        query.clear();
+        str = QString("select id_sign, sign_name, sign_key, sign_picture from signs where id_sign = %1").arg(id_sign);
+        if(!query.exec(str))
+        {
+            return;
+        }
+        QSqlRecord rec = query.record();
+        int i = 0;
 
-        QString id_sign = query.value(rec.indexOf("id_sign")).toString();
-        QTableWidgetItem *item = new QTableWidgetItem(id_sign);
-        UI->object_signs_table->setItem(i,0,item);
+        while(query.next())
+        {
+            UI->object_signs_table->insertRow(i);
+            UI->object_signs_table->setRowHeight(i,80);
 
-        QPixmap pixmap;
-        pixmap.loadFromData( query.value(rec.indexOf("sign_picture")).toByteArray() );
-        QTableWidgetItem *foto_item = new QTableWidgetItem(QIcon(pixmap),"");
-        UI->object_signs_table->setItem(i,1,foto_item);
-        UI->object_signs_table->setIconSize(QSize(60,60));
+            QString id_sign = query.value(rec.indexOf("id_sign")).toString();
+            QTableWidgetItem *item = new QTableWidgetItem(id_sign);
+            UI->object_signs_table->setItem(i,0,item);
 
-        item = new QTableWidgetItem(query.value(rec.indexOf("sign_key")).toString());
-        UI->object_signs_table->setItem(i,2,item);
+            QPixmap pixmap;
+            pixmap.loadFromData( query.value(rec.indexOf("sign_picture")).toByteArray() );
+            QTableWidgetItem *foto_item = new QTableWidgetItem(QIcon(pixmap),"");
+            UI->object_signs_table->setItem(i,1,foto_item);
+            UI->object_signs_table->setIconSize(QSize(60,60));
 
-        item = new QTableWidgetItem(query.value(rec.indexOf("sign_name")).toString());
-        UI->object_signs_table->setItem(i,3,item);
+            item = new QTableWidgetItem(query.value(rec.indexOf("sign_key")).toString());
+            UI->object_signs_table->setItem(i,2,item);
 
-        QIcon icon(QString("./icons/close.png"));
-        item = new QTableWidgetItem(icon,"",0);
-        UI->object_signs_table->setItem(i,4,item);
+            item = new QTableWidgetItem(query.value(rec.indexOf("sign_name")).toString());
+            UI->object_signs_table->setItem(i,3,item);
 
-        i++;
+            QIcon icon(QString("./icons/close.png"));
+            item = new QTableWidgetItem(icon,"",0);
+            UI->object_signs_table->setItem(i,4,item);
+            i++;
+        }
     }
     UI->object_signs_table->resizeColumnsToContents();
     UI->object_signs_table->horizontalHeader()->setResizeMode(3,QHeaderView::Stretch);
@@ -133,10 +148,20 @@ void SignsEdit::create_signs_table(const QModelIndex &index)
 void SignsEdit::add_new_sign()
 {
     QModelIndex currentIndex=UI->object_types_treeView->currentIndex();
+    QString table_type;
+    if (currentIndex.data(Qt::UserRole).isNull()) {
+        QMessageBox msgBox;
+        msgBox.setText("Pleas, select one of type.");
+        msgBox.exec();
+        return;
+    }
     if (currentIndex.data(Qt::UserRole).type() == QVariant::String){
         QMessageBox msgBox;
-        msgBox.setText(tr("Please, select type of object."));
+        msgBox.setText("Pleas, select one of type.");
         msgBox.exec();
+        return;
+    }else{
+        table_type=UI->object_types_treeView->currentIndex().parent().data(Qt::UserRole).toString();
     }
     add_sign = new QDialog();
     add_sign->setMinimumSize(400,200);
@@ -193,14 +218,10 @@ void SignsEdit::add_new_sign()
     if(add_sign->exec() == QDialog::Accepted)
     {
         if((sign_filepath_edit->text() == "") || (sign_code_edit->text() == "") || (sign_name_edit->text() == "")) return;
+
         //------ По кнопке ОК добавление в БД нового знака для типа объекта --------
         QSqlQuery query;
-
         query.prepare("INSERT INTO signs (sign_key,sign_name,sign_picture) VALUES (?,?,?)");
-
-        int id_type = model->data(UI->object_types_treeView->currentIndex(),Qt::UserRole).toInt();
-        query.addBindValue(id_type);
-
         query.addBindValue(sign_code_edit->text());
         query.addBindValue(sign_name_edit->text());
 
@@ -225,6 +246,15 @@ void SignsEdit::add_new_sign()
         if(!query.exec())
         {
             QString s = query.lastError().text();
+        }
+        int id_sign = query.lastInsertId().toInt();
+        QString str_query=QString("UPDATE %1 SET id_sign = %3 WHERE id_%1 = %2").arg(table_type).arg(currentIndex.data(Qt::UserRole).toInt()).arg(id_sign);
+        if(!query.exec(str_query)){
+            QString s = query.lastError().text();
+            QMessageBox msgBox;
+            msgBox.setText(s);
+            msgBox.exec();
+            return;
         }
         create_signs_table(UI->object_types_treeView->currentIndex());
         return;
@@ -293,7 +323,7 @@ void SignsEdit::delete_sign(int row, int column)
 
     int id_sign= UI->object_signs_table->item(row,0)->text().toInt();
 
-    QString str = QString("DELETE FROM object_signs WHERE id_sign = %1").arg(id_sign);
+    QString str = QString("DELETE FROM signs WHERE id_sign = %1").arg(id_sign);
     if(!query.exec(str))
     {
         return;
@@ -311,7 +341,7 @@ void SignsEdit::save_changes()
 
     for(int i=0;i<row_count;i++)
     {
-        query.prepare("UPDATE object_signs SET sign_key = ?, sign_name = ? WHERE id_sign = ?");
+        query.prepare("UPDATE signs SET sign_key = ?, sign_name = ? WHERE id_sign = ?");
         query.addBindValue(UI->object_signs_table->item(i,2)->text());
         query.addBindValue(UI->object_signs_table->item(i,3)->text());
         query.addBindValue(UI->object_signs_table->item(i,0)->text().toInt());
@@ -352,7 +382,7 @@ void SignsEdit::add_type_to_model(QString str_query, QStandardItem *parent)
     while (query.next())
     {
         QStandardItem *item = new QStandardItem(query.value(1).toString());
-        int id_obj_type=query.value(0).toInt();
+        int id_obj_type=query.value(2).toInt();
         QString data_type_obj = QString::number(id_obj_type);
         item->setData(data_type_obj,Qt::UserRole);
         parent->appendRow(item);
