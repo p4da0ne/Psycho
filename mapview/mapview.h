@@ -38,8 +38,11 @@ private:
 	void			createSitObjects(HSITE hSite,QList<SignData*> signsList);					//++++++
 	//------------------------------------------------------------------------
 	QMenu* createGreateLessScaleMenu();															//++++++
+	QMenu* createObjectsListMenu(QList<QStringList> objectsList);							    //++++++
+	QMenu* createObjectsListComplexMenu(QList<QStringList> objectsList);											//++++++
 
-	
+
+
 	void			showInformationDialog(QString information);
 	
 	void			setAdditionalInfo();
@@ -104,15 +107,20 @@ private slots:
 	void			changeBrihgtDown();
 	void			changeContrastUp();
 	void			changeContrastDown();
+
+	void			slotObjectInfo(); //слот - обработчик выбора в контекстном меню объекта
+	void			slotObjectDescription();
+	void			slotObjectReport();
 	//==========================
 	//------------ Обработчики нажатий на кнопки мыши (общие для разных программных комплексов) ------------------
-	void			slotMouseLeftButtonClicked(QPoint pe, int idObject, int objectType);
-	void			slotMouseRightButtonClicked(QPoint pe, int idObject, int objectType);
+	void			slotMouseLeftButtonClicked(QPoint pe, QList<QStringList> objectsList);
+	void			slotMouseRightButtonClicked(QPoint pe, QList<QStringList> objectsList);
 	void			mouseRightSimpleMenu(QPoint pe);
 	//======================================================
 
 	//---- Меню по нажатию правой кнопки мыши (специфичные для конкретного программного комплекса) -------------------
-	void			mouseRightFormationsMenu(QPoint pe,int idObject, int objectType);
+	//void			mouseRightFormationsMenu(QPoint pe,int idObject, int objectType);
+	QMenu*			createFormationsMenu(QStringList objInfo);
 	void			mouseRightSpecialConditionsMenu(QPoint pe,int idObject, int objectType);
 	void			mouseRightSmiMeansMenu(QPoint pe,int idObject, int objectType);
 	void			mouseRightFormationsMeansMenu(QPoint pe,int idObject, int objectType);
