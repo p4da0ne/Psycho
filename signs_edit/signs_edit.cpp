@@ -3,6 +3,7 @@
 #include <QFileDialog>
 #include <QLineEdit>
 #include <QToolButton>
+#include "ui_signs_edit.h"
 
 SignsEdit::SignsEdit(QDialog *parent, Qt::WFlags flags)
     : QDialog(parent, flags),

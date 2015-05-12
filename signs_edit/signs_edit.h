@@ -3,7 +3,7 @@
 
 #include <QtGui/QDialog>
 #include "config_signs_edit.h"
-#include "ui_signs_edit.h"
+#include <QLabel>
 #include <QSqlQuery>
 #include <QTableWidgetItem>
 #include <QSqlRecord>
@@ -12,10 +12,11 @@
 #include <QHeaderView>
 #include <QToolButton>
 
+
 namespace Ui
 {
 class signs_edit_form;
-};
+}
 
 
 class __EXPORT_SIGNS_EDIT SignsEdit : public QDialog
