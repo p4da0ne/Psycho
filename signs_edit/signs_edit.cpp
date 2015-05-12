@@ -31,28 +31,28 @@ void SignsEdit::show_object_types(){
     parentItem = model->invisibleRootItem();
 
     // Add type from type_ls table
-    QStandardItem *type_ls_item = new QStandardItem(tr ("type_ls"));
+    QStandardItem *type_ls_item = new QStandardItem("Типы формирований");
     type_ls_item->setData("type_ls",Qt::UserRole);
     parentItem->appendRow(type_ls_item);
     str_query="SELECT id_sign, name_type_ls, id_type_ls FROM type_ls order by id_type_ls";
     this->add_type_to_model(str_query,type_ls_item);
 
     // Add type from type_mpo_pso table
-    QStandardItem *type_mpo_pso_item = new QStandardItem(tr ("type_mpo_pso"));
+    QStandardItem *type_mpo_pso_item = new QStandardItem("Типы средств");
     type_mpo_pso_item->setData("type_mpo_pso",Qt::UserRole);
     parentItem->appendRow(type_mpo_pso_item);
     str_query="SELECT id_sign, name_type_mpo_pso, id_type_mpo_pso FROM type_mpo_pso order by id_type_mpo_pso";
     this->add_type_to_model(str_query,type_mpo_pso_item);
 
     // Add type from type_persones table
-    QStandardItem *type_persones_item = new QStandardItem(tr ("type_persones"));
+    QStandardItem *type_persones_item = new QStandardItem("Типы персоналий");
     type_persones_item->setData("type_persones",Qt::UserRole);
     parentItem->appendRow(type_persones_item);
     str_query="SELECT id_sign, name_type_persones, id_type_persones FROM type_persones order by id_type_persones";
     this->add_type_to_model(str_query,type_persones_item);
 
     // Add type from type_special_conditions table
-    QStandardItem *type_special_conditions_item = new QStandardItem(tr ("type_special_conditions"));
+    QStandardItem *type_special_conditions_item = new QStandardItem("Типы особых условий");
     type_special_conditions_item->setData("type_special_conditions",Qt::UserRole);
     parentItem->appendRow(type_special_conditions_item);
     str_query="SELECT id_sign, name_type_special_conditions id_type_special_conditions FROM type_special_conditions order by id_type_special_conditions";
@@ -64,18 +64,13 @@ void SignsEdit::show_object_types(){
 
 /*!
 Отображение информации о знаках выбранного типа объектов
+Обработка нажатия на элемент дерева типов объектов
 void SignsEdit::show_signs_table(const QModelIndex &index)
 */
 void SignsEdit::show_signs_table(const QModelIndex &index){
-    //---------- Обработка нажатия на элемент дерева типов объектов поражения -----------
-    int id_type = index.data(Qt::UserRole).toInt();
-
     QString type_name = index.data(Qt::DisplayRole).toString();
-
     UI->object_typename_label->setText(type_name);
-
     create_signs_table(index);
-    //------------------------------------------------
 }
 
 /*!
@@ -144,7 +139,10 @@ void SignsEdit::create_signs_table(const QModelIndex &index)
 }
 
 
-//======= Добавление знака для типа объекта ========
+/*!
+Добавление знака для типа объекта
+void SignsEdit::add_new_sign()
+*/
 void SignsEdit::add_new_sign()
 {
     QModelIndex currentIndex=UI->object_types_treeView->currentIndex();
@@ -245,7 +243,7 @@ void SignsEdit::add_new_sign()
 
         if(!query.exec())
         {
-            QString s = query.lastError().text();
+            QMessageBox::about(this,"Error",query.lastError().text());
         }
         int id_sign = query.lastInsertId().toInt();
         QString str_query=QString("UPDATE %1 SET id_sign = %3 WHERE id_%1 = %2").arg(table_type).arg(currentIndex.data(Qt::UserRole).toInt()).arg(id_sign);
@@ -264,7 +262,10 @@ void SignsEdit::add_new_sign()
 }
 
 
-//========== Функция очищения таблицы (удаление всех строк и столбцов) ===============
+/*!
+Функция очищения таблицы (удаление всех строк и столбцов)
+void SignsEdit::clear_tableWidget(QTableWidget *table)
+*/
 void SignsEdit::clear_tableWidget(QTableWidget *table)
 {
     int count_rows = table->rowCount();
@@ -275,32 +276,31 @@ void SignsEdit::clear_tableWidget(QTableWidget *table)
     }
 
     int count_cols = table->columnCount();
-    while(count_cols >= 0)
-    {
+    while(count_cols >= 0){
         table->removeColumn(count_cols);
         count_cols--;
     }
 }
 
-
-//====== Получение пути файла изображения знака объекта =============
+/*!
+Получение пути файла изображения знака объекта
+void SignsEdit::get_path()
+*/
 void SignsEdit::get_path()
 {
     QFileDialog *file_dlg = new QFileDialog(add_sign);
-
     QString filepath =  file_dlg->getOpenFileName(this,
                                                   tr("Open Image"), "", tr("Image Files (*.png *.jpg *.bmp)"));
-
     sign_filepath_edit->setText(filepath);
     add_sign->raise();
-
 }
 
-
-//=========== Удаление знака объекта ======
+/*!
+Удаление знака объекта
+void SignsEdit::delete_sign(int row, int column)
+*/
 void SignsEdit::delete_sign(int row, int column)
 {
-
     if(column != 4)return;
     //================MessageBox===============================
     QMessageBox msgBox;
@@ -332,22 +332,20 @@ void SignsEdit::delete_sign(int row, int column)
     return;
 }
 
-//======== Сохранение изменений после редактирования знаков ======
+/*!
+Сохранение изменений после редактирования знаков
+void SignsEdit::save_changes()
+*/
 void SignsEdit::save_changes()
 {
     int row_count = UI->object_signs_table->rowCount();
-
     QSqlQuery query;
-
-    for(int i=0;i<row_count;i++)
-    {
+    for(int i=0;i<row_count;i++){
         query.prepare("UPDATE signs SET sign_key = ?, sign_name = ? WHERE id_sign = ?");
         query.addBindValue(UI->object_signs_table->item(i,2)->text());
         query.addBindValue(UI->object_signs_table->item(i,3)->text());
         query.addBindValue(UI->object_signs_table->item(i,0)->text().toInt());
-
-        if(!query.exec())
-        {
+        if(!query.exec()){
             QString err = query.lastError().text();
             return;
         }
@@ -366,7 +364,6 @@ void SignsEdit::save_changes()
         return;
         break;
     }
-
 }
 
 /*!
@@ -383,8 +380,7 @@ void SignsEdit::add_type_to_model(QString str_query, QStandardItem *parent)
     {
         QStandardItem *item = new QStandardItem(query.value(1).toString());
         int id_obj_type=query.value(2).toInt();
-        QString data_type_obj = QString::number(id_obj_type);
-        item->setData(data_type_obj,Qt::UserRole);
+        item->setData(id_obj_type,Qt::UserRole);
         parent->appendRow(item);
     }
     query.clear();

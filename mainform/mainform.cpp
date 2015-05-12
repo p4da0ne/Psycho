@@ -615,8 +615,6 @@ void Mainform::slotOpenMapSettingsDialog()
     {
 		QString mapFilePath = settDlg->mapPathLineEdit.text();
 		QString rscFilePath = settDlg->rscPathLineEdit.text();
-        
-
     }
 
 }
