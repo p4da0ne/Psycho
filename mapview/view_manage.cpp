@@ -461,3 +461,62 @@ QList<SignData*> ViewManage::getSpecialConditions(long int hMap,double x1,double
 	}
 	return conditionsList;
 }
+
+
+//================================================================================
+//====== Метод возвращает строку с типом и наименованием объекта =================
+//================================================================================
+QString ViewManage::getObjectTypeAndName(int idObject, int objectType)
+{
+	QString objectInfo;
+	QSqlQuery query;
+	QString str;
+
+	switch(objectType)
+		{
+			case FORMATIONS:
+				str = QString("SELECT type_ls.name_type_ls, ls.name_ls \
+						       FROM ls, type_ls \
+						       WHERE ls.id_type_ls = type_ls.id_type_ls \
+						       AND ls.id_ls = %1").arg(idObject);
+				break;
+			
+			case SPECIAL_CONDITIONS:
+				str = QString("SELECT t.name_type_special_conditions, s.name_special_conditions \
+							   FROM special_conditions s, type_special_conditions t \
+							   WHERE s.id_type_special_conditions = t.id_type_special_conditions \
+							   AND s.id_special_conditions = %1").arg(idObject);
+				break;
+			case SMI_MEANS:
+				str = QString("SELECT t.name_type_mpo_pso, m.name_mpo_pso \
+							   FROM mpo_pso m, type_mpo_pso t \
+							   WHERE m.id_type_mpo_pso = t.id_type_mpo_pso \
+							   AND m.id_mpo_pso = %1").arg(idObject);
+				break;
+			
+			case FORMATIONS_MEANS:
+				str = QString("SELECT t.name_type_mpo_pso, m.name_mpo_pso \
+							   FROM mpo_pso m, type_mpo_pso t \
+							   WHERE m.id_type_mpo_pso = t.id_type_mpo_pso \
+							   AND m.id_mpo_pso = %1").arg(idObject);
+				break;
+							
+			case GROUPS_MEANS:
+				str = QString("SELECT t.name_type_mpo_pso, m.name_mpo_pso \
+							   FROM mpo_pso m, type_mpo_pso t \
+							   WHERE m.id_type_mpo_pso = t.id_type_mpo_pso \
+							   AND m.id_mpo_pso = %1").arg(idObject);
+				break;
+		}
+	
+	
+	if(query.exec(str))
+	{
+		QSqlRecord rec = query.record();
+		while (query.next())
+		{
+			objectInfo += query.value(0).toString() + " (" + query.value(1).toString() + ")";
+		}
+	}
+	return objectInfo;
+}

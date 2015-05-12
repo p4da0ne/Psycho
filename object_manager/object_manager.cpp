@@ -10,6 +10,7 @@
 #include <QUrl>
 #include <QPainter>
 #include <QLineEdit>
+#include <QCheckBox>
 #include <QStandardItem>
 #include "simledelegate.h"
 #include <QProgressDialog>
@@ -53,7 +54,6 @@ Objectmanager::Objectmanager(QWidget *parent) //int in_id_object
     connect(UI->del_coord_button,SIGNAL(clicked()),this,SLOT(delete_coordinates()));
     connect(UI->edit_coord_button,SIGNAL(clicked()),this,SLOT(edit_coordinates_view()));
     connect(UI->add_many_coord_button,SIGNAL(clicked()),this,SLOT(show_dialog_add_file()));
-
 //==============================================================================================================
 
 	connect(UI->object_manager_tree,SIGNAL(clicked(const QModelIndex &)),this,SLOT(show_objects ( const QModelIndex & )));
@@ -1325,6 +1325,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 			Add_elements_dialog *add_element= new Add_elements_dialog(24,list.value(1).toInt());
 			add_element->setModal(true);
 			connect(add_element->deleteButton,SIGNAL(clicked()),this,SLOT(delete_pers()));
+			connect(add_element->addButton,SIGNAL(clicked()),this,SLOT(edit_persones()));
 			add_element->exec();
 
 		}// =============== для формирований по персоналу ================================
@@ -1333,6 +1334,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 			Add_elements_dialog *add_element= new Add_elements_dialog(24,list.value(1).toInt());
 			add_element->setModal(true);
 			connect(add_element->deleteButton,SIGNAL(clicked()),this,SLOT(delete_pers()));
+		    connect(add_element->addButton,SIGNAL(clicked()),this,SLOT(edit_persones()));
 			add_element->exec();
 		}
          // =============== для smi по персоналу ================================
@@ -1341,6 +1343,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
             Add_elements_dialog *add_element= new Add_elements_dialog(24,list.value(1).toInt());
             add_element->setModal(true);
             connect(add_element->deleteButton,SIGNAL(clicked()),this,SLOT(delete_pers()));
+			connect(add_element->addButton,SIGNAL(clicked()),this,SLOT(edit_persones()));
             add_element->exec();
          }
 		//============== выбор для заполнения таблицы ====================================
@@ -2372,6 +2375,230 @@ void Objectmanager::delete_sc(){
 	UI->property_object->setModel(0);
     clear_tableWidget(UI->coord_table);
 }
+void Objectmanager::edit_persones(){
+	 
+	 edit_dlg_pers = new QDialog;
+	 edit_dlg_pers->setWindowTitle("Редактирование  персоналии");
+	//edit_dlg->setMinimumSize(QSize(600,400));
+	 QLabel *label_foto_name = new QLabel("Фото:");
+     label_foto = new MyLabel();
+     label_foto_name->setBuddy(label_foto);
+     label_foto_hide = new QLabel();
+	 label_foto_hide->setVisible(false);
+     QLabel *label = new QLabel("Имя:");
+	 QLineEdit *lineEdit_name = new QLineEdit;
+	 lineEdit_name->setStyleSheet("font:bold; color: black");
+	 label->setBuddy(lineEdit_name);
+	 
+     QLabel *label_2 = new QLabel("Возраст:");
+	 QLineEdit *lineEdit_counte_ls = new QLineEdit;
+	 label_2->setBuddy(lineEdit_counte_ls);
+  	 lineEdit_counte_ls->setStyleSheet("font:bold; color: black");
+     QLabel *label_3 = new QLabel("Контакты:");
+	 QLineEdit *lineEdit_counte_ls_bd = new QLineEdit;
+	 label_3->setBuddy(lineEdit_counte_ls_bd);
+	 lineEdit_counte_ls_bd->setStyleSheet("font:bold; color: black");
+     QLabel *label_4 = new QLabel("Оппозиция:");
+     checkbox_enemy = new QCheckBox(" [-V- оппозиция]", this);
+	 label_4->setBuddy(checkbox_enemy);
+	 checkbox_enemy->setStyleSheet("color: black");
+     QLabel *label_5 = new QLabel("Должность:");
+	 QLineEdit *lineEdit_rank = new QLineEdit;
+	 label_5->setBuddy(lineEdit_rank);
+	 lineEdit_rank->setStyleSheet("font:bold; color: black");
+     QLabel *label_6 = new QLabel("Авторитет:");
+	 QLineEdit *lineEdit_aut = new QLineEdit;
+	 label_6->setBuddy(lineEdit_aut);
+	 lineEdit_aut->setStyleSheet("font:bold; color: black");
+     QLabel *label_7 = new QLabel("Характеристика:");
+	 QTextEdit *textEdit_propa = new QTextEdit;
+	 label_7->setBuddy(textEdit_propa);
+	 textEdit_propa->setStyleSheet("font:bold; color: black");
+     textEdit_propa->setFixedHeight(100);
+
+	QModelIndex index = UI->columnView->currentIndex();
+	if(!index.data(Qt::UserRole).toBool()) return;
+	QString id_sc=index.data(Qt::UserRole).toString();
+	QStringList list=id_sc.split("_");
+	int in_id_object = list.value(1).toInt();
+
+	QSqlQuery query;
+    QString str = QString("SELECT id_persones, name_persones, age_persones, contact_persones, rank_persones, authority_persones, opposition_persones, description_persones, image_persones FROM persones where id_persones = %1").arg(in_id_object);
+	if(!query.exec(str)){
+	 return;
+	}
+    
+	int id_persers = in_id_object;
+	QSqlRecord rec = query.record();
+    QString name_pers,contact,rank_pers,desc_pers,foto_name,path_foto;
+	float autor;
+	int age_pers;
+	bool oppos;
+	while(query.next()){	
+		id_persers=query.value(rec.indexOf("id_persones")).toInt();
+		name_pers=query.value(rec.indexOf("name_persones")).toString();
+		autor=query.value(rec.indexOf("authority_persones")).toString().toFloat();
+		age_pers=query.value(rec.indexOf("age_persones")).toInt();
+		contact=query.value(rec.indexOf("contact_persones")).toString();
+		rank_pers=query.value(rec.indexOf("rank_persones")).toString();
+		desc_pers=query.value(rec.indexOf("description_persones")).toString();
+		oppos=query.value(rec.indexOf("opposition_persones")).toBool();
+        foto_name = query.value(rec.indexOf("image_persones")).toString();
+
+	
+		lineEdit_name->setText(name_pers);
+		lineEdit_counte_ls->setText(QString::number(age_pers));
+        lineEdit_counte_ls_bd->setText(contact);
+		checkbox_enemy->setChecked(oppos);
+		lineEdit_rank->setText(rank_pers);
+		lineEdit_aut->setText(QString::number(autor));
+		textEdit_propa->setText(desc_pers);
+
+        QString path_foto = "foto_persones/" + foto_name;
+        label_foto->setText("<CENTER><IMG BORDER=\"0\" SRC=\""+path_foto+"\" width = '200' height = '200'> </CENTER>");
+		label_foto_hide->setText(foto_name);
+	}
+		 
+	 QPushButton *cancelButton = new QPushButton("Выход");
+	 connect(cancelButton,SIGNAL(clicked()),edit_dlg_pers,SLOT(close()));
+	 QPushButton *saveButton = new QPushButton("Сохранить");
+	 connect(saveButton,SIGNAL(clicked()),edit_dlg_pers,SLOT(accept()));
+	 
+	 connect(label_foto,SIGNAL(label_clicked()),this,SLOT(clicked_open_file()));
+	
+	 QHBoxLayout *buttonsLayout = new QHBoxLayout;
+	 buttonsLayout->addStretch();
+	 buttonsLayout->addWidget(saveButton);
+	 buttonsLayout->addWidget(cancelButton);
+
+         QHBoxLayout *topLeftLayout_15 = new QHBoxLayout;
+         topLeftLayout_15->addWidget(label_foto_name);
+         QHBoxLayout *topLeftLayout_16 = new QHBoxLayout;
+         topLeftLayout_16->addWidget(label_foto);
+         QHBoxLayout *topLeftLayout = new QHBoxLayout;
+		 topLeftLayout->addWidget(label);
+		 QHBoxLayout *topLeftLayout_2 = new QHBoxLayout;
+		 topLeftLayout_2->addWidget(lineEdit_name);
+		 QHBoxLayout *topLeftLayout_3 = new QHBoxLayout;
+		 topLeftLayout_3->addWidget(label_2);
+		 QHBoxLayout *topLeftLayout_4 = new QHBoxLayout;
+		 topLeftLayout_4->addWidget(lineEdit_counte_ls);
+		 QHBoxLayout *topLeftLayout_5 = new QHBoxLayout;
+		 topLeftLayout_5->addWidget(label_3);
+		 QHBoxLayout *topLeftLayout_6 = new QHBoxLayout;
+		 topLeftLayout_6->addWidget(lineEdit_counte_ls_bd);
+		 QHBoxLayout *topLeftLayout_7 = new QHBoxLayout;
+		 topLeftLayout_7->addWidget(label_4);
+		 QHBoxLayout *topLeftLayout_8 = new QHBoxLayout;
+		 topLeftLayout_8->addWidget(checkbox_enemy);
+		 QHBoxLayout *topLeftLayout_9 = new QHBoxLayout;
+		 topLeftLayout_9->addWidget(label_5);
+		 QHBoxLayout *topLeftLayout_10 = new QHBoxLayout;
+		 topLeftLayout_10->addWidget(lineEdit_rank);
+		 QHBoxLayout *topLeftLayout_11 = new QHBoxLayout;
+		 topLeftLayout_11->addWidget(label_6);
+		 QHBoxLayout *topLeftLayout_12 = new QHBoxLayout;
+		 topLeftLayout_12->addWidget(lineEdit_aut);
+		 QHBoxLayout *topLeftLayout_13 = new QHBoxLayout;
+		 topLeftLayout_13->addWidget(label_7);
+		 QHBoxLayout *topLeftLayout_14 = new QHBoxLayout;
+		 topLeftLayout_14->addWidget(textEdit_propa);
+
+
+         QVBoxLayout *leftLayout_15 = new QVBoxLayout;
+         leftLayout_15->addLayout(topLeftLayout_15);
+         QVBoxLayout *leftLayout_16 = new QVBoxLayout;
+         leftLayout_16->addLayout(topLeftLayout_16);
+         QVBoxLayout *leftLayout = new QVBoxLayout;
+		 leftLayout->addLayout(topLeftLayout);
+		 QVBoxLayout *leftLayout_2 = new QVBoxLayout;
+		 leftLayout_2->addLayout(topLeftLayout_2);
+		 QVBoxLayout *leftLayout_3 = new QVBoxLayout;
+		 leftLayout_3->addLayout(topLeftLayout_3);
+		 QVBoxLayout *leftLayout_4 = new QVBoxLayout;
+		 leftLayout_4->addLayout(topLeftLayout_4);
+		 QVBoxLayout *leftLayout_5 = new QVBoxLayout;
+		 leftLayout_5->addLayout(topLeftLayout_5);
+		 QVBoxLayout *leftLayout_6 = new QVBoxLayout;
+		 leftLayout_6->addLayout(topLeftLayout_6);
+		 QVBoxLayout *leftLayout_7 = new QVBoxLayout;
+		 leftLayout_7->addLayout(topLeftLayout_7);
+		 QVBoxLayout *leftLayout_8 = new QVBoxLayout;
+		 leftLayout_8->addLayout(topLeftLayout_8);
+		 QVBoxLayout *leftLayout_9 = new QVBoxLayout;
+		 leftLayout_9->addLayout(topLeftLayout_9);
+		 QVBoxLayout *leftLayout_10 = new QVBoxLayout;
+		 leftLayout_10->addLayout(topLeftLayout_10);
+		 QVBoxLayout *leftLayout_11 = new QVBoxLayout;
+		 leftLayout_11->addLayout(topLeftLayout_11);
+		 QVBoxLayout *leftLayout_12 = new QVBoxLayout;
+		 leftLayout_12->addLayout(topLeftLayout_12);
+		 QVBoxLayout *leftLayout_13 = new QVBoxLayout;
+		 leftLayout_13->addLayout(topLeftLayout_13);
+		 QVBoxLayout *leftLayout_14 = new QVBoxLayout;
+		 leftLayout_14->addLayout(topLeftLayout_14);
+		 leftLayout->addStretch(1);
+
+		 QGridLayout *mainLayout = new QGridLayout;
+		 mainLayout->setSizeConstraint(QLayout::SetFixedSize);
+         mainLayout->addLayout(leftLayout_15, 0, 0);
+         mainLayout->addLayout(leftLayout_16, 0, 1);
+
+         mainLayout->addLayout(leftLayout, 1, 0);
+         mainLayout->addLayout(leftLayout_2, 1, 1);
+         mainLayout->addLayout(leftLayout_3, 2, 0);
+         mainLayout->addLayout(leftLayout_4, 2, 1);
+         mainLayout->addLayout(leftLayout_5, 3, 0);
+         mainLayout->addLayout(leftLayout_6, 3, 1);
+         mainLayout->addLayout(leftLayout_7, 4, 0);
+         mainLayout->addLayout(leftLayout_8, 4, 1);
+         mainLayout->addLayout(leftLayout_9, 5, 0);
+         mainLayout->addLayout(leftLayout_10, 5, 1);
+         mainLayout->addLayout(leftLayout_11, 6, 0);
+         mainLayout->addLayout(leftLayout_12, 6, 1);
+         mainLayout->addLayout(leftLayout_13, 7, 0);
+         mainLayout->addLayout(leftLayout_14, 7, 1);
+		 
+         mainLayout->addLayout(buttonsLayout, 8, 0, 1, 2);
+         mainLayout->addWidget(label_foto_hide, 9, 0);
+
+		 setLayout(mainLayout);
+		 edit_dlg_pers->setLayout(mainLayout);
+
+		if(edit_dlg_pers->exec() == QDialog::Accepted){
+										
+		QString name_persones = lineEdit_name->text();
+		QString desc_pers=textEdit_propa->toPlainText();
+		int counte_age = lineEdit_counte_ls->text().toInt();
+		QString contact = lineEdit_counte_ls_bd->text();
+		QString rank_pers = lineEdit_rank->text();
+		float aut = lineEdit_aut->text().toFloat();
+		bool opossition = checkbox_enemy->isChecked();
+		QString l_foto = label_foto_hide->text();
+
+		QSqlQuery query;
+		QString str = QString("UPDATE persones SET name_persones='%1', age_persones='%2',contact_persones='%3',rank_persones='%4',opposition_persones='%5',description_persones='%6',authority_persones='%7', image_persones='%8' WHERE id_persones=%9").arg(name_persones).arg(counte_age).arg(contact).arg(rank_pers).arg(opossition).arg(desc_pers).arg(aut).arg(l_foto).arg(id_persers);
+	
+		if(!query.exec(str)){
+			 return;
+		}
+			
+	}
+	return; 
+
+}
+void Objectmanager::clicked_open_file()
+{
+	QString fileName = QFileDialog::getOpenFileName(this, "Выбор фотографии", "foto_persones/",
+                                                    "Images (*.jpg *.png)");
+    if (fileName.isEmpty()) return;
+    QString baseName = QFileInfo(fileName).fileName();
+    QString path_foto = "foto_persones/" + baseName;
+    label_foto->setText("<CENTER><IMG BORDER=\"0\" SRC=\""+path_foto+"\" width = '200' height = '200'> </CENTER>");
+    //label_foto->setDisabled(true);
+    label_foto_hide->setText(baseName);
+	
+    }
 void Objectmanager::delete_pers(){
 	QMessageBox msgBox;
 	msgBox.setWindowTitle("Предупреждение");
