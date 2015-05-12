@@ -45,7 +45,7 @@ MapScroll::~MapScroll()
 }
 
 
-bool		MapScroll::eventFilter (QObject * watched, QEvent * event)
+bool MapScroll::eventFilter (QObject * watched, QEvent * event)
 {
   if (event->type() == QEvent::Paint && MyViewport != 0 && MyViewport == watched)
   {
@@ -64,7 +64,7 @@ bool		MapScroll::eventFilter (QObject * watched, QEvent * event)
 //-------------------------------------------------------------
 // Перерисовка окна
 //-------------------------------------------------------------
-void		MapScroll::drawContents( QPainter* p, int cx, int cy, int cw, int ch)//перерисовка
+void MapScroll::drawContents( QPainter* p, int cx, int cy, int cw, int ch)//перерисовка
 {
    if (hMap)
    {
@@ -114,8 +114,9 @@ void		MapScroll::drawContents( QPainter* p, int cx, int cy, int cw, int ch)//пер
    }
 }
 
+
 //открытие карты
-int			MapScroll::mapOpen(  const char *name )
+int	MapScroll::mapOpen(  const char *name )
 {
   char        drive[10];
   char        dir[MAX_PATH];
@@ -250,24 +251,33 @@ void MapScroll::mousePressEvent(QMouseEvent * event)
 			pe = event->pos();
 			screenX= pe.x(); 
 			screenY= pe.y(); 
-			screenX+= horizontalScrollBar()->value();
-			screenY+= verticalScrollBar()->value();
+			int xScroll = HScrollBarValue();
+			int yScroll = VScrollBarValue();
+
+			screenX+= xScroll; //horizontalScrollBar()->value();
+			screenY+= yScroll; //verticalScrollBar()->value();
+			
 			map->mapPictureToPlane(hMap, &screenX, &screenY);
 			pe = event->globalPos();
 			
-			QStringList semList = getObjectIdAndTypeInfo(&screenX, &screenY);
-			if(!semList.isEmpty())
+			//QStringList semList = getObjectIdAndTypeInfo(&screenX, &screenY);
+
+			QList<QStringList> allObjectsList = getAllObjectsIdAndTypeInfo(&screenX, &screenY);
+
+			if(!allObjectsList.isEmpty())
 			{
-				long int idOdject = semList.at(0).toInt();
-				long int objectType = semList.at(1).toInt();
+				/*long int idOdject = semList.at(0).toInt();
+				long int objectType = semList.at(1).toInt();*/
 				
 				if (event->button() == Qt::LeftButton)//левая клавиша мыши
 				{					
-					emit leftButtonClicked(pe,idOdject,objectType); return;	
+					//emit leftButtonClicked(pe,idOdject,objectType); return;	
+					emit leftButtonClicked(pe,allObjectsList); return;
 				}
 				if (event->button() == Qt::RightButton)  //правая клавиша мыши
 				{
-					emit rightButtonClicked(pe,idOdject,objectType); return;	
+					//emit rightButtonClicked(pe,idOdject,objectType); return;	
+					emit rightButtonClicked(pe,allObjectsList); return;
 				}
 			
 			}
@@ -275,7 +285,8 @@ void MapScroll::mousePressEvent(QMouseEvent * event)
 			{
 				if (event->button() == Qt::RightButton)  //правая клавиша мыши
 				{
-					emit rightButtonClicked(pe,0,0); return; //клик на пустом месте (где нет объектов)	
+					//emit rightButtonClicked(pe,0,0); return; //клик на пустом месте (где нет объектов)	
+					emit rightButtonClicked(pe,allObjectsList); return;
 				}
 				return;
 			}
@@ -374,6 +385,59 @@ QStringList	MapScroll::getObjectIdAndTypeInfo(double *x, double *y)
 	return semList;
 }
 
+
+//==============================================================================
+//===== Метод возвращает список списков значений семантик знаков с ключами: ====
+//===== 17501 - idObject; 17502 - тип объекта ==================================
+//===== Выполняется поиск всех объектов в заданной точке =======================
+QList<QStringList>	MapScroll::getAllObjectsIdAndTypeInfo(double *x, double *y)
+{
+	QList<QStringList> signsList;
+	
+	QStringList semList;
+	info=map->mapCreateObject(hMap);
+	changeFrame(50);  // расширение области поиска объекта
+	info=map->mapWhatObject(hMap,info,&frame,WO_LAST,PP_PLANE);
+
+	double idObject, objectType;
+	int idObjectSemNumber, objectTypeSemNumber;
+
+	if(info)
+	{
+		idObject = map->mapSemanticCodeDoubleValue(info,ID_OBJECT,1);
+		objectType = map->mapSemanticCodeDoubleValue(info,OBJECT_TYPE,1);
+	
+		if(idObject && objectType)
+		{
+			semList.append(QString::number((int)idObject));
+			semList.append(QString::number((int)objectType));
+			signsList.append(semList);
+		}
+		while(info)
+		{
+			HOBJ infoLast = info;
+			info=map->mapCreateObject(hMap);
+			info=map->mapWhatObject(hMap,infoLast,&frame,WO_BACK,PP_PLANE);
+
+			if(info)
+			{
+				idObject = map->mapSemanticCodeDoubleValue(info,ID_OBJECT,1);
+				objectType = map->mapSemanticCodeDoubleValue(info,OBJECT_TYPE,1);
+	
+				if(idObject && objectType)
+				{
+					QStringList semList;
+					semList.append(QString::number((int)idObject));
+					semList.append(QString::number((int)objectType));
+					signsList.append(semList);
+				}
+			}
+		}
+	}
+
+
+	return signsList;
+}
 
 //================================================================================
 //==== Метод изменения области поиска объекта, начиная от координат клика мыши ===

@@ -50,8 +50,10 @@ MapView::MapView(QWidget *parent, const char *name)
 	connect(mapwin,SIGNAL(signalFor4Action(double, double)),this,SLOT(redrawWithNewAngle(double, double)));
 	connect(mapwin,SIGNAL(signal_for_change_scale(QPoint)),this,SLOT(mouseRightSimpleMenu(QPoint)));
 	
-	connect(mapwin,SIGNAL(leftButtonClicked(QPoint, int, int)),this,SLOT(slotMouseLeftButtonClicked(QPoint, int, int)));
-	connect(mapwin,SIGNAL(rightButtonClicked(QPoint, int, int)),this,SLOT(slotMouseRightButtonClicked(QPoint, int, int)));
+	
+	
+	connect(mapwin,SIGNAL(leftButtonClicked(QPoint, QList<QStringList>)),this,SLOT(slotMouseLeftButtonClicked(QPoint, QList<QStringList>)));
+	connect(mapwin,SIGNAL(rightButtonClicked(QPoint, QList<QStringList>)),this,SLOT(slotMouseRightButtonClicked(QPoint, QList<QStringList>)));
 	// ===================================================================================================================================
 	vertLayout = new QVBoxLayout();  //==== основной лэйаут
 	vertLayout->setMargin(1);
@@ -836,6 +838,7 @@ QMenu* MapView::createGreateLessScaleMenu()
 	return mouse_menu;
 }
 
+
 //=================================================================================================
 //========= Меню по клику правой клавишей мыши в любом месте карты ================================
 //=================================================================================================
@@ -1077,15 +1080,12 @@ void MapView::showCheckedCalcResults()
 //============================================================================
 //==== Слот обработки нажатия левой кнопки мыши ==============================
 //============================================================================
-void MapView::slotMouseLeftButtonClicked(QPoint pe, int idObject, int objectType)
+void MapView::slotMouseLeftButtonClicked(QPoint pe, QList<QStringList> objectsList)
 {
-	if(!idObject || !objectType) return;
+	if(objectsList.isEmpty()) return;
 	
-	QString str;
-	str = "Идентификатор объекта: " + QString::number(idObject) + "\n"; 
-	str = str + "Тип объекта: " + QString::number(objectType); 
-	
-	showInformationDialog(str);
+	mouse_menu = createObjectsListMenu(objectsList);
+	mouse_menu->exec(pe);
 }
 
 
@@ -1093,21 +1093,67 @@ void MapView::slotMouseLeftButtonClicked(QPoint pe, int idObject, int objectType
 //============================================================================
 //============ Слот обработки нажатия правой кнопки мыши =====================
 //============================================================================
-void MapView::slotMouseRightButtonClicked(QPoint pe, int idObject, int objectType)
+void MapView::slotMouseRightButtonClicked(QPoint pe, QList<QStringList> objectsList)
 {
-	if(!idObject || !objectType)
+	if(objectsList.isEmpty())
 	{
 		mouseRightSimpleMenu(pe);
 	}
 	else
 	{
-		switch(objectType)
+		mouse_menu = createObjectsListComplexMenu(objectsList);
+		mouse_menu->exec(pe);
+
+	
+	}
+		
+		
+		
+
+}
+
+
+//======================================================================================
+//====== Метод формирует меню в виде списка найденных в точке поиска объектов ==========
+//======================================================================================
+QMenu* MapView::createObjectsListMenu(QList<QStringList> objectsList)
+{
+	QMenu *mouse_menu = new QMenu; 
+	
+	for(int i=0;i<objectsList.count();i++)
+	{
+		QString text = objectsList.at(i).at(0) + "_" + objectsList.at(i).at(1);
+		QAction *obj_act = new QAction(text,this);
+		obj_act->setData(text);
+	
+		mouse_menu->addAction(obj_act); 
+		connect(obj_act, SIGNAL(triggered()), this, SLOT(slotObjectInfo()));
+	}
+	
+	return mouse_menu;
+}
+
+
+//=========================================================================================
+//== Метод формирует сложное многоуровневое меню в зависимости от типов объектов. =========
+//== Для обработки нажатия правой кнопки мыши. ============================================
+//=========================================================================================
+QMenu* MapView::createObjectsListComplexMenu(QList<QStringList> objectsList)
+{
+	QMenu *mouse_menu = new QMenu; 
+	
+	for(int i=0;i<objectsList.count();i++)
+	{
+		int objType = objectsList.at(i).at(1).toInt();
+		switch(objType)
 		{
 			case ViewManage::FORMATIONS:
-				mouseRightFormationsMenu(pe,idObject,objectType);
+				QString text = objectsList.at(i).at(0) + "_" + objectsList.at(i).at(1);  //нужно получить короткую информацию
+				mouse_menu->setTitle(text);
+				mouse_menu->addMenu(createFormationsMenu(objectsList.at(i)));
 				break;
 			
-			case ViewManage::SPECIAL_CONDITIONS:
+			/*case ViewManage::SPECIAL_CONDITIONS:
 				mouseRightSpecialConditionsMenu(pe,idObject,objectType);
 				break;
 			
@@ -1121,26 +1167,105 @@ void MapView::slotMouseRightButtonClicked(QPoint pe, int idObject, int objectTyp
 							
 			case ViewManage::GROUPS_MEANS:
 				mouseRightGroupsMeansMenu(pe,idObject,objectType);
-				break;
+				break;*/
 		}
-	
+
 	}
-		
-		
-		
+	
+	return mouse_menu;
+}
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////// Данные необходимо получить из модели  ////////////
+/////////////////////////////////////////////////////////////
+void MapView::slotObjectInfo() //слот - обработчик выбора в контекстном меню объекта
+{
+	QAction *action = qobject_cast<QAction*>(sender());
+	QString str;
+	if(action)
+	{
+		QStringList objInfo = action->data().toString().split("_");
+
+
+		str += "Идентификатор объекта: " + objInfo.at(0) + "\n"; 
+		str += "Тип объекта: " + objInfo.at(1) + "\n"; 
+	
+		showInformationDialog(str);
+
+	}
 
 }
 
+void MapView::slotObjectDescription() //слот - обработчик выбора в контекстном меню объекта
+{
+	QAction *action = qobject_cast<QAction*>(sender());
+	QString str;
+	if(action)
+	{
+		QStringList objInfo = action->data().toString().split("_");
+
+
+		str += "Идентификатор объекта: " + objInfo.at(0) + "\n"; 
+		str += "Тип объекта: " + objInfo.at(1) + "\n"; 
+	
+		showInformationDialog(str);
+
+	}
+
+}
+
+
+void MapView::slotObjectReport() //слот - обработчик выбора в контекстном меню объекта
+{
+	QAction *action = qobject_cast<QAction*>(sender());
+	QString str;
+	if(action)
+	{
+		QStringList objInfo = action->data().toString().split("_");
+
+
+		str += "Идентификатор объекта: " + objInfo.at(0) + "\n"; 
+		str += "Тип объекта: " + objInfo.at(1) + "\n"; 
+	
+		showInformationDialog(str);
+
+	}
+
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+
+
 //===================================================================================
-//===== Метод создания и отображения контекстного меню для формирования =============
+//===== Метод создания контекстного меню для формирования =============
 //===================================================================================
-void MapView::mouseRightFormationsMenu(QPoint pe,int idObject, int objectType)
+QMenu* MapView::createFormationsMenu(QStringList objInfo)
 {
 	//------------------------------------------------------------------------------
-	mouse_menu = createGreateLessScaleMenu(); 
-	mouse_menu->exec(pe);
+	QMenu *mouse_menu = new QMenu; 
 
-	//--- Добавление в меню специфичных действий для фомирования ---------
+	//--- Добавление в меню специфичных действий для формирования ---------
+
+	QString text = objInfo.at(0) + "_" + objInfo.at(1);
+	
+	QAction *description_act = new QAction("Описание",this);
+	description_act->setData(text);
+	mouse_menu->addAction(description_act); 
+	connect(description_act, SIGNAL(triggered()), this, SLOT(slotObjectDescription()));
+	
+	QAction *report_act = new QAction("Отчет",this);
+	report_act->setData(text);
+	mouse_menu->addAction(report_act); 
+	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));
+	
+
+	return mouse_menu;
+
+	
 
 }
 

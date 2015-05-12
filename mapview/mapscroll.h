@@ -5,6 +5,7 @@
 #include <QtGui>
 #include <QTextCodec>
 #include <QMap>
+#include <QList>
 #include <mapapi.h>
 #include <QMenu>
 #include "coord.h"
@@ -53,6 +54,7 @@ public:
 	QStringList		getHobj(double *x, double *y);
 
 	QStringList		getObjectIdAndTypeInfo(double *x, double *y);
+	QList<QStringList>	getAllObjectsIdAndTypeInfo(double *x, double *y);  //поиск всех объектов в заданной точке
 
 	int				HScrollBarValue();
 	int				VScrollBarValue();
@@ -99,8 +101,11 @@ signals:
 	void		signal_for_change_scale(QPoint pe);
 
 	//------ Сигналы для обработки нажатий кнопок мыши --------------
-	void leftButtonClicked(QPoint pe, int idOdject=0, int objectType=0);
-	void rightButtonClicked(QPoint pe, int idOdject=0, int objectType=0);
+	//void leftButtonClicked(QPoint pe, int idOdject=0, int objectType=0);
+	//void rightButtonClicked(QPoint pe, int idOdject=0, int objectType=0);
+
+	void leftButtonClicked(QPoint pe, QList<QStringList> objectsList);
+	void rightButtonClicked(QPoint pe, QList<QStringList> objectsList);
 	//---------------------------------------------------------------
 protected:
     bool  eventFilter (QObject * watched, QEvent * event);
