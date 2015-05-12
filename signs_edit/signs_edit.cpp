@@ -56,7 +56,7 @@ void SignsEdit::show_object_types(){
     QStandardItem *type_special_conditions_item = new QStandardItem("Типы особых условий");
     type_special_conditions_item->setData("type_special_conditions",Qt::UserRole);
     parentItem->appendRow(type_special_conditions_item);
-    str_query="SELECT id_sign, name_type_special_conditions id_type_special_conditions FROM type_special_conditions order by id_type_special_conditions";
+    str_query="SELECT id_sign, name_type_special_conditions, id_type_special_conditions FROM type_special_conditions order by id_type_special_conditions";
     this->add_type_to_model(str_query,type_special_conditions_item);
 
     model->setHeaderData(0, Qt::Horizontal, QObject::tr("Types of objects"));
