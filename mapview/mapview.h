@@ -119,12 +119,11 @@ private slots:
 	//======================================================
 
 	//---- Меню по нажатию правой кнопки мыши (специфичные для конкретного программного комплекса) -------------------
-	//void			mouseRightFormationsMenu(QPoint pe,int idObject, int objectType);
 	QMenu*			createFormationsMenu(QStringList objInfo);
-	void			mouseRightSpecialConditionsMenu(QPoint pe,int idObject, int objectType);
-	void			mouseRightSmiMeansMenu(QPoint pe,int idObject, int objectType);
-	void			mouseRightFormationsMeansMenu(QPoint pe,int idObject, int objectType);
-	void			mouseRightGroupsMeansMenu(QPoint pe,int idObject, int objectType);
+	QMenu*			createSpecialConditionsMenu(QStringList objInfo);
+	QMenu*			createSmiMeansMenu(QStringList objInfo);
+	QMenu*			createFormationsMeansMenu(QStringList objInfo);
+	QMenu*			createGroupsMeansMenu(QStringList objInfo);
 	//----------------------------------------------------------------------
 
 

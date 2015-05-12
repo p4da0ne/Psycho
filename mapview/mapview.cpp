@@ -1122,9 +1122,10 @@ QMenu* MapView::createObjectsListMenu(QList<QStringList> objectsList)
 	
 	for(int i=0;i<objectsList.count();i++)
 	{
-		QString text = objectsList.at(i).at(0) + "_" + objectsList.at(i).at(1);
+		QString text = model->getObjectTypeAndName(objectsList.at(i).at(0).toInt(), objectsList.at(i).at(1).toInt());
+		QString idAndType = objectsList.at(i).at(0) + "_" + objectsList.at(i).at(1);
 		QAction *obj_act = new QAction(text,this);
-		obj_act->setData(text);
+		obj_act->setData(idAndType);
 	
 		mouse_menu->addAction(obj_act); 
 		connect(obj_act, SIGNAL(triggered()), this, SLOT(slotObjectInfo()));
@@ -1148,26 +1149,24 @@ QMenu* MapView::createObjectsListComplexMenu(QList<QStringList> objectsList)
 		switch(objType)
 		{
 			case ViewManage::FORMATIONS:
-				QString text = objectsList.at(i).at(0) + "_" + objectsList.at(i).at(1);  //нужно получить короткую информацию
-				mouse_menu->setTitle(text);
 				mouse_menu->addMenu(createFormationsMenu(objectsList.at(i)));
 				break;
 			
-			/*case ViewManage::SPECIAL_CONDITIONS:
-				mouseRightSpecialConditionsMenu(pe,idObject,objectType);
+			case ViewManage::SPECIAL_CONDITIONS:
+				mouse_menu->addMenu(createSpecialConditionsMenu(objectsList.at(i)));
 				break;
 			
 			case ViewManage::SMI_MEANS:
-				mouseRightSmiMeansMenu(pe,idObject,objectType);
+				mouse_menu->addMenu(createSmiMeansMenu(objectsList.at(i)));
 				break;
 			
 			case ViewManage::FORMATIONS_MEANS:
-				mouseRightFormationsMeansMenu(pe,idObject,objectType);
+				mouse_menu->addMenu(createFormationsMeansMenu(objectsList.at(i)));
 				break;
 							
 			case ViewManage::GROUPS_MEANS:
-				mouseRightGroupsMeansMenu(pe,idObject,objectType);
-				break;*/
+				mouse_menu->addMenu(createGroupsMeansMenu(objectsList.at(i)));
+				break;
 		}
 
 	}
@@ -1180,7 +1179,13 @@ QMenu* MapView::createObjectsListComplexMenu(QList<QStringList> objectsList)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////// Данные необходимо получить из модели  ////////////
 /////////////////////////////////////////////////////////////
-void MapView::slotObjectInfo() //слот - обработчик выбора в контекстном меню объекта
+
+
+
+//=============================================================================
+//==== Слот вывода информации об объекте по нажатию левой кнопки мыши =========
+//=============================================================================
+void MapView::slotObjectInfo()
 {
 	QAction *action = qobject_cast<QAction*>(sender());
 	QString str;
@@ -1246,19 +1251,23 @@ void MapView::slotObjectReport() //слот - обработчик выбора в контекстном меню о
 QMenu* MapView::createFormationsMenu(QStringList objInfo)
 {
 	//------------------------------------------------------------------------------
-	QMenu *mouse_menu = new QMenu; 
+	QString text = model->getObjectTypeAndName(objInfo.at(0).toInt(), objInfo.at(1).toInt());
+	
+	QString idAndType = objInfo.at(0) + "_" + objInfo.at(1);
+
+	QMenu *mouse_menu = new QMenu(text); 
 
 	//--- Добавление в меню специфичных действий для формирования ---------
 
-	QString text = objInfo.at(0) + "_" + objInfo.at(1);
+	
 	
 	QAction *description_act = new QAction("Описание",this);
-	description_act->setData(text);
+	description_act->setData(idAndType);
 	mouse_menu->addAction(description_act); 
 	connect(description_act, SIGNAL(triggered()), this, SLOT(slotObjectDescription()));
 	
 	QAction *report_act = new QAction("Отчет",this);
-	report_act->setData(text);
+	report_act->setData(idAndType);
 	mouse_menu->addAction(report_act); 
 	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));
 	
@@ -1273,13 +1282,29 @@ QMenu* MapView::createFormationsMenu(QStringList objInfo)
 //===================================================================================
 //===== Метод создания и отображения контекстного меню для особых условий =============
 //===================================================================================
-void MapView::mouseRightSpecialConditionsMenu(QPoint pe,int idObject, int objectType)
+QMenu* MapView::createSpecialConditionsMenu(QStringList objInfo)
 {
-	//------------------------------------------------------------------------------
-	mouse_menu = createGreateLessScaleMenu(); 
-	mouse_menu->exec(pe);
+	QString text = model->getObjectTypeAndName(objInfo.at(0).toInt(), objInfo.at(1).toInt());
+	QString idAndType = objInfo.at(0) + "_" + objInfo.at(1);
 
-	//--- Добавление в меню специфичных действий для особых условий ---------
+	QMenu *mouse_menu = new QMenu(text); 
+
+	//--- Добавление в меню специфичных действий для формирования ---------
+
+	
+	
+	QAction *description_act = new QAction("Описание",this);
+	description_act->setData(idAndType);
+	mouse_menu->addAction(description_act); 
+	connect(description_act, SIGNAL(triggered()), this, SLOT(slotObjectDescription()));
+	
+	QAction *report_act = new QAction("Отчет",this);
+	report_act->setData(idAndType);
+	mouse_menu->addAction(report_act); 
+	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));
+	
+
+	return mouse_menu;
 
 }
 
@@ -1287,13 +1312,29 @@ void MapView::mouseRightSpecialConditionsMenu(QPoint pe,int idObject, int object
 //===================================================================================
 //===== Метод создания и отображения контекстного меню для средств СМИ ==============
 //===================================================================================
-void MapView::mouseRightSmiMeansMenu(QPoint pe,int idObject, int objectType)
+QMenu* MapView::createSmiMeansMenu(QStringList objInfo)
 {
-	//------------------------------------------------------------------------------
-	mouse_menu = createGreateLessScaleMenu(); 
-	mouse_menu->exec(pe);
+	QString text = model->getObjectTypeAndName(objInfo.at(0).toInt(), objInfo.at(1).toInt());
+	QString idAndType = objInfo.at(0) + "_" + objInfo.at(1);
 
-	//--- Добавление в меню специфичных действий для средств СМИ ---------
+	QMenu *mouse_menu = new QMenu(text); 
+
+	//--- Добавление в меню специфичных действий для формирования ---------
+
+	
+	
+	QAction *description_act = new QAction("Описание",this);
+	description_act->setData(idAndType);
+	mouse_menu->addAction(description_act); 
+	connect(description_act, SIGNAL(triggered()), this, SLOT(slotObjectDescription()));
+	
+	QAction *report_act = new QAction("Отчет",this);
+	report_act->setData(idAndType);
+	mouse_menu->addAction(report_act); 
+	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));
+	
+
+	return mouse_menu;
 
 }
 
@@ -1301,27 +1342,58 @@ void MapView::mouseRightSmiMeansMenu(QPoint pe,int idObject, int objectType)
 //===================================================================================
 //===== Метод создания и отображения контекстного меню для средств формирований =====
 //===================================================================================
-void MapView::mouseRightFormationsMeansMenu(QPoint pe,int idObject, int objectType)
+QMenu* MapView::createFormationsMeansMenu(QStringList objInfo)
 {
-	//------------------------------------------------------------------------------
-	mouse_menu = createGreateLessScaleMenu(); 
-	mouse_menu->exec(pe);
+	QString text = model->getObjectTypeAndName(objInfo.at(0).toInt(), objInfo.at(1).toInt());
+	QString idAndType = objInfo.at(0) + "_" + objInfo.at(1);
 
-	//--- Добавление в меню специфичных действий для средств формирований ---------
+	QMenu *mouse_menu = new QMenu(text); 
 
+	//--- Добавление в меню специфичных действий для формирования ---------
+
+	
+	
+	QAction *description_act = new QAction("Описание",this);
+	description_act->setData(idAndType);
+	mouse_menu->addAction(description_act); 
+	connect(description_act, SIGNAL(triggered()), this, SLOT(slotObjectDescription()));
+	
+	QAction *report_act = new QAction("Отчет",this);
+	report_act->setData(idAndType);
+	mouse_menu->addAction(report_act); 
+	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));
+	
+
+	return mouse_menu;
 }
 
 
 //===================================================================================
 //===== Метод создания и отображения контекстного меню для средств организаций ======
 //===================================================================================
-void MapView::mouseRightGroupsMeansMenu(QPoint pe,int idObject, int objectType)
+QMenu* MapView::createGroupsMeansMenu(QStringList objInfo)
 {
-	//------------------------------------------------------------------------------
-	mouse_menu = createGreateLessScaleMenu(); 
-	mouse_menu->exec(pe);
+	QString text = model->getObjectTypeAndName(objInfo.at(0).toInt(), objInfo.at(1).toInt());
+	QString idAndType = objInfo.at(0) + "_" + objInfo.at(1);
 
-	//--- Добавление в меню специфичных действий для средств организаций ----------
+	QMenu *mouse_menu = new QMenu(text); 
+
+	//--- Добавление в меню специфичных действий для формирования ---------
+
+	
+	
+	QAction *description_act = new QAction("Описание",this);
+	description_act->setData(idAndType);
+	mouse_menu->addAction(description_act); 
+	connect(description_act, SIGNAL(triggered()), this, SLOT(slotObjectDescription()));
+	
+	QAction *report_act = new QAction("Отчет",this);
+	report_act->setData(idAndType);
+	mouse_menu->addAction(report_act); 
+	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));
+	
+
+	return mouse_menu;
 
 }
 
