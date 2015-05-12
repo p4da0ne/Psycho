@@ -920,7 +920,7 @@ void MapView::showCheckedObjects()
 		//показать средства формирований
 		closeSitByName(formationMeansSitName);
 		HSITE formationMeansSite = openMapSit(formationMeansSitName,rscPath);
-		QList<SignData*> formationsMeansSigns = model->getFormationsMeans();
+		QList<SignData*> formationsMeansSigns = model->getFormationsMeans(mapwin->hMap,x1,y1,x2,y2);
 		createSitObjects(formationMeansSite, formationsMeansSigns);
 	}
 	else
@@ -934,7 +934,7 @@ void MapView::showCheckedObjects()
 		//показать средства организаций
 		closeSitByName(organizationMeansSitName);
 		HSITE organizationMeansSite = openMapSit(organizationMeansSitName,rscPath);
-		QList<SignData*> groupsMeansSigns = model->getGroupsMeans();
+		QList<SignData*> groupsMeansSigns = model->getGroupsMeans(mapwin->hMap,x1,y1,x2,y2);
 		createSitObjects(organizationMeansSite, groupsMeansSigns);
 	}
 	else
@@ -948,7 +948,7 @@ void MapView::showCheckedObjects()
 		//показать формирования
 		closeSitByName(formationsSitName);
 		HSITE formationsSite = openMapSit(formationsSitName,rscPath);
-		QList<SignData*> formationsSigns = model->getFormations();
+		QList<SignData*> formationsSigns = model->getFormations(mapwin->hMap,x1,y1,x2,y2);
 		createSitObjects(formationsSite, formationsSigns);
 	}
 	else
@@ -962,7 +962,7 @@ void MapView::showCheckedObjects()
 		//показать особые условия
 		closeSitByName(conditionsSitName);
 		HSITE conditionsSite = openMapSit(conditionsSitName,rscPath);
-		QList<SignData*> specialConditionsSigns = model->getSpecialConditions();
+		QList<SignData*> specialConditionsSigns = model->getSpecialConditions(mapwin->hMap,x1,y1,x2,y2);
 		createSitObjects(conditionsSite, specialConditionsSigns);
 	}
 	else

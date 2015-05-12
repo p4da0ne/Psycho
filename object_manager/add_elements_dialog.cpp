@@ -1834,15 +1834,15 @@ case 24:{ //========== Персонал данные ====================================
 		textEdit_propa->setText(desc_pers);
 
 
-        QSettings settings("Saturn");
-        QString path_pict=settings.value("last_img").toString();
-        if(path_pict == QString::null){
-            path_pict="C:/projects/Saturn_500m/Saturn/icons2/" ;
-        }else{
-            path_pict=path_pict.append("/");
-        }
-        path_pict.append( "foto_persones/").append(foto_name);
-        label_foto->setText("<CENTER><IMG BORDER=\"0\" SRC=\""+path_pict+"\" width = '200' height = '200'> </CENTER>");
+//        QSettings settings("Saturn");
+//        QString path_pict=settings.value("last_img").toString();
+//        if(path_pict == QString::null){
+//            path_pict="C:/projects/Saturn_500m/Saturn/icons2/" ;
+//        }else{
+//            path_pict=path_pict.append("/");
+//        }
+        QString path_foto = "foto_persones/" + foto_name;
+        label_foto->setText("<CENTER><IMG BORDER=\"0\" SRC=\""+path_foto+"\" width = '200' height = '200'> </CENTER>");
 	}
 		 
 	 addButton = new QPushButton("Редактировать");
@@ -5613,26 +5613,17 @@ void Add_elements_dialog::open_file()
 {
     QString fileName = QFileDialog::getOpenFileName(this, "Выбор фотографии", "foto_persones/",
                                                     "Images (*.jpg *.png)");
+    if (fileName.isEmpty()) return;
     QString baseName = QFileInfo(fileName).fileName();
     lineEdit_name_f->setText(baseName);
-    if (!fileName.isEmpty()) return;
-}
+ }
 void Add_elements_dialog::clicked_open_file()
 {
-	    QSettings settings("Saturn");
-        QString path_pict=settings.value("last_img").toString();
-        if(path_pict == QString::null){
-            path_pict="C:/projects/Saturn_500m/Saturn/icons2/" ;
-        }else{
-            path_pict=path_pict.append("/");
-        }
-        path_pict.append( "foto_persones/");
-    QString fileName = QFileDialog::getOpenFileName(this, "Выбор фотографии", path_pict,
+    QString fileName = QFileDialog::getOpenFileName(this, "Выбор фотографии", "foto_persones/",
                                                     "Images (*.jpg *.png)");
- //   if (!fileName.isEmpty()) return;
+    if (fileName.isEmpty()) return; //  label_foto_hide->setText(noup);
     QString baseName = QFileInfo(fileName).fileName();
-
-    QString path_foto = path_pict + baseName;
+    QString path_foto = "foto_persones/" + baseName;
     label_foto->setText("<CENTER><IMG BORDER=\"0\" SRC=\""+path_foto+"\" width = '200' height = '200'> </CENTER>");
     //label_foto->setDisabled(true);
     label_foto_hide->setText(baseName);
@@ -5647,103 +5638,6 @@ void Add_elements_dialog::otchet_pers()
     r->show_preview_dialog(report);
 }
 
-/*
-void Add_elements_dialog::  add_coord_special_cond_dlg()
-{
-	add_dlg = new QDialog;
-	add_dlg->setWindowTitle("Добавлении координат");
-	add_dlg->setMinimumSize(QSize(600,400));
-
-	 label = new QLabel("X:");
-	 lineEdit= new QLineEdit;
-	 label->setBuddy(lineEdit);
-
-	 label_2 = new QLabel("Y:");
-	 lineEdit_counte = new QLineEdit;
-	 label_2->setBuddy(lineEdit_counte);
-
-	 addButton = new QPushButton("Добавить");
-	 addButton->setDefault(true);
-	 connect(addButton,SIGNAL(clicked()),this,SLOT(add_coord()));
-	 cancelButton = new QPushButton("Отмена");
-	 connect(cancelButton,SIGNAL(clicked()),add_dlg,SLOT(accept()));
-
-	 QHBoxLayout *buttonsLayout = new QHBoxLayout;
-	 buttonsLayout->addStretch();
-	 buttonsLayout->addWidget(addButton);
-	 buttonsLayout->addWidget(cancelButton);
-
-	 QHBoxLayout *topLeftLayout_29 = new QHBoxLayout;
-	 topLeftLayout_29->addWidget(label);
-	 QHBoxLayout *topLeftLayout_30 = new QHBoxLayout;
-	 topLeftLayout_30->addWidget(lineEdit);
-	 QHBoxLayout *topLeftLayout_1 = new QHBoxLayout;
-	 topLeftLayout_1->addWidget(label_2);
-	 QHBoxLayout *topLeftLayout_2 = new QHBoxLayout;
-	 topLeftLayout_2->addWidget(lineEdit_counte);
-
-	 QVBoxLayout *leftLayout_31 = new QVBoxLayout;
-	 leftLayout_31->addLayout(topLeftLayout_29);
-	 QVBoxLayout *leftLayout_32 = new QVBoxLayout;
-	 leftLayout_32->addLayout(topLeftLayout_30);
-	 QVBoxLayout *leftLayout_1 = new QVBoxLayout;
-	 leftLayout_1->addLayout(topLeftLayout_1);
-	 QVBoxLayout *leftLayout_2 = new QVBoxLayout;
-	 leftLayout_2->addLayout(topLeftLayout_2);
-
-	 QGridLayout *mainLayout = new QGridLayout;
-	 mainLayout->setSizeConstraint(QLayout::SetFixedSize);
-	 mainLayout->addLayout(leftLayout_31, 0, 0);
-	 mainLayout->addLayout(leftLayout_32, 0, 1);
-	 mainLayout->addLayout(leftLayout_1, 1, 0);
-	 mainLayout->addLayout(leftLayout_2, 1, 1);
-
-	 mainLayout->addLayout(buttonsLayout, 2, 0, 1, 2);
-	 add_dlg->setLayout(mainLayout);
-
-	 if(add_dlg->exec() == QDialog::Accepted){
-	 }
-	
-}
-
-void Add_elements_dialog::add_coord()
-{
-		float y = lineEdit_counte->text().toFloat();
-		float x = lineEdit->text().toFloat();
-			
-	//	if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Национальность не выбрана "),QMessageBox::Ok);return;}
-	//	else if (lineEdit_counte->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Введите процент населения "),QMessageBox::Ok);return;}
-		
-	//	int id_reg = in_id_object;
-
-		QMap<QString,QString> map;
-				
-		if (in_id_object<1) return;
-		map.clear();
-		map.insert("x_coordinates",QString::number(x));
-		map.insert("y_coordinates",QString::number(y));
-				
-		int id_coord = insert_in_table("coordinates",map,"id_coordinates");
-		
-	//	clear_table(coord_view);
-		table_coord(id_coord);
-		add_dlg->close();
-		
-}
-//=========================== правка координат в условиях ============================================
-void Add_elements_dialog::show_redaktor_coord(int row,int column){
-	QSqlQuery query;
-	if (column!=3){
-		return;
-	}
-	 else{    
-		int id_coord= coord_view->item(row,0)->text().toInt();
-	    if(!query.exec(QString ("delete from coordinates where id_coordinates = %1").arg(id_coord))){
-		return;
-		}
-		coord_view->removeRow(row);
-	 }
-}*/
 //============================ персонал в организации ===============================================
 void Add_elements_dialog::add_persones_groups(){
 

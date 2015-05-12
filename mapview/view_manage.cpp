@@ -71,9 +71,9 @@ QList<SignData*> ViewManage::getSmiMeans(long int hMap,double x1,double y1,doubl
 	QList<SignData*> smiMeansList;
 ///
 	QSqlQuery query;
-	QString str=QString("SELECT DISTINCT name_type_mpo_pso, coordinates.latitude_wgs_84_g,coordinates.latitude_wgs_84_m,coordinates.latitude_wgs_84_s,coordinates.longitude_wgs_84_g, \
+	QString str=QString("SELECT name_type_mpo_pso, coordinates.latitude_wgs_84_g,coordinates.latitude_wgs_84_m,coordinates.latitude_wgs_84_s,coordinates.longitude_wgs_84_g, \
 						coordinates.longitude_wgs_84_m,coordinates.longitude_wgs_84_s, \
-						type_mpo_pso.excode_type_mpo_pso, mpo_pso.id_mpo_pso, mpo_pso.semantika_digit1, mpo_pso.semantika_digit2, semantika_1 \
+						type_mpo_pso.excode_type_mpo_pso, mpo_pso.id_mpo_pso, mpo_pso.semantika_digit1, mpo_pso.semantika_digit2, mpo_pso.semantika_1 \
 						FROM mpo_pso, coord_mpo_pso cmp, coordinates, type_mpo_pso \
 						WHERE cmp.id_coordinates=coordinates.id_coordinates \
 						AND mpo_pso.id_type_mpo_pso=type_mpo_pso.id_type_mpo_pso \
@@ -183,28 +183,46 @@ QList<SignData*> ViewManage::getSmiMeans(long int hMap,double x1,double y1,doubl
 //==== Метод возвращает список объектов SignData с информацией ======================
 //==== для нанесения на карту и инициализации условных знаков средств формирований ==
 //===================================================================================
-QList<SignData*> ViewManage::getFormationsMeans()
+QList<SignData*> ViewManage::getFormationsMeans(long int hMap,double x1,double y1,double x2,double y2)
 {
 	QList<SignData*> formationsMeansList;
 
 	QSqlQuery query;
-	QString str=QString("SELECT name_type_mpo_pso, coordinates.x_coordinates, coordinates.y_coordinates, \
-						type_mpo_pso.excode_type_mpo_pso, id_mpo_pso, mpo_pso.semantika_digit1, mpo_pso.semantika_digit2, semantika_1 \
-						FROM mpo_pso, coordinates, type_mpo_pso \
-						WHERE mpo_pso.id_coordinates=coordinates.id_coordinates \
+	QString str=QString("SELECT name_type_mpo_pso, coordinates.latitude_wgs_84_g,coordinates.latitude_wgs_84_m,coordinates.latitude_wgs_84_s,coordinates.longitude_wgs_84_g, \
+						coordinates.longitude_wgs_84_m,coordinates.longitude_wgs_84_s, \
+						type_mpo_pso.excode_type_mpo_pso, mpo_pso.id_mpo_pso, mpo_pso.semantika_digit1, mpo_pso.semantika_digit2, mpo_pso.semantika_1 \
+						FROM mpo_pso, coord_mpo_pso cmp, coordinates, type_mpo_pso \
+						WHERE cmp.id_coordinates=coordinates.id_coordinates \
 						AND mpo_pso.id_type_mpo_pso=type_mpo_pso.id_type_mpo_pso \
+						AND mpo_pso.id_mpo_pso = cmp.id_mpo_pso \
 						AND type_mpo_pso.excode_type_mpo_pso <> '' \
-						AND coordinates.x_coordinates<>0 \
-						AND coordinates.y_coordinates<>0 \
 						AND mpo_pso.id_ls > 0");
 	if(query.exec(str))
 	{
 		QSqlRecord rec = query.record();
 		while (query.next())
 		{		
+			int wgs_g = query.value(rec.indexOf("latitude_wgs_84_g")).toInt();
+			int wgs_m = query.value(rec.indexOf("latitude_wgs_84_m")).toInt();
+			double wgs_s = query.value(rec.indexOf("latitude_wgs_84_s")).toDouble();
+			int long_wgs_g = query.value(rec.indexOf("longitude_wgs_84_g")).toInt();
+			int long_wgs_m = query.value(rec.indexOf("longitude_wgs_84_m")).toInt();
+			double long_wgs_s = query.value(rec.indexOf("longitude_wgs_84_s")).toDouble();
+					
+			///получить из запроса 6 параметров координат WGS
+
+			Coord c1(wgs_g,wgs_m,wgs_s,long_wgs_g,long_wgs_m,long_wgs_s);
+			
+			Coord *c2 = WGStoPlane(hMap,&c1);		
+			
+			double x_coord = c2->getX();
+			double y_coord = c2->getY();
+
+			
+			if(!((x_coord > x1) && (y_coord > y1) && (x_coord < x2) && (y_coord < y2))) continue;
+			
+			
 			QString name_type_mpo_pso = query.value(rec.indexOf("name_type_mpo_pso")).toString();
-			long int x_coord=query.value(rec.indexOf("x_coordinates")).toInt();
-			long int y_coord=query.value(rec.indexOf("y_coordinates")).toInt();
 			QString signCode = query.value(rec.indexOf("excode_type_mpo_pso")).toString();
 			QString id_mpo_pso = query.value(rec.indexOf("id_mpo_pso")).toString();
 
@@ -239,28 +257,45 @@ QList<SignData*> ViewManage::getFormationsMeans()
 //==== Метод возвращает список объектов SignData с информацией ======================
 //==== для нанесения на карту и инициализации условных знаков средств организаций ===
 //===================================================================================
-QList<SignData*> ViewManage::getGroupsMeans()
+QList<SignData*> ViewManage::getGroupsMeans(long int hMap,double x1,double y1,double x2,double y2)
 {
 	QList<SignData*> groupsMeansList;
 
 	QSqlQuery query;
-	QString str=QString("SELECT name_type_mpo_pso, coordinates.x_coordinates, coordinates.y_coordinates, \
-						type_mpo_pso.excode_type_mpo_pso, id_mpo_pso, mpo_pso.semantika_digit1, mpo_pso.semantika_digit2, semantika_1 \
-						FROM mpo_pso, coordinates, type_mpo_pso \
-						WHERE mpo_pso.id_coordinates=coordinates.id_coordinates \
+	QString str=QString("SELECT name_type_mpo_pso, coordinates.latitude_wgs_84_g,coordinates.latitude_wgs_84_m,coordinates.latitude_wgs_84_s,coordinates.longitude_wgs_84_g, \
+						coordinates.longitude_wgs_84_m,coordinates.longitude_wgs_84_s, \
+						type_mpo_pso.excode_type_mpo_pso, mpo_pso.id_mpo_pso, mpo_pso.semantika_digit1, mpo_pso.semantika_digit2, mpo_pso.semantika_1 \
+						FROM mpo_pso, coord_mpo_pso cmp, coordinates, type_mpo_pso \
+						WHERE cmp.id_coordinates=coordinates.id_coordinates \
 						AND mpo_pso.id_type_mpo_pso=type_mpo_pso.id_type_mpo_pso \
+						AND mpo_pso.id_mpo_pso = cmp.id_mpo_pso \
 						AND type_mpo_pso.excode_type_mpo_pso <> '' \
-						AND coordinates.x_coordinates<>0 \
-						AND coordinates.y_coordinates<>0 \
 						AND mpo_pso.id_groups > 0");
 	if(query.exec(str))
 	{
 		QSqlRecord rec = query.record();
 		while (query.next())
 		{		
+			int wgs_g = query.value(rec.indexOf("latitude_wgs_84_g")).toInt();
+			int wgs_m = query.value(rec.indexOf("latitude_wgs_84_m")).toInt();
+			double wgs_s = query.value(rec.indexOf("latitude_wgs_84_s")).toDouble();
+			int long_wgs_g = query.value(rec.indexOf("longitude_wgs_84_g")).toInt();
+			int long_wgs_m = query.value(rec.indexOf("longitude_wgs_84_m")).toInt();
+			double long_wgs_s = query.value(rec.indexOf("longitude_wgs_84_s")).toDouble();
+					
+			///получить из запроса 6 параметров координат WGS
+
+			Coord c1(wgs_g,wgs_m,wgs_s,long_wgs_g,long_wgs_m,long_wgs_s);
+			
+			Coord *c2 = WGStoPlane(hMap,&c1);		
+			
+			double x_coord = c2->getX();
+			double y_coord = c2->getY();
+
+			
+			if(!((x_coord > x1) && (y_coord > y1) && (x_coord < x2) && (y_coord < y2))) continue;
+
 			QString name_type_mpo_pso = query.value(rec.indexOf("name_type_mpo_pso")).toString();
-			long int x_coord=query.value(rec.indexOf("x_coordinates")).toInt();
-			long int y_coord=query.value(rec.indexOf("y_coordinates")).toInt();
 			QString signCode = query.value(rec.indexOf("excode_type_mpo_pso")).toString();
 			QString id_mpo_pso = query.value(rec.indexOf("id_mpo_pso")).toString();
 
@@ -296,22 +331,46 @@ QList<SignData*> ViewManage::getGroupsMeans()
 //==== Метод возвращает список объектов SignData с информацией ===================
 //==== для нанесения на карту и инициализации условных знаков формирований =======
 //================================================================================
-QList<SignData*> ViewManage::getFormations()
+QList<SignData*> ViewManage::getFormations(long int hMap,double x1,double y1,double x2,double y2)
 {
 	QList<SignData*> formationsList;
 
 	QSqlQuery query;
-	QString str=QString("SELECT name_ls, coordinates.x_coordinates, coordinates.y_coordinates, type_ls.excode_type_ls, ls.short_name_ls, id_ls \
-						FROM ls, coordinates, type_ls WHERE ls.id_coordinates=coordinates.id_coordinates AND ls.id_type_ls=type_ls.id_type_ls\
-						AND type_ls.excode_type_ls <> '' AND coordinates.x_coordinates<>0 AND coordinates.y_coordinates<>0 AND ls.short_name_ls <> ''");
+	QString str=QString("SELECT ls.name_ls, coordinates.latitude_wgs_84_g,coordinates.latitude_wgs_84_m,coordinates.latitude_wgs_84_s, \
+						coordinates.longitude_wgs_84_g,coordinates.longitude_wgs_84_m,coordinates.longitude_wgs_84_s, \
+						type_ls.excode_type_ls, ls.short_name_ls, ls.id_ls, coord_ls.id_ls \
+						FROM ls, coordinates, type_ls, coord_ls \
+						WHERE coord_ls.id_coordinates=coordinates.id_coordinates \
+						AND ls.id_type_ls=type_ls.id_type_ls\
+						AND type_ls.excode_type_ls <> '' \
+						AND ls.id_ls = coord_ls.id_ls \
+						AND ls.short_name_ls <> ''");
 	if(query.exec(str))
 	{
 		QSqlRecord rec = query.record();
 		while (query.next())
 		{
+			int wgs_g = query.value(rec.indexOf("latitude_wgs_84_g")).toInt();
+			int wgs_m = query.value(rec.indexOf("latitude_wgs_84_m")).toInt();
+			double wgs_s = query.value(rec.indexOf("latitude_wgs_84_s")).toDouble();
+			int long_wgs_g = query.value(rec.indexOf("longitude_wgs_84_g")).toInt();
+			int long_wgs_m = query.value(rec.indexOf("longitude_wgs_84_m")).toInt();
+			double long_wgs_s = query.value(rec.indexOf("longitude_wgs_84_s")).toDouble();
+					
+			///получить из запроса 6 параметров координат WGS
+
+			Coord c1(wgs_g,wgs_m,wgs_s,long_wgs_g,long_wgs_m,long_wgs_s);
+			
+			Coord *c2 = WGStoPlane(hMap,&c1);		
+			
+			double x_coord = c2->getX();
+			double y_coord = c2->getY();
+
+			
+			if(!((x_coord > x1) && (y_coord > y1) && (x_coord < x2) && (y_coord < y2))) continue;
+
+
 			QString name_ls = query.value(rec.indexOf("name_ls")).toString();
-			long int x_coord=query.value(rec.indexOf("x_coordinates")).toInt();
-			long int y_coord=query.value(rec.indexOf("y_coordinates")).toInt();
 			QString signCode = query.value(rec.indexOf("excode_type_ls")).toString();
 			QString shortNameLs = query.value(rec.indexOf("short_name_ls")).toString();
 			QString idLs = query.value(rec.indexOf("id_ls")).toString();
@@ -340,17 +399,19 @@ QList<SignData*> ViewManage::getFormations()
 //==== Метод возвращает список объектов SignData с информацией =====================
 //==== для нанесения на карту и инициализации условных знаков специальных условий ==
 //==================================================================================
-QList<SignData*> ViewManage::getSpecialConditions()
+QList<SignData*> ViewManage::getSpecialConditions(long int hMap,double x1,double y1,double x2,double y2)
 {
 	QList<SignData*> conditionsList;
 
 	QSqlQuery query;
 	QString str=QString("SELECT special_conditions.name_special_conditions, special_conditions.semantika_1, \
 						special_conditions.semantika_2 , type_special_conditions.excode_type_sc, \
-						coordinates.x_coordinates, coordinates.y_coordinates, special_conditions.id_special_conditions FROM special_conditions, \
-						region, type_special_conditions, coordinates, coord_spec_cond \
-						where special_conditions.id_region=region.id_region AND \
-						special_conditions.id_type_special_conditions=type_special_conditions.id_type_special_conditions \
+						coordinates.latitude_wgs_84_g,coordinates.latitude_wgs_84_m,coordinates.latitude_wgs_84_s,\
+						coordinates.longitude_wgs_84_g,coordinates.longitude_wgs_84_m,coordinates.longitude_wgs_84_s, \
+						special_conditions.id_special_conditions \
+						FROM special_conditions, region, type_special_conditions, coordinates, coord_spec_cond \
+						WHERE special_conditions.id_region=region.id_region \
+						AND special_conditions.id_type_special_conditions=type_special_conditions.id_type_special_conditions \
 						AND coord_spec_cond.id_special_conditions=special_conditions.id_special_conditions \
 						AND coord_spec_cond.id_coordinates=coordinates.id_coordinates");
 	if(query.exec(str))
@@ -358,9 +419,26 @@ QList<SignData*> ViewManage::getSpecialConditions()
 		QSqlRecord rec = query.record();
 		while (query.next())
 		{
+			int wgs_g = query.value(rec.indexOf("latitude_wgs_84_g")).toInt();
+			int wgs_m = query.value(rec.indexOf("latitude_wgs_84_m")).toInt();
+			double wgs_s = query.value(rec.indexOf("latitude_wgs_84_s")).toDouble();
+			int long_wgs_g = query.value(rec.indexOf("longitude_wgs_84_g")).toInt();
+			int long_wgs_m = query.value(rec.indexOf("longitude_wgs_84_m")).toInt();
+			double long_wgs_s = query.value(rec.indexOf("longitude_wgs_84_s")).toDouble();
+					
+			///получить из запроса 6 параметров координат WGS
+
+			Coord c1(wgs_g,wgs_m,wgs_s,long_wgs_g,long_wgs_m,long_wgs_s);
+			
+			Coord *c2 = WGStoPlane(hMap,&c1);		
+			
+			double x_coord = c2->getX();
+			double y_coord = c2->getY();
+
+			
+			if(!((x_coord > x1) && (y_coord > y1) && (x_coord < x2) && (y_coord < y2))) continue;
+
 			QString name_spec_cond = query.value(rec.indexOf("name_special_conditions")).toString();
-			long int x_coord=query.value(rec.indexOf("x_coordinates")).toInt();
-			long int y_coord=query.value(rec.indexOf("y_coordinates")).toInt();
 			QString signCode = query.value(rec.indexOf("excode_type_sc")).toString();
 			QString Sem_1_spec_cond = query.value(rec.indexOf("semantika_1")).toString();
 			QString Sem_2_spec_cond = query.value(rec.indexOf("semantika_2")).toString();
