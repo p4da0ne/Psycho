@@ -97,8 +97,7 @@ void SignsEdit::create_signs_table(const QModelIndex &index)
     }
     while(query_sign.next())
     {
-        int id_sign = query.value(2).toInt();
-        query.clear();
+        int id_sign = query_sign.value(2).toInt();
         str = QString("select id_sign, sign_name, sign_key, sign_picture from signs where id_sign = %1").arg(id_sign);
         if(!query.exec(str))
         {
@@ -149,13 +148,13 @@ void SignsEdit::add_new_sign()
     QString table_type;
     if (currentIndex.data(Qt::UserRole).isNull()) {
         QMessageBox msgBox;
-        msgBox.setText("Pleas, select one of type.");
+        msgBox.setText("Please, select one of type.");
         msgBox.exec();
         return;
     }
     if (currentIndex.data(Qt::UserRole).type() == QVariant::String){
         QMessageBox msgBox;
-        msgBox.setText("Pleas, select one of type.");
+        msgBox.setText("Please, select one of type.");
         msgBox.exec();
         return;
     }else{
@@ -219,7 +218,7 @@ void SignsEdit::add_new_sign()
 
         //------ По кнопке ОК добавление в БД нового знака для типа объекта --------
         QSqlQuery query;
-        query.prepare("INSERT INTO signs (sign_key,sign_name,sign_picture) VALUES (?,?,?)");
+        query.prepare("INSERT INTO signs (sign_key,sign_name,sign_picture) VALUES (?,?,?) RETURNING id_sign");
         query.addBindValue(sign_code_edit->text());
         query.addBindValue(sign_name_edit->text());
 
@@ -245,7 +244,11 @@ void SignsEdit::add_new_sign()
         {
             QMessageBox::about(this,"Error",query.lastError().text());
         }
-        int id_sign = query.lastInsertId().toInt();
+        
+		query.next();
+		int id_sign = query.value(0).toInt();
+		query.clear();
+
         QString str_query=QString("UPDATE %1 SET id_sign = %3 WHERE id_%1 = %2").arg(table_type).arg(currentIndex.data(Qt::UserRole).toInt()).arg(id_sign);
         if(!query.exec(str_query)){
             QString s = query.lastError().text();
