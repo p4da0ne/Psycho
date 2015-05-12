@@ -26,6 +26,7 @@ public:
 	Add_elements_dialog(int type_element,int id_object,QWidget *parent=0);
 	~Add_elements_dialog();
 	QPushButton *deleteButton;
+	QPushButton *addButton;
 
 private:
 	 void fill_combobox(QComboBox *in_comboBox,QString table,QStringList name_column);
@@ -103,7 +104,7 @@ private:
      QCheckBox *searchSelectionCheckBox;
      QCheckBox *backwardCheckBox;
      QDialogButtonBox *buttonBox;
-     QPushButton *addButton;
+     
 	 QPushButton *addButtonn;
 	 QPushButton *addButton_1;
 	 QPushButton *saveButton;
@@ -143,6 +144,7 @@ private:
 	 int in_id_object;
 	 int id_persers;
 	 
+	 
 
 private slots:
 	void add_smi();
@@ -152,7 +154,6 @@ private slots:
 	void add_mpo_pso_smi();
 	void add_groups();
     void add_persones_groups();
-	void edit_persones();
 	void add_persones_ls();
     void add_persones_smi();
 	void add_special_cond();
@@ -212,14 +213,12 @@ private slots:
 	void table_prof_gr();
 	void table_age();
 	void table_age_gr();
-	void save_edit_persones();
 	void table_sex();
 	void table_sex_gr();
 	void table_rank();
 	void table_rank_gr();
 //	void table_coord(int id_coord);
     void open_file();
-    void clicked_open_file();
     void otchet_pers();
 
 	//void add_hardware_object();

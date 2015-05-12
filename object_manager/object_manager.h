@@ -23,6 +23,7 @@
 #include "textprinter.h"
 #include <QProgressDialog>
 #include <my_mapaccess.h>
+#include "mylabel.h"
 
 class simledelegate;
 
@@ -48,6 +49,8 @@ public:
     QMap< QString, QMap<QString, QString> > object_map;
 	QPoint		pe;
     HMAP hmap;
+	MyLabel *label_foto; 
+	QLabel *label_foto_hide;
 public slots:
 	void customMenuTree(const QPoint &);
 	void customMenuView(const QPoint &);
@@ -64,6 +67,8 @@ private slots:
 	void delete_mpo();
 	void delete_sc();
 	void delete_pers();
+	void edit_persones();
+	void clicked_open_file();
 	
     void otchet();
     void otchet_groups();
@@ -80,6 +85,8 @@ private slots:
     void WGS_to_other();
     void PLANE_to_other();
 private:
+	QDialog *edit_dlg_pers;
+	QCheckBox *checkbox_enemy;
     void edit_coordinates(QString,int id_obj,QString,QString);
     int calcul(int);
     int count_smi(int);
