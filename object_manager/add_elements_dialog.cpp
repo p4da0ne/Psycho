@@ -1761,7 +1761,7 @@ case 24:{ //========== Персонал данные ====================================
      label_foto_name = new QLabel("Фото:");
      label_foto = new MyLabel();
      label_foto_name->setBuddy(label_foto);
-     label_foto_hide = new QLabel("");
+     label_foto_hide = new QLabel();
 
      label = new QLabel("Имя:");
 	 lineEdit_name = new QLineEdit;
@@ -1846,13 +1846,9 @@ case 24:{ //========== Персонал данные ====================================
 	}
 		 
 	 addButton = new QPushButton("Редактировать");
-	 addButton->setDefault(true);
-	 connect(addButton,SIGNAL(clicked()),this,SLOT(edit_persones()));
+	 connect(addButton,SIGNAL(clicked()),this,SLOT(close()));
 	 cancelButton = new QPushButton("Выход");
 	 connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
-	 saveButton = new QPushButton("Сохранить");
-	 connect(saveButton,SIGNAL(clicked()),this,SLOT(save_edit_persones()));
-	 saveButton->setDisabled(true);
 	 deleteButton = new QPushButton("Удалить");
 	 connect(deleteButton,SIGNAL(clicked()),this,SLOT(close()));
      otchetButton = new QPushButton("Отчет");
@@ -1861,7 +1857,6 @@ case 24:{ //========== Персонал данные ====================================
 	 QHBoxLayout *buttonsLayout = new QHBoxLayout;
 	 buttonsLayout->addStretch();
 	 buttonsLayout->addWidget(deleteButton);
-	 buttonsLayout->addWidget(saveButton);
 	 buttonsLayout->addWidget(addButton);
      buttonsLayout->addWidget(otchetButton);
      buttonsLayout->addWidget(cancelButton);
@@ -5616,18 +5611,7 @@ void Add_elements_dialog::open_file()
     if (fileName.isEmpty()) return;
     QString baseName = QFileInfo(fileName).fileName();
     lineEdit_name_f->setText(baseName);
- }
-void Add_elements_dialog::clicked_open_file()
-{
-    QString fileName = QFileDialog::getOpenFileName(this, "Выбор фотографии", "foto_persones/",
-                                                    "Images (*.jpg *.png)");
-    if (fileName.isEmpty()) return; //  label_foto_hide->setText(noup);
-    QString baseName = QFileInfo(fileName).fileName();
-    QString path_foto = "foto_persones/" + baseName;
-    label_foto->setText("<CENTER><IMG BORDER=\"0\" SRC=\""+path_foto+"\" width = '200' height = '200'> </CENTER>");
-    //label_foto->setDisabled(true);
-    label_foto_hide->setText(baseName);
-
+   
 }
 
 void Add_elements_dialog::otchet_pers()
@@ -5676,73 +5660,6 @@ void Add_elements_dialog::add_persones_groups(){
 	
 	
 }
-//============================ редактирование персонала =============================================
-void Add_elements_dialog::edit_persones(){
- 
-    textEdit_propa->setReadOnly(false);
-    label_foto->setEnabled(true);
-     label_foto_hide->setVisible(false);
-     lineEdit_name->setStyleSheet("color: black");
-	 lineEdit_name->setEnabled(true);
-	 lineEdit_counte_ls->setStyleSheet("color: black");
-     lineEdit_counte_ls->setEnabled(true);
-	 lineEdit_counte_ls_bd->setStyleSheet("color: black");
-	 lineEdit_counte_ls_bd->setEnabled(true);
-	 checkbox_enemy->setEnabled(true);
-	 lineEdit_rank->setStyleSheet("color: black");
-	 lineEdit_rank->setEnabled(true);
-	 lineEdit_aut->setStyleSheet("color: black");
-	 lineEdit_aut->setEnabled(true);
-	 textEdit_propa->setStyleSheet("color: black");
-	 textEdit_propa->setEnabled(true);
-     textEdit_propa->setFixedHeight(100);
-	 saveButton->setEnabled(true);
-	 deleteButton->setDisabled(true);
-     otchetButton->setDisabled(true);
-     connect(label_foto,SIGNAL(label_clicked()),this,SLOT(clicked_open_file()));
-	  
-	
-}
-//============================ save персонала ========================================================
-void Add_elements_dialog::save_edit_persones(){
-	
-	QString name_persones = lineEdit_name->text();
-	QString desc_pers=textEdit_propa->toPlainText();
-	int counte_age = lineEdit_counte_ls->text().toInt();
-	QString contact = lineEdit_counte_ls_bd->text();
-	QString rank_pers = lineEdit_rank->text();
-	float aut = lineEdit_aut->text().toFloat();
-	bool opossition = checkbox_enemy->isChecked();
-    QString l_foto = label_foto_hide->text();
-
-	QSqlQuery query;
-    QString str = QString("UPDATE persones SET name_persones='%1', age_persones='%2',contact_persones='%3',rank_persones='%4',opposition_persones='%5',description_persones='%6',authority_persones='%7', image_persones='%8' WHERE id_persones=%9").arg(name_persones).arg(counte_age).arg(contact).arg(rank_pers).arg(opossition).arg(desc_pers).arg(aut).arg(l_foto).arg(id_persers);
-	
-	if(!query.exec(str)){
-			 return;
-		 }
-	 saveButton->setDisabled(true);
-	 deleteButton->setEnabled(true);
-     otchetButton->setEnabled(true);
-	 lineEdit_name->setDisabled(true);
-	 lineEdit_name->setStyleSheet("font:bold; color: black");
-	 lineEdit_counte_ls->setDisabled(true);
-	 lineEdit_counte_ls->setStyleSheet("font:bold; color: black");
-	 lineEdit_counte_ls_bd->setDisabled(true);
-	 lineEdit_counte_ls_bd->setStyleSheet("font:bold; color: black");
-	 checkbox_enemy->setDisabled(true);
-	 checkbox_enemy->setStyleSheet("color: black");
-	 lineEdit_rank->setDisabled(true);
-	 lineEdit_rank->setStyleSheet("font:bold; color: black");
-	 lineEdit_aut->setDisabled(true);
-	 lineEdit_aut->setStyleSheet("font:bold; color: black");
-	 textEdit_propa->setDisabled(true);
-	 textEdit_propa->setStyleSheet("font:bold; color: black");
-     label_foto->setDisabled(true);
-     textEdit_propa->setReadOnly(false);
-     close();
-
-   }
 
 //============================ персонал в формирований ===============================================
 void Add_elements_dialog::add_persones_ls(){
