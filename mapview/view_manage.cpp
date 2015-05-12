@@ -520,3 +520,142 @@ QString ViewManage::getObjectTypeAndName(int idObject, int objectType)
 	}
 	return objectInfo;
 }
+//======================================================================================================
+//====== Метод возвращает строку c информацией об объекте при нажатии на левую кнопень =================
+//======================================================================================================
+QString ViewManage::getObjectInfo(int idObject, int objectType)
+{
+	
+	
+	QString str;
+
+	switch(objectType)
+		{
+			case FORMATIONS:
+				str = get_ls_info(idObject);
+				break;
+			
+			/*case SPECIAL_CONDITIONS:
+				str = QString("SELECT t.name_type_special_conditions, s.name_special_conditions \
+							   FROM special_conditions s, type_special_conditions t \
+							   WHERE s.id_type_special_conditions = t.id_type_special_conditions \
+							   AND s.id_special_conditions = %1").arg(idObject);
+				break;
+			case SMI_MEANS:
+				str = QString("SELECT t.name_type_mpo_pso, m.name_mpo_pso \
+							   FROM mpo_pso m, type_mpo_pso t \
+							   WHERE m.id_type_mpo_pso = t.id_type_mpo_pso \
+							   AND m.id_mpo_pso = %1").arg(idObject);
+				break;
+			
+			case FORMATIONS_MEANS:
+				str = QString("SELECT t.name_type_mpo_pso, m.name_mpo_pso \
+							   FROM mpo_pso m, type_mpo_pso t \
+							   WHERE m.id_type_mpo_pso = t.id_type_mpo_pso \
+							   AND m.id_mpo_pso = %1").arg(idObject);
+				break;
+							
+			case GROUPS_MEANS:
+				str = QString("SELECT t.name_type_mpo_pso, m.name_mpo_pso \
+							   FROM mpo_pso m, type_mpo_pso t \
+							   WHERE m.id_type_mpo_pso = t.id_type_mpo_pso \
+							   AND m.id_mpo_pso = %1").arg(idObject);
+				break;*/
+		}
+	
+		
+	
+		
+	return str;
+}
+//============================ инфа по воинским формированиям ================================
+QString ViewManage::get_ls_info(int idObject){
+	
+	QString name_blok,name_mpo,name_ls,name_country,objectInfo_parent,html_info_ls;
+	int id_region,id_blok,id_country,id_parent_ls,counte_ls;
+	QSqlQuery query;
+	QString str;
+
+	str = QString("SELECT name_ls,parent_ls, id_region, enimy_ls, counte_ls FROM ls WHERE id_ls=%1").arg(idObject);
+	
+	if(query.exec(str))
+	{
+		QSqlRecord rec = query.record();
+		while (query.next())
+		{
+			name_ls = query.value(0).toString();
+			id_region = query.value(2).toInt();
+			id_parent_ls = query.value(1).toInt();
+			counte_ls = query.value(4).toInt();
+		}
+		query.clear();
+	}
+//============================================ средства ВФ ===============================================	
+	
+	str = QString("SELECT name_mpo_pso FROM mpo_pso WHERE id_ls = %1 ").arg(idObject);
+
+	if(query.exec(str))
+	{
+		QSqlRecord rec = query.record();
+		while (query.next())
+		{
+			name_mpo += query.value(0).toString();
+		}
+		query.clear();
+	}
+//============================================ имя страны и флаг страны ===============================================	
+	str = QString("SELECT country.flag,  country.name_country, country.id_country FROM region, country WHERE region.id_country = country.id_country AND region.id_region = %1").arg(id_region);
+
+		if(query.exec(str))
+	{
+		QSqlRecord rec = query.record();
+		while (query.next())
+		{
+			name_country = query.value(1).toString();
+			id_country = query.value(2).toInt();
+		}
+
+		query.clear();
+	}
+//============================================ имя блока и эмблема блока ===============================================
+			
+		str = QString("SELECT blok.name_blok, blok.emblem_blok FROM blok , blok_country WHERE blok.id_blok = blok_country.id_blok AND blok_country.id_country = %1 ").arg(id_country);
+		
+		if(query.exec(str))
+	{
+		QSqlRecord rec = query.record();
+		while (query.next())
+		{
+			name_blok = query.value(0).toString();
+		}
+		query.clear();
+	}
+//============================================ подчиненность ===============================================
+	
+		if (id_parent_ls==0) {
+			objectInfo_parent = " в подчинении не замечен :-)";
+		}
+		else{
+		str = QString("SELECT name_ls FROM ls WHERE id_ls= %1").arg(id_parent_ls);
+		if(query.exec(str))
+	{
+		QSqlRecord rec = query.record();
+		while (query.next())
+		{
+			objectInfo_parent = query.value(0).toString();
+		}
+		query.clear();
+	}
+		}
+	
+		html_info_ls = "<H2><CENTER>" + name_ls + "</CENTER></H2>"
+						"<H3><B>Страна: " + name_country + "</B></H3>"
+	//					"<CENTER><IMG BORDER=\"0\" SRC=\""+Pict+"\"></CENTER>"
+						"<H3><B>Блок: " + name_blok + "</B></H3>"
+	//					"<CENTER><IMG BORDER=\"0\" SRC=\""+Pict1+"\"></CENTER>"
+						"<H3><B>Численность - " + counte_ls + "</B></H3>"
+						"<H3><B>Средства ПсО: " + name_mpo+ "</B></H3>"
+					    "<H3>Подчиненность:  " + objectInfo_parent + "</H3>";
+
+	return html_info_ls;
+}
