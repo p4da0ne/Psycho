@@ -251,10 +251,8 @@ void Mainform::init_menu(int id_user_group)
 			add_menu_manage_users(settings_menu);
 			add_menu_map_settings(settings_menu);
 			add_menu_backup_db(settings_menu);
+            add_menu_signs_edit(settings_menu);
 			UI->menuBar->addMenu(settings_menu);
-
-		//	DB_work_menu = new QMenu("Работа с БД");
-		//	UI->menuBar->addMenu(DB_work_menu);
 
 			oper_menu = new QMenu("Оперативная работа");
 			add_menu_supporting_tables(oper_menu);
@@ -268,7 +266,7 @@ void Mainform::init_menu(int id_user_group)
 			UI->menuBar->clear();
 			menu = new QMenu("Файл");
 			add_menu_change_user(menu);
-			add_menu_exit(menu);		
+            add_menu_exit(menu);
 			UI->menuBar->addMenu(menu);
 
 			settings_menu = new QMenu("Настройки");
@@ -276,10 +274,8 @@ void Mainform::init_menu(int id_user_group)
 			add_menu_manage_users(settings_menu);
 			add_menu_map_settings(settings_menu);
 			add_menu_backup_db(settings_menu);
+            add_menu_signs_edit(settings_menu);
 			UI->menuBar->addMenu(settings_menu);
-
-		//	DB_work_menu = new QMenu("Работа с БД");
-		//	UI->menuBar->addMenu(DB_work_menu);
 
 			oper_menu = new QMenu("Оперативная работа");
 			add_menu_supporting_tables(oper_menu);
@@ -295,13 +291,9 @@ void Mainform::init_menu(int id_user_group)
 			menu = new QMenu("Файл");
 			add_menu_change_user(menu);
 			add_menu_exit(menu);
-			UI->menuBar->addMenu(menu);
-			
-	//		DB_work_menu = new QMenu("Работа с БД");
-		//	UI->menuBar->addMenu(DB_work_menu);
 
-			oper_menu = new QMenu("Оперативная работа");
-		//	add_menu_supporting_tables(oper_menu);
+			UI->menuBar->addMenu(menu);
+            oper_menu = new QMenu("Оперативная работа");
 			add_menu_object_manager(oper_menu);
 			add_mapwork(oper_menu);
 			UI->menuBar->addMenu(oper_menu);
@@ -357,7 +349,15 @@ void Mainform::add_menu_backup_db(QMenu *settings_menu){
 	backup_db_action = new QAction("Резервное копирование БД",this);
 	backup_db_action->setIcon(QIcon("./icons/database.png"));
 	settings_menu->addAction(backup_db_action);
-	connect(backup_db_action, SIGNAL(triggered()),this, SLOT(slotOpenBackupDbDialog()));
+    connect(backup_db_action, SIGNAL(triggered()),this, SLOT(slotOpenBackupDbDialog()));
+}
+
+void Mainform::add_menu_signs_edit(QMenu *settings_menu)
+{
+    sett_act5 = new QAction("Редактирование знаков типов объектов",this);
+    sett_act5->setIcon(QIcon("./icons/user_config.png"));
+    settings_menu->addAction(sett_act5);
+    connect(sett_act5, SIGNAL(triggered()),this, SLOT(show_signs_edit()));
 }
 
 
@@ -579,8 +579,21 @@ void Mainform::show_object_manager_form(){
 	obmanager->setAttribute (Qt::WA_DeleteOnClose);
 	obman->setWindowTitle("Управление объектами");
 	obman->showMaximized();
-	m_mdiArea->setActiveSubWindow (obmanager);  
+    m_mdiArea->setActiveSubWindow (obmanager);
 
+}
+
+/*!
+Открытие окна управления знаками типов объектов отображаемых на карте
+void Mainform::show_signs_edit()
+*/
+void Mainform::show_signs_edit(){
+    SignsEdit *signs = new SignsEdit();
+    QMdiSubWindow * signs_window = m_mdiArea->addSubWindow (signs);
+    signs_window->setAttribute (Qt::WA_DeleteOnClose);
+    signs->setWindowTitle("Управление знаками типов объектов");
+    signs->showMaximized();
+    m_mdiArea->setActiveSubWindow (signs_window);
 }
 
 //void Mainform::show_calculating_form(){
