@@ -16,7 +16,8 @@ SUBDIRS += \
         supporting_tables \
         object_manager \
         mainform \
-		signs_edit
+        signs_edit \
+        textedit
 	
 
 INSTALLS += transl
