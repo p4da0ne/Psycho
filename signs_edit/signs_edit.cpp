@@ -59,6 +59,13 @@ void SignsEdit::show_object_types(){
     str_query="SELECT id_sign, name_type_special_conditions, id_type_special_conditions FROM type_special_conditions order by id_type_special_conditions";
     this->add_type_to_model(str_query,type_special_conditions_item);
 
+    // Add type from type_region table
+    QStandardItem *type_region_item = new QStandardItem("Типы регионов");
+    type_region_item->setData("type_region",Qt::UserRole);
+    parentItem->appendRow(type_region_item);
+    str_query="SELECT id_sign, name_type_region, id_type_region FROM type_region order by id_type_region";
+    this->add_type_to_model(str_query,type_region_item);
+
     model->setHeaderData(0, Qt::Horizontal, QObject::tr("Types of objects"));
     UI->object_types_treeView->setModel(model);
 }
