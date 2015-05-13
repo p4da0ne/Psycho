@@ -70,11 +70,8 @@ private slots:
 	void edit_persones();
 	void clicked_open_file();
 	
-    void otchet();
     void otchet_groups();
-    void save_pdf();
-    void print_formul();
-
+    void reports_region();
     void add_new_coordinates();
     void show_dialog_add_file();
     void get_coordinates(int,QString,QString,QString);

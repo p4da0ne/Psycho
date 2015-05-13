@@ -2,6 +2,7 @@
 #define ADD_OBJECT_H
 
 #include <QDialog>
+#include <QComboBox>
 //#include "ui_add_object.h"
 
 namespace Ui
@@ -28,6 +29,7 @@ private slots:
 	void add_new_object();
 
 private:
+    void fill_combobox_type_region(QComboBox *box);
 	int id_region_1;
 	bool id_bool_preg;
 	Ui::add_object *UI;
