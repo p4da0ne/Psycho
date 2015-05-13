@@ -1,0 +1,12 @@
+#ifndef EVENTS_MODEL_GLOBAL_H
+#define EVENTS_MODEL_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(EVENTS_MODEL_LIBRARY)
+#  define EVENTS_MODELSHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define EVENTS_MODELSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // EVENTS_MODEL_GLOBAL_H

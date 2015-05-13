@@ -17,7 +17,8 @@ SUBDIRS += \
         object_manager \
         mainform \
         signs_edit \
-        textedit
+        textedit \
+    events_model
 	
 
 INSTALLS += transl
