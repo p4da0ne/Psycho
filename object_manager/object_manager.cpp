@@ -1773,12 +1773,9 @@ void Objectmanager::region_click(int id_region){
     const QString tableName="region";
 	model_region->setTable(tableName);
 	model_region->setFilter(QString("id_region=%1").arg(id_region));
-    UI->property_object->verticalHeader()->setVisible(true);
+
 
     QSqlRelationalDelegate *delegat_reg=new QSqlRelationalDelegate(UI->property_object);
-
-
-
 
     model_region->setHeaderData(3, Qt::Horizontal,"Наименование региона");model_region->setHeaderData(5, Qt::Horizontal, "Описание региона");
 
@@ -1830,11 +1827,13 @@ void Objectmanager::region_click(int id_region){
     bool is= model_region->select();
     QString str=model_region->lastError().text();
 
+
     UI->property_object->setModel(model_region);
 
 	UI->property_object->hideColumn(0);
 	UI->property_object->hideColumn(1);
-	UI->property_object->hideColumn(2);
+    UI->property_object->hideColumn(2);
+    UI->property_object->horizontalHeader()->moveSection(83,4);
     UI->property_object->hideColumn(4);
     UI->property_object->hideColumn(82);
 	UI->property_object->setColumnWidth(3,150);UI->property_object->setColumnWidth(7,150);UI->property_object->setColumnWidth(11,150);
