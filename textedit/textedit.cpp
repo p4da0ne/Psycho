@@ -2,15 +2,15 @@
 
 const QString rsrcPath = ":/images/win";
 
-TextEdit::TextEdit(QWidget *parent)
+TextEdit::TextEdit(QString content,QString windoe_title, QWidget *parent)
     : QMainWindow(parent)
 {
     Q_INIT_RESOURCE(textedit);
+    title = windoe_title;
     setToolButtonStyle(Qt::ToolButtonFollowStyle);
     setupFileActions();
     setupEditActions();
     setupTextActions();
-
     {
         QMenu *helpMenu = new QMenu(tr("Help"), this);
         menuBar()->addMenu(helpMenu);
@@ -63,13 +63,8 @@ TextEdit::TextEdit(QWidget *parent)
     connect(QApplication::clipboard(), SIGNAL(dataChanged()), this, SLOT(clipboardDataChanged()));
 #endif
 
-    QString initialFile = ":/example.html";
-    const QStringList args = QCoreApplication::arguments();
-    if (args.count() == 2)
-        initialFile = args.at(1);
-
-    if (!load(initialFile))
-        fileNew();
+    load(content);
+    this->show();
 }
 
 void TextEdit::closeEvent(QCloseEvent *e)
@@ -91,22 +86,22 @@ void TextEdit::setupFileActions()
 
     QAction *a;
 
-    QIcon newIcon = QIcon::fromTheme("document-new", QIcon(rsrcPath + "/filenew.png"));
-    a = new QAction( newIcon, tr("&New"), this);
-    a->setPriority(QAction::LowPriority);
-    a->setShortcut(QKeySequence::New);
-    connect(a, SIGNAL(triggered()), this, SLOT(fileNew()));
-    tb->addAction(a);
-    menu->addAction(a);
+//    QIcon newIcon = QIcon::fromTheme("document-new", QIcon(rsrcPath + "/filenew.png"));
+//    a = new QAction( newIcon, tr("&New"), this);
+//    a->setPriority(QAction::LowPriority);
+//    a->setShortcut(QKeySequence::New);
+//    connect(a, SIGNAL(triggered()), this, SLOT(fileNew()));
+//    tb->addAction(a);
+//    menu->addAction(a);
 
-    a = new QAction(QIcon::fromTheme("document-open", QIcon(rsrcPath + "/fileopen.png")),
-                    tr("&Open..."), this);
-    a->setShortcut(QKeySequence::Open);
-    connect(a, SIGNAL(triggered()), this, SLOT(fileOpen()));
-    tb->addAction(a);
-    menu->addAction(a);
+//    a = new QAction(QIcon::fromTheme("document-open", QIcon(rsrcPath + "/fileopen.png")),
+//                    tr("&Open..."), this);
+//    a->setShortcut(QKeySequence::Open);
+//    connect(a, SIGNAL(triggered()), this, SLOT(fileOpen()));
+//    tb->addAction(a);
+//    menu->addAction(a);
 
-    menu->addSeparator();
+//    menu->addSeparator();
 
     actionSave = a = new QAction(QIcon::fromTheme("document-save", QIcon(rsrcPath + "/filesave.png")),
                                  tr("&Save"), this);
@@ -144,8 +139,8 @@ void TextEdit::setupFileActions()
     tb->addAction(a);
     menu->addAction(a);
 
-    a = new QAction(QIcon::fromTheme("exportpdf", QIcon(rsrcPath + "/exportpdf.png")),
-                    tr("&Export PDF..."), this);
+    a = new QAction(QIcon::fromTheme("exportword", QIcon(rsrcPath + "/word_document.png")),
+                    tr("&Export Word..."), this);
     a->setPriority(QAction::LowPriority);
     a->setShortcut(Qt::CTRL + Qt::Key_D);
     connect(a, SIGNAL(triggered()), this, SLOT(worder()));
@@ -335,26 +330,10 @@ void TextEdit::setupTextActions()
                                                                    .pointSize())));
 }
 
-bool TextEdit::load(const QString &f)
+bool TextEdit::load(QString content)
 {
-    if (!QFile::exists(f))
-        return false;
-    QFile file(f);
-    if (!file.open(QFile::ReadOnly))
-        return false;
-
-    QByteArray data = file.readAll();
-    QTextCodec *codec = Qt::codecForHtml(data);
-    QString str = codec->toUnicode(data);
-    if (Qt::mightBeRichText(str)) {
-        textEdit->setHtml(str);
-    } else {
-        str = QString::fromLocal8Bit(data);
-        textEdit->setPlainText(str);
-    }
-
-    setCurrentFileName(f);
-    return true;
+    textEdit->setHtml(content);
+    setCurrentFileName(title);
 }
 
 bool TextEdit::maybeSave()
@@ -376,16 +355,16 @@ bool TextEdit::maybeSave()
     return true;
 }
 
-void TextEdit::setCurrentFileName(const QString &fileName)
+void TextEdit::setCurrentFileName(QString title)
 {
-    this->fileName = fileName;
+    this->fileName = title;
     textEdit->document()->setModified(false);
 
     QString shownName;
-    if (fileName.isEmpty())
+    if (title.isEmpty())
         shownName = "untitled.txt";
     else
-        shownName = QFileInfo(fileName).fileName();
+        shownName = title;
 
     setWindowTitle(tr("%1[*] - %2").arg(shownName).arg(tr("Rich Text")));
     setWindowModified(false);

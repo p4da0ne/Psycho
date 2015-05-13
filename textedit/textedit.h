@@ -1,6 +1,7 @@
 #ifndef TEXTEDIT_H
 #define TEXTEDIT_H
 
+#include "config_textedit.h"
 #include <QMainWindow>
 #include <QMap>
 #include <QPointer>
@@ -38,12 +39,12 @@ QT_FORWARD_DECLARE_CLASS(QTextEdit)
 QT_FORWARD_DECLARE_CLASS(QTextCharFormat)
 QT_FORWARD_DECLARE_CLASS(QMenu)
 
-class TextEdit : public QMainWindow
+class __EXPORT_TEXTEDIT TextEdit : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    TextEdit(QWidget *parent = 0);
+    TextEdit(QString content="", QString document_title="", QWidget *parent = 0);
 
 protected:
     virtual void closeEvent(QCloseEvent *e);
@@ -52,9 +53,10 @@ private:
     void setupFileActions();
     void setupEditActions();
     void setupTextActions();
-    bool load(const QString &f);
+    bool load(QString content);
     bool maybeSave();
-    void setCurrentFileName(const QString &fileName);
+    void setCurrentFileName(QString title);
+    QString title;
 
 private slots:
     void fileNew();

@@ -1,6 +1,6 @@
 TEMPLATE        = lib
 TARGET          = textedit
-
+DESTDIR = ../build
 CONFIG          += qt warn_on
 
 LIBS += -lqaxcontainer

@@ -9,6 +9,7 @@
 #include <QPrintDialog>
 #include <QFile>
 #include <QFileDialog>
+#include "textedit.h"
 
 class ReportView : public QObject
 {
@@ -33,6 +34,7 @@ private:
      TextPrinter *textprinter_;
      QTextDocument *report_window1;
      QFileDialog *fd;
+     TextEdit *textedit;
 };
 
 #endif // REPORT_VIEW_H

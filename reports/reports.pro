@@ -7,11 +7,13 @@ DESTDIR = ../build
 QT += sql
 
 INCLUDEPATH += . \
-                ../output
+                ../output \
+                ../textedit
 
-DEPENDPATH +=  ../output
+DEPENDPATH +=   ../output \
+                ../textedit
 
-LIBS += -L../build -loutput
+LIBS += -L../build -loutput -ltextedit
 
 DEFINES += __USE_DLL_REPORTS
 
