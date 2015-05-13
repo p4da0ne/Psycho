@@ -125,7 +125,7 @@ void Objectmanager::customMenuView(const QPoint & pos)
             rez_z_1 = list.value(3).toFloat();
             QAction *otch23 = new QAction(QString("Сформировать отчет"),this);
             groud_id = list.value(1).toInt();
-            connect(otch23,SIGNAL(triggered()),this,SLOT(otchet()));
+            connect(otch23,SIGNAL(triggered()),this,SLOT(save_pdf()));
 
             menu->addAction(act);
             menu->addAction(act_1);
@@ -1764,20 +1764,25 @@ QStandardItem * Objectmanager::set_child_item(QString item_text,QString user_dat
     }
 //============= функции заполнения свойств в tableview ==================================
 void Objectmanager::region_click(int id_region){
-	QSqlRelationalTableModel *model_region = new QSqlRelationalTableModel(this);
+
+    QSqlRelationalTableModel *model_region = new QSqlRelationalTableModel(this);
 	QString db_name=model_region->database().databaseName();
 	QStringList tables=model_region->database().tables();
-	const QString tableName="region";
+
+
+    const QString tableName="region";
 	model_region->setTable(tableName);
 	model_region->setFilter(QString("id_region=%1").arg(id_region));
-	
-  
- bool is= model_region->select();
-	QString str=model_region->lastError().text();
-	model_region->setEditStrategy(QSqlTableModel::OnFieldChange);
+    UI->property_object->verticalHeader()->setVisible(true);
+
+    QSqlRelationalDelegate *delegat_reg=new QSqlRelationalDelegate(UI->property_object);
+
+
+
 
     model_region->setHeaderData(3, Qt::Horizontal,"Наименование региона");model_region->setHeaderData(5, Qt::Horizontal, "Описание региона");
-	model_region->setHeaderData(4, Qt::Horizontal, "Тип региона");model_region->setHeaderData(6, Qt::Horizontal, "Численность населения");
+
+    model_region->setHeaderData(6, Qt::Horizontal, "Численность населения");
 	model_region->setHeaderData(7, Qt::Horizontal, "Плотность населения");model_region->setHeaderData(8, Qt::Horizontal, "Уровень имиграции");
 	model_region->setHeaderData(9, Qt::Horizontal, "Уровень эммиграции");model_region->setHeaderData(10, Qt::Horizontal, "Уровень рождаемости");
 	model_region->setHeaderData(11, Qt::Horizontal, "Уровень смертности");model_region->setHeaderData(12, Qt::Horizontal, "Естественный прирост населения");
@@ -1816,13 +1821,22 @@ void Objectmanager::region_click(int id_region){
 	model_region->setHeaderData(76, Qt::Horizontal, "Pрф5");model_region->setHeaderData(77, Qt::Horizontal, "Религиозность своих войск(рф6)");
 	model_region->setHeaderData(78, Qt::Horizontal, "Pрф6");model_region->setHeaderData(79, Qt::Horizontal, "Групповой коэффициент(спф)");
     model_region->setHeaderData(80, Qt::Horizontal, "Групповой коэффициент(кф)");model_region->setHeaderData(81, Qt::Horizontal, "Групповой коэффициент(рф)");
-	model_region->setHeaderData(82, Qt::Horizontal, "Код значка региона");
+    model_region->setHeaderData(82, Qt::Horizontal, "Код значка региона");
+    model_region->setRelation(83,QSqlRelation("type_region","id_type_region","name_type_region"));
+    model_region->setHeaderData(83, Qt::Horizontal, "Тип региона");
 
-	UI->property_object->setModel(model_region);
+    model_region->setEditStrategy(QSqlTableModel::OnFieldChange);
+
+    bool is= model_region->select();
+    QString str=model_region->lastError().text();
+
+    UI->property_object->setModel(model_region);
 
 	UI->property_object->hideColumn(0);
 	UI->property_object->hideColumn(1);
 	UI->property_object->hideColumn(2);
+    UI->property_object->hideColumn(4);
+    UI->property_object->hideColumn(82);
 	UI->property_object->setColumnWidth(3,150);UI->property_object->setColumnWidth(7,150);UI->property_object->setColumnWidth(11,150);
 	UI->property_object->setColumnWidth(4,150);UI->property_object->setColumnWidth(8,150);UI->property_object->setColumnWidth(12,200);
 	UI->property_object->setColumnWidth(5,150);UI->property_object->setColumnWidth(9,150);UI->property_object->setColumnWidth(13,155);
@@ -1892,8 +1906,8 @@ void Objectmanager::region_click(int id_region){
 	UI->property_object->setItemDelegateForColumn(75,delegat); UI->property_object->setItemDelegateForColumn(76,delegat);
 	UI->property_object->setItemDelegateForColumn(77,delegat); UI->property_object->setItemDelegateForColumn(78,delegat); 
 	UI->property_object->setItemDelegateForColumn(79,delegat); UI->property_object->setItemDelegateForColumn(80,delegat);
-	UI->property_object->setItemDelegateForColumn(81,delegat);
-
+    UI->property_object->setItemDelegateForColumn(81,delegat);
+    UI->property_object->setItemDelegateForColumn(83,delegat_reg);
 //	UI->property_object->setItemDelegate(new QSqlRelationalDelegate(UI->property_object));
 //=============================================================================================
 }
@@ -2755,10 +2769,10 @@ void Objectmanager::otchet_groups()
             QString report = r->create_object_formular_ls(id_suka_ls);
             r->show_preview_dialog(report);
            }
-
-}
+    }
 }
 // QString str = QString("select gr.name_groups,gr.counte_groups,gr.founder_group,gr.menegement_groups,gr.officce_groups,gr.description_groups,gr.propaganda_groups,tr.name_trend_groups,sph.name_sphere_groups, form.name_form_groups, reg.name_region FROM groups gr,trend_groups tr,sphere_groups sph, form_groups form, region reg where gr.id_trend=tr.id_trend_groups AND gr.id_sphere_groups=sph.id_sphere_groups AND gr.id_form_groups=form.id_form_groups AND gr.id_region = reg.id_region AND gr.id_groups=%1").arg(group_id);
+
 void Objectmanager::print_formul()
 {
     QTextDocument *doc = new QTextDocument;
@@ -3223,10 +3237,30 @@ void Objectmanager::print_formul()
 
     otch->close();
 }
+
 void Objectmanager::save_pdf()
 {
-QTextDocument *doc = new QTextDocument;
-text = new TextPrinter(this);
+
+    QSqlQuery query_;
+    QString str_ = QString("SELECT reg.name_region, tr.name_type_region, reg.description_region, reg.counte_population, reg.density_population, reg.emmigration_population, reg.immigration_population, reg.birth_population, reg.dead_population FROM region reg, type_region tr WHERE reg.id_region = %1 AND tr.id_type_region = reg.id_type_region").arg(groud_id);
+    query_.exec(str_);
+
+    QSqlRecord data_ = query_.record();
+
+    while(query_.next())
+    {
+        name_region_string = query_.value(data_.indexOf("name_region")).toString();
+        type_region_string = query_.value(data_.indexOf("name_type_region")).toString();
+        description_region_string = query_.value(data_.indexOf("description_region")).toString();
+        counte_population_string = query_.value(data_.indexOf("counte_population")).toString();
+        density_population_string = query_.value(data_.indexOf("density_population")).toString();
+        emmigration_population_string = query_.value(data_.indexOf("emmigration_population")).toString();
+        immigration_population_string = query_.value(data_.indexOf("immigration_population")).toString();
+        birth_population_string = query_.value(data_.indexOf("birth_population")).toString();
+        dead_population_string = query_.value(data_.indexOf("dead_population")).toString();
+    }
+
+
 QDate date;
 QString time_date;
 int day,year,month;
@@ -3236,8 +3270,7 @@ month = date.month();
 year = date.year();
 time_date = date.toString("dd." "MM" "yyyy.г");
 
-
-QString htm;
+QString htm = "";
 
 htm.append("<HTML> <HEAD> </HEAD> <BODY> <H2> <CENTER> <B> Справка региона (района) </B> </CENTER> </H2>  ");
 htm.append("  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Название региона: "); htm.append(name_region_string.toLocal8Bit());
@@ -3678,21 +3711,30 @@ htm.append(" </FONT>  </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Обстановк
 htm.append("  </FONT>  </P> </BODY> </HTML>");
 
 
-QFile file_pdf;
-QString filename;
-QFont font;
-font.setPointSizeF(10.10);
-doc->setDefaultFont(font);
-doc->setHtml(htm);
 
-file_pdf.setFileName(filename);
-file_pdf.open(QIODevice::WriteOnly);
-file_pdf.close();
-text->setOrientation(QPrinter::Portrait);
-text->exportPdf(doc,"Сохранить формуляр",filename);
+Reports *r = new Reports;
+//int id_suka_ls = list.value(1).toInt();
+//QString report = r->create_object_formular_ls(id_suka_ls);
+r->show_preview_dialog(htm);
 
 
-otch->close();
+
+
+//QFile file_pdf;
+//QString filename;
+//QFont font;
+//font.setPointSizeF(10.10);
+//doc->setDefaultFont(font);
+//doc->setHtml(htm);
+
+//file_pdf.setFileName(filename);
+//file_pdf.open(QIODevice::WriteOnly);
+//file_pdf.close();
+//text->setOrientation(QPrinter::Portrait);
+//text->exportPdf(doc,"Сохранить формуляр",filename);
+
+
+//otch->close();
 
 }
 //==============================   расчеты   =============================================================
