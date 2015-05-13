@@ -28,6 +28,7 @@
 #include "calculating_mps.h"
 #include "Calculate_K_omkrf.h"
 #include "People_Losses.h"
+#include "regions_mpos.h"
 
 
 MapView::MapView(QWidget *parent, const char *name)
@@ -995,6 +996,13 @@ void MapView::showCheckedCalcResults()
 		openMapFromSettings();
 	}
 	
+	//------ Получение координат углов карты ---------
+	double x1 = mapwin->getMapX1(mapwin->hMap);
+	double y1 = mapwin->getMapY1(mapwin->hMap);
+	double x2 = mapwin->getMapX2(mapwin->hMap);
+	double y2 = mapwin->getMapY2(mapwin->hMap);
+	//-------------------------------------------------
+
 	QString rscPath = settings->value("/mapSettings/rscPath","").toString();
 	QFileInfo *info = new QFileInfo(rscPath);
 	QString sitPath = info->absolutePath();
@@ -1011,9 +1019,10 @@ void MapView::showCheckedCalcResults()
 		//показать результаты расчета МПО регионов
 		closeSitByName(mpoRegionsSitName);
 		HSITE mpoRegionsSite = openMapSit(mpoRegionsSitName,rscPath);
-		
-		//QList<SignData*> mpoRegionsSigns = model->getMpoRegions(mapwin->hMap,x1,y1,x2,y2);		//раскомментировать после реализации функции в модели
-		//createSitObjects(mpoRegionsSite, mpoRegionsSigns);
+		RegionsMpos * regionsModel = new RegionsMpos;
+
+		QList<SignData*> mpoRegionsSigns = regionsModel->getRegions(mapwin->hMap,x1,y1,x2,y2);
+		createSitObjects(mpoRegionsSite, mpoRegionsSigns);
 	}
 	else
 	{
@@ -1166,6 +1175,10 @@ QMenu* MapView::createObjectsListComplexMenu(QList<QStringList> objectsList)
 							
 			case ViewManage::GROUPS_MEANS:
 				mouse_menu->addMenu(createGroupsMeansMenu(objectsList.at(i)));
+				break;
+
+			case ViewManage::REGIONS:
+				//mouse_menu->addMenu(createGroupsMeansMenu(objectsList.at(i)));
 				break;
 		}
 

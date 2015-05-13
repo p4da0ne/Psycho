@@ -31,7 +31,7 @@ public:
 	QString get_spec_cond_info(int);
 	QString get_means_info(int);
 
-	enum SignObjectsTypes {FORMATIONS = 1, SPECIAL_CONDITIONS = 2, SMI_MEANS = 3, FORMATIONS_MEANS = 4, GROUPS_MEANS = 5};
+	enum SignObjectsTypes {FORMATIONS = 1, SPECIAL_CONDITIONS = 2, SMI_MEANS = 3, FORMATIONS_MEANS = 4, GROUPS_MEANS = 5, REGIONS = 6};
 };
 
 #endif // VIEW_MANAGE_H
