@@ -13,7 +13,7 @@ Mainform::Mainform(QMainWindow *parent, Qt::WFlags flags)
 {
 	UI->setupUi(this);
 	settings=new Settings(this);   
-	setWindowIcon(QIcon("./icons/metacontact.png"));
+    setWindowIcon(QIcon(":/icons/metacontact.png"));
 	connection_flag = false;
 	login_flag = false;
 	QImage img("./icons/saturn.png");

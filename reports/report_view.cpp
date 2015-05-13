@@ -17,6 +17,9 @@ ReportView::~ReportView()
 //=========== вывод формул€ра на экран (предпросмотр)=============
 void ReportView::preview_dialog(QString html)
 {
+    QString title = "‘ормул€р";
+    textedit = new TextEdit(html,title);
+    /*
 	preview_dlg = new QDialog;
     preview_dlg->setWindowTitle(tr("¬ывод формул€ра"));
     preview_dlg-> setFixedSize(800,600);
@@ -41,7 +44,7 @@ void ReportView::preview_dialog(QString html)
 	if(preview_dlg->exec() == QDialog::Accepted)
 	{
 
-    }
+    }*/
 
 }
 void ReportView::slot_print_formul()
