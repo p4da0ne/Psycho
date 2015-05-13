@@ -97,12 +97,12 @@ QList<SignData*> RegionsMpos::getRegions(long int hMap,double x1,double y1,doubl
 		if(isRegionOnMap(hMap,regionsIdList.at(i),x1,y1,x2,y2))
 		{
 			//----- Код условного знака региона  -----
-			QString exCode = getRegionExCode(idRegion);
+			QString exCode = getRegionExCode(regionsIdList.at(i));
 			//----- Метрика региона (список координат) ---------
-			QList<Coord*> coordList = getRegionMetric(hMap,idRegion);
+			QList<Coord*> coordList = getRegionMetric(hMap,regionsIdList.at(i));
 
 			//----- Семантики региона ---------
-			QMap<long int,QString> semantic_map = getRegionSemantics(idRegion);
+			QMap<long int,QString> semantic_map = getRegionSemantics(regionsIdList.at(i));
 		
 			SignData *signData = new SignData(exCode,coordList,semantic_map);
 
@@ -192,7 +192,8 @@ QList<Coord*> RegionsMpos::getRegionMetric(long int hMap,int idRegion)
 								c.longitude_wgs_84_g, c.longitude_wgs_84_m, c.longitude_wgs_84_s \
 						 FROM coord_region c_r, coordinates c \
 						 WHERE c_r.id_coordinates = c.id_coordinates \
-						 AND c_r.id_region = %1").arg(idRegion);
+						 AND c_r.id_region = %1 \
+						 ORDER BY c.id_coordinates").arg(idRegion);
 	if(query.exec(str))
 	{
 		QSqlRecord rec = query.record();
@@ -218,13 +219,13 @@ QList<Coord*> RegionsMpos::getRegionMetric(long int hMap,int idRegion)
 }
 
 //=======================================================================
-//====== Метод возвращает семанитики региона по его ID ======================
+//====== Метод возвращает семантики региона по его ID ======================
 //=======================================================================
 QMap<long int,QString> RegionsMpos::getRegionSemantics(int idRegion)
 {
 	QMap<long int,QString> semantic_map;
 
-			semantic_map[17501] = idRegion;
+	semantic_map[17501] = QString::number(idRegion);
 			semantic_map[17502] = QString::number(ViewManage::REGIONS);
 
 			float rez = regionCalculator->get_Rez_on_id_region(idRegion);

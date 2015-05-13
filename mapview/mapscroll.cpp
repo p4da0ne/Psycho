@@ -401,7 +401,7 @@ QList<QStringList>	MapScroll::getAllObjectsIdAndTypeInfo(double *x, double *y)
 	
 	QStringList semList;
 	info=map->mapCreateObject(hMap);
-	changeFrame(50);  // расширение области поиска объекта
+	changeFrame(512);  // расширение области поиска объекта
 	info=map->mapWhatObject(hMap,info,&frame,WO_LAST,PP_PLANE);
 
 	double idObject, objectType;
