@@ -73,11 +73,12 @@ QList<SignData*> ViewManage::getSmiMeans(long int hMap,double x1,double y1,doubl
 	QSqlQuery query;
 	QString str=QString("SELECT name_type_mpo_pso, coordinates.latitude_wgs_84_g,coordinates.latitude_wgs_84_m,coordinates.latitude_wgs_84_s,coordinates.longitude_wgs_84_g, \
 						coordinates.longitude_wgs_84_m,coordinates.longitude_wgs_84_s, \
-						type_mpo_pso.excode_type_mpo_pso, mpo_pso.id_mpo_pso, mpo_pso.semantika_digit1, mpo_pso.semantika_digit2, mpo_pso.semantika_1 \
-						FROM mpo_pso, coord_mpo_pso cmp, coordinates, type_mpo_pso \
+						type_mpo_pso.id_sign, mpo_pso.id_mpo_pso, mpo_pso.semantika_digit1, mpo_pso.semantika_digit2, mpo_pso.semantika_1,si.sign_key \
+						FROM mpo_pso, coord_mpo_pso cmp, coordinates, type_mpo_pso, signs si \
 						WHERE cmp.id_coordinates=coordinates.id_coordinates \
 						AND mpo_pso.id_type_mpo_pso=type_mpo_pso.id_type_mpo_pso \
 						AND mpo_pso.id_mpo_pso = cmp.id_mpo_pso \
+						AND type_mpo_pso.id_sign = si.id_sign \
 						AND type_mpo_pso.excode_type_mpo_pso <> '' \
 						AND mpo_pso.id_smi > 0 ");
 	if(query.exec(str))
@@ -105,7 +106,7 @@ QList<SignData*> ViewManage::getSmiMeans(long int hMap,double x1,double y1,doubl
 			if(!((x_coord > x1) && (y_coord > y1) && (x_coord < x2) && (y_coord < y2))) continue;	
 			
 			QString name_type_mpo_pso = query.value(rec.indexOf("name_type_mpo_pso")).toString();
-			QString signCode = query.value(rec.indexOf("excode_type_mpo_pso")).toString();
+			QString signCode = query.value(rec.indexOf("sign_key")).toString();
 			QString id_mpo_pso = query.value(rec.indexOf("id_mpo_pso")).toString();
 
 			// дальность (радиус) действия, километры
@@ -190,11 +191,12 @@ QList<SignData*> ViewManage::getFormationsMeans(long int hMap,double x1,double y
 	QSqlQuery query;
 	QString str=QString("SELECT name_type_mpo_pso, coordinates.latitude_wgs_84_g,coordinates.latitude_wgs_84_m,coordinates.latitude_wgs_84_s,coordinates.longitude_wgs_84_g, \
 						coordinates.longitude_wgs_84_m,coordinates.longitude_wgs_84_s, \
-						type_mpo_pso.excode_type_mpo_pso, mpo_pso.id_mpo_pso, mpo_pso.semantika_digit1, mpo_pso.semantika_digit2, mpo_pso.semantika_1 \
-						FROM mpo_pso, coord_mpo_pso cmp, coordinates, type_mpo_pso \
+						type_mpo_pso.id_sign, mpo_pso.id_mpo_pso, mpo_pso.semantika_digit1, mpo_pso.semantika_digit2, mpo_pso.semantika_1,si.sign_key \
+						FROM mpo_pso, coord_mpo_pso cmp, coordinates, type_mpo_pso, signs si \
 						WHERE cmp.id_coordinates=coordinates.id_coordinates \
 						AND mpo_pso.id_type_mpo_pso=type_mpo_pso.id_type_mpo_pso \
 						AND mpo_pso.id_mpo_pso = cmp.id_mpo_pso \
+						AND type_mpo_pso.id_sign = si.id_sign \
 						AND type_mpo_pso.excode_type_mpo_pso <> '' \
 						AND mpo_pso.id_ls > 0");
 	if(query.exec(str))
@@ -223,7 +225,7 @@ QList<SignData*> ViewManage::getFormationsMeans(long int hMap,double x1,double y
 			
 			
 			QString name_type_mpo_pso = query.value(rec.indexOf("name_type_mpo_pso")).toString();
-			QString signCode = query.value(rec.indexOf("excode_type_mpo_pso")).toString();
+			QString signCode = query.value(rec.indexOf("sign_key")).toString();
 			QString id_mpo_pso = query.value(rec.indexOf("id_mpo_pso")).toString();
 
 			// дальность (радиус) действия, километры
@@ -264,11 +266,12 @@ QList<SignData*> ViewManage::getGroupsMeans(long int hMap,double x1,double y1,do
 	QSqlQuery query;
 	QString str=QString("SELECT name_type_mpo_pso, coordinates.latitude_wgs_84_g,coordinates.latitude_wgs_84_m,coordinates.latitude_wgs_84_s,coordinates.longitude_wgs_84_g, \
 						coordinates.longitude_wgs_84_m,coordinates.longitude_wgs_84_s, \
-						type_mpo_pso.excode_type_mpo_pso, mpo_pso.id_mpo_pso, mpo_pso.semantika_digit1, mpo_pso.semantika_digit2, mpo_pso.semantika_1 \
-						FROM mpo_pso, coord_mpo_pso cmp, coordinates, type_mpo_pso \
+						type_mpo_pso.id_sign, mpo_pso.id_mpo_pso, mpo_pso.semantika_digit1, mpo_pso.semantika_digit2, mpo_pso.semantika_1,si.sign_key \
+						FROM mpo_pso, coord_mpo_pso cmp, coordinates, type_mpo_pso,signs si \
 						WHERE cmp.id_coordinates=coordinates.id_coordinates \
 						AND mpo_pso.id_type_mpo_pso=type_mpo_pso.id_type_mpo_pso \
 						AND mpo_pso.id_mpo_pso = cmp.id_mpo_pso \
+						AND type_mpo_pso.id_sign = si.id_sign \
 						AND type_mpo_pso.excode_type_mpo_pso <> '' \
 						AND mpo_pso.id_groups > 0");
 	if(query.exec(str))
@@ -296,7 +299,7 @@ QList<SignData*> ViewManage::getGroupsMeans(long int hMap,double x1,double y1,do
 			if(!((x_coord > x1) && (y_coord > y1) && (x_coord < x2) && (y_coord < y2))) continue;
 
 			QString name_type_mpo_pso = query.value(rec.indexOf("name_type_mpo_pso")).toString();
-			QString signCode = query.value(rec.indexOf("excode_type_mpo_pso")).toString();
+			QString signCode = query.value(rec.indexOf("sign_key")).toString();
 			QString id_mpo_pso = query.value(rec.indexOf("id_mpo_pso")).toString();
 
 			// дальность (радиус) действия, километры
@@ -338,11 +341,11 @@ QList<SignData*> ViewManage::getFormations(long int hMap,double x1,double y1,dou
 	QSqlQuery query;
 	QString str=QString("SELECT ls.name_ls, coordinates.latitude_wgs_84_g,coordinates.latitude_wgs_84_m,coordinates.latitude_wgs_84_s, \
 						coordinates.longitude_wgs_84_g,coordinates.longitude_wgs_84_m,coordinates.longitude_wgs_84_s, \
-						type_ls.excode_type_ls, ls.short_name_ls, ls.id_ls, coord_ls.id_ls \
-						FROM ls, coordinates, type_ls, coord_ls \
+						type_ls.id_sign, ls.short_name_ls, ls.id_ls, coord_ls.id_ls, si.sign_key \
+						FROM ls, coordinates, type_ls, coord_ls, signs si \
 						WHERE coord_ls.id_coordinates=coordinates.id_coordinates \
-						AND ls.id_type_ls=type_ls.id_type_ls\
-						AND type_ls.excode_type_ls <> '' \
+						AND ls.id_type_ls=type_ls.id_type_ls \
+						AND type_ls.id_sign = si.id_sign \
 						AND ls.id_ls = coord_ls.id_ls \
 						AND ls.short_name_ls <> ''");
 	if(query.exec(str))
@@ -371,7 +374,7 @@ QList<SignData*> ViewManage::getFormations(long int hMap,double x1,double y1,dou
 
 
 			QString name_ls = query.value(rec.indexOf("name_ls")).toString();
-			QString signCode = query.value(rec.indexOf("excode_type_ls")).toString();
+			QString signCode = query.value(rec.indexOf("sign_key")).toString();
 			QString shortNameLs = query.value(rec.indexOf("short_name_ls")).toString();
 			QString idLs = query.value(rec.indexOf("id_ls")).toString();
 
@@ -405,15 +408,16 @@ QList<SignData*> ViewManage::getSpecialConditions(long int hMap,double x1,double
 
 	QSqlQuery query;
 	QString str=QString("SELECT special_conditions.name_special_conditions, special_conditions.semantika_1, \
-						special_conditions.semantika_2 , type_special_conditions.excode_type_sc, \
+						special_conditions.semantika_2 , type_special_conditions.id_sign, si.sign_key, \
 						coordinates.latitude_wgs_84_g,coordinates.latitude_wgs_84_m,coordinates.latitude_wgs_84_s,\
 						coordinates.longitude_wgs_84_g,coordinates.longitude_wgs_84_m,coordinates.longitude_wgs_84_s, \
 						special_conditions.id_special_conditions \
-						FROM special_conditions, region, type_special_conditions, coordinates, coord_spec_cond \
+						FROM special_conditions, region, type_special_conditions, coordinates, coord_spec_cond, signs si \
 						WHERE special_conditions.id_region=region.id_region \
 						AND special_conditions.id_type_special_conditions=type_special_conditions.id_type_special_conditions \
 						AND coord_spec_cond.id_special_conditions=special_conditions.id_special_conditions \
-						AND coord_spec_cond.id_coordinates=coordinates.id_coordinates");
+						AND coord_spec_cond.id_coordinates=coordinates.id_coordinates\
+						AND type_special_conditions.id_sign=si.id_sign");
 	if(query.exec(str))
 	{
 		QSqlRecord rec = query.record();
@@ -439,7 +443,7 @@ QList<SignData*> ViewManage::getSpecialConditions(long int hMap,double x1,double
 			if(!((x_coord > x1) && (y_coord > y1) && (x_coord < x2) && (y_coord < y2))) continue;
 
 			QString name_spec_cond = query.value(rec.indexOf("name_special_conditions")).toString();
-			QString signCode = query.value(rec.indexOf("excode_type_sc")).toString();
+			QString signCode = query.value(rec.indexOf("sign_key")).toString();
 			QString Sem_1_spec_cond = query.value(rec.indexOf("semantika_1")).toString();
 			QString Sem_2_spec_cond = query.value(rec.indexOf("semantika_2")).toString();
 			QString idSpecialConditions = query.value(rec.indexOf("id_special_conditions")).toString();
@@ -535,32 +539,20 @@ QString ViewManage::getObjectInfo(int idObject, int objectType)
 				str = get_ls_info(idObject);
 				break;
 			
-			/*case SPECIAL_CONDITIONS:
-				str = QString("SELECT t.name_type_special_conditions, s.name_special_conditions \
-							   FROM special_conditions s, type_special_conditions t \
-							   WHERE s.id_type_special_conditions = t.id_type_special_conditions \
-							   AND s.id_special_conditions = %1").arg(idObject);
+			case SPECIAL_CONDITIONS:
+				str = get_spec_cond_info(idObject);
 				break;
 			case SMI_MEANS:
-				str = QString("SELECT t.name_type_mpo_pso, m.name_mpo_pso \
-							   FROM mpo_pso m, type_mpo_pso t \
-							   WHERE m.id_type_mpo_pso = t.id_type_mpo_pso \
-							   AND m.id_mpo_pso = %1").arg(idObject);
+				str = get_means_info(idObject);
 				break;
 			
 			case FORMATIONS_MEANS:
-				str = QString("SELECT t.name_type_mpo_pso, m.name_mpo_pso \
-							   FROM mpo_pso m, type_mpo_pso t \
-							   WHERE m.id_type_mpo_pso = t.id_type_mpo_pso \
-							   AND m.id_mpo_pso = %1").arg(idObject);
+				str = get_means_info(idObject);
 				break;
 							
 			case GROUPS_MEANS:
-				str = QString("SELECT t.name_type_mpo_pso, m.name_mpo_pso \
-							   FROM mpo_pso m, type_mpo_pso t \
-							   WHERE m.id_type_mpo_pso = t.id_type_mpo_pso \
-							   AND m.id_mpo_pso = %1").arg(idObject);
-				break;*/
+				str = get_means_info(idObject);
+				break;
 		}
 	
 		
@@ -573,6 +565,7 @@ QString ViewManage::get_ls_info(int idObject){
 	
 	QString name_blok,name_mpo,name_ls,name_country,objectInfo_parent,html_info_ls;
 	int id_region,id_blok,id_country,id_parent_ls,counte_ls;
+	bool enemy_ls;
 	QSqlQuery query;
 	QString str;
 
@@ -587,6 +580,8 @@ QString ViewManage::get_ls_info(int idObject){
 			id_region = query.value(2).toInt();
 			id_parent_ls = query.value(1).toInt();
 			counte_ls = query.value(4).toInt();
+			enemy_ls = query.value(3).toBool();
+			
 		}
 		query.clear();
 	}
@@ -633,29 +628,133 @@ QString ViewManage::get_ls_info(int idObject){
 //============================================ подчиненность ===============================================
 	
 		if (id_parent_ls==0) {
-			objectInfo_parent = " в подчинении не замечен :-)";
+			objectInfo_parent = " в подчинении не замечен";
 		}
 		else{
 		str = QString("SELECT name_ls FROM ls WHERE id_ls= %1").arg(id_parent_ls);
-		if(query.exec(str))
+			if(query.exec(str))
+			{
+			QSqlRecord rec = query.record();
+			while (query.next())
+			{
+				objectInfo_parent = query.value(0).toString();
+			}
+			query.clear();
+			}
+		}
+		if (enemy_ls == true) {
+			html_info_ls = "<style>table {border-color: blue; border-style: solid;}</style><table border='1' cellpadding='4' cellspacing='0'>"
+		"<tr align='center'><td colspan='2'><H3><CENTER><font color='blue'>" + name_ls + "</font></CENTER></H3></td></tr>"
+        "<tr><td> Подчиненность:</td><td>" + objectInfo_parent + "</td></tr>"
+		"<tr><td> Страна:</td><td>" + name_country + "</td></tr>"
+		"<tr><td>Блок:</td><td>" + name_blok + "</td></tr>"
+		"<tr><td>Численность:</td><td>" + QString::number(counte_ls) + "</td></tr>"
+		"<tr><td>Средства ПсО:</td><td>" + name_mpo + "</td></tr></table>";
+		}
+		else {
+			html_info_ls = "<style>table {border-color: red; border-style: solid;}</style><table border='1' cellpadding='4' cellspacing='0' >"
+		"<tr align='center'><td colspan='2'><H3><CENTER><font color='red'>" + name_ls + "</font></CENTER></H3></td></tr>"
+        "<tr><td> Подчиненность:</td><td>" + objectInfo_parent + "</td></tr>"
+		"<tr><td> Страна:</td><td>" + name_country + "</td></tr>"
+		"<tr><td>Блок:</td><td>" + name_blok + "</td></tr>"
+		"<tr><td>Численность:</td><td>" + QString::number(counte_ls) + "</td></tr>"
+		"<tr><td>Средства ПсО:</td><td>" + name_mpo + "</td></tr></table>";
+		}
+
+	return html_info_ls;
+}
+//============================ инфа по особым условиям ================================
+QString ViewManage::get_spec_cond_info(int idObject){
+	
+	QString name_sc,desc_sc,html_info_sc;
+	QSqlQuery query;
+	QString str;
+
+	str = QString("SELECT name_special_conditions, description_special_conditions FROM special_conditions WHERE id_special_conditions=%1").arg(idObject);
+	
+	if(query.exec(str))
 	{
 		QSqlRecord rec = query.record();
 		while (query.next())
 		{
-			objectInfo_parent = query.value(0).toString();
+			name_sc = query.value(0).toString();
+			desc_sc = query.value(1).toString();
 		}
 		query.clear();
 	}
-		}
+		html_info_sc = "<style>table {border-color: black; border-style: solid;}</style><table border='1' cellpadding='4' cellspacing='0'>"
+		"<tr align='center'><td colspan='2'><H3><CENTER><font color = 'black'>" + name_sc + "</font></CENTER></H3></td></tr>"
+        "<tr><td> Описание:</td><td>" + desc_sc + "</td></tr></table>";
 	
-		html_info_ls = "<H2><CENTER>" + name_ls + "</CENTER></H2>"
-						"<H3><B>Страна: " + name_country + "</B></H3>"
-	//					"<CENTER><IMG BORDER=\"0\" SRC=\""+Pict+"\"></CENTER>"
-						"<H3><B>Блок: " + name_blok + "</B></H3>"
-	//					"<CENTER><IMG BORDER=\"0\" SRC=\""+Pict1+"\"></CENTER>"
-						"<H3><B>Численность - " + counte_ls + "</B></H3>"
-						"<H3><B>Средства ПсО: " + name_mpo+ "</B></H3>"
-					    "<H3>Подчиненность:  " + objectInfo_parent + "</H3>";
+	return html_info_sc;
+}
+//===================================== инфа по всем средствам, имеющим отношения к объектам ===============================================
+QString ViewManage::get_means_info(int idObject){
+	
+	QString name_mpo_pso,name_type_mpo_pso,description_mpo_pso,name_means,html_info_means;
+	int count_mpo_pso, id_ls, id_groups, id_smi;
+	QSqlQuery query;
+	QString str;
 
-	return html_info_ls;
+	str = QString("SELECT mpo_pso.name_mpo_pso, mpo_pso.counte_mpo_pso, mpo_pso.description_mpo_pso, mpo_pso.image_mpo_pso, mpo_pso.id_ls, \
+					mpo_pso.id_smi, mpo_pso.id_groups, type_mpo_pso.name_type_mpo_pso \
+					FROM mpo_pso , type_mpo_pso \
+					WHERE mpo_pso.id_mpo_pso = %1 \
+					AND mpo_pso.id_type_mpo_pso = type_mpo_pso.id_type_mpo_pso ").arg(idObject);
+	
+	if(query.exec(str))
+	{
+		QSqlRecord rec = query.record();
+		while (query.next())
+		{
+			name_mpo_pso = query.value(0).toString();
+			name_type_mpo_pso = query.value(7).toString();
+			count_mpo_pso = query.value(1).toInt();
+			description_mpo_pso = query.value(2).toString();
+			id_ls = query.value(4).toInt();
+			id_smi = query.value(5).toInt();
+			id_groups = query.value(6).toInt();
+
+		}
+		query.clear();
+	}
+		if (!id_ls == 0)
+		{
+		str = QString("SELECT name_ls FROM ls WHERE id_ls = %1 ").arg(id_ls);
+			query.exec(str);
+			while (query.next())
+			{
+				name_means = query.value(0).toString();
+			}
+			query.clear();
+		}
+		if (!id_smi == 0)
+		{
+		str = QString("SELECT name_smi FROM smi WHERE id_smi = %1 ").arg(id_smi);
+			query.exec(str);
+			while (query.next())
+			{
+				name_means = query.value(0).toString();
+			}
+			query.clear();
+		}
+		if (!id_groups == 0)
+		{
+		str = QString("SELECT name_groups FROM groups WHERE id_groups = %1 ").arg(id_groups);
+			query.exec(str);
+			while (query.next())
+			{
+				name_means = query.value(0).toString();
+			}
+			query.clear();
+		}
+
+		html_info_means = "<style>table {border-color: black; border-style: solid;}</style><table border='1' cellpadding='4' cellspacing='0' >"
+		"<tr align='center'><td colspan='2'><H3><CENTER><font color='black'>" + name_mpo_pso + "</font></CENTER></H3></td></tr>"
+        "<tr><td> Тип объекта:</td><td>" + name_type_mpo_pso + "</td></tr>"
+		"<tr><td> Количество:</td><td>" + QString::number(count_mpo_pso) + "</td></tr>"
+		"<tr><td>Подчиненность: </td><td>" + name_means + "</td></tr>"
+		"<tr><td>Описание:</td><td>" + description_mpo_pso + "</td></tr></table>";
+	
+	return html_info_means;
 }
