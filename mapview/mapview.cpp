@@ -334,7 +334,7 @@ void MapView::initSaturnLeftMenu()
 	
 	//--------------- Панель "Расчетные задачи" ----------------------------------------
 
-	mpo_regions_checkbox = new QCheckBox("МПО регионов");
+	mpo_regions_checkbox = new QCheckBox("МПОС регионов");
 	mpo_regions_checkbox->setChecked(true);
 
 	mps_our_Mil_checkbox = new QCheckBox("МПС своих войск");
@@ -1012,7 +1012,7 @@ void MapView::showCheckedCalcResults()
 		closeSitByName(mpoRegionsSitName);
 		HSITE mpoRegionsSite = openMapSit(mpoRegionsSitName,rscPath);
 		
-		//QList<SignData*> mpoRegionsSigns = model->getMpoRegions();		//раскомментировать после реализации функции в модели
+		//QList<SignData*> mpoRegionsSigns = model->getMpoRegions(mapwin->hMap,x1,y1,x2,y2);		//раскомментировать после реализации функции в модели
 		//createSitObjects(mpoRegionsSite, mpoRegionsSigns);
 	}
 	else
@@ -1193,9 +1193,10 @@ void MapView::slotObjectInfo()
 	{
 		QStringList objInfo = action->data().toString().split("_");
 
+		str = model->getObjectInfo(objInfo.at(0).toInt(),objInfo.at(1).toInt());
 
-		str += "Идентификатор объекта: " + objInfo.at(0) + "\n"; 
-		str += "Тип объекта: " + objInfo.at(1) + "\n"; 
+		//str += "Идентификатор объекта: " + objInfo.at(0) + "\n"; 
+		//str += "Тип объекта: " + objInfo.at(1) + "\n"; 
 	
 		showInformationDialog(str);
 

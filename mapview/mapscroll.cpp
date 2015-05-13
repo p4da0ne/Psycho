@@ -191,6 +191,11 @@ void MapScroll::changeScale(float change)
 	double x1,y1, a, b;
 	long int mapW, mapH;
 	//вычислим текущий центр
+
+	int hMaximum = horizontalScrollBar()->maximum();
+	int vMaximum = verticalScrollBar()->maximum();
+
+
 	X = horizontalScrollBar()->value() + viewport()->width() / 2;
 	Y = verticalScrollBar()->value() + viewport()->height() / 2;
 	
