@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/" >
+        <file>Resources/book.png</file>
+        <file>Resources/change_user.png</file>
+        <file>Resources/database.png</file>
+        <file>Resources/db_settings.png</file>
+        <file>Resources/enter.png</file>
+        <file>Resources/exit.png</file>
+        <file>Resources/mapwork.png</file>
+        <file>Resources/metacontact.png</file>
+        <file>Resources/planet.png</file>
+        <file>Resources/saturn.png</file>
+        <file>Resources/user_config.png</file>
+    </qresource>
+</RCC>
