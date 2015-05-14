@@ -29,6 +29,7 @@
 #include "Calculate_K_omkrf.h"
 #include "People_Losses.h"
 #include "regions_mpos.h"
+#include "formationsPsiLooses.h"
 
 
 MapView::MapView(QWidget *parent, const char *name)
@@ -1154,27 +1155,27 @@ QMenu* MapView::createObjectsListComplexMenu(QList<QStringList> objectsList)
 		int objType = objectsList.at(i).at(1).toInt();
 		switch(objType)
 		{
-			case ViewManage::FORMATIONS:
+			case FORMATIONS:
 				mouse_menu->addMenu(createFormationsMenu(objectsList.at(i)));
 				break;
 			
-			case ViewManage::SPECIAL_CONDITIONS:
+			case SPECIAL_CONDITIONS:
 				mouse_menu->addMenu(createSpecialConditionsMenu(objectsList.at(i)));
 				break;
 			
-			case ViewManage::SMI_MEANS:
+			case SMI_MEANS:
 				mouse_menu->addMenu(createSmiMeansMenu(objectsList.at(i)));
 				break;
 			
-			case ViewManage::FORMATIONS_MEANS:
+			case FORMATIONS_MEANS:
 				mouse_menu->addMenu(createFormationsMeansMenu(objectsList.at(i)));
 				break;
 							
-			case ViewManage::GROUPS_MEANS:
+			case GROUPS_MEANS:
 				mouse_menu->addMenu(createGroupsMeansMenu(objectsList.at(i)));
 				break;
 
-			case ViewManage::REGIONS:
+			case REGIONS:
 				//mouse_menu->addMenu(createGroupsMeansMenu(objectsList.at(i)));
 				break;
 		}
@@ -1418,15 +1419,15 @@ QMenu* MapView::createGroupsMeansMenu(QStringList objInfo)
 void MapView::showInformationDialog(QString information)
 {
 	create_object_dialog = new QDialog;
-	create_object_dialog->setMinimumSize(250,150);
 	create_object_dialog->setWindowTitle("Информация об объекте");
-	QLabel * info_label = new QLabel(information);
-	info_label->setAlignment(Qt::AlignCenter);
-	QHBoxLayout *hbox_layout = new QHBoxLayout;  
-	hbox_layout->addStretch();
-	hbox_layout->addWidget(info_label);
-	hbox_layout->addStretch();
-	create_object_dialog->setLayout(hbox_layout);		
+	
+	QTextBrowser *infoBrowser = new QTextBrowser;
+	infoBrowser->setHtml(information);
+	//QLabel * info_label = new QLabel(information);
+	//info_label->setAlignment(Qt::AlignCenter);
+	QVBoxLayout *vbox_layout = new QVBoxLayout;  
+	vbox_layout->addWidget(infoBrowser);
+	create_object_dialog->setLayout(vbox_layout);		
 	create_object_dialog->exec();
 }
 

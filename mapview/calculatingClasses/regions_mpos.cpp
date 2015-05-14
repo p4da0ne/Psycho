@@ -226,7 +226,7 @@ QMap<long int,QString> RegionsMpos::getRegionSemantics(int idRegion)
 	QMap<long int,QString> semantic_map;
 
 	semantic_map[17501] = QString::number(idRegion);
-			semantic_map[17502] = QString::number(ViewManage::REGIONS);
+			semantic_map[17502] = QString::number(REGIONS);
 
 			float rez = regionCalculator->get_Rez_on_id_region(idRegion);
 			
