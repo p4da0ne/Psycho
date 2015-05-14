@@ -46,7 +46,7 @@
           </size>
          </property>
          <property name="title" >
-          <string>Знаки объекта поражения</string>
+          <string>Условные знаки</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2" >
           <item>
