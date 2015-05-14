@@ -86,22 +86,6 @@ void TextEdit::setupFileActions()
 
     QAction *a;
 
-//    QIcon newIcon = QIcon::fromTheme("document-new", QIcon(rsrcPath + "/filenew.png"));
-//    a = new QAction( newIcon, tr("&New"), this);
-//    a->setPriority(QAction::LowPriority);
-//    a->setShortcut(QKeySequence::New);
-//    connect(a, SIGNAL(triggered()), this, SLOT(fileNew()));
-//    tb->addAction(a);
-//    menu->addAction(a);
-
-//    a = new QAction(QIcon::fromTheme("document-open", QIcon(rsrcPath + "/fileopen.png")),
-//                    tr("&Open..."), this);
-//    a->setShortcut(QKeySequence::Open);
-//    connect(a, SIGNAL(triggered()), this, SLOT(fileOpen()));
-//    tb->addAction(a);
-//    menu->addAction(a);
-
-//    menu->addSeparator();
 
     actionSave = a = new QAction(QIcon::fromTheme("document-save", QIcon(rsrcPath + "/filesave.png")),
                                  tr("&Save"), this);
@@ -138,15 +122,6 @@ void TextEdit::setupFileActions()
     connect(a, SIGNAL(triggered()), this, SLOT(filePrintPdf()));
     tb->addAction(a);
     menu->addAction(a);
-
-    a = new QAction(QIcon::fromTheme("exportword", QIcon(rsrcPath + "/word_document.png")),
-                    tr("&Export Word..."), this);
-    a->setPriority(QAction::LowPriority);
-    a->setShortcut(Qt::CTRL + Qt::Key_D);
-    connect(a, SIGNAL(triggered()), this, SLOT(worder()));
-    tb->addAction(a);
-    menu->addAction(a);
-
 
     menu->addSeparator();
 #endif
@@ -334,6 +309,7 @@ bool TextEdit::load(QString content)
 {
     textEdit->setHtml(content);
     setCurrentFileName(title);
+    return true;
 }
 
 bool TextEdit::maybeSave()
@@ -401,10 +377,22 @@ bool TextEdit::fileSave()
 bool TextEdit::fileSaveAs()
 {
     QString fn = QFileDialog::getSaveFileName(this, tr("Save as..."),
-                                              QString(), tr("ODF files (*.odt);;HTML-Files (*.htm *.html);;All Files (*)"));
+                                              QString(), tr("DOC files (*.doc);;ODF files (*.odt);;HTML-Files (*.htm *.html);;All Files (*)"));
     if (fn.isEmpty())
         return false;
-    if (! (fn.endsWith(".odt", Qt::CaseInsensitive) || fn.endsWith(".htm", Qt::CaseInsensitive) || fn.endsWith(".html", Qt::CaseInsensitive)) )
+	if(fn.endsWith(".doc", Qt::CaseInsensitive)){
+		QFile file;
+		file.setFileName(fn);
+		if(!file.open(QIODevice::WriteOnly)){
+			return false;
+		}else{
+			file.write(textEdit->toHtml().toLocal8Bit());
+			file.close();
+			setCurrentFileName(fn);
+			return true;
+		}
+	}
+    if (! (fn.endsWith(".doc", Qt::CaseInsensitive) || fn.endsWith(".odt", Qt::CaseInsensitive) || fn.endsWith(".htm", Qt::CaseInsensitive) || fn.endsWith(".html", Qt::CaseInsensitive)) )
         fn += ".odt"; // default
     setCurrentFileName(fn);
     return fileSave();
@@ -464,20 +452,7 @@ void TextEdit::filePrintPdf()
 }
 
 
-void TextEdit::worder()
-{
-    QAxObject *word = new QAxObject("Word.Application", this);
-    if(word->isNull()) {
-        QMessageBox::warning(this,"Предупреждение", "На Вашем компьютере не установлен \"Microsoft Word\"");
-        return;
-    }
-    QAxObject *documents = word->querySubObject("Documents"); //получаем коллекцию документов
-    QAxObject *document = documents->querySubObject("Add()"); //добавляем свой документ в коллекцию
-    word->setProperty("Visible", true);
-    QAxObject* ActiveDocument = word->querySubObject("ActiveDocument()");
-    QAxObject* Range = ActiveDocument->querySubObject("Range()");
-    Range->querySubObject("InsertAfter(Text)", tr( "текст") );
-}
+
 
 void TextEdit::textBold()
 {

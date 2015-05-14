@@ -5,8 +5,6 @@
 #include <QMainWindow>
 #include <QMap>
 #include <QPointer>
-#include <QAxWidget>
-#include <QAxObject>
 #include <QApplication>
 #include <QAction>
 #include <QClipboard>
@@ -66,9 +64,6 @@ private slots:
     void filePrint();
     void filePrintPreview();
     void filePrintPdf();
-    void worder();
-
-
     void textBold();
     void textUnderline();
     void textItalic();
@@ -77,10 +72,8 @@ private slots:
     void textStyle(int styleIndex);
     void textColor();
     void textAlign(QAction *a);
-
     void currentCharFormatChanged(const QTextCharFormat &format);
     void cursorPositionChanged();
-
     void clipboardDataChanged();
     void about();
     void printPreview(QPrinter *);
