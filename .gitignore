@@ -14,6 +14,10 @@ ui_*.h
 build/*lib
 */release/
 *.exe
+*.Debug
+*.Release
+*/Makefile
+*.autosave
 build/calculatingproblemmanager.dll
 build/dataaccess.dll
 build/db_saturn.dll
