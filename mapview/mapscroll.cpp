@@ -955,6 +955,8 @@ long int	MapScroll::createObjectTest(long int hSit,  QList<Coord*> *coordinates,
 	info = map->mapCreateSiteObject(hMap,hSit);
 	objectTopScale(info);
 
+	map->mapRegisterObjectByKey(info, rscKey);
+	
 	if(semantics)
 	{
 		QMap<long int,QString>::iterator it = semantics->begin(); 
@@ -966,7 +968,7 @@ long int	MapScroll::createObjectTest(long int hSit,  QList<Coord*> *coordinates,
 		}
 	}
 
-	map->mapRegisterObjectByKey(info, rscKey);
+
 
 	//-- Добавление метрики объекта из списка координат ----
 	for(int i=0;i<coordinates->count();i++)
@@ -986,8 +988,6 @@ long int	MapScroll::createObjectTest(long int hSit,  QList<Coord*> *coordinates,
 	return commitFlag;
 }
 
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
