@@ -113,6 +113,7 @@ private slots:
 	void			slotObjectInfo(); //слот - обработчик выбора в контекстном меню объекта
 	void			slotObjectDescription();
 	void			slotObjectReport();
+	void			slotFormationPsiLooses();
 	//==========================
 	//------------ Обработчики нажатий на кнопки мыши (общие для разных программных комплексов) ------------------
 	void			slotMouseLeftButtonClicked(QPoint pe, QList<QStringList> objectsList);
@@ -126,6 +127,8 @@ private slots:
 	QMenu*			createSmiMeansMenu(QStringList objInfo);
 	QMenu*			createFormationsMeansMenu(QStringList objInfo);
 	QMenu*			createGroupsMeansMenu(QStringList objInfo);
+	QMenu*			createRegionsMenu(QStringList objInfo);
+	
 	//----------------------------------------------------------------------
 
 

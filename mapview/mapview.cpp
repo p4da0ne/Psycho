@@ -1176,7 +1176,7 @@ QMenu* MapView::createObjectsListComplexMenu(QList<QStringList> objectsList)
 				break;
 
 			case REGIONS:
-				//mouse_menu->addMenu(createGroupsMeansMenu(objectsList.at(i)));
+				mouse_menu->addMenu(createRegionsMenu(objectsList.at(i)));
 				break;
 		}
 
@@ -1205,9 +1205,6 @@ void MapView::slotObjectInfo()
 		QStringList objInfo = action->data().toString().split("_");
 
 		str = model->getObjectInfo(objInfo.at(0).toInt(),objInfo.at(1).toInt());
-
-		//str += "Идентификатор объекта: " + objInfo.at(0) + "\n"; 
-		//str += "Тип объекта: " + objInfo.at(1) + "\n"; 
 	
 		showInformationDialog(str);
 
@@ -1226,6 +1223,26 @@ void MapView::slotObjectDescription() //слот - обработчик выбора в контекстном м
 
 		str += "Идентификатор объекта: " + objInfo.at(0) + "\n"; 
 		str += "Тип объекта: " + objInfo.at(1) + "\n"; 
+	
+		showInformationDialog(str);
+
+	}
+
+}
+
+//===========================================================================================
+//===== Слот расчета психогенных потерь формирования (для конткстного меню) =================
+//===========================================================================================
+void MapView::slotFormationPsiLooses() 
+{
+	QAction *action = qobject_cast<QAction*>(sender());
+	QString str;
+	if(action)
+	{
+		QStringList objInfo = action->data().toString().split("_");
+
+		//вызов метода из класса FormationsPsiLooses   str = 
+		str = "Психогенные потери: "; 
 	
 		showInformationDialog(str);
 
@@ -1273,10 +1290,10 @@ QMenu* MapView::createFormationsMenu(QStringList objInfo)
 
 	
 	
-	QAction *description_act = new QAction("Описание",this);
-	description_act->setData(idAndType);
-	mouse_menu->addAction(description_act); 
-	connect(description_act, SIGNAL(triggered()), this, SLOT(slotObjectDescription()));
+	QAction *psiLooses_act = new QAction("Психогенные потери",this);
+	psiLooses_act->setData(idAndType);
+	mouse_menu->addAction(psiLooses_act); 
+	connect(psiLooses_act, SIGNAL(triggered()), this, SLOT(slotFormationPsiLooses()));
 	
 	QAction *report_act = new QAction("Отчет",this);
 	report_act->setData(idAndType);
@@ -1409,6 +1426,29 @@ QMenu* MapView::createGroupsMeansMenu(QStringList objInfo)
 
 }
 
+
+//===================================================================================
+//===== Метод создания и отображения контекстного меню для регионов =================
+//===================================================================================
+QMenu* MapView::createRegionsMenu(QStringList objInfo)
+{
+	QString text = model->getObjectTypeAndName(objInfo.at(0).toInt(), objInfo.at(1).toInt());
+	QString idAndType = objInfo.at(0) + "_" + objInfo.at(1);
+
+	QMenu *mouse_menu = new QMenu(text); 
+
+	//--- Добавление в меню специфичных действий для региона ---------
+
+	
+	QAction *report_act = new QAction("Отчет",this);
+	report_act->setData(idAndType);
+	mouse_menu->addAction(report_act); 
+	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));
+	
+
+	return mouse_menu;
+
+}
 
 
 

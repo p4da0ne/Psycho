@@ -511,6 +511,9 @@ QString ViewManage::getObjectTypeAndName(int idObject, int objectType)
 							   WHERE m.id_type_mpo_pso = t.id_type_mpo_pso \
 							   AND m.id_mpo_pso = %1").arg(idObject);
 				break;
+			case REGIONS:
+				str = QString("SELECT type_region,name_region FROM region WHERE id_region = %1").arg(idObject);
+				break;
 		}
 	
 	
