@@ -346,8 +346,7 @@ QList<SignData*> ViewManage::getFormations(long int hMap,double x1,double y1,dou
 						WHERE coord_ls.id_coordinates=coordinates.id_coordinates \
 						AND ls.id_type_ls=type_ls.id_type_ls \
 						AND type_ls.id_sign = si.id_sign \
-						AND ls.id_ls = coord_ls.id_ls \
-						AND ls.short_name_ls <> ''");
+						AND ls.id_ls = coord_ls.id_ls");
 	if(query.exec(str))
 	{
 		QSqlRecord rec = query.record();
