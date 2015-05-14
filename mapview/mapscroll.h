@@ -33,6 +33,9 @@ public:
 	
 	long int createObjectTest(long int hSit,  QList<Coord*> *coordinates, const char * rscKey, QMap<long int,QString> *semantics=0);
 	
+	/////////////////////////////////////////////////////////////////////////////////////
+	
+	/////////////////////////////////////////////////////////////////////////////////////////
 	
 	long int		createLine(long int hSit, const char * name_ff, long int id_obj);
 	long int		getScale();

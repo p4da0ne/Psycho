@@ -36,6 +36,8 @@ private:
 
 	//------ Метод для отрисовки условных знаков на пользовательской карте -------------
 	void			createSitObjects(HSITE hSite,QList<SignData*> signsList);					//++++++
+	
+
 	//------------------------------------------------------------------------
 	QMenu* createGreateLessScaleMenu();															//++++++
 	QMenu* createObjectsListMenu(QList<QStringList> objectsList);							    //++++++
