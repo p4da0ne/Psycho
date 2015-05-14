@@ -244,3 +244,49 @@ QMap<long int,QString> RegionsMpos::getRegionSemantics(int idRegion)
 
 	return semantic_map;
 }
+
+
+QString RegionsMpos::getRegionMpos(int idRegion)
+{
+	QString regionMpos;
+
+	QSqlQuery query;
+
+	/*QString str=QString("SELECT c.latitude_wgs_84_g, c.latitude_wgs_84_m, c.latitude_wgs_84_s, \
+								c.longitude_wgs_84_g, c.longitude_wgs_84_m, c.longitude_wgs_84_s \
+						 FROM coord_region c_r, coordinates c \
+						 WHERE c_r.id_coordinates = c.id_coordinates \
+						 AND c_r.id_region = %1 \
+						 ORDER BY c.id_coordinates").arg(idRegion);
+	if(query.exec(str))
+	{
+		QSqlRecord rec = query.record();
+		while (query.next())
+		{		
+			int wgs_g = query.value(rec.indexOf("latitude_wgs_84_g")).toInt();
+	*/
+	
+	
+	float rez = regionCalculator->get_Rez_on_id_region(idRegion);	
+
+	QString mpos;
+	if(rez > 0 && rez < 0.3)
+	{
+		mpos="<span color='red'>МПО затрудняет выполнение задач</span>";
+	}	
+	if(rez >= 0.3 && rez < 0.5)
+	{
+		mpos="<span color='blue'>МПО не влияет на выполнение задач</span>";
+	}	
+	if(rez >=0.5 && rez <= 0.8)
+	{	
+		mpos="<span color='green'>МПО способствует выполнению задач</span>";
+	}	
+	if(rez == 0)
+	{	
+		mpos="<span color='black'>Расчет МПО не производился</span>";
+	}
+
+
+	return regionMpos;
+}
