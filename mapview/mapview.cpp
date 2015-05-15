@@ -423,22 +423,12 @@ bool MapView::openMap(QString mapFilepath)
                    "Maps (*.map)\n Sites (*.sit)\n Matrixes (*.mtw)\n Rasters (*.rsw)" );
 		if (filePath.isEmpty()) return false;//если карта не выбрана
 	}
-	if(mapwin->mapOpen(filePath.toLocal8Bit().data()))
+	if(mapwin->mapOpen(filePath.toStdString().c_str()))
 	{
 		//показать середину карты при ее открытии
-		//long int b, sb;
-		int width = mapwin->width();
-		int height = mapwin->height();
 
-		int width_middle = width/2;
-		int heigth_middle = height/2;
-		/*b=mapwin->verticalScrollBar()->maximum();
-		sb=mapwin->verticalScrollBar()->value();
-		sb=(b-sb)/2;*/
+		mapwin->setMapCenter();
 
-		mapwin->horizontalScrollBar()->setValue(width_middle);
-		mapwin->verticalScrollBar()->setValue(heigth_middle);
-		mapwin->updateScreen();
 		setAdditionalInfo();
 
 		QSettings *settings = new QSettings("vka","saturnMap");
@@ -735,7 +725,7 @@ void MapView::setAdditionalInfo()
 {
 	QString info;
 	long int scale = mapwin->getScale();
-	info = "						  Масштаб отображения карты: 1:";
+	info = "Масштаб отображения карты: 1:";
 	info +=QString::number(scale);
 
 	additional_info->setText(info);

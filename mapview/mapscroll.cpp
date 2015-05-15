@@ -181,6 +181,37 @@ void MapScroll::closeMap()
   }
 }
 
+
+
+void MapScroll::setMapCenter()
+{
+	if (hMap == 0) return;
+	long int X,Y;
+	long int mapW, mapH;
+
+	map->mapGetPictureSize(hMap,&mapW,&mapH);
+	
+	MyViewport->hide();
+	
+	//изменение размеров содержимого
+	MyViewport->resize(mapW, mapH);
+
+	horizontalScrollBar()->setMaximum(mapW);
+	verticalScrollBar()->setMaximum(mapH);
+
+	//вычислим центр
+	X = mapW/2;
+	if (X < 0) X = 0;
+	Y = mapH/2;
+	if (Y < 0) Y = 0;
+
+	horizontalScrollBar()->setValue(X);
+	verticalScrollBar()->setValue(Y);
+	MyViewport->show();
+
+}
+
+
 //====================================================================
 //==== Метод изменения масштаба "<" ">" отображения карты ============
 //====================================================================
