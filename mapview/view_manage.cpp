@@ -555,6 +555,10 @@ QString ViewManage::getObjectInfo(int idObject, int objectType)
 			case GROUPS_MEANS:
 				str = get_means_info(idObject);
 				break;
+
+			case REGIONS:
+				str = get_info_region(idObject);
+				break;
 		}
 	
 		
@@ -565,8 +569,8 @@ QString ViewManage::getObjectInfo(int idObject, int objectType)
 //============================ инфа по воинским формированиям ================================
 QString ViewManage::get_ls_info(int idObject){
 	
-	QString name_blok,name_mpo,name_ls,name_country,objectInfo_parent,html_info_ls;
-	int id_region,id_blok,id_country,id_parent_ls,counte_ls;
+	QString name_blok,name_mpo,name_ls,name_country,objectInfo_parent,html_info_ls,id_root_ls;
+	int id_region,id_blok,id_country,id_parent_ls,counte_ls,id_ls;
 	bool enemy_ls;
 	QSqlQuery query;
 	QString str;
@@ -579,7 +583,6 @@ QString ViewManage::get_ls_info(int idObject){
 		while (query.next())
 		{
 			name_ls = query.value(0).toString();
-			id_region = query.value(2).toInt();
 			id_parent_ls = query.value(1).toInt();
 			counte_ls = query.value(4).toInt();
 			enemy_ls = query.value(3).toBool();
@@ -587,6 +590,36 @@ QString ViewManage::get_ls_info(int idObject){
 		}
 		query.clear();
 	}
+
+	int parent_ls = idObject;
+		while (!parent_ls == 0)
+		{
+			str = QString("SELECT id_ls, parent_ls, id_region, name_ls FROM ls WHERE id_ls = %1").arg(parent_ls);
+			query.exec(str);
+			while (query.next())
+			{
+				id_ls = query.value(0).toInt();
+				parent_ls = query.value(1).toInt();
+				id_region = query.value(2).toInt();
+				id_root_ls = query.value(3).toString();
+			}
+			query.clear();
+		}
+//=======================	Нахождение корневого региона для формиования  =================================================
+	
+		int parent_region = id_region;
+		while (!(parent_region == 0))
+		{
+			str = QString("SELECT id_region, parent_region, id_country FROM region WHERE id_region = %1").arg(parent_region);
+			query.exec(str);
+			while (query.next())
+			{
+				id_region = query.value(0).toInt();
+				parent_region = query.value(1).toInt();
+
+			}
+			query.clear();
+		}
 //============================================ средства ВФ ===============================================	
 	
 	str = QString("SELECT name_mpo_pso FROM mpo_pso WHERE id_ls = %1 ").arg(idObject);
@@ -602,7 +635,7 @@ QString ViewManage::get_ls_info(int idObject){
 	}
 //============================================ имя страны и флаг страны ===============================================	
 	str = QString("SELECT country.flag,  country.name_country, country.id_country FROM region, country WHERE region.id_country = country.id_country AND region.id_region = %1").arg(id_region);
-
+                   
 		if(query.exec(str))
 	{
 		QSqlRecord rec = query.record();
@@ -614,6 +647,8 @@ QString ViewManage::get_ls_info(int idObject){
 
 		query.clear();
 	}
+		QString foto_flag = get_object_foto_from_DB(id_region);
+
 //============================================ имя блока и эмблема блока ===============================================
 			
 		str = QString("SELECT blok.name_blok, blok.emblem_blok FROM blok , blok_country WHERE blok.id_blok = blok_country.id_blok AND blok_country.id_country = %1 ").arg(id_country);
@@ -627,6 +662,7 @@ QString ViewManage::get_ls_info(int idObject){
 		}
 		query.clear();
 	}
+		QString blok_flag = get_blok_foto_from_DB(id_country);
 //============================================ подчиненность ===============================================
 	
 		if (id_parent_ls==0) {
@@ -649,7 +685,9 @@ QString ViewManage::get_ls_info(int idObject){
 		"<tr align='center'><td colspan='2'><H3><CENTER><font color='blue'>" + name_ls + "</font></CENTER></H3></td></tr>"
         "<tr><td> Подчиненность:</td><td>" + objectInfo_parent + "</td></tr>"
 		"<tr><td> Страна:</td><td>" + name_country + "</td></tr>"
+		"<tr align='center'><td colspan='2'><CENTER><img src=\"" + foto_flag + "\"></CENTER></td></tr>"
 		"<tr><td>Блок:</td><td>" + name_blok + "</td></tr>"
+		"<tr align='center'><td colspan='2'><CENTER><img src=\"" + blok_flag + "\"></CENTER></td></tr>"
 		"<tr><td>Численность:</td><td>" + QString::number(counte_ls) + "</td></tr>"
 		"<tr><td>Средства ПсО:</td><td>" + name_mpo + "</td></tr></table>";
 		}
@@ -658,7 +696,9 @@ QString ViewManage::get_ls_info(int idObject){
 		"<tr align='center'><td colspan='2'><H3><CENTER><font color='red'>" + name_ls + "</font></CENTER></H3></td></tr>"
         "<tr><td> Подчиненность:</td><td>" + objectInfo_parent + "</td></tr>"
 		"<tr><td> Страна:</td><td>" + name_country + "</td></tr>"
+		"<tr align='center'><td colspan='2'><CENTER><img src=\"" + foto_flag + "\"></CENTER></td></tr>"
 		"<tr><td>Блок:</td><td>" + name_blok + "</td></tr>"
+		"<tr align='center'><td colspan='2'><CENTER><img src=\"" + blok_flag + "\"></CENTER></td></tr>"
 		"<tr><td>Численность:</td><td>" + QString::number(counte_ls) + "</td></tr>"
 		"<tr><td>Средства ПсО:</td><td>" + name_mpo + "</td></tr></table>";
 		}
@@ -720,7 +760,7 @@ QString ViewManage::get_means_info(int idObject){
 		}
 		query.clear();
 	}
-		if (!id_ls == 0)
+		if (!(id_ls == 0))
 		{
 		str = QString("SELECT name_ls FROM ls WHERE id_ls = %1 ").arg(id_ls);
 			query.exec(str);
@@ -730,7 +770,7 @@ QString ViewManage::get_means_info(int idObject){
 			}
 			query.clear();
 		}
-		if (!id_smi == 0)
+		if (!(id_smi == 0))
 		{
 		str = QString("SELECT name_smi FROM smi WHERE id_smi = %1 ").arg(id_smi);
 			query.exec(str);
@@ -740,7 +780,7 @@ QString ViewManage::get_means_info(int idObject){
 			}
 			query.clear();
 		}
-		if (!id_groups == 0)
+		if (!(id_groups == 0))
 		{
 		str = QString("SELECT name_groups FROM groups WHERE id_groups = %1 ").arg(id_groups);
 			query.exec(str);
@@ -759,4 +799,127 @@ QString ViewManage::get_means_info(int idObject){
 		"<tr><td>Описание:</td><td>" + description_mpo_pso + "</td></tr></table>";
 	
 	return html_info_means;
+}
+//===================================== инфа по регионам ===============================================
+QString ViewManage::get_info_region(int idObject){
+
+	int id_region,parent_region;
+	QString name_region,type_region_string,description_region_string,counte_population_string,density_population_string,emmigration_population_string,immigration_population_string,birth_population_string,dead_population_string;
+	QString html_info_region;
+		
+	QSqlQuery query;
+	QString str = QString("SELECT region.id_region, region.name_region, region.description_region, region.counte_population, region.density_population, region.emmigration_population, region.immigration_population, region.birth_population, region.dead_population, type_region.name_type_region, region.parent_region FROM region, type_region WHERE region.id_region = %1 AND type_region.id_type_region = region.id_type_region").arg(idObject);
+	query.exec(str);
+
+	QSqlRecord data = query.record();
+
+	while(query.next())
+	{
+		id_region =  query.value(data.indexOf("id_region")).toInt();
+		parent_region =  query.value(data.indexOf("parent_region")).toInt();
+		name_region = query.value(data.indexOf("name_region")).toString();
+		type_region_string = query.value(data.indexOf("name_type_region")).toString();
+		counte_population_string = query.value(data.indexOf("counte_population")).toString();
+		density_population_string = query.value(data.indexOf("density_population")).toString();
+		emmigration_population_string = query.value(data.indexOf("emmigration_population")).toString();
+		immigration_population_string = query.value(data.indexOf("immigration_population")).toString();
+		birth_population_string = query.value(data.indexOf("birth_population")).toString();
+		dead_population_string = query.value(data.indexOf("dead_population")).toString();
+	}
+	query.clear();
+
+	
+	QString foto_flag = get_object_foto_from_DB(id_region);
+		
+	html_info_region = "<style>table {border-color:#D3D3D3; border-style: solid;}</style></style><table border='1' cellpadding='4' cellspacing='0' >"
+					"<tr align='center'><td colspan='2'><H2><CENTER><font color='black'>" + name_region + "</font></CENTER></H2></td></tr>"
+					"<tr align='center'><td colspan='2'><CENTER><img src=\"" + foto_flag + "\"></CENTER></td></tr>"
+					"<tr><td> Тип региона:</td><td>" + type_region_string + "</td></tr>"
+					"<tr align='center'><td colspan='2'><H3><CENTER><font color='black'> 1. Население </font></CENTER></H3></td></tr>"
+					"<tr><td> Численность населения:</td><td align='center'>" + counte_population_string + "</td></tr>"
+					"<tr><td> Плотность населения:</td><td align='center'>" + density_population_string + "</td></tr>"
+					"<tr><td> Уровень рождаемости:</td><td align='center'>" + birth_population_string + "</td></tr>"
+					"<tr><td> Уровень смертности:</td><td align='center'>" + dead_population_string + "</td></tr>"
+					"<tr><td> Уровень эммиграции:</td><td align='center'>" + emmigration_population_string + "</td></tr>"
+					"<tr><td> Уровень иммиграции:</td><td align='center'>" + immigration_population_string + "</td></tr>"
+					"</table>";
+
+
+				/*	"<tr><td> Количество:</td><td>" + QString::number(count_mpo_pso) + "</td></tr>"
+					"<tr><td>Подчиненность: </td><td>" + name_means + "</td></tr>"
+					"<tr><td>Описание:</td><td>" + description_mpo_pso + "</td></tr>*/
+
+	
+	return html_info_region;
+}
+
+//=========================== метод работает с картинками из БД =======================================
+QString ViewManage::get_blok_foto_from_DB(int id_country)
+{
+		QDir dir;
+		QString currentPath = dir.homePath();
+		QPixmap pixmap;
+		QString pathStr = currentPath + "/pixmap_blok.png";
+		QFile file(pathStr);
+		
+		if(file.exists()){
+		   file.remove(pathStr);
+		}
+		QSqlQuery query;
+   //============================================ имя блока и эмблема блока ===============================================
+		QString str = QString("SELECT blok.emblem_blok FROM blok , blok_country WHERE blok.id_blok = blok_country.id_blok AND blok_country.id_country = %1 ").arg(id_country);
+		
+		if(!query.exec(str))
+		{
+			QString sss = query.lastError().text();
+			return pathStr;
+		}
+			QSqlRecord rec = query.record();
+			while(query.next()){	
+			pixmap.loadFromData(query.value(rec.indexOf("emblem_blok")).toByteArray());
+			pixmap.save(pathStr, "PNG");
+		}
+	
+	return pathStr; 
+}
+QString ViewManage::get_object_foto_from_DB(int id_object)
+{
+		QDir dir;
+		QString currentPath = dir.homePath();
+		QPixmap pixmap;
+		QString pathStr = currentPath + "/pixmap_obj.png";
+		QFile file(pathStr);
+		
+		if(file.exists()){
+		   file.remove(pathStr);
+		}
+		
+		QSqlQuery query;
+		int id_region;
+		int parent_reg = id_object;
+		while (!(parent_reg == 0))
+		{
+			QString str = QString("SELECT id_region, parent_region, id_country FROM region WHERE id_region = %1").arg(parent_reg);
+			query.exec(str);
+			while (query.next())
+			{
+				id_region = query.value(0).toInt();
+				parent_reg = query.value(1).toInt();
+			}
+		}
+		
+		QString str = QString("SELECT country.flag FROM region, country WHERE region.id_country = country.id_country AND region.id_region = %1").arg(id_region);
+
+		if(!query.exec(str))
+		{
+			QString sss = query.lastError().text();
+			return pathStr;
+		}
+			QSqlRecord rec = query.record();
+			while(query.next()){	
+			pixmap.loadFromData(query.value(rec.indexOf("flag")).toByteArray());
+			pixmap.save(pathStr, "PNG");
+		}
+	
+	return pathStr; 
 }

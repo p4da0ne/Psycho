@@ -31,8 +31,10 @@ public:
 	QString get_ls_info(int);
 	QString get_spec_cond_info(int);
 	QString get_means_info(int);
+	QString get_info_region(int);
+	QString get_object_foto_from_DB(int);
+	QString get_blok_foto_from_DB(int);
 
-	
 };
 
 #endif // VIEW_MANAGE_H
