@@ -26,11 +26,7 @@ public:
 	Coord * WGStoPlane(long int hMap,Coord *coordObject);
 	QString getPsiLosses(int);
 	QList<SignData*> getPsiFormationsLooses(long int hMap,double x1,double y1,double x2,double y2);
-	
-	/*QList<SignData*> getRegions(long int hMap,double x1,double y1,double x2,double y2);
-	bool isRegionOnMap(long int hMap,int idRegion,double x1,double y1,double x2,double y2);
-	QList<Coord*> getRegionMetric(long int hMap,int idRegion);
-	QMap<long int,QString> getRegionSemantics(int idRegion);*/
+
 private:
 	People_Losses *psiCalculator;
 

@@ -248,45 +248,47 @@ QMap<long int,QString> RegionsMpos::getRegionSemantics(int idRegion)
 
 QString RegionsMpos::getRegionMpos(int idRegion)
 {
-	QString regionMpos;
+	QString regionMpos, regionName;
+
+	regionMpos = "<html><body><h4>Уровень МПОб региона</h4><br>";
 
 	QSqlQuery query;
 
-	/*QString str=QString("SELECT c.latitude_wgs_84_g, c.latitude_wgs_84_m, c.latitude_wgs_84_s, \
-								c.longitude_wgs_84_g, c.longitude_wgs_84_m, c.longitude_wgs_84_s \
-						 FROM coord_region c_r, coordinates c \
-						 WHERE c_r.id_coordinates = c.id_coordinates \
-						 AND c_r.id_region = %1 \
-						 ORDER BY c.id_coordinates").arg(idRegion);
+	QString str=QString("SELECT name_region FROM region WHERE id_region = %1").arg(idRegion);
 	if(query.exec(str))
 	{
-		QSqlRecord rec = query.record();
-		while (query.next())
-		{		
-			int wgs_g = query.value(rec.indexOf("latitude_wgs_84_g")).toInt();
-	*/
+		query.next();
+		regionName = query.value(0).toString();
 	
+	}
 	
 	float rez = regionCalculator->get_Rez_on_id_region(idRegion);	
 
 	QString mpos;
 	if(rez > 0 && rez < 0.3)
 	{
-		mpos="<span color='red'>МПО затрудняет выполнение задач</span>";
+		mpos="<font color='red'>МПО затрудняет выполнение задач</font>";
 	}	
 	if(rez >= 0.3 && rez < 0.5)
 	{
-		mpos="<span color='blue'>МПО не влияет на выполнение задач</span>";
+		mpos="<font color='blue'>МПО не влияет на выполнение задач</font>";
 	}	
 	if(rez >=0.5 && rez <= 0.8)
 	{	
-		mpos="<span color='green'>МПО способствует выполнению задач</span>";
+		mpos="<font color='green'>МПО способствует выполнению задач</font>";
 	}	
 	if(rez == 0)
 	{	
-		mpos="<span color='black'>Расчет МПО не производился</span>";
+		mpos="<font color='black'>Расчет МПО не производился</font>";
 	}
 
+
+	QString table = "<style>table {border-color: black; border-style: solid;}</style><table border='1' cellpadding='4' cellspacing='0'>"
+	"<tr align='center'><td colspan='2'><H3><CENTER><font color = 'black'>" + regionName + "</font></CENTER></H3></td></tr>"
+	"<tr><td> Уровень МПОб:</td><td>" + QString::number(rez,'f',3) + "</td></tr>"
+	"<tr><td> Оценка:</td><td>" + mpos + "</td></tr></table></body></html>";
+
+	regionMpos.append(table);
 
 	return regionMpos;
 }

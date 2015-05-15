@@ -1062,8 +1062,12 @@ void MapView::showCheckedCalcResults()
 		//показать результаты расчета психогенных потерь
 		closeSitByName(psiLoosesSitName);
 		HSITE psiLoosesSite = openMapSit(psiLoosesSitName,rscPath);
-		//QList<SignData*> psiLoosesSigns = model->getPsiLooses();			//раскомментировать после реализации функции в модели
-		//createSitObjects(psiLoosesSite, psiLoosesSigns);
+		
+		FormationsPsiLooses * psiLooses = new FormationsPsiLooses;
+
+	
+		QList<SignData*> psiLoosesSigns = psiLooses->getPsiFormationsLooses(mapwin->hMap,x1,y1,x2,y2);
+		createSitObjects(psiLoosesSite, psiLoosesSigns);
 	
 	}
 	else
@@ -1241,14 +1245,37 @@ void MapView::slotFormationPsiLooses()
 	{
 		QStringList objInfo = action->data().toString().split("_");
 
-		//вызов метода из класса FormationsPsiLooses   str = 
-		str = "Психогенные потери: "; 
-	
+		FormationsPsiLooses *psiCalc = new FormationsPsiLooses;
+
+		str = psiCalc->getPsiLosses(objInfo.at(0).toInt()); 
+			
 		showInformationDialog(str);
 
 	}
 
 }
+
+//===========================================================================================
+//===== Слот вывода уровня МПОб региона (для конткстного меню) =================
+//===========================================================================================
+void MapView::slotRegionMpos() 
+{
+	QAction *action = qobject_cast<QAction*>(sender());
+	QString str;
+	if(action)
+	{
+		QStringList objInfo = action->data().toString().split("_");
+
+		RegionsMpos *mpos = new RegionsMpos;
+
+		str = mpos->getRegionMpos(objInfo.at(0).toInt()); 
+			
+		showInformationDialog(str);
+
+	}
+
+}
+
 
 
 void MapView::slotObjectReport() //слот - обработчик выбора в контекстном меню объекта
@@ -1439,12 +1466,16 @@ QMenu* MapView::createRegionsMenu(QStringList objInfo)
 
 	//--- Добавление в меню специфичных действий для региона ---------
 
-	
 	QAction *report_act = new QAction("Отчет",this);
 	report_act->setData(idAndType);
 	mouse_menu->addAction(report_act); 
 	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));
 	
+
+	QAction *mpos_act = new QAction("МПОб региона",this);
+	mpos_act->setData(idAndType);
+	mouse_menu->addAction(mpos_act); 
+	connect(mpos_act, SIGNAL(triggered()), this, SLOT(slotRegionMpos()));
 
 	return mouse_menu;
 
