@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/" >
+        <file>Resources/map_open.png</file>
+        <file>Resources/map_close.png</file>
+        <file>Resources/up_bright.png</file>
+        <file>Resources/down_bright.png</file>
+        <file>Resources/contrast-up.png</file>
+        <file>Resources/contrast-down.png</file>
+        <file>Resources/print.png</file>
+        <file>Resources/print_part.png</file>
+        <file>Resources/less_scale.jpg</file>
+        <file>Resources/greate_scale.jpg</file>
+        <file>Resources/foto.png</file>
+		<file>Resources/no_photo1.png</file>
+		<file>Resources/mapwork.png</file>
+    </qresource>
+</RCC>

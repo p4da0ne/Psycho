@@ -456,6 +456,36 @@ void MapScroll::changeFrame(int pixels)
 	frame = dframe;
 }
 
+
+
+
+
+//================================================================================
+//==== Метод изменения позиции пользовательской карты в цепочке карт =============
+//================================================================================
+long int MapScroll::changeSitViewOrder(HSITE site, long int newNumber)
+{
+	
+	long int oldNumber = map->mapGetSiteNumber(hMap,site);
+
+	long int changeFlag = map->mapSetSiteViewOrder(hMap,oldNumber,0);
+	changeFlag = map->mapSetSiteViewOrder(hMap,oldNumber,1);
+	//long int changeFlag = map->mapChangeOrderSiteShow(hMap,oldNumber,newNumber);
+
+	return changeFlag;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 //открытие пользовательского слоя
 HSITE		MapScroll::openSit(HMAP hMap, const char * mapname, const char * rscname)
 {

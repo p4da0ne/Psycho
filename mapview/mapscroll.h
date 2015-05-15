@@ -26,6 +26,10 @@ public:
 	void			changeFrame(int pixels=50);
 	void			findObject(double *x, double *y);
 	HSITE			openSit(HMAP hMap, const char * mapname,const char * rscname);
+	
+	long int		changeSitViewOrder(HSITE site, long int newNumber);
+	
+	
 	long int		appendData(const char* sitname);
 	long int		createV0(long int hSit, double x1, double y1, double x2, double y2, const char * name_ff, long int id_obj, int flag=0, long int id_coord=0);
 	long int		createObject(long int hSit, double x, double y, const char * name_ff, long int id_obj=0, long int flag=0, bool if_shtab=FALSE, QString semantic="", long int id_coordintes=0, float angle=0);

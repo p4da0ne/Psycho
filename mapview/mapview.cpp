@@ -38,7 +38,7 @@ MapView::MapView(QWidget *parent, const char *name)
 	MainCodec = QTextCodec::codecForName("CP1251");
 	setMouseTracking(true);  //включает режим отлавливания событий движения мыши без нажатой клавиши
 	rst_name_and_number.clear();
-	setWindowIcon(QIcon("./icons/mapwork.png"));
+	setWindowIcon(QIcon(":/Resources/mapwork.png"));
 
 	settings = new QSettings(SETTINGS_ORGANIZATION,SETTINGS_APPLICATION);
 
@@ -135,74 +135,74 @@ void MapView::initToolButtonsPanel()
 
 //Открыть карту
 	QToolButton *open_map_but = new QToolButton();
-	open_map_but->setIcon(QIcon("./icons/map_open.png"));
+	open_map_but->setIcon(QIcon(":/Resources/map_open.png"));
 	open_map_but->setIconSize(QSize(20,20));
 	open_map_but->setToolTip("Открыть карту");
 	connect(open_map_but, SIGNAL(clicked()), this, SLOT(openNewMap()));
 //Закрыть карту и все данные
 	QToolButton *close_map_but = new QToolButton();
-	close_map_but->setIcon(QIcon("./icons/map_close.png"));
+	close_map_but->setIcon(QIcon(":/Resources/map_close.png"));
 	close_map_but->setIconSize(QSize(20,20));
 	close_map_but->setToolTip("Закрыть карту и все данные");
 	connect(close_map_but, SIGNAL(clicked()), this, SLOT(closeMap()));
 //Увеличить яркость
 	QToolButton *set_map_bright1 = new QToolButton();
-	set_map_bright1->setIcon(QIcon("./icons/up_bright.png"));
+	set_map_bright1->setIcon(QIcon(":/Resources/up_bright.png"));
 	set_map_bright1->setIconSize(QSize(20,20));
 	set_map_bright1->setToolTip("Увеличить яркость карты");
 	connect(set_map_bright1, SIGNAL(clicked()), this, SLOT(changeBrihgtUp()));
 //Уменьшить яркость
 	QToolButton *set_map_bright2 = new QToolButton();
-	set_map_bright2->setIcon(QIcon("./icons/down_bright.png"));
+	set_map_bright2->setIcon(QIcon(":/Resources//down_bright.png"));
 	set_map_bright2->setIconSize(QSize(20,20));
 	set_map_bright2->setToolTip("Уменьшить яркость карты");
 	connect(set_map_bright2, SIGNAL(clicked()), this, SLOT(changeBrihgtDown()));
 //Увеличить контрастность
 	QToolButton *set_map_contrast1 = new QToolButton();
-	set_map_contrast1->setIcon(QIcon("./icons/contrast-up.png"));
+	set_map_contrast1->setIcon(QIcon(":/Resources/contrast-up.png"));
 	set_map_contrast1->setIconSize(QSize(20,20));
 	set_map_contrast1->setToolTip("Увеличить контрастность карты");
 	connect(set_map_contrast1, SIGNAL(clicked()), this, SLOT(changeContrastUp()));
 //Уменьшить контрастность
 	QToolButton *set_map_contrast2 = new QToolButton();
-	set_map_contrast2->setIcon(QIcon("./icons/contrast-down.png"));
+	set_map_contrast2->setIcon(QIcon(":/Resources/contrast-down.png"));
 	set_map_contrast2->setIconSize(QSize(20,20));
 	set_map_contrast2->setToolTip("Уменьшить контрастность карты");
 	connect(set_map_contrast2, SIGNAL(clicked()), this, SLOT(changeContrastDown()));
 //печать всей карты
 	QToolButton *print_map_but = new QToolButton();
-	print_map_but->setIcon(QIcon("./icons/print.png"));
+	print_map_but->setIcon(QIcon(":/Resources/print.png"));
 	print_map_but->setIconSize(QSize(20,20));
 	print_map_but->setToolTip("Печать всей карты");
 	connect(print_map_but, SIGNAL(clicked()), this, SLOT(PrintMapSlot()));
 //печать видимой области карты
 	QToolButton *print_screen_but = new QToolButton();
-	print_screen_but->setIcon(QIcon("./icons/print_part.png"));
+	print_screen_but->setIcon(QIcon(":/Resources/print_part.png"));
 	print_screen_but->setIconSize(QSize(20,20));
 	print_screen_but->setToolTip("Печать видимой области карты");
 	connect(print_screen_but, SIGNAL(clicked()), this, SLOT(PrintScreenSlot()));
 //уменьшить масштаб отображения карты
 	QToolButton *less_scale_but = new QToolButton();
-	less_scale_but->setIcon(QIcon("./icons/less_scale.jpg"));
+	less_scale_but->setIcon(QIcon(":/Resources/less_scale.jpg"));
 	less_scale_but->setIconSize(QSize(20,20));
 	less_scale_but->setToolTip("Уменьшить масштаб");
 	connect(less_scale_but, SIGNAL(clicked()), this, SLOT(lessScale()));
 //увеличить масштаб отображения карты
 	QToolButton *greate_scale_but = new QToolButton();
-	greate_scale_but->setIcon(QIcon("./icons/greate_scale.jpg"));
+	greate_scale_but->setIcon(QIcon(":/Resources/greate_scale.jpg"));
 	greate_scale_but->setIconSize(QSize(20,20));
 	greate_scale_but->setToolTip("Увеличить масштаб");
 	connect(greate_scale_but, SIGNAL(clicked()), this, SLOT(greateScale()));
 
 //РАСТР! ! ! Открыть растр
 	QToolButton *open_rsc_but = new QToolButton();
-	open_rsc_but->setIcon(QIcon("./icons/foto.png"));
+	open_rsc_but->setIcon(QIcon(":/Resources/foto.png"));
 	open_rsc_but->setIconSize(QSize(20,20));
 	open_rsc_but->setToolTip("Открыть растр");
 	connect(open_rsc_but, SIGNAL(clicked()), this, SLOT(openRST()));
 //закрыть растр
 	QToolButton *close_rsc_but = new QToolButton();
-	close_rsc_but->setIcon(QIcon("./icons/no_photo1.png"));
+	close_rsc_but->setIcon(QIcon(":/Resources/no_photo1.png"));
 	close_rsc_but->setIconSize(QSize(20,20));
 	close_rsc_but->setToolTip("Закрыть растр");
 	connect(close_rsc_but, SIGNAL(clicked()), this, SLOT(closeRST()));
@@ -375,8 +375,8 @@ void MapView::initSaturnLeftMenu()
 	//----------------------------------------------------------------
 	
 	QToolBox *mapWorkToolBox = new QToolBox;
-	mapWorkToolBox->addItem(mapWorkWidget,QIcon("./icons/map_search.png"),"Фильтр отображения");
-	mapWorkToolBox->addItem(calcWidget,QIcon("./icons/edit_1.png"),"Расчетные задачи");
+	mapWorkToolBox->addItem(mapWorkWidget,QIcon(":/Resources/map_search.png"),"Фильтр отображения");
+	mapWorkToolBox->addItem(calcWidget,QIcon(":/Resources/edit_1.png"),"Расчетные задачи");
 
 	QVBoxLayout *left_panel_layout = new QVBoxLayout();
 	left_panel_layout->setAlignment(Qt::AlignTop);
@@ -1021,6 +1021,8 @@ void MapView::showCheckedCalcResults()
 
 		QList<SignData*> mpoRegionsSigns = regionsModel->getRegions(mapwin->hMap,x1,y1,x2,y2);
 		createSitObjects(mpoRegionsSite, mpoRegionsSigns);
+
+		mapwin->changeSitViewOrder(mpoRegionsSite,1);  //установка слоя с регионами на задний план
 	}
 	else
 	{
