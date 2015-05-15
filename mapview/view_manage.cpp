@@ -681,18 +681,18 @@ QString ViewManage::get_ls_info(int idObject){
 			}
 		}
 		if (enemy_ls == true) {
-			html_info_ls = "<style>table {border-color: blue; border-style: solid;}</style><table border='1' cellpadding='4' cellspacing='0'>"
+			html_info_ls = "<style>table {border-color: blue; border-style: solid; background-color:#f5f5f5;}</style><table border='1' cellpadding='4' cellspacing='0'>"
 		"<tr align='center'><td colspan='2'><H3><CENTER><font color='blue'>" + name_ls + "</font></CENTER></H3></td></tr>"
         "<tr><td> Подчиненность:</td><td>" + objectInfo_parent + "</td></tr>"
 		"<tr><td> Страна:</td><td>" + name_country + "</td></tr>"
-		"<tr align='center'><td colspan='2'><CENTER><img src=\"" + foto_flag + "\"></CENTER></td></tr>"
+		"<tr align='center'><td colspan='2'><CENTER><img color = green src=\"" + foto_flag + "\" ></CENTER></td></tr>"
 		"<tr><td>Блок:</td><td>" + name_blok + "</td></tr>"
 		"<tr align='center'><td colspan='2'><CENTER><img src=\"" + blok_flag + "\"></CENTER></td></tr>"
 		"<tr><td>Численность:</td><td>" + QString::number(counte_ls) + "</td></tr>"
 		"<tr><td>Средства ПсО:</td><td>" + name_mpo + "</td></tr></table>";
 		}
 		else {
-			html_info_ls = "<style>table {border-color: red; border-style: solid;}</style><table border='1' cellpadding='4' cellspacing='0' >"
+			html_info_ls = "<style>table {border-color: red; border-style: solid;background-color:#f5f5f5;}</style><table border='1' cellpadding='4' cellspacing='0' >"
 		"<tr align='center'><td colspan='2'><H3><CENTER><font color='red'>" + name_ls + "</font></CENTER></H3></td></tr>"
         "<tr><td> Подчиненность:</td><td>" + objectInfo_parent + "</td></tr>"
 		"<tr><td> Страна:</td><td>" + name_country + "</td></tr>"
@@ -831,7 +831,7 @@ QString ViewManage::get_info_region(int idObject){
 	
 	QString foto_flag = get_object_foto_from_DB(id_region);
 		
-	html_info_region = "<style>table {border-color:#D3D3D3; border-style: solid;}</style></style><table border='1' cellpadding='4' cellspacing='0' >"
+	html_info_region = "<style>table {border-color:#D3D3D3; border-style: solid;background-color:#f5f5f5;}</style></style><table border='1' cellpadding='4' cellspacing='0' >"
 					"<tr align='center'><td colspan='2'><H2><CENTER><font color='black'>" + name_region + "</font></CENTER></H2></td></tr>"
 					"<tr align='center'><td colspan='2'><CENTER><img src=\"" + foto_flag + "\"></CENTER></td></tr>"
 					"<tr><td> Тип региона:</td><td>" + type_region_string + "</td></tr>"
