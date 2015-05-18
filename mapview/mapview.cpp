@@ -843,6 +843,8 @@ QMenu* MapView::createGreateLessScaleMenu()
 	mouse_menu->addAction(less_scale_act); 
 	connect(less_scale_act, SIGNAL(triggered()), this, SLOT(lessScale()));
 	
+	mouse_menu->addSeparator();
+
 	return mouse_menu;
 }
 
@@ -1287,7 +1289,7 @@ void MapView::slotFormationPsiLooses()
 }
 
 //===========================================================================================
-//===== Слот вывода уровня МПОб региона (для конткстного меню) =================
+//===== Слот вывода уровня МПОб региона (для контекстного меню) =================
 //===========================================================================================
 void MapView::slotRegionMpos() 
 {
@@ -1307,6 +1309,27 @@ void MapView::slotRegionMpos()
 
 }
 
+
+//===========================================================================================
+//===== Слот вывода уровня МПС воинского формирования (для контекстного меню) =================
+//===========================================================================================
+void MapView::slotFormationMPS()
+{
+	QAction *action = qobject_cast<QAction*>(sender());
+	QString str;
+	if(action)
+	{
+		QStringList objInfo = action->data().toString().split("_");
+
+		//RegionsMpos *mpos = new RegionsMpos;
+
+		//str = mpos->getRegionMpos(objInfo.at(0).toInt()); 
+			
+		showInformationDialog(str);
+
+	}
+
+}
 
 
 void MapView::slotObjectReport() //слот - обработчик выбора в контекстном меню объекта
@@ -1347,16 +1370,20 @@ QMenu* MapView::createFormationsMenu(QStringList objInfo)
 	//--- Добавление в меню специфичных действий для формирования ---------
 
 	
-	
+	QAction *report_act = new QAction("Отчет",this);
+	report_act->setData(idAndType);
+	mouse_menu->addAction(report_act); 
+	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));
+
 	QAction *psiLooses_act = new QAction("Психогенные потери",this);
 	psiLooses_act->setData(idAndType);
 	mouse_menu->addAction(psiLooses_act); 
 	connect(psiLooses_act, SIGNAL(triggered()), this, SLOT(slotFormationPsiLooses()));
 	
-	QAction *report_act = new QAction("Отчет",this);
-	report_act->setData(idAndType);
-	mouse_menu->addAction(report_act); 
-	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));
+	QAction *formationMps_act = new QAction("Уровень МПС",this);
+	formationMps_act->setData(idAndType);
+	mouse_menu->addAction(formationMps_act); 
+	connect(formationMps_act, SIGNAL(triggered()), this, SLOT(slotFormationMPS()));
 	
 
 	return mouse_menu;

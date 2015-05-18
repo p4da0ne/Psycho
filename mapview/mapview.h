@@ -115,6 +115,7 @@ private slots:
 	void			slotObjectReport();
 	void			slotFormationPsiLooses();
 	void			slotRegionMpos();
+	void			slotFormationMPS();
 	//==========================
 	//------------ Обработчики нажатий на кнопки мыши (общие для разных программных комплексов) ------------------
 	void			slotMouseLeftButtonClicked(QPoint pe, QList<QStringList> objectsList);
