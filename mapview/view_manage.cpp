@@ -572,9 +572,9 @@ QString ViewManage::getObjectTypeAndName(int idObject, int objectType)
 				str = QString("SELECT type_region,name_region FROM region WHERE id_region = %1").arg(idObject);
 				break;
 
-			/*case PERSONNEL:
-			str = QString("SELECT name_region FROM region WHERE id_region = %1").arg(idObject);
-			break;*/
+			case PERSONNEL:
+			str = QString("SELECT name_persones,rank_persones FROM persones WHERE persones.id_persones = %1").arg(idObject);
+			break;
 		}
 	
 	
