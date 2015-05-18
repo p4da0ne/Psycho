@@ -648,6 +648,10 @@ QString ViewManage::get_ls_info(int idObject){
 		query.clear();
 	}
 		QString foto_flag = get_object_foto_from_DB(id_region);
+		QFile file(foto_flag);
+		
+		
+
 
 //============================================ имя блока и эмблема блока ===============================================
 			
@@ -663,6 +667,7 @@ QString ViewManage::get_ls_info(int idObject){
 		query.clear();
 	}
 		QString blok_flag = get_blok_foto_from_DB(id_country);
+		QFile file_blok(blok_flag);
 //============================================ подчиненность ===============================================
 	
 		if (id_parent_ls==0) {
@@ -680,29 +685,52 @@ QString ViewManage::get_ls_info(int idObject){
 			query.clear();
 			}
 		}
-		if (enemy_ls == true) {
+		
+		
+		if ((enemy_ls == true) && (file.size()==0) && (file_blok.size()==0)) {
 			html_info_ls = "<style>table {border-color: blue; border-style: solid; background-color:#f5f5f5;}</style><table border='1' cellpadding='4' cellspacing='0'>"
 		"<tr align='center'><td colspan='2'><H3><CENTER><font color='blue'>" + name_ls + "</font></CENTER></H3></td></tr>"
         "<tr><td> Подчиненность:</td><td>" + objectInfo_parent + "</td></tr>"
 		"<tr><td> Страна:</td><td>" + name_country + "</td></tr>"
-		"<tr align='center'><td colspan='2'><CENTER><img color = green src=\"" + foto_flag + "\" width = 50 height = 32></CENTER></td></tr>"
+		"<tr align='center'><td colspan='2'><CENTER> </CENTER></td></tr>"
 		"<tr><td>Блок:</td><td>" + name_blok + "</td></tr>"
-		"<tr align='center'><td colspan='2'><CENTER><img src=\"" + blok_flag + "\" width = 35 height = 35></CENTER></td></tr>"
+		"<tr align='center'><td colspan='2'><CENTER> </CENTER></td></tr>"
 		"<tr><td>Численность:</td><td>" + QString::number(counte_ls) + "</td></tr>"
 		"<tr><td>Средства ПсО:</td><td>" + name_mpo + "</td></tr></table>";
 		}
-		else {
+		else if ((enemy_ls == false) && (file.size()==0) && (file_blok.size()==0)) {
 			html_info_ls = "<style>table {border-color: red; border-style: solid;background-color:#f5f5f5;}</style><table border='1' cellpadding='4' cellspacing='0' >"
 		"<tr align='center'><td colspan='2'><H3><CENTER><font color='red'>" + name_ls + "</font></CENTER></H3></td></tr>"
         "<tr><td> Подчиненность:</td><td>" + objectInfo_parent + "</td></tr>"
+		"<tr><td> Страна:</td><td>" + name_country + "</td></tr>" 
+		"<tr align='center'><td colspan='2'><CENTER> </CENTER></td></tr>"
+		"<tr><td>Блок:</td><td>" + name_blok + "</td></tr>"
+		"<tr align='center'><td colspan='2'><CENTER> </CENTER></td></tr>"
+		"<tr><td>Численность:</td><td>" + QString::number(counte_ls) + "</td></tr>"
+		"<tr><td>Средства ПсО:</td><td>" + name_mpo + "</td></tr></table>";
+		}
+		else if (enemy_ls == true) {
+		html_info_ls = "<style>table {border-color: blue; border-style: solid; background-color:#f5f5f5;}</style><table border='1' cellpadding='4' cellspacing='0'>"
+		"<tr align='center'><td colspan='2'><H3><CENTER><font color='blue'>" + name_ls + "</font></CENTER></H3></td></tr>"
+        "<tr><td> Подчиненность:</td><td>" + objectInfo_parent + "</td></tr>"
 		"<tr><td> Страна:</td><td>" + name_country + "</td></tr>"
-		"<tr align='center'><td colspan='2'><CENTER><img src=\"" + foto_flag + "\" width = 50 height = 32></CENTER></td></tr>"
+		"<tr align='center'><td colspan='2'><CENTER><img src=\"" + foto_flag + "\" width = 50 height = 35></CENTER></td></tr>"
 		"<tr><td>Блок:</td><td>" + name_blok + "</td></tr>"
 		"<tr align='center'><td colspan='2'><CENTER><img src=\"" + blok_flag + "\" width = 35 height = 35></CENTER></td></tr>"
 		"<tr><td>Численность:</td><td>" + QString::number(counte_ls) + "</td></tr>"
 		"<tr><td>Средства ПсО:</td><td>" + name_mpo + "</td></tr></table>";
 		}
-
+		else  {
+			html_info_ls = "<style>table {border-color: red; border-style: solid;background-color:#f5f5f5;}</style><table border='1' cellpadding='4' cellspacing='0' >"
+		"<tr align='center'><td colspan='2'><H3><CENTER><font color='red'>" + name_ls + "</font></CENTER></H3></td></tr>"
+        "<tr><td> Подчиненность:</td><td>" + objectInfo_parent + "</td></tr>"
+		"<tr><td> Страна:</td><td>" + name_country + "</td></tr>" 
+		"<tr align='center'><td colspan='2'><CENTER><img src=\"" + foto_flag + "\" width = 50 height = 35></CENTER></td></tr>"
+		"<tr><td>Блок:</td><td>" + name_blok + "</td></tr>"
+		"<tr align='center'><td colspan='2'><CENTER><img src=\"" + blok_flag + "\" width = 35 height = 35></CENTER></td></tr>"
+		"<tr><td>Численность:</td><td>" + QString::number(counte_ls) + "</td></tr>"
+		"<tr><td>Средства ПсО:</td><td>" + name_mpo + "</td></tr></table>";
+		}
 	return html_info_ls;
 }
 //============================ инфа по особым условиям ================================
