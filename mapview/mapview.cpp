@@ -281,6 +281,9 @@ void MapView::initSaturnLeftMenu()
 	fr->setLineWidth(2);
 	
 	//--------------- Панель "Фильтр объектов" ----------------------------------------
+	mpo_regions_checkbox = new QCheckBox("МПОб регионов");
+	mpo_regions_checkbox->setChecked(true);
+	
 	QLabel *means_label = new QLabel("Средства:");
 	QFont font("Arial",8);
 	font.setUnderline(true);
@@ -310,12 +313,18 @@ void MapView::initSaturnLeftMenu()
 	
 	QVBoxLayout *show_objects_layout = new QVBoxLayout;
 	
+	show_objects_layout->addWidget(mpo_regions_checkbox);
+	QLabel *lineLabel = new QLabel();
+	lineLabel->setFrameStyle(QFrame::HLine | QFrame::Raised);
+	lineLabel->setLineWidth(2);
+	show_objects_layout->addWidget(lineLabel);
+	
 	show_objects_layout->addWidget(means_label);
 	show_objects_layout->addWidget(smi_means_checkbox);
 	show_objects_layout->addWidget(formation_means_checkbox);
 	show_objects_layout->addWidget(organization_means_checkbox);
 
-	QLabel *lineLabel = new QLabel();
+	lineLabel = new QLabel();
 	lineLabel->setFrameStyle(QFrame::HLine | QFrame::Raised);
 	lineLabel->setLineWidth(2);
 
@@ -336,9 +345,6 @@ void MapView::initSaturnLeftMenu()
 	
 	//--------------- Панель "Расчетные задачи" ----------------------------------------
 
-	mpo_regions_checkbox = new QCheckBox("МПОС регионов");
-	mpo_regions_checkbox->setChecked(true);
-
 	mps_our_Mil_checkbox = new QCheckBox("МПС своих войск");
 	mps_our_Mil_checkbox->setChecked(true);
 
@@ -356,7 +362,7 @@ void MapView::initSaturnLeftMenu()
 	
 	QVBoxLayout *calc_layout = new QVBoxLayout;
 	
-	calc_layout->addWidget(mpo_regions_checkbox);
+	
 	calc_layout->addWidget(mps_our_Mil_checkbox);
 	calc_layout->addWidget(mps_enemy_checkbox);
 	calc_layout->addWidget(psi_looses_checkbox);
@@ -854,6 +860,7 @@ void MapView::createSitObjects(HSITE hSite, QList<SignData*> signsList)
 								 signsList.at(i)->getSignCode().toStdString().c_str(),
 								 &signsList.at(i)->getSemanticList());
 	}
+	mapwin->updateScreen();
 }
 
 
@@ -886,6 +893,7 @@ void MapView::showCheckedObjects()
 	QString sitPath = info->absolutePath();
 	sitPath.append("/");
 	//-------------------------------------------------------------------------
+	QString mpoRegionsSitName = sitPath + "mpoRegions.sit";
 	QString smiMeansSitName = sitPath + "smiMeans.sit";
 	QString formationMeansSitName = sitPath + "formationMeans.sit";
 	QString organizationMeansSitName = sitPath + "organizationMeans.sit";
@@ -893,6 +901,27 @@ void MapView::showCheckedObjects()
 	QString conditionsSitName = sitPath +"conditions.sit";
 	//-------------------------------------------------------------------------
 
+
+	if (mpo_regions_checkbox->checkState())
+	{
+		//показать результаты расчета МПО регионов
+		closeSitByName(mpoRegionsSitName);
+		HSITE mpoRegionsSite = openMapSit(mpoRegionsSitName,rscPath);
+		RegionsMpos * regionsModel = new RegionsMpos;
+
+		QList<SignData*> mpoRegionsSigns = regionsModel->getRegions(mapwin->hMap,x1,y1,x2,y2);
+		createSitObjects(mpoRegionsSite, mpoRegionsSigns);
+		/////// Временно - для обновления пользовательской карты, чтобы отображались знаки регионов ///////////////
+		greateScale();
+		lessScale();
+		///////////////////////////////////////////////
+	}
+	else
+	{
+		closeSitByName(mpoRegionsSitName);
+	}
+
+	//-------------------------------------------------------------------------
 	if (smi_means_checkbox->checkState())
 	{
 		//показать средства СМИ
@@ -996,28 +1025,11 @@ void MapView::showCheckedCalcResults()
 	QString sitPath = info->absolutePath();
 	sitPath.append("/");
 	//-------------------------------------------------------------------------
-	QString mpoRegionsSitName = sitPath + "mpoRegions.sit";
+	
 	QString mpsOursSitName = sitPath + "mpsOurs.sit";
 	QString mpsEnemiesSitName = sitPath + "mpsEnemies.sit";
 	QString psiLoosesSitName = sitPath + "psiLooses.sit";
-	//-------------------------------------------------------------------------
-
-	if (mpo_regions_checkbox->checkState())
-	{
-		//показать результаты расчета МПО регионов
-		closeSitByName(mpoRegionsSitName);
-		HSITE mpoRegionsSite = openMapSit(mpoRegionsSitName,rscPath);
-		RegionsMpos * regionsModel = new RegionsMpos;
-
-		QList<SignData*> mpoRegionsSigns = regionsModel->getRegions(mapwin->hMap,x1,y1,x2,y2);
-		createSitObjects(mpoRegionsSite, mpoRegionsSigns);
-
-		mapwin->changeSitViewOrder(mpoRegionsSite,1);  //установка слоя с регионами на задний план
-	}
-	else
-	{
-		closeSitByName(mpoRegionsSitName);
-	}
+	
 
 	//-------------------------------------------------------------------------
 	if (mps_our_Mil_checkbox->checkState())
