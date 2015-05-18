@@ -1010,7 +1010,7 @@ void MapView::showCheckedObjects()
 		//показать особые условия
 		closeSitByName(personesSitName);
 		HSITE personesSite = openMapSit(personesSitName,rscPath);
-		QList<SignData*> personesSigns;// = model->getPersones(mapwin->hMap,x1,y1,x2,y2);
+		QList<SignData*> personesSigns = model->getPersones(mapwin->hMap,x1,y1,x2,y2);
 		createSitObjects(personesSite, personesSigns);
 	}
 	else
