@@ -30,7 +30,7 @@
 #include "People_Losses.h"
 #include "regions_mpos.h"
 #include "formationsPsiLooses.h"
-
+#include "formationsMPS.h"
 
 MapView::MapView(QWidget *parent, const char *name)
     : QWidget(parent)
@@ -1063,8 +1063,9 @@ void MapView::showCheckedCalcResults()
 		//показать результаты расчета МПС наших войск
 		closeSitByName(mpsOursSitName);
 		HSITE mpsOursSite = openMapSit(mpsOursSitName,rscPath);
-		//QList<SignData*> mpsOursSigns = model->getMpsOurs();			//раскомментировать после реализации функции в модели
-		//createSitObjects(mpsOursSite, mpsOursSigns);
+		FormationsMPS *mpsCalc = new FormationsMPS;
+		QList<SignData*> mpsOursSigns = mpsCalc->getFormationsMPS(mapwin->hMap,x1,y1,x2,y2,false);
+		createSitObjects(mpsOursSite, mpsOursSigns);
 	}
 	else
 	{
@@ -1077,8 +1078,9 @@ void MapView::showCheckedCalcResults()
 		//показать результаты расчета МПС противника
 		closeSitByName(mpsEnemiesSitName);
 		HSITE mpsEnemiesSite = openMapSit(mpsEnemiesSitName,rscPath);
-		//QList<SignData*> mpsEnemiesSigns = model->getMpsEnemies();			//раскомментировать после реализации функции в модели
-		//createSitObjects(mpsEnemiesSite, mpsEnemiesSigns);
+		FormationsMPS *mpsCalc = new FormationsMPS;
+		QList<SignData*> mpsEnemiesSigns = mpsCalc->getFormationsMPS(mapwin->hMap,x1,y1,x2,y2,true);
+		createSitObjects(mpsEnemiesSite, mpsEnemiesSigns);
 	
 	}
 	else

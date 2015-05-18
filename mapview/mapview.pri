@@ -8,7 +8,8 @@ HEADERS		= config_mapview.h \
 			  calculatingClasses/Calculate_K_omkrf.h \
 			  calculatingClasses/People_Losses.h \
 			  calculatingClasses/regions_mpos.h \
-			  calculatingClasses/formationsPsiLooses.h
+			  calculatingClasses/formationsPsiLooses.h \
+			  calculatingClasses/formationsMPS.h
 			  
 SOURCES		= mapview.cpp \
 			  mapscroll.cpp \
@@ -19,5 +20,6 @@ SOURCES		= mapview.cpp \
 			  calculatingClasses/Calculate_K_omkrf.cpp \
 			  calculatingClasses/People_Losses.cpp \
 			  calculatingClasses/regions_mpos.cpp \
-			  calculatingClasses/formationsPsiLooses.cpp
+			  calculatingClasses/formationsPsiLooses.cpp \
+			  calculatingClasses/formationsMPS.cpp
 			  
