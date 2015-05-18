@@ -182,7 +182,9 @@ void MapScroll::closeMap()
 }
 
 
-
+//====================================================================
+//==== Метод установки скроллбаров в центр карты =======
+//====================================================================
 void MapScroll::setMapCenter()
 {
 	if (hMap == 0) return;
@@ -191,10 +193,10 @@ void MapScroll::setMapCenter()
 
 	map->mapGetPictureSize(hMap,&mapW,&mapH);
 	
-	MyViewport->hide();
+	//MyViewport->hide();
 	
 	//изменение размеров содержимого
-	MyViewport->resize(mapW, mapH);
+	//MyViewport->resize(mapW, mapH);
 
 	horizontalScrollBar()->setMaximum(mapW);
 	verticalScrollBar()->setMaximum(mapH);
@@ -207,7 +209,7 @@ void MapScroll::setMapCenter()
 
 	horizontalScrollBar()->setValue(X);
 	verticalScrollBar()->setValue(Y);
-	MyViewport->show();
+	//MyViewport->show();
 
 }
 
@@ -236,7 +238,8 @@ void MapScroll::changeScale(float change)
 	MyViewport->hide();
 	//изменение размеров содержимого
 	MyViewport->resize(mapW, mapH);
-	
+	horizontalScrollBar()->setMaximum(mapW);
+	verticalScrollBar()->setMaximum(mapH);
 	
 	//вычислим новый центр
 	X = X - viewport()->width() / 2;
