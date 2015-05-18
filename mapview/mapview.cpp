@@ -662,9 +662,6 @@ void MapView::lessScale()
 //===============================================================
 void MapView::greateScale()
 {
-	QPoint pe = mouse_menu->pos();
-	
-
     mapwin->changeScale(2.0);		
 }
 
