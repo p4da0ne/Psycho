@@ -394,8 +394,66 @@ QList<SignData*> ViewManage::getFormations(long int hMap,double x1,double y1,dou
 	}
 	return formationsList;
 }
+//================================================================================
+//==== Метод возвращает список объектов SignData с информацией ===================
+//==== для нанесения на карту и инициализации условных знаков персоналии =======
+//================================================================================
+QList<SignData*> ViewManage::getPersones(long int hMap,double x1,double y1,double x2,double y2)
+{
+	QList<SignData*> PersonelList;
+
+	QSqlQuery query;
+	QString str=QString("SELECT persones.id_persones, coordinates.latitude_wgs_84_g,coordinates.latitude_wgs_84_m,coordinates.latitude_wgs_84_s, \
+						coordinates.longitude_wgs_84_g,coordinates.longitude_wgs_84_m,coordinates.longitude_wgs_84_s, \
+						type_persones.id_sign, si.sign_key \
+						FROM persones, coordinates, type_persones, coord_persones, signs si \
+						WHERE coord_persones.id_coordinates=coordinates.id_coordinates \
+						AND persones.id_type_persones=type_persones.id_type_persones \
+						AND type_persones.id_sign = si.id_sign \
+						AND persones.id_persones = coord_persones.id_persones"); 
+	if(query.exec(str))
+	{
+		QSqlRecord rec = query.record();
+		while (query.next())
+		{
+			int wgs_g = query.value(rec.indexOf("latitude_wgs_84_g")).toInt();
+			int wgs_m = query.value(rec.indexOf("latitude_wgs_84_m")).toInt();
+			double wgs_s = query.value(rec.indexOf("latitude_wgs_84_s")).toDouble();
+			int long_wgs_g = query.value(rec.indexOf("longitude_wgs_84_g")).toInt();
+			int long_wgs_m = query.value(rec.indexOf("longitude_wgs_84_m")).toInt();
+			double long_wgs_s = query.value(rec.indexOf("longitude_wgs_84_s")).toDouble();
+					
+			///получить из запроса 6 параметров координат WGS
+
+			Coord c1(wgs_g,wgs_m,wgs_s,long_wgs_g,long_wgs_m,long_wgs_s);
+			
+			Coord *c2 = WGStoPlane(hMap,&c1);		
+			
+			double x_coord = c2->getX();
+			double y_coord = c2->getY();
+
+			
+			if(!((x_coord > x1) && (y_coord > y1) && (x_coord < x2) && (y_coord < y2))) continue;
 
 
+			QString signCode = query.value(rec.indexOf("sign_key")).toString();
+			QString idPers = query.value(rec.indexOf("id_persones")).toString();
+
+			QList<Coord*> coordList;
+			Coord *coord = new Coord(x_coord,y_coord);	
+			coordList.append(coord);
+
+			QMap<long int,QString> semantic_map;
+			semantic_map[17501] = idPers;
+			semantic_map[17502] = QString::number(PERSONNEL);
+
+			SignData *signData = new SignData(signCode,coordList,semantic_map);
+				
+			PersonelList.append(signData);
+		}
+	}
+	return PersonelList;
+}
 
 //==================================================================================
 //==== Метод возвращает список объектов SignData с информацией =====================
@@ -513,6 +571,10 @@ QString ViewManage::getObjectTypeAndName(int idObject, int objectType)
 			case REGIONS:
 				str = QString("SELECT type_region,name_region FROM region WHERE id_region = %1").arg(idObject);
 				break;
+
+			/*case PERSONNEL:
+			str = QString("SELECT name_region FROM region WHERE id_region = %1").arg(idObject);
+			break;*/
 		}
 	
 	
