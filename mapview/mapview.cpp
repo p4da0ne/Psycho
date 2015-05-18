@@ -307,6 +307,11 @@ void MapView::initSaturnLeftMenu()
 	conditions_checkbox->setChecked(true);
 	//-----------------------------------------------------
 
+	persones_checkbox = new QCheckBox("Персоналии");
+	persones_checkbox->setChecked(true);
+
+
+
 	QPushButton * show_oper_obst_but = new QPushButton("Показать");
 	connect(show_oper_obst_but, SIGNAL(clicked()), this, SLOT(showCheckedObjects()));
 	
@@ -331,6 +336,7 @@ void MapView::initSaturnLeftMenu()
 	show_objects_layout->addWidget(lineLabel);
 	show_objects_layout->addWidget(formations_checkbox);
 	show_objects_layout->addWidget(conditions_checkbox);
+	show_objects_layout->addWidget(persones_checkbox);
 
 	lineLabel = new QLabel();
 	lineLabel->setFrameStyle(QFrame::HLine | QFrame::Raised);
@@ -656,6 +662,9 @@ void MapView::lessScale()
 //===============================================================
 void MapView::greateScale()
 {
+	QPoint pe = mouse_menu->pos();
+	
+
     mapwin->changeScale(2.0);		
 }
 
@@ -823,9 +832,13 @@ HSITE MapView::openMapSit(QString sitFileName, QString rscFilePath)
 //======================================================================================
 QMenu* MapView::createGreateLessScaleMenu()
 {
-	QMenu *mouse_menu = new QMenu; 
+	mouse_menu = new QMenu; 
 	QAction *great_scale_act = new QAction("Увеличить масштаб карты  \">\"", this);
+	great_scale_act->setIcon(QIcon(":/Resources/greate_scale.jpg"));
+
 	QAction *less_scale_act = new QAction("Уменьшить масштаб карты  \"<\"", this);
+	less_scale_act->setIcon(QIcon(":/Resources/less_scale.jpg"));
+
 
 	mouse_menu->addAction(great_scale_act); 
 	connect(great_scale_act, SIGNAL(triggered()), this, SLOT(greateScale()));
@@ -899,6 +912,7 @@ void MapView::showCheckedObjects()
 	QString organizationMeansSitName = sitPath + "organizationMeans.sit";
 	QString formationsSitName = sitPath + "formations.sit";
 	QString conditionsSitName = sitPath +"conditions.sit";
+	QString personesSitName = sitPath +"persones.sit";
 	//-------------------------------------------------------------------------
 
 
@@ -985,6 +999,19 @@ void MapView::showCheckedObjects()
 		HSITE conditionsSite = openMapSit(conditionsSitName,rscPath);
 		QList<SignData*> specialConditionsSigns = model->getSpecialConditions(mapwin->hMap,x1,y1,x2,y2);
 		createSitObjects(conditionsSite, specialConditionsSigns);
+	}
+	else
+	{
+		closeSitByName(conditionsSitName);
+	}
+	//-------------------------------------------------------------------------
+	if (persones_checkbox->checkState())
+	{
+		//показать особые условия
+		closeSitByName(personesSitName);
+		HSITE personesSite = openMapSit(personesSitName,rscPath);
+		QList<SignData*> personesSigns;// = model->getPersones(mapwin->hMap,x1,y1,x2,y2);
+		createSitObjects(personesSite, personesSigns);
 	}
 	else
 	{
@@ -1156,7 +1183,7 @@ QMenu* MapView::createObjectsListMenu(QList<QStringList> objectsList)
 //=========================================================================================
 QMenu* MapView::createObjectsListComplexMenu(QList<QStringList> objectsList)
 {
-	QMenu *mouse_menu = new QMenu; 
+	QMenu *mouse_menu = createGreateLessScaleMenu();//new QMenu; 
 	
 	for(int i=0;i<objectsList.count();i++)
 	{
@@ -1186,8 +1213,11 @@ QMenu* MapView::createObjectsListComplexMenu(QList<QStringList> objectsList)
 			case REGIONS:
 				mouse_menu->addMenu(createRegionsMenu(objectsList.at(i)));
 				break;
+			case PERSONNEL:
+				mouse_menu->addMenu(createPersonnelMenu(objectsList.at(i)));
+				break;
 		}
-
+		
 	}
 	
 	return mouse_menu;
@@ -1486,7 +1516,26 @@ QMenu* MapView::createRegionsMenu(QStringList objInfo)
 }
 
 
+//===================================================================================
+//===== Метод создания и отображения контекстного меню для персоналий =================
+//===================================================================================
+QMenu* MapView::createPersonnelMenu(QStringList objInfo)
+{
+	QString text = model->getObjectTypeAndName(objInfo.at(0).toInt(), objInfo.at(1).toInt());
+	QString idAndType = objInfo.at(0) + "_" + objInfo.at(1);
 
+	QMenu *mouse_menu = new QMenu(text); 
+
+	//--- Добавление в меню специфичных действий для персоналий ---------
+
+	QAction *report_act = new QAction("Отчет",this);
+	report_act->setData(idAndType);
+	mouse_menu->addAction(report_act); 
+	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));
+	
+	return mouse_menu;
+
+}
 
 //===============================================================================
 //============== Диалоговое окно с информацией об объекте =======================

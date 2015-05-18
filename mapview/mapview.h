@@ -129,7 +129,7 @@ private slots:
 	QMenu*			createFormationsMeansMenu(QStringList objInfo);
 	QMenu*			createGroupsMeansMenu(QStringList objInfo);
 	QMenu*			createRegionsMenu(QStringList objInfo);
-	
+	QMenu*			createPersonnelMenu(QStringList objInfo);
 	//----------------------------------------------------------------------
 
 
@@ -182,13 +182,15 @@ private:
 	QHBoxLayout *centralLayout;
 
 	//---- Чекбоксы фильтра отображения -----
+	QCheckBox *mpo_regions_checkbox;
 	QCheckBox *smi_means_checkbox;
 	QCheckBox *formation_means_checkbox;
 	QCheckBox *organization_means_checkbox;
 	QCheckBox *formations_checkbox;
 	QCheckBox *conditions_checkbox;
+	QCheckBox *persones_checkbox;
 	//---- Чекбоксы фильтра расчетных задач -----
-	QCheckBox *mpo_regions_checkbox;
+
 	QCheckBox *mps_our_Mil_checkbox;
 	QCheckBox *mps_enemy_checkbox;
 	QCheckBox *psi_looses_checkbox;
