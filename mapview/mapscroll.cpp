@@ -142,9 +142,11 @@ int	MapScroll::mapOpen(  const char *name )
    if (hMap)
    {
       long int	mapW, mapH;
-	  //setViewScale(16000000);//установить масштаб, с каким изначально откроется карта
 	  
+	  mapBaseScale = getScale();  //запоминание базового масштаба карты
 	 
+	 //setViewScale(16000000);//установить масштаб, с каким изначально откроется карта  (можно тянуть из настроек)
+
 	  map->mapGetPictureSize(hMap,&mapW,&mapH);
      
       if (MyViewport == 0)  
@@ -193,11 +195,6 @@ void MapScroll::setMapCenter()
 
 	map->mapGetPictureSize(hMap,&mapW,&mapH);
 	
-	//MyViewport->hide();
-	
-	//изменение размеров содержимого
-	//MyViewport->resize(mapW, mapH);
-
 	horizontalScrollBar()->setMaximum(mapW);
 	verticalScrollBar()->setMaximum(mapH);
 
@@ -209,7 +206,6 @@ void MapScroll::setMapCenter()
 
 	horizontalScrollBar()->setValue(X);
 	verticalScrollBar()->setValue(Y);
-	//MyViewport->show();
 
 }
 
@@ -261,10 +257,8 @@ void MapScroll::changePos(long int dx,long int dy)
   long int X,Y;
 
   long int mapW, mapH;
-  void (WINAPI * lpmapfn)(HMAP, long int *, long int *);
-  (FARPROC&) lpmapfn = ::GetProcAddress(LibInst,"mapGetPictureSize");// Запросить размеры общего изображения карты в пикселах  // для текущего масштаба
-  (*lpmapfn)(hMap, &mapW, &mapH);
-
+  map->mapGetPictureSize(hMap,&mapW,&mapH);
+  
   X = horizontalScrollBar()->value() + dx;
   Y = verticalScrollBar()->value() + dy;
   if (X > mapW - viewport()->width()) X = mapW - viewport()->width();
@@ -494,34 +488,10 @@ void MapScroll::changeFrame(int pixels)
 
 
 
-//================================================================================
-//==== Метод изменения позиции пользовательской карты в цепочке карт =============
-//================================================================================
-long int MapScroll::changeSitViewOrder(HSITE site, long int newNumber)
-{
-	
-	long int oldNumber = map->mapGetSiteNumber(hMap,site);
-
-	long int changeFlag = map->mapSetSiteViewOrder(hMap,oldNumber,0);
-	changeFlag = map->mapSetSiteViewOrder(hMap,oldNumber,1);
-	//long int changeFlag = map->mapChangeOrderSiteShow(hMap,oldNumber,newNumber);
-
-	return changeFlag;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-//открытие пользовательского слоя
-HSITE		MapScroll::openSit(HMAP hMap, const char * mapname, const char * rscname)
+//============================================================================
+//====Метод  открытия пользовательского слоя =================================
+//============================================================================
+HSITE MapScroll::openSit(HMAP hMap, const char * mapname, const char * rscname)
 {
 	memset((void*)&createsite,0,sizeof(createsite));
 	createsite.Length = sizeof(createsite);
@@ -529,12 +499,16 @@ HSITE		MapScroll::openSit(HMAP hMap, const char * mapname, const char * rscname)
 
 	createsite.MapType=COUNTGEOG;//обзорно-географическая
 	createsite.MaterialProjection=CONICALORTHOMORPHIC;//каноническая равноугольная
-	//long int scale = 5000000;//mapwin->getScale();
-	long int scale = getScale();
+	long int scale = mapBaseScale;
+
 	createsite.Scale = scale;
 	map->mapCreateAndAppendSite(hMap,mapname,rscname,&createsite);
 	return  map->mapOpenSiteForMap(hMap,mapname,0);
 }
+
+
+
+
 
 //Закрытие пользовательской карты
 void		MapScroll::closeSit(HMAP hMap, HSITE hsite)

@@ -13,5 +13,7 @@
         <file>Resources/foto.png</file>
 		<file>Resources/no_photo1.png</file>
 		<file>Resources/mapwork.png</file>
+		<file>Resources/map_search.png</file>
+		<file>Resources/edit_1.png</file>
     </qresource>
 </RCC>

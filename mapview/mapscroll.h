@@ -27,7 +27,6 @@ public:
 	void			findObject(double *x, double *y);
 	HSITE			openSit(HMAP hMap, const char * mapname,const char * rscname);
 	
-	long int		changeSitViewOrder(HSITE site, long int newNumber);
 	
 	
 	long int		appendData(const char* sitname);
@@ -159,6 +158,8 @@ public:
 	int								number_action; //номер выбранного действия для реакции левой клавиши мыши
 	long int						x_for_change_angle, y_for_change_angle;
 	int								dx, dy;
+
+	int	mapBaseScale;
 private:
 	//delete
 	QDialog		* info_dialog;

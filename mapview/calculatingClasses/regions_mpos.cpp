@@ -84,7 +84,7 @@ QList<SignData*> RegionsMpos::getRegions(long int hMap,double x1,double y1,doubl
 	
 
 	//======== ProgressDialog =======
-	QProgressDialog progress("Вычисление МПОС регионов...", "Прервать", 0,regionsIdList.count());
+	QProgressDialog progress("Вычисление МПОб регионов...", "Прервать", 0,regionsIdList.count());
 	progress.setWindowModality(Qt::WindowModal);
 
 	//===============================
