@@ -2113,6 +2113,8 @@ QSqlRelationalTableModel *model_region = new QSqlRelationalTableModel(this);
 	UI->property_object->hideColumn(3);
 	UI->property_object->hideColumn(4);
 	UI->property_object->hideColumn(5);
+	UI->property_object->hideColumn(12);
+
 
 	//UI->property_object->setColumnWidth(1,150);
 	UI->property_object->setColumnWidth(1,200);UI->property_object->setColumnWidth(6,200);
