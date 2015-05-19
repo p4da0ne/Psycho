@@ -2113,7 +2113,7 @@ QSqlRelationalTableModel *model_region = new QSqlRelationalTableModel(this);
 	UI->property_object->hideColumn(3);
 	UI->property_object->hideColumn(4);
 	UI->property_object->hideColumn(5);
-	UI->property_object->hideColumn(12);
+    //UI->property_object->hideColumn(12);
 
 
 	//UI->property_object->setColumnWidth(1,150);
@@ -2121,8 +2121,9 @@ QSqlRelationalTableModel *model_region = new QSqlRelationalTableModel(this);
 	UI->property_object->setColumnWidth(7,200);UI->property_object->setColumnWidth(8,200);
 
 	UI->property_object->setShowGrid(true);
-	QSqlRelationalDelegate *delegat_mpo=new QSqlRelationalDelegate(UI->property_object);
-	UI->property_object->setItemDelegate(delegat_mpo);
+    QSqlRelationalDelegate *delegat_mpo=new QSqlRelationalDelegate(UI->property_object);
+    UI->property_object->setItemDelegate(delegat_mpo);
+    UI->property_object->setItemDelegateForColumn(12,delegat_mpo);
 
 }
 

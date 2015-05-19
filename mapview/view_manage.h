@@ -35,6 +35,7 @@ public:
 	QString get_info_region(int);
 	QString get_object_foto_from_DB(int);
 	QString get_blok_foto_from_DB(int);
+	QString get_mpo_foto_from_DB(int);
 
 };
 

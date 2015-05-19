@@ -1209,34 +1209,32 @@ case 15: { //=========================== средства СМИ ==========================
 		 textEdit_desc->setFixedHeight(50);
 		 label_4->setBuddy(textEdit_desc);
 
-//		 QGroupBox *configGroup = new QGroupBox("Прямоугольные координаты объекта:");
-//		 QLabel *x_label = new QLabel("X:");
-//		 lineEdit_x = new QLineEdit();
-//		 QLabel *y_label = new QLabel("Y:");
-//		 lineEdit_y = new QLineEdit();
-		
-//	 	 QHBoxLayout *coord_Layout = new QHBoxLayout;
-//		 coord_Layout->addWidget(x_label);
-//		 coord_Layout->addWidget(lineEdit_x);
-//		 coord_Layout->addWidget(y_label);
-//		 coord_Layout->addWidget(lineEdit_y);
-   
-//		 QVBoxLayout *configLayout = new QVBoxLayout;
-//		 configLayout->addLayout(coord_Layout);
-//		 configGroup->setLayout(configLayout);
+         QLabel *label_f = new QLabel("Фото средства:");
+         lineEdit_name_f = new QLineEdit;
+         label_f->setBuddy(lineEdit_name_f);
 				 			 
 		 addButton = new QPushButton("Добавить");
 		 addButton->setDefault(true);
 		 connect(addButton,SIGNAL(clicked()),this,SLOT(add_mpo_pso_smi()));
 		 cancelButton = new QPushButton("Отмена");
 		 connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
+         QPushButton *openButton = new QPushButton("открыть");
+         openButton->setText("...");
+         openButton->setFixedSize(30,20);
+         connect(openButton,SIGNAL(clicked()),this,SLOT(open_file()));
 
 		 QHBoxLayout *buttonsLayout = new QHBoxLayout;
 		 buttonsLayout->addStretch();
 		 buttonsLayout->addWidget(addButton);
 		 buttonsLayout->addWidget(cancelButton);
 
-		 QHBoxLayout *topLeftLayout = new QHBoxLayout;
+         QHBoxLayout *topLeftLayout_15 = new QHBoxLayout;
+         topLeftLayout_15->addWidget(label_f);
+         QHBoxLayout *topLeftLayout_16 = new QHBoxLayout;
+         topLeftLayout_16->addWidget(lineEdit_name_f);
+         topLeftLayout_16->addWidget(openButton);
+
+         QHBoxLayout *topLeftLayout = new QHBoxLayout;
 		 topLeftLayout->addWidget(label);
 		 QHBoxLayout *topLeftLayout_2 = new QHBoxLayout;
 		 topLeftLayout_2->addWidget(lineEdit_name);
@@ -1254,7 +1252,14 @@ case 15: { //=========================== средства СМИ ==========================
 		 QHBoxLayout *topLeftLayout_6 = new QHBoxLayout;
 		 topLeftLayout_6->addWidget(textEdit_desc);
 						 			 
-		 QVBoxLayout *leftLayout = new QVBoxLayout;
+
+         QVBoxLayout *leftLayout_15 = new QVBoxLayout;
+         leftLayout_15->addLayout(topLeftLayout_15);
+         QVBoxLayout *leftLayout_16 = new QVBoxLayout;
+         leftLayout_16->addLayout(topLeftLayout_16);
+
+
+         QVBoxLayout *leftLayout = new QVBoxLayout;
 		 leftLayout->addLayout(topLeftLayout);
 		 QVBoxLayout *leftLayout_2 = new QVBoxLayout;
 		 leftLayout_2->addLayout(topLeftLayout_2);
@@ -1273,6 +1278,8 @@ case 15: { //=========================== средства СМИ ==========================
 		 		 		 			 
 		 QGridLayout *mainLayout = new QGridLayout;
 		 mainLayout->setSizeConstraint(QLayout::SetFixedSize);
+         mainLayout->addLayout(leftLayout_15, 1, 0);
+         mainLayout->addLayout(leftLayout_16, 1, 1);
 		 mainLayout->addLayout(leftLayout, 2, 0);
 		 mainLayout->addLayout(leftLayout_2, 2, 1);
 		 mainLayout->addLayout(leftLayout_3, 3, 0);
@@ -1651,7 +1658,7 @@ case 23:{ //========== Персонал для групп ====================================
 
         QLabel *label_f = new QLabel("Фото:");
         lineEdit_name_f = new QLineEdit;
-        label->setBuddy(lineEdit_name_f);
+        label_f->setBuddy(lineEdit_name_f);
 		 
 	     
 		 addButton = new QPushButton("Добавить");
@@ -2035,7 +2042,7 @@ case 25:{ //=========== Персонал для формирований ==============================
 		 
          QLabel *label_f = new QLabel("Фото:");
          lineEdit_name_f = new QLineEdit;
-         label->setBuddy(lineEdit_name_f);
+         label_f->setBuddy(lineEdit_name_f);
 	     
 		 addButton = new QPushButton("Добавить");
 		 addButton->setDefault(true);
@@ -2190,7 +2197,7 @@ case 25:{ //=========== Персонал для формирований ==============================
 
              QLabel *label_f = new QLabel("Фото:");
              lineEdit_name_f = new QLineEdit;
-             label->setBuddy(lineEdit_name_f);
+             label_f->setBuddy(lineEdit_name_f);
 
              addButton = new QPushButton("Добавить");
              addButton->setDefault(true);
@@ -5534,8 +5541,7 @@ void Add_elements_dialog::add_mpo_pso_smi()
 		QString counte_mpo = lineEdit_counte_mpo_pso->text();
 		QString desc_mpo = textEdit_desc->toPlainText();
 
-//		float x_object=lineEdit_x->text().toFloat();
-//	    float y_object=lineEdit_y->text().toFloat();
+
 
 /*		if(pavComboBox->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Выберите тип программно-аппаратного воздействия "),QMessageBox::Ok );return;}
 		else if(vul_pavComboBox->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Выберите уязвимость "),QMessageBox::Ok );return;}
@@ -5550,21 +5556,47 @@ void Add_elements_dialog::add_mpo_pso_smi()
 		{QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите нанесенный(планируемый) ущерб "),QMessageBox::Ok );return;} */	
 
 		QMap<QString,QString> map;
-//		map.clear();
-//		map.insert("x_coordinates",QString::number(x_object));
-//		map.insert("y_coordinates",QString::number(y_object));
-//		int id_coordinates=insert_in_table("coordinates",map,"id_coordinates");
 	
 		if (in_id_object<1) return;
 		map.clear();
 		map.insert("name_mpo_pso",name_mpo);
 		map.insert("counte_mpo_pso",counte_mpo);
 		map.insert("description_mpo_pso",desc_mpo);
-//		map.insert("id_coordinates",QString::number(id_coordinates));
 		map.insert("id_type_mpo_pso",QString::number(id_type_mpo_pso));
 		map.insert("id_smi",QString::number(in_id_object));
 	
-		int id_mpo_pso=insert_in_table("mpo_pso",map,"id_mpo_pso");
+
+        int id_mpo_pso=insert_in_table("mpo_pso",map,"id_mpo_pso");
+
+        //======================= для картинки ===================================
+         QSqlQuery query;
+
+         query.prepare("UPDATE mpo_pso SET image_mpo_pso = ? WHERE id_mpo_pso = ?");
+
+         QFile file(lineEdit_name_f->text());
+         if(!file.open(QIODevice::ReadOnly))
+         {
+             QMessageBox msgBox;
+             msgBox.setWindowTitle(tr("Внимание"));
+             msgBox.setText(tr("Необходимо выбрать изображение"));
+             msgBox.setStandardButtons(QMessageBox::Yes);
+             switch (msgBox.exec()) {
+             case QMessageBox::Yes:
+                 return;
+                 break;
+             }
+         }
+         QByteArray image_mpo_pso = file.readAll();
+         query.addBindValue(image_mpo_pso);
+         query.addBindValue(id_mpo_pso);
+
+         if(!query.exec())
+         {
+             QString s = query.lastError().text();
+         }
+
+        //===============================================================================
+
 		if(id_mpo_pso>0){
 			this->done(id_mpo_pso);
 			}else{

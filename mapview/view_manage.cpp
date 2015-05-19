@@ -13,9 +13,7 @@ ViewManage::ViewManage(QObject *parent)
     : QObject(parent)
 {
 	//MainCodec = QTextCodec::codecForName("CP1251");
-  	
-	
-	
+     	
 	
 }
 
@@ -849,7 +847,11 @@ QString ViewManage::get_means_info(int idObject){
 
 		}
 		query.clear();
+				
+
 	}
+			QString foto_ = get_mpo_foto_from_DB(idObject);
+			QFile file_(foto_);
 		if (!(id_ls == 0))
 		{
 		str = QString("SELECT name_ls FROM ls WHERE id_ls = %1 ").arg(id_ls);
@@ -859,6 +861,9 @@ QString ViewManage::get_means_info(int idObject){
 				name_means = query.value(0).toString();
 			}
 			query.clear();
+			
+			
+
 		}
 		if (!(id_smi == 0))
 		{
@@ -880,13 +885,24 @@ QString ViewManage::get_means_info(int idObject){
 			}
 			query.clear();
 		}
-
-		html_info_means = "<style>table {border-color: black; border-style: solid;}</style><table border='1' cellpadding='4' cellspacing='0' >"
+		if (file_.size()==0){ 
+			html_info_means = "<style>table {border-color: black; border-style: solid;}</style><table border='1' cellpadding='4' cellspacing='0' >"
 		"<tr align='center'><td colspan='2'><H3><CENTER><font color='black'>" + name_mpo_pso + "</font></CENTER></H3></td></tr>"
         "<tr><td> Тип объекта:</td><td>" + name_type_mpo_pso + "</td></tr>"
+		"<tr align='center'><td colspan='2'><CENTER> </CENTER></td></tr>"
 		"<tr><td> Количество:</td><td>" + QString::number(count_mpo_pso) + "</td></tr>"
 		"<tr><td>Подчиненность: </td><td>" + name_means + "</td></tr>"
 		"<tr><td>Описание:</td><td>" + description_mpo_pso + "</td></tr></table>";
+		}
+		else{
+			html_info_means = "<style>table {border-color: black; border-style: solid;}</style><table border='1' cellpadding='4' cellspacing='0' >"
+		"<tr align='center'><td colspan='2'><H3><CENTER><font color='black'>" + name_mpo_pso + "</font></CENTER></H3></td></tr>"
+        "<tr><td> Тип объекта:</td><td>" + name_type_mpo_pso + "</td></tr>"
+		"<tr align='center'><td colspan='2'><CENTER><img src=\"" + foto_ + "\" ></CENTER></td></tr>"
+		"<tr><td> Количество:</td><td>" + QString::number(count_mpo_pso) + "</td></tr>"
+		"<tr><td>Подчиненность: </td><td>" + name_means + "</td></tr>"
+		"<tr><td>Описание:</td><td>" + description_mpo_pso + "</td></tr></table>";
+		}
 	
 	return html_info_means;
 }
@@ -1022,6 +1038,34 @@ QString ViewManage::get_object_foto_from_DB(int id_object)
 			QSqlRecord rec = query.record();
 			while(query.next()){	
 			pixmap.loadFromData(query.value(rec.indexOf("flag")).toByteArray());
+			pixmap.save(pathStr, "PNG");
+		}
+	
+	return pathStr; 
+}
+QString ViewManage::get_mpo_foto_from_DB(int id_mpo_object)
+{
+		QDir dir;
+		QString currentPath = dir.homePath();
+		QPixmap pixmap;
+		QString pathStr = currentPath + "/pixmap_mpo.png";
+		QFile file(pathStr);
+		
+		if(file.exists()){
+		   file.remove(pathStr);
+		}
+		QSqlQuery query;
+   //============================================ имя блока и эмблема блока ===============================================
+		QString str = QString("SELECT image_mpo_pso FROM mpo_pso WHERE id_mpo_pso = %1 ").arg(id_mpo_object);
+		
+		if(!query.exec(str))
+		{
+			QString sss = query.lastError().text();
+			return pathStr;
+		}
+			QSqlRecord rec = query.record();
+			while(query.next()){	
+			pixmap.loadFromData(query.value(rec.indexOf("image_mpo_pso")).toByteArray());
 			pixmap.save(pathStr, "PNG");
 		}
 	
