@@ -1638,7 +1638,7 @@ case 23:{ //========== Персонал для групп ====================================
         label_4 = new QLabel("Оппозиция:");
         checkbox_enemy = new QCheckBox(" [-V- оппозиция]", this);
         label_4->setBuddy(checkbox_enemy);
-        label_5 = new QLabel("Должноть:");
+        label_5 = new QLabel("Должноcть:");
         lineEdit_rank = new QLineEdit;
         label_5->setBuddy(lineEdit_rank);
         label_6 = new QLabel("Авторитет:");
@@ -1774,7 +1774,7 @@ case 23:{ //========== Персонал для групп ====================================
          mainLayout->addLayout(leftLayout_14, 8, 1);
          mainLayout->addLayout(buttonsLayout, 9, 0, 1, 2);
 		 setLayout(mainLayout);
-		 setWindowTitle("Добавить данные по персоналу");
+         setWindowTitle("Добавить данные по персоналиям");
 		 break;
 		}
 case 24:{ //========== Персонал данные ====================================
@@ -1995,7 +1995,7 @@ case 24:{ //========== Персонал данные ====================================
          mainLayout->addLayout(buttonsLayout, 9, 0, 1, 2);
 
 		 setLayout(mainLayout);
-		 setWindowTitle("Данные по персоналу");
+         setWindowTitle("Данные по персоналиям");
 	
 	 break;
 	 }
@@ -2151,7 +2151,7 @@ case 25:{ //=========== Персонал для формирований ==============================
          mainLayout->addLayout(leftLayout_14, 8, 1);
          mainLayout->addLayout(buttonsLayout, 9, 0, 1, 2);
 		 setLayout(mainLayout);
-		 setWindowTitle("Добавить данные по персоналу");
+         setWindowTitle("Добавить данные по персоналиям");
 		 break;
         }
  case 26:{ //========== Персонал для СМИ ====================================
@@ -2306,7 +2306,7 @@ case 25:{ //=========== Персонал для формирований ==============================
              mainLayout->addLayout(leftLayout_14, 8, 1);
              mainLayout->addLayout(buttonsLayout, 9, 0, 1, 2);
              setLayout(mainLayout);
-             setWindowTitle("Добавить данные по персоналу");
+             setWindowTitle("Добавить данные по персоналиям");
              break;
             }
 	}

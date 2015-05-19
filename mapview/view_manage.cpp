@@ -920,8 +920,22 @@ QString ViewManage::get_info_region(int idObject){
 
 	
 	QString foto_flag = get_object_foto_from_DB(id_region);
-		
+	QFile file_(foto_flag);	
+
+	if (file_.size()==0){ 
 	html_info_region = "<style>table {border-color:#D3D3D3; border-style: solid;background-color:#f5f5f5;}</style></style><table border='1' cellpadding='4' cellspacing='0' >"
+					"<tr align='center'><td colspan='2'><H2><CENTER><font color='black'>" + name_region + "</font></CENTER></H2></td></tr>"
+					"<tr align='center'><td colspan='2'><CENTER> </CENTER></td></tr>"
+					"<tr><td> Тип региона:</td><td>" + type_region_string + "</td></tr>"
+					"<tr align='center'><td colspan='2'><H3><CENTER><font color='black'> 1. Население </font></CENTER></H3></td></tr>"
+					"<tr><td> Численность населения:</td><td align='center'>" + counte_population_string + "</td></tr>"
+					"<tr><td> Плотность населения:</td><td align='center'>" + density_population_string + "</td></tr>"
+					"<tr><td> Уровень рождаемости:</td><td align='center'>" + birth_population_string + "</td></tr>"
+					"<tr><td> Уровень смертности:</td><td align='center'>" + dead_population_string + "</td></tr>"
+					"<tr><td> Уровень эммиграции:</td><td align='center'>" + emmigration_population_string + "</td></tr>"
+					"<tr><td> Уровень иммиграции:</td><td align='center'>" + immigration_population_string + "</td></tr>"
+					"</table>";}
+	else{html_info_region ="<style>table {border-color:#D3D3D3; border-style: solid;background-color:#f5f5f5;}</style></style><table border='1' cellpadding='4' cellspacing='0' >"
 					"<tr align='center'><td colspan='2'><H2><CENTER><font color='black'>" + name_region + "</font></CENTER></H2></td></tr>"
 					"<tr align='center'><td colspan='2'><CENTER><img src=\"" + foto_flag + "\"  width = 50 height = 32></CENTER></td></tr>"
 					"<tr><td> Тип региона:</td><td>" + type_region_string + "</td></tr>"
@@ -932,7 +946,7 @@ QString ViewManage::get_info_region(int idObject){
 					"<tr><td> Уровень смертности:</td><td align='center'>" + dead_population_string + "</td></tr>"
 					"<tr><td> Уровень эммиграции:</td><td align='center'>" + emmigration_population_string + "</td></tr>"
 					"<tr><td> Уровень иммиграции:</td><td align='center'>" + immigration_population_string + "</td></tr>"
-					"</table>";
+					"</table>";}
 
 
 				/*	"<tr><td> Количество:</td><td>" + QString::number(count_mpo_pso) + "</td></tr>"
