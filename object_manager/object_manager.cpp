@@ -2399,12 +2399,17 @@ void Objectmanager::edit_persones(){
      label_foto = new MyLabel();
      label_foto_name->setBuddy(label_foto);
      label_foto_hide = new QLabel();
-	 label_foto_hide->setVisible(false);
-     QLabel *label = new QLabel("Имя:");
+     label_foto_hide->setVisible(false);
+
+     QLabel *label = new QLabel("ФИО:");
 	 QLineEdit *lineEdit_name = new QLineEdit;
 	 lineEdit_name->setStyleSheet("font:bold; color: black");
 	 label->setBuddy(lineEdit_name);
 	 
+     QLabel *label_8 = new QLabel("Тип персоналии:");
+     QComboBox *Box = new QComboBox();
+     label_8->setBuddy(Box);
+
      QLabel *label_2 = new QLabel("Возраст:");
 	 QLineEdit *lineEdit_counte_ls = new QLineEdit;
 	 label_2->setBuddy(lineEdit_counte_ls);
@@ -2438,16 +2443,21 @@ void Objectmanager::edit_persones(){
 	int in_id_object = list.value(1).toInt();
 
 	QSqlQuery query;
-    QString str = QString("SELECT id_persones, name_persones, age_persones, contact_persones, rank_persones, authority_persones, opposition_persones, description_persones, image_persones FROM persones where id_persones = %1").arg(in_id_object);
+    QString str = QString("SELECT id_persones, name_persones, age_persones, contact_persones, rank_persones, authority_persones, \
+                          opposition_persones, description_persones, image_persones, \
+                          persones.id_type_persones,type_persones.name_type_persones \
+                          FROM persones, type_persones \
+                          WHERE id_persones = %1 \
+                          AND persones.id_type_persones = type_persones.id_type_persones").arg(in_id_object);
 	if(!query.exec(str)){
 	 return;
 	}
     
-	int id_persers = in_id_object;
+    id_persers = in_id_object;
 	QSqlRecord rec = query.record();
     QString name_pers,contact,rank_pers,desc_pers,foto_name,path_foto;
 	float autor;
-	int age_pers;
+    int age_pers,id_type_persones;
 	bool oppos;
 	while(query.next()){	
 		id_persers=query.value(rec.indexOf("id_persones")).toInt();
@@ -2458,9 +2468,13 @@ void Objectmanager::edit_persones(){
 		rank_pers=query.value(rec.indexOf("rank_persones")).toString();
 		desc_pers=query.value(rec.indexOf("description_persones")).toString();
 		oppos=query.value(rec.indexOf("opposition_persones")).toBool();
-        foto_name = query.value(rec.indexOf("image_persones")).toString();
+        id_type_persones = query.value(rec.indexOf("id_type_persones")).toInt();
 
-	
+        QPixmap pixmap;
+        QSize size_pic(200,200);
+        pixmap.loadFromData(query.value(rec.indexOf("image_persones")).toByteArray() );
+        pixmap = pixmap.scaled(size_pic,Qt::KeepAspectRatio);
+
 		lineEdit_name->setText(name_pers);
 		lineEdit_counte_ls->setText(QString::number(age_pers));
         lineEdit_counte_ls_bd->setText(contact);
@@ -2468,10 +2482,10 @@ void Objectmanager::edit_persones(){
 		lineEdit_rank->setText(rank_pers);
 		lineEdit_aut->setText(QString::number(autor));
 		textEdit_propa->setText(desc_pers);
+        fill_combobox_persones_(Box,id_type_persones);
 
-        QString path_foto = "foto_persones/" + foto_name;
-        label_foto->setText("<CENTER><IMG BORDER=\"0\" SRC=\""+path_foto+"\" width = '200' height = '200'> </CENTER>");
-		label_foto_hide->setText(foto_name);
+        label_foto->setPixmap(pixmap);
+        label_foto->setAlignment(Qt::AlignCenter);
 	}
 		 
 	 QPushButton *cancelButton = new QPushButton("Выход");
@@ -2479,7 +2493,7 @@ void Objectmanager::edit_persones(){
 	 QPushButton *saveButton = new QPushButton("Сохранить");
 	 connect(saveButton,SIGNAL(clicked()),edit_dlg_pers,SLOT(accept()));
 	 
-	 connect(label_foto,SIGNAL(label_clicked()),this,SLOT(clicked_open_file()));
+     connect(label_foto,SIGNAL(label_clicked()),this,SLOT(clicked_open_file()));
 	
 	 QHBoxLayout *buttonsLayout = new QHBoxLayout;
 	 buttonsLayout->addStretch();
@@ -2494,6 +2508,11 @@ void Objectmanager::edit_persones(){
 		 topLeftLayout->addWidget(label);
 		 QHBoxLayout *topLeftLayout_2 = new QHBoxLayout;
 		 topLeftLayout_2->addWidget(lineEdit_name);
+         QHBoxLayout *topLeftLayout_17 = new QHBoxLayout;
+         topLeftLayout_17->addWidget(label_8);
+         QHBoxLayout *topLeftLayout_18  = new QHBoxLayout;
+         topLeftLayout_18->addWidget(Box);
+
 		 QHBoxLayout *topLeftLayout_3 = new QHBoxLayout;
 		 topLeftLayout_3->addWidget(label_2);
 		 QHBoxLayout *topLeftLayout_4 = new QHBoxLayout;
@@ -2528,6 +2547,10 @@ void Objectmanager::edit_persones(){
 		 leftLayout->addLayout(topLeftLayout);
 		 QVBoxLayout *leftLayout_2 = new QVBoxLayout;
 		 leftLayout_2->addLayout(topLeftLayout_2);
+         QVBoxLayout *leftLayout_17 = new QVBoxLayout;
+         leftLayout_17->addLayout(topLeftLayout_17);
+         QVBoxLayout *leftLayout_18 = new QVBoxLayout;
+         leftLayout_18->addLayout(topLeftLayout_18);
 		 QVBoxLayout *leftLayout_3 = new QVBoxLayout;
 		 leftLayout_3->addLayout(topLeftLayout_3);
 		 QVBoxLayout *leftLayout_4 = new QVBoxLayout;
@@ -2558,61 +2581,108 @@ void Objectmanager::edit_persones(){
 		 mainLayout->setSizeConstraint(QLayout::SetFixedSize);
          mainLayout->addLayout(leftLayout_15, 0, 0);
          mainLayout->addLayout(leftLayout_16, 0, 1);
-
          mainLayout->addLayout(leftLayout, 1, 0);
          mainLayout->addLayout(leftLayout_2, 1, 1);
-         mainLayout->addLayout(leftLayout_3, 2, 0);
-         mainLayout->addLayout(leftLayout_4, 2, 1);
-         mainLayout->addLayout(leftLayout_5, 3, 0);
-         mainLayout->addLayout(leftLayout_6, 3, 1);
-         mainLayout->addLayout(leftLayout_7, 4, 0);
-         mainLayout->addLayout(leftLayout_8, 4, 1);
-         mainLayout->addLayout(leftLayout_9, 5, 0);
-         mainLayout->addLayout(leftLayout_10, 5, 1);
-         mainLayout->addLayout(leftLayout_11, 6, 0);
-         mainLayout->addLayout(leftLayout_12, 6, 1);
-         mainLayout->addLayout(leftLayout_13, 7, 0);
-         mainLayout->addLayout(leftLayout_14, 7, 1);
+         mainLayout->addLayout(leftLayout_17, 2, 0);
+         mainLayout->addLayout(leftLayout_18, 2, 1);
+         mainLayout->addLayout(leftLayout_3, 3, 0);
+         mainLayout->addLayout(leftLayout_4, 3, 1);
+         mainLayout->addLayout(leftLayout_5, 4, 0);
+         mainLayout->addLayout(leftLayout_6, 4, 1);
+         mainLayout->addLayout(leftLayout_7, 5, 0);
+         mainLayout->addLayout(leftLayout_8, 5, 1);
+         mainLayout->addLayout(leftLayout_9, 6, 0);
+         mainLayout->addLayout(leftLayout_10, 6, 1);
+         mainLayout->addLayout(leftLayout_11, 7, 0);
+         mainLayout->addLayout(leftLayout_12, 7, 1);
+         mainLayout->addLayout(leftLayout_13, 8, 0);
+         mainLayout->addLayout(leftLayout_14, 8, 1);
 		 
-         mainLayout->addLayout(buttonsLayout, 8, 0, 1, 2);
-         mainLayout->addWidget(label_foto_hide, 9, 0);
+         mainLayout->addLayout(buttonsLayout, 9, 0, 1, 2);
+         mainLayout->addWidget(label_foto_hide, 10, 0);
 
 		 setLayout(mainLayout);
 		 edit_dlg_pers->setLayout(mainLayout);
 
 		if(edit_dlg_pers->exec() == QDialog::Accepted){
 										
-		QString name_persones = lineEdit_name->text();
-		QString desc_pers=textEdit_propa->toPlainText();
-		int counte_age = lineEdit_counte_ls->text().toInt();
-		QString contact = lineEdit_counte_ls_bd->text();
-		QString rank_pers = lineEdit_rank->text();
-		float aut = lineEdit_aut->text().toFloat();
-		bool opossition = checkbox_enemy->isChecked();
-		QString l_foto = label_foto_hide->text();
+            int id_type_pers_=Box->itemData(Box->currentIndex()).toInt();
+            QString name_persones = lineEdit_name->text();
+            QString desc_pers=textEdit_propa->toPlainText();
+            int counte_age = lineEdit_counte_ls->text().toInt();
+            QString contact = lineEdit_counte_ls_bd->text();
+            QString rank_pers = lineEdit_rank->text();
+            float aut = lineEdit_aut->text().toFloat();
+            bool opossition = checkbox_enemy->isChecked();
+
+//            QFile file(label_foto->text());
+//            if(!file.open(QIODevice::ReadOnly))
+//            {
+//                QMessageBox msgBox;
+//                msgBox.setWindowTitle(tr("Внимание"));
+//                msgBox.setText(tr("Необходимо выбрать изображение"));
+//                msgBox.setStandardButtons(QMessageBox::Yes);
+//                switch (msgBox.exec()) {
+//                case QMessageBox::Yes:
+//                    return;
+//                    break;
+//                }
+//            }
+//            QByteArray image_pers = file.readAll();
+
 
 		QSqlQuery query;
-		QString str = QString("UPDATE persones SET name_persones='%1', age_persones='%2',contact_persones='%3',rank_persones='%4',opposition_persones='%5',description_persones='%6',authority_persones='%7', image_persones='%8' WHERE id_persones=%9").arg(name_persones).arg(counte_age).arg(contact).arg(rank_pers).arg(opossition).arg(desc_pers).arg(aut).arg(l_foto).arg(id_persers);
-	
-		if(!query.exec(str)){
-			 return;
-		}
-			
-	}
+        QString str = QString("UPDATE persones SET name_persones='%1', age_persones='%2',contact_persones='%3',rank_persones='%4', opposition_persones='%5',description_persones='%6',authority_persones='%7', id_type_persones = '%8' WHERE id_persones=%9").arg(name_persones).arg(counte_age).arg(contact).arg(rank_pers).arg(opossition).arg(desc_pers).arg(aut).arg(id_type_pers_).arg(id_persers);
+
+        if(!query.exec(str)){
+             return;
+        }
+
+          }
 	return; 
 
 }
 void Objectmanager::clicked_open_file()
 {
-	QString fileName = QFileDialog::getOpenFileName(this, "Выбор фотографии", "foto_persones/",
+    QString fileName = QFileDialog::getOpenFileName(this, "Выбор фотографии", "",
                                                     "Images (*.jpg *.png)");
     if (fileName.isEmpty()) return;
-    QString baseName = QFileInfo(fileName).fileName();
-    QString path_foto = "foto_persones/" + baseName;
-    label_foto->setText("<CENTER><IMG BORDER=\"0\" SRC=\""+path_foto+"\" width = '200' height = '200'> </CENTER>");
-    //label_foto->setDisabled(true);
-    label_foto_hide->setText(baseName);
-	
+
+   // label_foto->setText(fileName);
+
+    QSqlQuery query;
+
+    query.prepare("UPDATE persones SET image_persones = ? WHERE id_persones = ?");
+
+        QFile file(fileName);
+        if(!file.open(QIODevice::ReadOnly))
+             {
+        QMessageBox msgBox;
+        msgBox.setWindowTitle(tr("Внимание"));
+        msgBox.setText(tr("Необходимо выбрать изображение"));
+        msgBox.setStandardButtons(QMessageBox::Yes);
+        switch (msgBox.exec()) {
+        case QMessageBox::Yes:
+            return;
+            break;
+            }
+         }
+        QByteArray image_pers = file.readAll();
+        query.addBindValue(image_pers);
+        query.addBindValue(id_persers);
+
+        if(!query.exec())
+         {
+         QString s = query.lastError().text();
+         }
+
+        QPixmap pixmap;
+        QSize size_pic(200,200);
+        pixmap.loadFromData(image_pers);
+        pixmap = pixmap.scaled(size_pic,Qt::KeepAspectRatio);
+        label_foto->setPixmap(pixmap);
+        label_foto->setAlignment(Qt::AlignCenter);
+
     }
 void Objectmanager::delete_pers(){
 	QMessageBox msgBox;
@@ -4159,3 +4229,19 @@ void Objectmanager::PLANE_to_other()
     add_coord->raise();
 }
 
+//======================================================================================
+void Objectmanager::fill_combobox_persones_(QComboBox *Box,int current_index)
+{
+    QSqlQuery query;
+    query.exec("SELECT id_type_persones, name_type_persones FROM type_persones");
+    int ci_3=0;
+    while (query.next())
+    {
+        QString blok = query.value(1).toString();
+        int id_blok=query.value(0).toInt();
+        Box->addItem(blok,id_blok);
+        if (current_index==id_blok) ci_3=Box->count()-1;
+    }
+
+    Box->setCurrentIndex(ci_3);
+}

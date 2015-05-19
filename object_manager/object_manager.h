@@ -87,7 +87,9 @@ private:
     void edit_coordinates(QString,int id_obj,QString,QString);
     int calcul(int);
     int count_smi(int);
+    int id_persers;
 	simleDelegate *delegat; 
+    void fill_combobox_persones_(QComboBox *Box,int);
 	QStandardItem * set_child_item(QString item_text,QString user_data,QStandardItem *parent_item,int row);
 	QStandardItem * set_child_item(QString item_text,QString user_data,QStandardItem *parent_item,int row,QFont font);
 	QStandardItem * set_child_item(QString item_text,QString user_data,QStandardItem *parent_item,int row,QString icon_path);
