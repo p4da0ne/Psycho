@@ -58,7 +58,7 @@ Add_elements_dialog::Add_elements_dialog(int type_element,int id_object,QWidget 
 			 mainLayout->addLayout(buttonsLayout, 1, 0, 1, 2);
 			 setLayout(mainLayout);
 			 setWindowTitle("Добавить СМИ");
-             setWindowIcon(QIcon("./icons/book.png"));
+             setWindowIcon(QIcon(":/Resources/book.png"));
 			 break;
 			 }  
 	 case QMessageBox::No:{
@@ -283,7 +283,7 @@ Add_elements_dialog::Add_elements_dialog(int type_element,int id_object,QWidget 
 			 mainLayout->addLayout(buttonsLayout, 16, 0, 1, 2);
 			 setLayout(mainLayout);
 			 setWindowTitle("Добавить СМИ");
-             setWindowIcon(QIcon("./icons/book.png"));
+             setWindowIcon(QIcon(":/Resources/book.png"));
 			break;
 			}
 		default:
@@ -403,7 +403,7 @@ break;
          mainLayout->addLayout(buttonsLayout, 5, 0, 1, 2);
 		 setLayout(mainLayout);
 		 setWindowTitle("Добавить воинское формирование");
-         setWindowIcon(QIcon("./icons/weapon.png"));
+         setWindowIcon(QIcon(":/Resources/weapon.png"));
 		 break;
 		}
 	case 3://=============== Организации ============================================
@@ -595,7 +595,7 @@ break;
 
 		 setLayout(mainLayout);
 		 setWindowTitle("Добавить организацию");
-         setWindowIcon(QIcon("./icons/group.png"));
+         setWindowIcon(QIcon(":/Resources/group.png"));
 		 break;
 		}
 case 4:// ============ Национальность ================================================
@@ -625,7 +625,7 @@ case 4:// ============ Национальность ==========================================
 		 mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		 this->setLayout(mainLayout);
 		 setWindowTitle("Национальный состав");
-         setWindowIcon(QIcon("./icons/user_config.png"));
+         setWindowIcon(QIcon(":/Resources/user_config.png"));
 	//==========================================
 	 table_nations();
 
@@ -743,7 +743,7 @@ case 5:{ //========== Воинские формирования ====================================
          mainLayout->addLayout(buttonsLayout, 5, 0, 1, 2);
 		 setLayout(mainLayout);
 		 setWindowTitle("Добавить воинское формирование");
-         setWindowIcon(QIcon("./icons/weapon.png"));
+         setWindowIcon(QIcon(":/Resources/weapon.png"));
 		 break;
 		}
 case 6:{// ============ Религия ================================================
@@ -772,7 +772,7 @@ case 6:{// ============ Религия ================================================
 		mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		this->setLayout(mainLayout);
 		setWindowTitle("Религиозный состав");
-        setWindowIcon(QIcon("./icons/change_user.png"));
+        setWindowIcon(QIcon(":/Resources/change_user.png"));
 	//==========================================
 	 table_confess();
 
@@ -805,7 +805,7 @@ case 7:{// ============ Профессиональный состав ================================
 		mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		this->setLayout(mainLayout);
 		setWindowTitle("Профессиональный состав");
-        setWindowIcon(QIcon("./icons/change_user.png"));
+        setWindowIcon(QIcon(":/Resources/change_user.png"));
 	//==========================================
 	 table_prof();
 
@@ -838,7 +838,7 @@ case 8:{// ============ Возрастной состав ======================================
 		mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		this->setLayout(mainLayout);
 		setWindowTitle("Возрастной состав");
-        setWindowIcon(QIcon("./icons/change_user.png"));
+        setWindowIcon(QIcon(":/Resources/change_user.png"));
 	//==========================================
 	 table_age();
 
@@ -871,7 +871,7 @@ case 9:{// ============ половой состав =========================================
 		mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		this->setLayout(mainLayout);
 		setWindowTitle("Половой состав");
-        setWindowIcon(QIcon("./icons/change_user.png"));
+        setWindowIcon(QIcon(":/Resources/change_user.png"));
 	//==========================================
 	 table_sex();
 	
@@ -908,7 +908,7 @@ case 10:// ============ Национальность для ВФ===================================
 		 mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		 this->setLayout(mainLayout);
 		 setWindowTitle("Национальный состав");
-         setWindowIcon(QIcon("./icons/change_user.png"));
+         setWindowIcon(QIcon(":/Resources/change_user.png"));
 	//==========================================
 	 table_nations_vf();
 
@@ -942,7 +942,7 @@ case 11:{// ============ Религия для ВФ ========================================
 		mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		this->setLayout(mainLayout);
 		setWindowTitle("Религиозный состав");
-        setWindowIcon(QIcon("./icons/change_user.png"));
+        setWindowIcon(QIcon(":/Resources/change_user.png"));
 	//==========================================
 	 table_confess_conf();
 
@@ -976,7 +976,7 @@ case 12:{// ============ Штатка ================================================
 		mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		this->setLayout(mainLayout);
 		setWindowTitle("Штатно-должностной состав");
-        setWindowIcon(QIcon("./icons/change_user.png"));
+        setWindowIcon(QIcon(":/Resources/change_user.png"));
 	//==========================================
 	 table_rank();
 
@@ -1082,7 +1082,7 @@ case 13: { //=========================== средства ==============================
          mainLayout->addLayout(buttonsLayout, 6, 0, 1, 2);
 		 setLayout(mainLayout);
 		 setWindowTitle("Добавить средства");
-         setWindowIcon(QIcon("./icons/connect_saturn.png"));
+         setWindowIcon(QIcon(":/Resources/connect_saturn.png"));
 		 break;
 		 
 		 }
@@ -1184,7 +1184,7 @@ case 13: { //=========================== средства ==============================
          mainLayout->addLayout(buttonsLayout, 6, 0, 1, 2);
 		 setLayout(mainLayout);
 		 setWindowTitle("Добавить средства");
-         setWindowIcon(QIcon("./icons/connect_saturn.png"));
+         setWindowIcon(QIcon(":/Resources/connect_saturn.png"));
 		 break;
 		 
 		 }
@@ -1286,7 +1286,7 @@ case 15: { //=========================== средства СМИ ==========================
          mainLayout->addLayout(buttonsLayout, 6, 0, 1, 2);
 		 setLayout(mainLayout);
 		 setWindowTitle("Добавить средства");
-         setWindowIcon(QIcon("./icons/connect_saturn.png"));
+         setWindowIcon(QIcon(":/Resources/connect_saturn.png"));
 		 break;
 		 
 		 }
@@ -1403,7 +1403,7 @@ case 16://=============== Условия ============================================
 
 		 setLayout(mainLayout);
 		 setWindowTitle("Добавить особое условие");
-         setWindowIcon(QIcon("./icons/Stop2.png"));
+         setWindowIcon(QIcon(":/Resources/Stop2.png"));
 
     //   table_coord();
     //	 connect(coord_view,SIGNAL(cellClicked(int,int)),this,SLOT(show_redaktor_coord(int,int)));
@@ -2753,7 +2753,7 @@ directs_view->setColumnCount(6);
     QString type_name,nat_view;
 	float short_name;
     QTableWidgetItem *item;
-    QIcon icon(QString("./icons/edit_1.png"));
+    QIcon icon(QString(":/Resources/edit_1.png"));
 	while(query.next())
 	{	
 		id_ls_nations = query.value(rec.indexOf("id_ls_nations")).toInt();
@@ -2782,7 +2782,7 @@ directs_view->setColumnCount(6);
 		item = new QTableWidgetItem(nat_view);
 		directs_view->setItem(row,4,item);
 
-		QIcon icon2(QString("./icons/saturn_delete.png"));
+		QIcon icon2(QString(":/Resources/saturn_delete.png"));
 		item = new QTableWidgetItem(icon2," Удалить",0);
 		directs_view->setItem(row,5,item);
 	}	
@@ -2815,7 +2815,7 @@ directs_view->setColumnCount(6);
     QString type_name,nat_view;
 	float short_name;
     QTableWidgetItem *item;
-    QIcon icon(QString("./icons/edit_1.png"));
+    QIcon icon(QString(":/Resources/edit_1.png"));
     while(query.next())
 	{	
 		id_ls_nations = query.value(rec.indexOf("id_ls_nations")).toInt();
@@ -2844,7 +2844,7 @@ directs_view->setColumnCount(6);
 		item = new QTableWidgetItem(nat_view);
 		directs_view->setItem(row,4,item);
 
-		QIcon icon2(QString("./icons/saturn_delete.png"));
+		QIcon icon2(QString(":/Resources/saturn_delete.png"));
 		item = new QTableWidgetItem(icon2," Удалить",0);
 		directs_view->setItem(row,5,item);
 	}	
@@ -2875,7 +2875,7 @@ void Add_elements_dialog::table_nations_gr() {
     QString type_name,nat_view;
 	float short_name;
     QTableWidgetItem *item;
-    QIcon icon(QString("./icons/edit_1.png"));
+    QIcon icon(QString(":/Resources/edit_1.png"));
     while(query.next())
 	{	
 		id_ls_nations = query.value(rec.indexOf("id_ls_nations")).toInt();
@@ -2904,7 +2904,7 @@ void Add_elements_dialog::table_nations_gr() {
 		item = new QTableWidgetItem(nat_view);
 		directs_view->setItem(row,4,item);
 
-		QIcon icon2(QString("./icons/saturn_delete.png"));
+		QIcon icon2(QString(":/Resources/saturn_delete.png"));
 		item = new QTableWidgetItem(icon2," Удалить",0);
 		directs_view->setItem(row,5,item);
 	}	
@@ -3284,7 +3284,7 @@ void Add_elements_dialog::table_confess() {
     QString type_name;
 	float persent_name;
     QTableWidgetItem *item;
-    QIcon icon(QString("./icons/edit_1.png"));
+    QIcon icon(QString(":/Resources/edit_1.png"));
     while(query.next())
 	{	
 		id_ls_conf = query.value(rec.indexOf("id_ls_confessions")).toInt();
@@ -3306,7 +3306,7 @@ void Add_elements_dialog::table_confess() {
 		confess_view->setItem(row,3,item);
 	//	confess_view->sortItems(3,Qt::DescendingOrder);
 
-		QIcon icon2(QString("./icons/saturn_delete.png"));
+		QIcon icon2(QString(":/Resources/saturn_delete.png"));
 		item = new QTableWidgetItem(icon2," Удалить",0);
 		confess_view->setItem(row,4,item);
 	}	
@@ -3336,7 +3336,7 @@ void Add_elements_dialog::table_confess_conf() {
     QString type_name;
 	float persent_name;
     QTableWidgetItem *item;
-    QIcon icon(QString("./icons/edit_1.png"));
+    QIcon icon(QString(":/Resources/edit_1.png"));
     while(query.next())
 	{	
 		id_ls_conf = query.value(rec.indexOf("id_ls_confessions")).toInt();
@@ -3358,7 +3358,7 @@ void Add_elements_dialog::table_confess_conf() {
 		confess_view->setItem(row,3,item);
 	//	confess_view->sortItems(3,Qt::DescendingOrder);
 
-		QIcon icon2(QString("./icons/saturn_delete.png"));
+		QIcon icon2(QString(":/Resources/saturn_delete.png"));
 		item = new QTableWidgetItem(icon2," Удалить",0);
 		confess_view->setItem(row,4,item);
 	}	
@@ -3388,7 +3388,7 @@ void Add_elements_dialog::table_confess_gr() {
     QString type_name;
 	float persent_name;
     QTableWidgetItem *item;
-    QIcon icon(QString("./icons/edit_1.png"));
+    QIcon icon(QString(":/Resources/edit_1.png"));
     while(query.next())
 	{	
 		id_ls_conf = query.value(rec.indexOf("id_ls_confessions")).toInt();
@@ -3410,7 +3410,7 @@ void Add_elements_dialog::table_confess_gr() {
 		confess_view->setItem(row,3,item);
 	//	confess_view->sortItems(3,Qt::DescendingOrder);
 
-		QIcon icon2(QString("./icons/saturn_delete.png"));
+		QIcon icon2(QString(":/Resources/saturn_delete.png"));
 		item = new QTableWidgetItem(icon2," Удалить",0);
 		confess_view->setItem(row,4,item);
 	}	
@@ -3840,7 +3840,7 @@ void Add_elements_dialog::table_prof() {
     QString type_name;
 	float persent_name;
     QTableWidgetItem *item;
-    QIcon icon(QString("./icons/edit_1.png"));
+    QIcon icon(QString(":/Resources/edit_1.png"));
     while(query.next())
 	{	
 		id_pop_prof = query.value(rec.indexOf("id_pop_profession")).toInt();
@@ -3862,7 +3862,7 @@ void Add_elements_dialog::table_prof() {
 		prof_view->setItem(row,3,item);
 	//	prof_view->sortItems(3,Qt::DescendingOrder);
 
-		QIcon icon2(QString("./icons/saturn_delete.png"));
+		QIcon icon2(QString(":/Resources/saturn_delete.png"));
 		item = new QTableWidgetItem(icon2," Удалить",0);
 		prof_view->setItem(row,4,item);
 	}	
@@ -3891,7 +3891,7 @@ void Add_elements_dialog::table_prof_gr() {
     QString type_name;
 	float persent_name;
     QTableWidgetItem *item;
-    QIcon icon(QString("./icons/edit_1.png"));
+    QIcon icon(QString(":/Resources/edit_1.png"));
     while(query.next())
 	{	
 		id_pop_prof = query.value(rec.indexOf("id_pop_profession")).toInt();
@@ -3913,7 +3913,7 @@ void Add_elements_dialog::table_prof_gr() {
 		prof_view->setItem(row,3,item);
 	//	prof_view->sortItems(3,Qt::DescendingOrder);
 
-		QIcon icon2(QString("./icons/saturn_delete.png"));
+		QIcon icon2(QString(":/Resources/saturn_delete.png"));
 		item = new QTableWidgetItem(icon2," Удалить",0);
 		prof_view->setItem(row,4,item);
 	}	
@@ -4252,7 +4252,7 @@ void Add_elements_dialog::table_age() {
     QString type_name;
 	float persent_name;
     QTableWidgetItem *item;
-    QIcon icon(QString("./icons/edit_1.png"));
+    QIcon icon(QString(":/Resources/edit_1.png"));
     while(query.next())
 	{	
 		id_pop_age = query.value(rec.indexOf("id_pop_age")).toInt();
@@ -4274,7 +4274,7 @@ void Add_elements_dialog::table_age() {
 		age_view->setItem(row,3,item);
 	//	age_view->sortItems(3,Qt::DescendingOrder);
 
-		QIcon icon2(QString("./icons/saturn_delete.png"));
+		QIcon icon2(QString(":/Resources/saturn_delete.png"));
 		item = new QTableWidgetItem(icon2," Удалить",0);
 		age_view->setItem(row,4,item);
 	}	
@@ -4303,7 +4303,7 @@ void Add_elements_dialog::table_age_gr() {
     QString type_name;
 	float persent_name;
     QTableWidgetItem *item;
-    QIcon icon(QString("./icons/edit_1.png"));
+    QIcon icon(QString(":/Resources/edit_1.png"));
     while(query.next())
 	{	
 		id_pop_age = query.value(rec.indexOf("id_pop_age")).toInt();
@@ -4325,7 +4325,7 @@ void Add_elements_dialog::table_age_gr() {
 		age_view->setItem(row,3,item);
 	//	age_view->sortItems(3,Qt::DescendingOrder);
 
-		QIcon icon2(QString("./icons/saturn_delete.png"));
+		QIcon icon2(QString(":/Resources/saturn_delete.png"));
 		item = new QTableWidgetItem(icon2," Удалить",0);
 		age_view->setItem(row,4,item);
 	}	
@@ -4674,7 +4674,7 @@ void Add_elements_dialog::table_sex() {
 	int row = 0;
 	float persent_m,persent_w;
     QTableWidgetItem *item;
-    QIcon icon(QString("./icons/edit_1.png"));
+    QIcon icon(QString(":/Resources/edit_1.png"));
     while(query.next())
 	{	
 		id_pop_sex = query.value(rec.indexOf("id_pop_sex")).toInt();
@@ -4695,7 +4695,7 @@ void Add_elements_dialog::table_sex() {
 		item = new QTableWidgetItem(QString::number(persent_w));
 		sex_view->setItem(row,3,item);
 
-		QIcon icon2(QString("./icons/saturn_delete.png"));
+		QIcon icon2(QString(":/Resources/saturn_delete.png"));
 		item = new QTableWidgetItem(icon2," Удалить",0);
 		sex_view->setItem(row,4,item);
 	}	
@@ -4734,7 +4734,7 @@ void Add_elements_dialog::table_sex_gr() {
 	int row = 0;
 	float persent_m,persent_w;
     QTableWidgetItem *item;
-    QIcon icon(QString("./icons/edit_1.png"));
+    QIcon icon(QString(":/Resources/edit_1.png"));
     while(query.next())
 	{	
 		id_pop_sex = query.value(rec.indexOf("id_pop_sex")).toInt();
@@ -4755,7 +4755,7 @@ void Add_elements_dialog::table_sex_gr() {
 		item = new QTableWidgetItem(QString::number(persent_w));
 		sex_view->setItem(row,3,item);
 
-		QIcon icon2(QString("./icons/saturn_delete.png"));
+		QIcon icon2(QString(":/Resources/saturn_delete.png"));
 		item = new QTableWidgetItem(icon2," Удалить",0);
 		sex_view->setItem(row,4,item);
 	}	
@@ -5060,7 +5060,7 @@ void Add_elements_dialog::table_rank() {
     QString type_name;
 	float persent_name;
     QTableWidgetItem *item;
-    QIcon icon(QString("./icons/edit_1.png"));
+    QIcon icon(QString(":/Resources/edit_1.png"));
     while(query.next())
 	{	
 		id_ls_rank = query.value(rec.indexOf("id_ls_rank")).toInt();
@@ -5082,7 +5082,7 @@ void Add_elements_dialog::table_rank() {
 		rank_view->setItem(row,3,item);
 	//	rank_view->sortItems(3,Qt::DescendingOrder);
 
-		QIcon icon2(QString("./icons/saturn_delete.png"));
+		QIcon icon2(QString(":/Resources/saturn_delete.png"));
 		item = new QTableWidgetItem(icon2," Удалить",0);
 		rank_view->setItem(row,4,item);
 	}	
@@ -5112,7 +5112,7 @@ void Add_elements_dialog::table_rank_gr() {
     QString type_name;
 	float persent_name;
     QTableWidgetItem *item;
-    QIcon icon(QString("./icons/edit_1.png"));
+    QIcon icon(QString(":/Resources/edit_1.png"));
     while(query.next())
 	{	
 		id_ls_rank = query.value(rec.indexOf("id_ls_rank")).toInt();
@@ -5134,7 +5134,7 @@ void Add_elements_dialog::table_rank_gr() {
 		rank_view->setItem(row,3,item);
 	//	rank_view->sortItems(3,Qt::DescendingOrder);
 
-		QIcon icon2(QString("./icons/saturn_delete.png"));
+		QIcon icon2(QString(":/Resources/saturn_delete.png"));
 		item = new QTableWidgetItem(icon2," Удалить",0);
 		rank_view->setItem(row,4,item);
 	}	

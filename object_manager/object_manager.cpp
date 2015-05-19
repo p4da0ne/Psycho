@@ -37,10 +37,10 @@ Objectmanager::Objectmanager(QWidget *parent) //int in_id_object
 	UI->delete_button->setEnabled(false);*/
 	UI->object_manager_tree->setContextMenuPolicy(Qt::CustomContextMenu);
 	UI->columnView->setContextMenuPolicy(Qt::CustomContextMenu);	
-    UI->add_coord_button->setIcon(QIcon("./icons/add_but.png"));
-    UI->del_coord_button->setIcon(QIcon("./icons/delete_but.png"));
-    UI->edit_coord_button->setIcon(QIcon("./icons/edit_but.png"));
-    UI->add_many_coord_button->setIcon(QIcon("./icons/open.png"));
+    UI->add_coord_button->setIcon(QIcon(":/Resources/add_but.png"));
+    UI->del_coord_button->setIcon(QIcon(":/Resources/delete_but.png"));
+    UI->edit_coord_button->setIcon(QIcon(":/Resources/edit_but.png"));
+    UI->add_many_coord_button->setIcon(QIcon(":/Resources/open.png"));
 
 //==============================COMBOBOX 0 ñòğîêà íàôèã + ğàáîòà ñ êîîğäèíàòàìè ===============================
 
@@ -61,7 +61,7 @@ Objectmanager::Objectmanager(QWidget *parent) //int in_id_object
 	connect(UI->object_manager_tree,SIGNAL(customContextMenuRequested(const QPoint &)),this,SLOT(customMenuTree(const QPoint &)));
 	connect(UI->columnView,SIGNAL(clicked(const QModelIndex &)),this,SLOT(column_item_clicked ( const QModelIndex & )));
 
-    iconsList << "./icons/0.png" << "./icons/01.png" << "./icons/02.png" << "./icons/03.png";
+    iconsList << ":/Resources/0.png" << ":/Resources/01.png" << ":/Resources/02.png" << ":/Resources/03.png";
 	init_object_tree();
 }
 
@@ -563,7 +563,7 @@ void Objectmanager::show_objects(const QModelIndex &index)
 			}
 
         progress.setValue(55);
-	QStandardItem *item = new QStandardItem(QIcon("./icons/add.png"),"Äîáàâèòü ğåãèîí");
+	QStandardItem *item = new QStandardItem(QIcon(":/Resources/add.png"),"Äîáàâèòü ğåãèîí");
     item->setFont(font);
 	item->setData(QString("pregion_%1").arg(id_country),Qt::UserRole);
     progress.setValue(75);
@@ -649,7 +649,7 @@ void Objectmanager::child_region_objects(QStandardItem *parent_item,int id_paren
 	QFont font;
 	font.setBold(true);
 	
-	set_child_item("Äîáàâèòü ğåãèîí",QString("preg_%1").arg(id_parent_region),parent_item,row,"./icons/add.png" ,font);
+	set_child_item("Äîáàâèòü ğåãèîí",QString("preg_%1").arg(id_parent_region),parent_item,row,":/Resources/add.png" ,font);
 	add_region_components(parent_item,id_parent_region,row);
 	query.clear();
 }
@@ -669,7 +669,7 @@ void Objectmanager::add_region_components(QStandardItem *parent_item,int id_pare
 	while (query_count.next()){
 		g = query_count.value(0).toInt();}
 	
-    QStandardItem *item=set_child_item("ÑÌÈ ["  + QString::number(g) +"/" + QString::number(ggg)+ "]","smi",parent_item,row,"./icons/printer.png");
+    QStandardItem *item=set_child_item("ÑÌÈ ["  + QString::number(g) +"/" + QString::number(ggg)+ "]","smi",parent_item,row,":/Resources/printer.png");
 	//QStandardItem *item=set_child_item("ÑÌÈ","smi",parent_item,row,"./icons/printer.png");
 	row++;
 	
@@ -720,7 +720,7 @@ void Objectmanager::add_region_components(QStandardItem *parent_item,int id_pare
 	while (query_count_ls.next()){
 		b = query_count_ls.value(0).toInt();
 	}
-    item=set_child_item("ÂÎÈÍÑÊÈÅ ÔÎĞÌÈĞÎÂÀÍÈß ["  + QString::number(b) + "]",QString("ls_%1").arg(id_parent_region),parent_item,row,"./icons/weapon.png");
+    item=set_child_item("ÂÎÈÍÑÊÈÅ ÔÎĞÌÈĞÎÂÀÍÈß ["  + QString::number(b) + "]",QString("ls_%1").arg(id_parent_region),parent_item,row,":/Resources/weapon.png");
     row++;
 	if (query.size() != 0)
 	{//Âåòêà âîèíñêèå ôîğìèğîâàíèÿ
@@ -759,7 +759,7 @@ void Objectmanager::add_region_components(QStandardItem *parent_item,int id_pare
 	while (query_count_gr.next()){
 		a = query_count_gr.value(0).toInt();}
 	
-	item=set_child_item("ÎĞÃÀÍÈÇÀÖÈÈ ["  + QString::number(a) + "]","gr",parent_item,row,"./icons/group.png");
+	item=set_child_item("ÎĞÃÀÍÈÇÀÖÈÈ ["  + QString::number(a) + "]","gr",parent_item,row,":/Resources/group.png");
 
 	//item = set_child_item("ÎĞÃÀÍÈÇÀÖÈÈ","gr",parent_item,row,"./icons/group.png");
 	row++;
@@ -796,7 +796,7 @@ query.exec(QString("SELECT id_region, id_special_conditions,name_special_conditi
 	while (query_count_sc.next()){
 		y = query_count_sc.value(0).toInt();}
 	
-	item=set_child_item("ÎÑÎÁÛÅ ÓÑËÎÂÈß ["  + QString::number(y) + "]","gr",parent_item,row,"./icons/stop2.png");
+	item=set_child_item("ÎÑÎÁÛÅ ÓÑËÎÂÈß ["  + QString::number(y) + "]","gr",parent_item,row,":/Resources/stop2.png");
 
 	//item = set_child_item("ÎĞÃÀÍÈÇÀÖÈÈ","gr",parent_item,row,"./icons/group.png");
 	row++;
@@ -1483,7 +1483,7 @@ void Objectmanager::add_ls_components(QStandardItem *parent_item,int id_parent_r
 	while (query_count.next()){
 		g = query_count.value(0).toInt();}
 	
-	QStandardItem *item=set_child_item("ÑĞÅÄÑÒÂÀ ["  + QString::number(g) + "]","mpo",parent_item,row,"./icons/connect_saturn.png");
+	QStandardItem *item=set_child_item("ÑĞÅÄÑÒÂÀ ["  + QString::number(g) + "]","mpo",parent_item,row,":/Resources/connect_saturn.png");
 	//QStandardItem *item=set_child_item("ÑÌÈ","smi",parent_item,row,"./icons/printer.png");
 	row++;
 	
@@ -1516,7 +1516,7 @@ void Objectmanager::add_ls_components(QStandardItem *parent_item,int id_parent_r
 	while (query_count_p.next()){
 		f = query_count_p.value(0).toInt();}
 	
-	item=set_child_item("ÏÅĞÑÎÍÀËÈÈ ["  + QString::number(f) + "]","persls",parent_item,row,"./icons/connect_saturn.png");
+	item=set_child_item("ÏÅĞÑÎÍÀËÈÈ ["  + QString::number(f) + "]","persls",parent_item,row,":/Resources/connect_saturn.png");
 	//QStandardItem *item=set_child_item("ÑÌÈ","smi",parent_item,row,"./icons/printer.png");
 	row++;
 	
@@ -1572,7 +1572,7 @@ void Objectmanager::add_groups_components(QStandardItem *parent_item,int id_pare
 	while (query_count.next()){
 		g = query_count.value(0).toInt();}
 	
-	QStandardItem *item=set_child_item("ÑĞÅÄÑÒÂÀ ["  + QString::number(g) + "]","mpo",parent_item,row,"./icons/connect_saturn.png");
+	QStandardItem *item=set_child_item("ÑĞÅÄÑÒÂÀ ["  + QString::number(g) + "]","mpo",parent_item,row,":/Resources/connect_saturn.png");
 	//QStandardItem *item=set_child_item("ÑÌÈ","smi",parent_item,row,"./icons/printer.png");
 	row++;
 	
@@ -1604,7 +1604,7 @@ void Objectmanager::add_groups_components(QStandardItem *parent_item,int id_pare
 	while (query_count_p.next()){
 		f = query_count_p.value(0).toInt();}
 	
-	item=set_child_item("ÏÅĞÑÎÍÀËÈÈ ["  + QString::number(f) + "]","pers",parent_item,row,"./icons/connect_saturn.png");
+	item=set_child_item("ÏÅĞÑÎÍÀËÈÈ ["  + QString::number(f) + "]","pers",parent_item,row,":/Resources/connect_saturn.png");
 	//QStandardItem *item=set_child_item("ÑÌÈ","smi",parent_item,row,"./icons/printer.png");
 	row++;
 	
@@ -1665,7 +1665,7 @@ void Objectmanager::add_smi_components(QStandardItem *parent_item,int id_parent_
 	while (query_count.next()){
 		g = query_count.value(0).toInt();}
 	
-	QStandardItem *item=set_child_item("ÑĞÅÄÑÒÂÀ ["  + QString::number(g) + "]","mpo",parent_item,row,"./icons/connect_saturn.png");
+	QStandardItem *item=set_child_item("ÑĞÅÄÑÒÂÀ ["  + QString::number(g) + "]","mpo",parent_item,row,":/Resources/connect_saturn.png");
 	//QStandardItem *item=set_child_item("ÑÌÈ","smi",parent_item,row,"./icons/printer.png");
 	row++;
 	
@@ -1697,7 +1697,7 @@ void Objectmanager::add_smi_components(QStandardItem *parent_item,int id_parent_
         while (query_count_p.next()){
             t = query_count_p.value(0).toInt();}
 
-        item=set_child_item("ÏÅĞÑÎÍÀËÈÈ ["  + QString::number(t) + "]","perssmi",parent_item,row,"./icons/connect_saturn.png");
+        item=set_child_item("ÏÅĞÑÎÍÀËÈÈ ["  + QString::number(t) + "]","perssmi",parent_item,row,":/Resources/connect_saturn.png");
         //QStandardItem *item=set_child_item("ÑÌÈ","smi",parent_item,row,"./icons/printer.png");
         row++;
 
