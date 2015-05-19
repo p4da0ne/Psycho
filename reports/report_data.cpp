@@ -57,22 +57,22 @@ QMap <int, QMap< QString,QString> > ReportData::get_obj_info(int id_object)
         map.insert("5. Описание организации",query.value(rec.indexOf("description_groups")).toString());
         obj_info->insert(5,map);
         map.clear();
-        map.insert("6. menegement_groups",query.value(rec.indexOf("menegement_groups")).toString());
+        map.insert("6. Руководство организации",query.value(rec.indexOf("menegement_groups")).toString());
         obj_info->insert(6,map);
         map.clear();
-        map.insert("7. officce_groups",query.value(rec.indexOf("officce_groups")).toString());
+        map.insert("7. Представительство организации",query.value(rec.indexOf("officce_groups")).toString());
         obj_info->insert(7,map);
         map.clear();
-        map.insert("8. propaganda_groups",query.value(rec.indexOf("propaganda_groups")).toString());
+        map.insert("8. Информационные органы организации",query.value(rec.indexOf("propaganda_groups")).toString());
         obj_info->insert(8,map);
         map.clear();
-        map.insert("9. name_trend_groups",query.value(rec.indexOf("name_trend_groups")).toString());
+        map.insert("9. Направленность организации",query.value(rec.indexOf("name_trend_groups")).toString());
         obj_info->insert(9,map);
         map.clear();
-        map.insert("10. name_sphere_groups",query.value(rec.indexOf("name_sphere_groups")).toString());
+        map.insert("10. Сфера деятельности организации",query.value(rec.indexOf("name_sphere_groups")).toString());
         obj_info->insert(10,map);
         map.clear();
-        map.insert("11. name_form_groups",query.value(rec.indexOf("name_form_groups")).toString());
+        map.insert("11. Форма организации",query.value(rec.indexOf("name_form_groups")).toString());
         obj_info->insert(11,map);
         map.clear();
 
