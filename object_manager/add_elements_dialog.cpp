@@ -1647,7 +1647,7 @@ case 23:{ //========== Персонал для групп ====================================
         label_7 = new QLabel("Характеристика:");
         textEdit_propa = new QTextEdit;
         label_7->setBuddy(textEdit_propa);
-        textEdit_propa->setFixedHeight(100);
+        textEdit_propa->setFixedSize(200,200);
 
         QLabel *label_f = new QLabel("Фото:");
         lineEdit_name_f = new QLineEdit;
@@ -1858,9 +1858,9 @@ case 24:{ //========== Персонал данные ====================================
         id_type_persones = query.value(rec.indexOf("id_type_persones")).toInt();
 
         QPixmap pixmap;
-        QSize size_pic(200,200);
+
         pixmap.loadFromData(query.value(rec.indexOf("image_persones")).toByteArray() );
-        pixmap = pixmap.scaled(size_pic,Qt::KeepAspectRatio);
+        pixmap = pixmap.scaled(pixmap.size(),Qt::KeepAspectRatio);
 
         lineEdit_name->setText(name_pers);
 		lineEdit_counte_ls->setText(QString::number(age_pers));
