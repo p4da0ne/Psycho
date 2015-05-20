@@ -36,6 +36,7 @@ public:
 	QString get_object_foto_from_DB(int);
 	QString get_blok_foto_from_DB(int);
 	QString get_mpo_foto_from_DB(int);
+	QString get_srec_cond_foto_from_DB(int);
 
 };
 

@@ -1312,6 +1312,10 @@ case 16://=============== Условия ============================================
 		 label = new QLabel("Наименование особого условия:");
 		 lineEdit_name = new QLineEdit;
 		 label->setBuddy(lineEdit_name);
+
+		 QLabel *label_f = new QLabel("Фото особого условия:");
+         lineEdit_name_f = new QLineEdit;
+         label_f->setBuddy(lineEdit_name_f);
 		 
 		 label_2 = new QLabel("Тип особого условия");
 		 comboBox = new QComboBox();
@@ -1334,31 +1338,29 @@ case 16://=============== Условия ============================================
 		 lineEdit_sem_2 = new QLineEdit;
 		 label_5->setBuddy(lineEdit_sem_2);
 		
-//		 QGroupBox *configGroup = new QGroupBox("Координаты:");
-//		 coord_view = new QTableWidget;
-//		 coord_view->setFixedSize(400,300);
-//		 addButton_1 = new QPushButton("Добавить координаты");
-//		 addButton_1->setDefault(true);
-//		 connect(addButton_1,SIGNAL(clicked()),this,SLOT(add_coord_special_cond_dlg()));
-//	 	 QHBoxLayout *coord_Layout = new QHBoxLayout;
-//		 coord_Layout->addWidget(coord_view);
-//		 QHBoxLayout *coord_Layout_1 = new QHBoxLayout;
-//		 coord_Layout_1->addWidget(addButton_1);
-//		 QVBoxLayout *configLayout = new QVBoxLayout;
-//		 configLayout->addLayout(coord_Layout);
-//		 configLayout->addLayout(coord_Layout_1);
-//		 configGroup->setLayout(configLayout);
-		 
+
 		 addButton = new QPushButton("Добавить");
 		 addButton->setDefault(true);
 		 connect(addButton,SIGNAL(clicked()),this,SLOT(add_special_cond()));
 		 cancelButton = new QPushButton("Отмена");
 		 connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
-   
+
+         QPushButton *openButton = new QPushButton("открыть");
+         openButton->setText("...");
+         openButton->setFixedSize(30,20);
+         connect(openButton,SIGNAL(clicked()),this,SLOT(open_file()));
+
+		 		 
 		 QHBoxLayout *buttonsLayout = new QHBoxLayout;
 		 buttonsLayout->addStretch();
 		 buttonsLayout->addWidget(addButton);
 		 buttonsLayout->addWidget(cancelButton);
+
+		 QHBoxLayout *topLeftLayout_15 = new QHBoxLayout;
+         topLeftLayout_15->addWidget(label_f);
+         QHBoxLayout *topLeftLayout_16 = new QHBoxLayout;
+         topLeftLayout_16->addWidget(lineEdit_name_f);
+         topLeftLayout_16->addWidget(openButton);
 
 		 QHBoxLayout *topLeftLayout = new QHBoxLayout;
 		 topLeftLayout->addWidget(label);
@@ -1382,6 +1384,10 @@ case 16://=============== Условия ============================================
 		 QHBoxLayout *topLeftLayout_10 = new QHBoxLayout;
 		 topLeftLayout_10->addWidget(lineEdit_sem_2);
 		
+		 QVBoxLayout *leftLayout_15 = new QVBoxLayout;
+         leftLayout_15->addLayout(topLeftLayout_15);
+         QVBoxLayout *leftLayout_16 = new QVBoxLayout;
+         leftLayout_16->addLayout(topLeftLayout_16);
 		 QVBoxLayout *leftLayout = new QVBoxLayout;
 		 leftLayout->addLayout(topLeftLayout);
 		 QVBoxLayout *leftLayout_2 = new QVBoxLayout;
@@ -1407,23 +1413,21 @@ case 16://=============== Условия ============================================
 		 mainLayout->setSizeConstraint(QLayout::SetFixedSize);
 		 mainLayout->addLayout(leftLayout, 0, 0);
 		 mainLayout->addLayout(leftLayout_2, 0, 1);
-		 mainLayout->addLayout(leftLayout_3, 1, 0);
-		 mainLayout->addLayout(leftLayout_4, 1, 1);
-		 mainLayout->addLayout(leftLayout_5, 2, 0);
-		 mainLayout->addLayout(leftLayout_6, 2, 1);
-		 mainLayout->addLayout(leftLayout_7, 3, 0);
-		 mainLayout->addLayout(leftLayout_8, 3, 1);
-		 mainLayout->addLayout(leftLayout_9, 4, 0);
-		 mainLayout->addLayout(leftLayout_10, 4, 1);
-//		 mainLayout->addWidget(configGroup, 5, 0, 1, 2);
-         mainLayout->addLayout(buttonsLayout, 5, 0, 1, 2);
+		 mainLayout->addLayout(leftLayout_15, 1, 0);
+         mainLayout->addLayout(leftLayout_16, 1, 1);
+		 mainLayout->addLayout(leftLayout_3, 2, 0);
+		 mainLayout->addLayout(leftLayout_4, 2, 1);
+		 mainLayout->addLayout(leftLayout_5, 3, 0);
+		 mainLayout->addLayout(leftLayout_6, 3, 1);
+		 mainLayout->addLayout(leftLayout_7, 4, 0);
+		 mainLayout->addLayout(leftLayout_8, 4, 1);
+		 mainLayout->addLayout(leftLayout_9, 5, 0);
+		 mainLayout->addLayout(leftLayout_10, 5, 1);
+         mainLayout->addLayout(buttonsLayout, 6, 0, 1, 2);
 
 		 setLayout(mainLayout);
 		 setWindowTitle("Добавить особое условие");
          setWindowIcon(QIcon(":/Resources/Stop2.png"));
-
-    //   table_coord();
-    //	 connect(coord_view,SIGNAL(cellClicked(int,int)),this,SLOT(show_redaktor_coord(int,int)));
 
 		 break;
 		}
@@ -1877,7 +1881,8 @@ case 24:{ //========== Персонал данные ====================================
         QPixmap pixmap;
 
         pixmap.loadFromData(query.value(rec.indexOf("image_persones")).toByteArray() );
-        pixmap = pixmap.scaled(pixmap.size(),Qt::KeepAspectRatio);
+		
+		pixmap = pixmap.scaled(200,200,Qt::KeepAspectRatio);
 
         lineEdit_name->setText(name_pers);
 		lineEdit_counte_ls->setText(QString::number(age_pers));
@@ -5684,17 +5689,35 @@ void Add_elements_dialog::add_special_cond(){
 			
 		int id_sc=insert_in_table("special_conditions",map,"id_special_conditions");
 		
-        //int  t = coord_view->rowCount(); //строка
-        //int id_coord_spec_cond=0;
-        //  if (t == 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Неободимо добавить координаты особого условия "),QMessageBox::Ok);return;}
-        //  for (int i=0 ; i<t ; i++){
-        //  int id_coord = coord_view->item(i,0)->text().toInt();
-        //  if(id_sc==0) return;
-        //	map.clear();
-        //	map.insert("id_special_conditions",QString::number(id_sc));
-        //	map.insert("id_coordinates",QString::number(id_coord));
-        //	id_coord_spec_cond=insert_in_table("coord_spec_cond",map,"id_coord_spec_cond");
-         //}
+//======================= для картинки ===================================
+        QSqlQuery query;
+
+        query.prepare("UPDATE persones SET image_persones = ? WHERE id_persones = ?");
+
+            QFile file(lineEdit_name_f->text());
+            if(!file.open(QIODevice::ReadOnly))
+                 {
+            QMessageBox msgBox;
+            msgBox.setWindowTitle(tr("Внимание"));
+            msgBox.setText(tr("Необходимо выбрать изображение"));
+            msgBox.setStandardButtons(QMessageBox::Yes);
+            switch (msgBox.exec()) {
+            case QMessageBox::Yes:
+                return;
+                break;
+                }
+             }
+            QByteArray image_pers = file.readAll();
+            query.addBindValue(image_pers);
+            query.addBindValue(id_sc);
+
+            if(!query.exec())
+             {
+             QString s = query.lastError().text();
+             }
+
+//===============================================================================
+        
         if(id_sc>0){
 				this->done(id_sc);
 			}else{
@@ -5702,66 +5725,6 @@ void Add_elements_dialog::add_special_cond(){
 			}
 	   
 }
-//================================ координаты для условий ============================================
-/*void Add_elements_dialog::table_coord(int id_coord) {
-	coord_view->setColumnCount(4);
-	coord_view->hideColumn(0);
-	coord_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-	
-	QStringList header_list;
-	header_list<<" "<<"X"<<"Y"<<" ";
-	
-	coord_view->setHorizontalHeaderLabels(header_list);
-	coord_view->setColumnWidth(1,100);
-	coord_view->setColumnWidth(2,100);
-	
-	
-	QSqlQuery query;
-	QString str = QString("SELECT coordinat.x_coordinates, coordinat.y_coordinates  FROM coordinates coordinat WHERE coordinat.id_coordinates = %1 ").arg(id_coord);
-	if(!query.exec(str))
-	{
-	 return;
-	}
-    
-	QSqlRecord rec = query.record();
-	int id_coord_spec;
-	float x,y; 
-	int row = 0;
-    QString type_name,nat_view;
-	float short_name;
-    QTableWidgetItem *item;
-    QIcon icon(QString("./icons/edit_1.png"));
-    while(query.next())
-	{	
-//		id_coord_spec = query.value(rec.indexOf("id_ls_nations")).toInt();
-//		type_name = query.value(rec.indexOf("name_nations")).toString();
-		x = query.value(rec.indexOf("x_coordinates")).toString().toFloat();
-		y = query.value(rec.indexOf("y_coordinates")).toString().toFloat();
-	
-		coord_view->insertRow(row);
-
-		//item = new QTableWidgetItem(icon," Редактировать",0);
-	//	coord_view->setItem(row,0,item);
-
-		item = new QTableWidgetItem(QString::number(id_coord));
-		coord_view->setItem(row,0,item);
-
-		item = new QTableWidgetItem(QString::number(x));
-		coord_view->setItem(row,1,item);
-
-		item = new QTableWidgetItem(QString::number(y));
-		coord_view->setItem(row,2,item);
-	//	directs_view->sortItems(3,Qt::DescendingOrder);
-
-
-		QIcon icon2(QString("./icons/saturn_delete.png"));
-		item = new QTableWidgetItem(icon2," Удалить",0);
-		coord_view->setItem(row,3,item);
-	}	
-   row++;
-   //  coord_view->resizeColumnsToContents();
-}
-*/
 
 void Add_elements_dialog::open_file()
 {
