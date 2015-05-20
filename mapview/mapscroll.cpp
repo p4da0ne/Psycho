@@ -11,7 +11,9 @@
 MapScroll::MapScroll(QWidget * parent)
           :QScrollArea(parent)
 {
-    MainCodec = QTextCodec::codecForName("CP1251");
+   	this->setMouseTracking(true);  //включает режим отлавливания событий движения мыши без нажатой клавиши
+	
+	MainCodec = QTextCodec::codecForName("CP1251");
 	MyViewport = 0;
     hMap = 0;
     LibInst = 0;
@@ -31,6 +33,10 @@ MapScroll::MapScroll(QWidget * parent)
 	hSite_ok_weapon=0;
 	war_line_coord.clear();
 	dx=0; dy=0;
+
+	/////////////////////////
+	moveFlag = false;
+	////////////////////////
 }
 //-------------------------------------------------------------
 // Деструктор
@@ -153,6 +159,7 @@ int	MapScroll::mapOpen(  const char *name )
       {
         MyViewport = new QWidget(viewport());
 		MyViewport->setAttribute(Qt::WA_NoBackground);
+		MyViewport->setMouseTracking(true);
         setWidget(MyViewport);
       }
       else MyViewport->show();
@@ -304,8 +311,14 @@ void MapScroll::mousePressEvent(QMouseEvent * event)
 				
 				if (event->button() == Qt::LeftButton)//левая клавиша мыши
 				{					
-					//emit leftButtonClicked(pe,idOdject,objectType); return;	
-					emit leftButtonClicked(pe,allObjectsList); return;
+					if(moveFlag)
+					{
+						emit selectedPoint(screenX, screenY);  //сигнал при указании мышью точки для перемещения объекта 
+					}
+					else
+					{
+						emit leftButtonClicked(pe,allObjectsList); return;
+					}
 				}
 				if (event->button() == Qt::RightButton)  //правая клавиша мыши
 				{
@@ -316,6 +329,14 @@ void MapScroll::mousePressEvent(QMouseEvent * event)
 			}
 			else
 			{
+				if (event->button() == Qt::LeftButton)//левая клавиша мыши
+				{					
+					if(moveFlag)
+					{
+						emit selectedPoint(screenX, screenY);  //сигнал при указании мышью точки для перемещения объекта 
+					}
+				}
+
 				if (event->button() == Qt::RightButton)  //правая клавиша мыши
 				{
 					//emit rightButtonClicked(pe,0,0); return; //клик на пустом месте (где нет объектов)	
@@ -326,6 +347,32 @@ void MapScroll::mousePressEvent(QMouseEvent * event)
 		}
 	}
 }
+
+
+//======================================================================
+//======= Метод обработки движения мыши по карте =======================
+//======= Заносит координаты в строку состояния =======================
+//======================================================================
+void MapScroll::mouseMoveEvent(QMouseEvent * event)
+{
+	if(event->Move)
+	{
+		QPointF a,mouse_pos;
+		double x,y;
+		if (hMap)
+		{
+			mouse_pos = event->pos();
+			x = mouse_pos.x();
+			y = mouse_pos.y();
+			a = getXY(x,y);
+			emit cursorIsMoved(a);
+		}
+		
+	}
+}
+
+
+
 
 //для левой клавиши мыши
 void		MapScroll::findObject(double *x, double *y)
@@ -736,8 +783,10 @@ long int	MapScroll::updateScreen()
 	return 0;
 }
 
-//пересчет из координат экрана в прямоугольные на карте
-QPoint		MapScroll::getXY(double x, double y)
+//======================================================================
+//======= Пересчет из координат экрана в прямоугольные на карте ========
+//======================================================================
+QPoint MapScroll::getXY(double x, double y)
 {
 	QPoint a;
 	x += horizontalScrollBar()->value();

@@ -31,12 +31,14 @@
 #include "regions_mpos.h"
 #include "formationsPsiLooses.h"
 #include "formationsMPS.h"
+#include "move_model.h"
+
 
 MapView::MapView(QWidget *parent, const char *name)
     : QWidget(parent)
 {
 	MainCodec = QTextCodec::codecForName("CP1251");
-	setMouseTracking(true);  //включает режим отлавливания событий движения мыши без нажатой клавиши
+	
 	rst_name_and_number.clear();
 	setWindowIcon(QIcon(":/Resources/mapwork.png"));
 
@@ -52,8 +54,8 @@ MapView::MapView(QWidget *parent, const char *name)
 	connect(mapwin,SIGNAL(signalFor4Action(double, double)),this,SLOT(redrawWithNewAngle(double, double)));
 	connect(mapwin,SIGNAL(signal_for_change_scale(QPoint)),this,SLOT(mouseRightSimpleMenu(QPoint)));
 	
-	
-	
+	connect(mapwin,SIGNAL(cursorIsMoved(QPointF)),this,SLOT(showCoordinates(QPointF))); //отображение координат в строке состояния при движении курсора по карте
+	connect(mapwin,SIGNAL(selectedPoint(double,double)),this,SLOT(changeObjectCoordInDB(double,double))); //изменение координат в БД после указания точки мышью
 	connect(mapwin,SIGNAL(leftButtonClicked(QPoint, QList<QStringList>)),this,SLOT(slotMouseLeftButtonClicked(QPoint, QList<QStringList>)));
 	connect(mapwin,SIGNAL(rightButtonClicked(QPoint, QList<QStringList>)),this,SLOT(slotMouseRightButtonClicked(QPoint, QList<QStringList>)));
 	// ===================================================================================================================================
@@ -254,11 +256,11 @@ void MapView::initToolButtonsPanel()
 	menuLayout->addWidget(set_map_contrast1);
 	menuLayout->addWidget(set_map_contrast2);
 	menuLayout->addWidget(v_lab2);
-	menuLayout->addWidget(print_map_but);
-	menuLayout->addWidget(print_screen_but);
-	menuLayout->addWidget(v_lab4);
-	menuLayout->addWidget(print_screen_but);
-	menuLayout->addWidget(v_lab3);
+	//menuLayout->addWidget(print_map_but);
+	//menuLayout->addWidget(print_screen_but);
+	//menuLayout->addWidget(v_lab4);
+	//menuLayout->addWidget(print_screen_but);
+	//menuLayout->addWidget(v_lab3);
 	menuLayout->addWidget(less_scale_but);
 	menuLayout->addWidget(greate_scale_but);
 	menuLayout->addWidget(v_lab5);
@@ -441,7 +443,7 @@ bool MapView::openMap(QString mapFilepath)
 
 		mapwin->setMapCenter();
 
-		setAdditionalInfo();
+		showViewScale();
 
 		QSettings *settings = new QSettings("vka","saturnMap");
 		settings->setValue("/mapSettings/mapPath",filePath);
@@ -654,7 +656,8 @@ void MapView::closeMap()
 //===============================================================
 void MapView::lessScale()
 {
-    mapwin->changeScale(0.5);		
+    mapwin->changeScale(0.5);	
+	showViewScale();
 }
 
 //===============================================================
@@ -662,7 +665,8 @@ void MapView::lessScale()
 //===============================================================
 void MapView::greateScale()
 {
-    mapwin->changeScale(2.0);		
+    mapwin->changeScale(2.0);
+	showViewScale();
 }
 
 //===============================================================
@@ -733,7 +737,7 @@ void MapView::changeContrastDown()
 //===== Метод отображения текущего масштаба в правом нижнем углу карты =======
 //============================================================================
 //
-void MapView::setAdditionalInfo()
+void MapView::showViewScale()
 {
 	QString info;
 	long int scale = mapwin->getScale();
@@ -751,14 +755,14 @@ void MapView::keyPressEvent(QKeyEvent *e)
   if (e->key() == Qt::Key_Less || e->key() == Qt::Key_Comma)
   {
     lessScale();
-	setAdditionalInfo();
+	showViewScale();
 	setStatusInfo("info");
     return;
   }
   if (e->key() == Qt::Key_Greater || e->key() == Qt::Key_Period)
   {
     greateScale();
-	setAdditionalInfo();
+	showViewScale();
 	setStatusInfo("info");
     return;
   }
@@ -784,25 +788,58 @@ void MapView::keyPressEvent(QKeyEvent *e)
 //======= Метод обработки движения мыши по карте =======================
 //======= Заносит координаты в строку состояния =======================
 //======================================================================
-void MapView::mouseMoveEvent(QMouseEvent * event)
+void MapView::showCoordinates(QPointF xyCoord)
 {
-	if (event->Move)
-	{
-		QPoint a;
-		double x,y;
-		if (mapwin->hMap)
-		{
-			mouse_pos = event->pos();
-			x= mouse_pos.x();
-			y = mouse_pos.y();
-			a=mapwin->getXY(x, y);
-		}
-		QString s = "x: ";
-		s += QString::number(a.x());
-		s += " y: ";
-		s += QString::number(a.y());
-		cursor_coord->setText(s);
-	}
+	QString s = "x: ";
+	s += QString::number(xyCoord.x(),'f',0);
+	s += "   y: ";
+	s += QString::number(xyCoord.y(),'f',0);
+	
+	Coord *coord = new Coord(xyCoord.x(),xyCoord.y());
+	coord = planeToWGS(mapwin->hMap,coord);
+	
+	s += "          B: ";
+	s += coord->latitudeToString();
+	s += "     L: ";
+	s += coord->longitudeToString();
+
+	cursor_coord->setText(s);
+
+}
+
+//======================================================================================
+//========= Метод перевода прямоугольных координат в геодезические (WGS-84) ============
+//======================================================================================
+Coord* MapView::planeToWGS(long int hMap,Coord *coord)
+{
+	Coord *tempCoord = coord;
+   
+	if(hMap == 0) return 0;
+
+	MyMapAccess *map = new MyMapAccess;
+	int nD,nM,eD,eM;
+	double nS,eS;
+	
+	if(map->mapIsGeoSupported(hMap))
+    {
+        GEODEGREE N, E;
+		double N_rad, E_rad, H;
+		N_rad = tempCoord->getX();
+		E_rad = tempCoord->getY();
+		map->mapPlaneToGeoWGS843D(hMap,&N_rad,&E_rad,&H);
+		map->mapRadianToDegree(&N_rad,&N);
+		map->mapRadianToDegree(&E_rad,&E);
+	    nD = N.Degree;	 
+		nM = N.Minute;
+		nS = N.Second;
+		eD = E.Degree;
+		eM = E.Minute;
+		eS = E.Second;
+		
+		tempCoord->setLatitude(nD,nM,nS);
+		tempCoord->setLongitude(eD,eM,eS);
+    }
+	return tempCoord;
 }
 
 
@@ -1006,7 +1043,7 @@ void MapView::showCheckedObjects()
 	//-------------------------------------------------------------------------
 	if (persones_checkbox->checkState())
 	{
-		//показать особые условия
+		//показать персоналии
 		closeSitByName(personesSitName);
 		HSITE personesSite = openMapSit(personesSitName,rscPath);
 		QList<SignData*> personesSigns = model->getPersones(mapwin->hMap,x1,y1,x2,y2);
@@ -1014,7 +1051,7 @@ void MapView::showCheckedObjects()
 	}
 	else
 	{
-		closeSitByName(conditionsSitName);
+		closeSitByName(personesSitName);
 	}
 	//-------------------------------------------------------------------------
 
@@ -1333,6 +1370,162 @@ void MapView::slotFormationMPS()
 
 }
 
+//===============================================================================
+//====== Слот перемещения объекта на карте с обновлением координат в БД =========
+//===============================================================================
+void MapView::slotMoveObject()
+{
+	QAction *action = qobject_cast<QAction*>(sender());
+	QString str;
+	if(action)
+	{
+		QStringList objInfo = action->data().toString().split("_");
+
+		MoveModel *model = new MoveModel;
+
+		QList<Coord*> coord = model->getObjectCoordinates(mapwin->hMap,objInfo.at(0).toInt(),objInfo.at(1).toInt());
+
+		dlg = new ChangeCoordDialog(coord.at(0),objInfo.at(0).toInt(),objInfo.at(1).toInt());
+
+		
+		
+		if(dlg->exec() == QDialog::Accepted)
+		{
+			mapwin->moveFlag = dlg->mouseFlag;
+			if(!dlg->mouseFlag)
+			{
+				changeObjectCoordInDB(); //изменение координат в БД после ввода их в диалоговом окне
+			}
+		}
+
+
+	}
+
+}
+
+//==================================================================================
+//=== Метод изменения координат объекта в БД и обновления соответствующего слоя ====
+//==================================================================================
+void MapView::changeObjectCoordInDB(double x, double y)
+{
+
+	int idObject = dlg->idObject;
+	int objectType = dlg->objectType;
+
+	MoveModel *moveModel = new MoveModel;
+	
+	Coord *coord = new Coord(x,y);
+	coord = moveModel->planeToWGS(mapwin->hMap,coord);
+
+	moveModel->updateObjectCoordinates(idObject,objectType,coord);
+	
+
+	updateSite(objectType);
+
+	mapwin->moveFlag = false;
+}
+
+//==================================================================================
+//=== Метод изменения координат объекта в БД и обновления соответствующего слоя ====
+//==================================================================================
+void MapView::changeObjectCoordInDB()
+{
+	int idObject = dlg->idObject;
+	int objectType = dlg->objectType;
+
+	int latD = dlg->latDegreeLineEdit.text().toInt();
+	int latM = dlg->latMinutesLineEdit.text().toInt();
+	double latS = dlg->latSecondsLineEdit.text().toDouble();
+	int longD = dlg->longDegreeLineEdit.text().toInt();
+	int longM = dlg->longMinutesLineEdit.text().toInt();
+	double longS = dlg->longSecondsLineEdit.text().toDouble();
+
+	Coord *coord = new Coord(latD,latM,latS,longD,longM,longS);
+
+	MoveModel *moveModel = new MoveModel;
+	moveModel->updateObjectCoordinates(idObject,objectType,coord);
+	
+
+	updateSite(objectType);
+
+}
+
+
+
+//=============================================================================================
+//======= Метод обновления пользовательской карты для указанного типа объектов ================
+//=============================================================================================
+void MapView::updateSite(int objectType)
+{
+	
+	//------ Получение координат углов карты ---------
+	double x1 = mapwin->getMapX1(mapwin->hMap);
+	double y1 = mapwin->getMapY1(mapwin->hMap);
+	double x2 = mapwin->getMapX2(mapwin->hMap);
+	double y2 = mapwin->getMapY2(mapwin->hMap);
+	//-------------------------------------------------
+	
+	QString rscPath = settings->value("/mapSettings/rscPath","").toString();
+	QFileInfo *info = new QFileInfo(rscPath);
+	QString sitPath = info->absolutePath();
+	sitPath.append("/");
+	//-------------------------------------------------------------------------
+	QString mpoRegionsSitName = sitPath + "mpoRegions.sit";
+	QString smiMeansSitName = sitPath + "smiMeans.sit";
+	QString formationMeansSitName = sitPath + "formationMeans.sit";
+	QString organizationMeansSitName = sitPath + "organizationMeans.sit";
+	QString formationsSitName = sitPath + "formations.sit";
+	QString conditionsSitName = sitPath +"conditions.sit";
+	QString personesSitName = sitPath +"persones.sit";
+	//-------------------------------------------------------------------------
+
+	QList<SignData*> signs;
+	HSITE site;
+
+	switch(objectType)
+		{
+			case FORMATIONS:
+				closeSitByName(formationsSitName);
+				site = openMapSit(formationsSitName,rscPath);
+				signs = model->getFormations(mapwin->hMap,x1,y1,x2,y2);
+				break;
+			
+			case SPECIAL_CONDITIONS:
+				closeSitByName(conditionsSitName);
+				site = openMapSit(conditionsSitName,rscPath);
+				signs = model->getSpecialConditions(mapwin->hMap,x1,y1,x2,y2);
+				break;
+			
+			case SMI_MEANS:
+				closeSitByName(smiMeansSitName);
+				site = openMapSit(smiMeansSitName,rscPath);
+				signs = model->getSmiMeans(mapwin->hMap,x1,y1,x2,y2);
+				break;
+			
+			case FORMATIONS_MEANS:
+				closeSitByName(formationMeansSitName);
+				site = openMapSit(formationMeansSitName,rscPath);
+				signs = model->getFormationsMeans(mapwin->hMap,x1,y1,x2,y2);
+				break;
+							
+			case GROUPS_MEANS:
+				closeSitByName(organizationMeansSitName);
+				site = openMapSit(organizationMeansSitName,rscPath);
+				signs = model->getGroupsMeans(mapwin->hMap,x1,y1,x2,y2);
+				break;
+			
+			case PERSONNEL:
+				closeSitByName(personesSitName);
+				site = openMapSit(personesSitName,rscPath);
+				signs = model->getPersones(mapwin->hMap,x1,y1,x2,y2);
+				break;
+		}
+	createSitObjects(site, signs);
+
+	if (mapwin->hMap) mapwin->updateScreen();
+}
+
+
 
 void MapView::slotObjectReport() //слот - обработчик выбора в контекстном меню объекта
 {
@@ -1387,6 +1580,10 @@ QMenu* MapView::createFormationsMenu(QStringList objInfo)
 	mouse_menu->addAction(formationMps_act); 
 	connect(formationMps_act, SIGNAL(triggered()), this, SLOT(slotFormationMPS()));
 	
+	QAction *move_act = new QAction("Переместить объект",this);
+	move_act->setData(idAndType);
+	mouse_menu->addAction(move_act); 
+	connect(move_act, SIGNAL(triggered()), this, SLOT(slotMoveObject()));
 
 	return mouse_menu;
 
@@ -1419,7 +1616,11 @@ QMenu* MapView::createSpecialConditionsMenu(QStringList objInfo)
 	mouse_menu->addAction(report_act); 
 	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));
 	
-
+	QAction *move_act = new QAction("Переместить объект",this);
+	move_act->setData(idAndType);
+	mouse_menu->addAction(move_act); 
+	connect(move_act, SIGNAL(triggered()), this, SLOT(slotMoveObject()));
+	
 	return mouse_menu;
 
 }
@@ -1449,6 +1650,10 @@ QMenu* MapView::createSmiMeansMenu(QStringList objInfo)
 	mouse_menu->addAction(report_act); 
 	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));
 	
+	QAction *move_act = new QAction("Переместить объект",this);
+	move_act->setData(idAndType);
+	mouse_menu->addAction(move_act); 
+	connect(move_act, SIGNAL(triggered()), this, SLOT(slotMoveObject()));
 
 	return mouse_menu;
 
@@ -1479,6 +1684,10 @@ QMenu* MapView::createFormationsMeansMenu(QStringList objInfo)
 	mouse_menu->addAction(report_act); 
 	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));
 	
+	QAction *move_act = new QAction("Переместить объект",this);
+	move_act->setData(idAndType);
+	mouse_menu->addAction(move_act); 
+	connect(move_act, SIGNAL(triggered()), this, SLOT(slotMoveObject()));
 
 	return mouse_menu;
 }
@@ -1508,6 +1717,10 @@ QMenu* MapView::createGroupsMeansMenu(QStringList objInfo)
 	mouse_menu->addAction(report_act); 
 	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));
 	
+	QAction *move_act = new QAction("Переместить объект",this);
+	move_act->setData(idAndType);
+	mouse_menu->addAction(move_act); 
+	connect(move_act, SIGNAL(triggered()), this, SLOT(slotMoveObject()));
 
 	return mouse_menu;
 
@@ -1559,6 +1772,11 @@ QMenu* MapView::createPersonnelMenu(QStringList objInfo)
 	mouse_menu->addAction(report_act); 
 	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));
 	
+	QAction *move_act = new QAction("Переместить объект",this);
+	move_act->setData(idAndType);
+	mouse_menu->addAction(move_act); 
+	connect(move_act, SIGNAL(triggered()), this, SLOT(slotMoveObject()));
+
 	return mouse_menu;
 
 }

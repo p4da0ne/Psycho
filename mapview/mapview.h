@@ -10,6 +10,7 @@
 #include "config_mapview.h"
 #include "mapscroll.h"
 #include "view_manage.h"
+#include "change_coord_dialog.h"
 #include <QPrinter>
 
 #define SETTINGS_ORGANIZATION "vka"
@@ -24,16 +25,17 @@ public:
     MapView( QWidget *parent=0, const char *name=0 );
     ~MapView();
 	void			keyPressEvent(QKeyEvent *e);
-	void			mouseMoveEvent(QMouseEvent * event);
+	//void			mouseMoveEvent(QMouseEvent * event);
 	void			selectAllObject();
 private:
 	void initToolButtonsPanel();																//++++++
 	void initSaturnLeftMenu();																	//++++++			
-
+	Coord* planeToWGS(long int hMap,Coord *coord);
 	bool			openMap(QString mapFilepath = "");											//++++++
 	HSITE			openMapSit(QString sitFileName, QString rscFilePath);						//++++++
 	void			closeSitByName(QString sitFileName);										//++++++
 
+	void			updateSite(int objectType);
 	//------ Метод для отрисовки условных знаков на пользовательской карте -------------
 	void			createSitObjects(HSITE hSite,QList<SignData*> signsList);					//++++++
 	
@@ -47,7 +49,7 @@ private:
 
 	void			showInformationDialog(QString information);
 	
-	void			setAdditionalInfo();
+	void			showViewScale();
 	void			setStatusInfo(QString status);
 
 	HSITE   		openMapSitWeapon();
@@ -109,6 +111,7 @@ private slots:
 	void			changeBrihgtDown();
 	void			changeContrastUp();
 	void			changeContrastDown();
+	void			showCoordinates(QPointF xyCoord);
 
 	void			slotObjectInfo(); //слот - обработчик выбора в контекстном меню объекта
 	void			slotObjectDescription();
@@ -116,12 +119,16 @@ private slots:
 	void			slotFormationPsiLooses();
 	void			slotRegionMpos();
 	void			slotFormationMPS();
+	void			slotMoveObject(); //слот обработки перемещения объекта
 	//==========================
 	//------------ Обработчики нажатий на кнопки мыши (общие для разных программных комплексов) ------------------
 	void			slotMouseLeftButtonClicked(QPoint pe, QList<QStringList> objectsList);
 	void			slotMouseRightButtonClicked(QPoint pe, QList<QStringList> objectsList);
 	void			mouseRightSimpleMenu(QPoint pe);
 	//======================================================
+
+	void changeObjectCoordInDB(double x, double y);
+	void changeObjectCoordInDB();
 
 	//---- Меню по нажатию правой кнопки мыши (специфичные для конкретного программного комплекса) -------------------
 	QMenu*			createFormationsMenu(QStringList objInfo);
@@ -196,6 +203,8 @@ private:
 	QCheckBox *mps_enemy_checkbox;
 	QCheckBox *psi_looses_checkbox;
 	//--------------------------------------
+	ChangeCoordDialog *dlg;
+
 
 	QSettings *settings;
 

@@ -110,6 +110,8 @@ signals:
 	//void leftButtonClicked(QPoint pe, int idOdject=0, int objectType=0);
 	//void rightButtonClicked(QPoint pe, int idOdject=0, int objectType=0);
 
+	void cursorIsMoved(QPointF xyCoord);
+	void selectedPoint(double X, double Y);
 	void leftButtonClicked(QPoint pe, QList<QStringList> objectsList);
 	void rightButtonClicked(QPoint pe, QList<QStringList> objectsList);
 	//---------------------------------------------------------------
@@ -117,10 +119,12 @@ protected:
     bool  eventFilter (QObject * watched, QEvent * event);
     void  drawContents( QPainter* p, int cx, int cy, int cw, int ch);
 	void  mousePressEvent(QMouseEvent * event);
+	void  mouseMoveEvent(QMouseEvent * event);
 	//void  addStatusBar();
 
 public:
 	enum ReservedSemantics {ID_OBJECT = 17501, OBJECT_TYPE = 17502};
+	bool moveFlag;
 	MyMapAccess						* map;
 	HMAP							hMap;  // Идентификатор карты
 	CREATESITE						createsite;

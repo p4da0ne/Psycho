@@ -9,7 +9,9 @@ HEADERS		= config_mapview.h \
 			  calculatingClasses/People_Losses.h \
 			  calculatingClasses/regions_mpos.h \
 			  calculatingClasses/formationsPsiLooses.h \
-			  calculatingClasses/formationsMPS.h
+			  calculatingClasses/formationsMPS.h \
+			  move_model.h \
+			  change_coord_dialog.h
 			  
 SOURCES		= mapview.cpp \
 			  mapscroll.cpp \
@@ -21,5 +23,7 @@ SOURCES		= mapview.cpp \
 			  calculatingClasses/People_Losses.cpp \
 			  calculatingClasses/regions_mpos.cpp \
 			  calculatingClasses/formationsPsiLooses.cpp \
-			  calculatingClasses/formationsMPS.cpp
+			  calculatingClasses/formationsMPS.cpp \
+			  move_model.cpp \
+			  change_coord_dialog.cpp
 			  
