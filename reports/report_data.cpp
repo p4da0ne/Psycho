@@ -57,22 +57,22 @@ QMap <int, QMap< QString,QString> > ReportData::get_obj_info(int id_object)
         map.insert("5. Описание организации",query.value(rec.indexOf("description_groups")).toString());
         obj_info->insert(5,map);
         map.clear();
-        map.insert("6. menegement_groups",query.value(rec.indexOf("menegement_groups")).toString());
+        map.insert("6. Руководство организации",query.value(rec.indexOf("menegement_groups")).toString());
         obj_info->insert(6,map);
         map.clear();
-        map.insert("7. officce_groups",query.value(rec.indexOf("officce_groups")).toString());
+        map.insert("7. Представительство",query.value(rec.indexOf("officce_groups")).toString());
         obj_info->insert(7,map);
         map.clear();
-        map.insert("8. propaganda_groups",query.value(rec.indexOf("propaganda_groups")).toString());
+        map.insert("8. Информационные органы организации",query.value(rec.indexOf("propaganda_groups")).toString());
         obj_info->insert(8,map);
         map.clear();
-        map.insert("9. name_trend_groups",query.value(rec.indexOf("name_trend_groups")).toString());
+        map.insert("9. Направленость организации",query.value(rec.indexOf("name_trend_groups")).toString());
         obj_info->insert(9,map);
         map.clear();
-        map.insert("10. name_sphere_groups",query.value(rec.indexOf("name_sphere_groups")).toString());
+        map.insert("10. Сфера деятельности",query.value(rec.indexOf("name_sphere_groups")).toString());
         obj_info->insert(10,map);
         map.clear();
-        map.insert("11. name_form_groups",query.value(rec.indexOf("name_form_groups")).toString());
+        map.insert("11. Форма организации",query.value(rec.indexOf("name_form_groups")).toString());
         obj_info->insert(11,map);
         map.clear();
 
@@ -148,14 +148,15 @@ QMap<QString, QString> ReportData::pers_info(int id_object)
     query.next();
     foto_name = get_pers_foto_from_DB(id_object);
 
-       pers_info_date->insert("1. Фотография:","<CENTER><IMG BORDER=\"0\" SRC=\""+foto_name+"\" width = 200 height=200> </CENTER>");
+       pers_info_date->insert("1. Фотография:","<CENTER><IMG BORDER=\"0\" SRC=\""+foto_name+"\" height=200> </CENTER>");
        pers_info_date->insert("2. Фамилия, Имя, Отчество",query.value(rec.indexOf("name_persones")).toString());
-       pers_info_date->insert("3. Должность(звание)",query.value(rec.indexOf("rank_persones")).toString());
-       pers_info_date->insert("4. Контакты",query.value(rec.indexOf("contact_persones")).toString());
-       pers_info_date->insert("5. Характеристика",query.value(rec.indexOf("description_persones")).toString());
-       pers_info_date->insert("6. Авторитет",query.value(rec.indexOf("authority_persones")).toString());
-       pers_info_date->insert("7. Оппозиционность",query.value(rec.indexOf("opposition_persones")).toString());
-       pers_info_date->insert("8. Тип персоналии",query.value(rec.indexOf("name_type_persones")).toString());
+	   pers_info_date->insert("3. Возраст",query.value(rec.indexOf("age_persones")).toString());
+       pers_info_date->insert("4. Должность(звание)",query.value(rec.indexOf("rank_persones")).toString());
+       pers_info_date->insert("5. Контакты",query.value(rec.indexOf("contact_persones")).toString());
+       pers_info_date->insert("6. Характеристика",query.value(rec.indexOf("description_persones")).toString());
+       pers_info_date->insert("7. Авторитет",query.value(rec.indexOf("authority_persones")).toString());
+       pers_info_date->insert("8. Оппозиционность",query.value(rec.indexOf("opposition_persones")).toString());
+       pers_info_date->insert("9. Тип персоналии",query.value(rec.indexOf("name_type_persones")).toString());
 
        return *pers_info_date;
 }
@@ -182,7 +183,7 @@ QMap<QString, QMap<QString, QString> > ReportData::pers_info_coord(int id_object
 
            QMap<QString, QString> map;
            query.next();
-           name_obj="9. Координаты персоны";
+           name_obj="10. Координаты персоны";
                        map.clear();
                        QString w = "X= ";
                        w.append(query.value(rec.indexOf("x_coordinates")).toString());
@@ -393,7 +394,7 @@ QMap<QString, QMap<QString, QString> > ReportData::ls_info_coord(int id_object)
 QString ReportData::get_pers_foto_from_DB(int id_persones)
 {
         QDir dir;
-        QString currentPath = dir.homePath();
+        QString currentPath = dir.tempPath();
         QPixmap pixmap;
         QString pathStr = currentPath + "/pixmap_pers.png";
         QFile file(pathStr);
@@ -402,7 +403,7 @@ QString ReportData::get_pers_foto_from_DB(int id_persones)
            file.remove(pathStr);
         }
         QSqlQuery query;
-   //============================================ имя блока и эмблема блока ===============================================
+ 
         QString str = QString("SELECT pers.image_persones FROM  persones pers, type_persones WHERE pers.id_persones = %1 AND pers.id_type_persones = type_persones.id_type_persones").arg(id_persones);
 
         if(!query.exec(str))

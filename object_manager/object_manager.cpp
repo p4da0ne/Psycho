@@ -2649,8 +2649,9 @@ void Objectmanager::clicked_open_file()
 {
     QString fileName = QFileDialog::getOpenFileName(this, "Выбор фотографии", "",
                                                     "Images (*.jpg *.png)");
-    if (fileName.isEmpty()) return;
-
+    if (fileName.isEmpty()) return; 
+	//	edit_dlg_pers->raise();
+		
    // label_foto->setText(fileName);
 
     QSqlQuery query;
@@ -2659,10 +2660,10 @@ void Objectmanager::clicked_open_file()
 
         QFile file(fileName);
         if(!file.open(QIODevice::ReadOnly))
-             {
+           {
         QMessageBox msgBox;
         msgBox.setWindowTitle(tr("Внимание"));
-        msgBox.setText(tr("Необходимо выбрать изображение"));
+        msgBox.setText(tr("Изображение не выбрано"));
         msgBox.setStandardButtons(QMessageBox::Yes);
         switch (msgBox.exec()) {
         case QMessageBox::Yes:
@@ -2685,6 +2686,7 @@ void Objectmanager::clicked_open_file()
         pixmap = pixmap.scaled(size_pic,Qt::KeepAspectRatio);
         label_foto->setPixmap(pixmap);
         label_foto->setAlignment(Qt::AlignCenter);
+		edit_dlg_pers->raise();
 
     }
 void Objectmanager::delete_pers(){

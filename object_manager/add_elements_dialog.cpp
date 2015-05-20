@@ -5670,8 +5670,8 @@ void Add_elements_dialog::add_special_cond(){
 
 	if (lineEdit_name->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Îøèáêà",("Ââåäèòå íàèìåíîâàíèå îñîáîãî óñëîâèÿ "),QMessageBox::Ok);return;}
 	else if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Îøèáêà",("Òèï îñîáîãî óñëîâèÿ íå âûáğàí "),QMessageBox::Ok);return;}
-	else if (lineEdit_sem_1->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Îøèáêà",("Ââåäèòå ñåìàíòèêó_1 "),QMessageBox::Ok);return;}
-	else if (lineEdit_sem_2->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Îøèáêà",("Ââåäèòå ñåìàíòèêó_2 "),QMessageBox::Ok);return;}
+	//else if (lineEdit_sem_1->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Îøèáêà",("Ââåäèòå ñåìàíòèêó_1 "),QMessageBox::Ok);return;}
+	//else if (lineEdit_sem_2->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Îøèáêà",("Ââåäèòå ñåìàíòèêó_2 "),QMessageBox::Ok);return;}
 	else if (textEdit_propa->toPlainText() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Îøèáêà",("Ââåäèòå îïèñàíèå îñîáîãî óñëîâèÿ "),QMessageBox::Ok);return;}
 
 	int id_reg = in_id_object;
@@ -5692,7 +5692,7 @@ void Add_elements_dialog::add_special_cond(){
 //======================= äëÿ êàğòèíêè ===================================
         QSqlQuery query;
 
-        query.prepare("UPDATE persones SET image_persones = ? WHERE id_persones = ?");
+        query.prepare("UPDATE special_conditions SET image_special_conditions = ? WHERE id_special_conditions = ?");
 
             QFile file(lineEdit_name_f->text());
             if(!file.open(QIODevice::ReadOnly))
@@ -5707,8 +5707,8 @@ void Add_elements_dialog::add_special_cond(){
                 break;
                 }
              }
-            QByteArray image_pers = file.readAll();
-            query.addBindValue(image_pers);
+            QByteArray image_sc = file.readAll();
+            query.addBindValue(image_sc);
             query.addBindValue(id_sc);
 
             if(!query.exec())
@@ -5732,6 +5732,7 @@ void Add_elements_dialog::open_file()
                                                     "Images (*.jpg *.png)");
     if (fileName.isEmpty()) return;
     lineEdit_name_f->setText(fileName);
+	this->raise();
    
 }
 
