@@ -15,5 +15,7 @@
 		<file>Resources/mapwork.png</file>
 		<file>Resources/map_search.png</file>
 		<file>Resources/edit_1.png</file>
+		<file>Resources/event-search.png</file>
+		<file>Resources/search.png</file>
     </qresource>
 </RCC>

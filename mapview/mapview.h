@@ -30,22 +30,25 @@ protected:
 
 
 private:
-	void			initToolButtonsPanel();																//++++++
-	void			initSaturnLeftMenu();																	//++++++			
+	void			initToolButtonsPanel();																
+	void			initSaturnLeftMenu();
+	QWidget*		createObjectPanel();
+	QWidget*		createCalculatePanel();
+	QWidget*		createEventPanel();
+			
 	Coord*			planeToWGS(long int hMap,Coord *coord);
-	bool			openMap(QString mapFilepath = "");											//++++++
-	HSITE			openMapSit(QString sitFileName, QString rscFilePath);						//++++++
-	void			closeSitByName(QString sitFileName);										//++++++
+	bool			openMap(QString mapFilepath = "");											
+	HSITE			openMapSit(QString sitFileName, QString rscFilePath);						
+	void			closeSitByName(QString sitFileName);										
 	void			updateSite(int objectType);
 	//------ ћетод дл€ отрисовки условных знаков на пользовательской карте -------------
-	void			createSitObjects(HSITE hSite,QList<SignData*> signsList);					//++++++
+	void			createSitObjects(HSITE hSite,QList<SignData*> signsList);					
 	//------------------------------------------------------------------------
-	QMenu*			createGreateLessScaleMenu();															//++++++
-	QMenu*			createObjectsListMenu(QList<QStringList> objectsList);							    //++++++
-	QMenu*			createObjectsListComplexMenu(QList<QStringList> objectsList);											//++++++
+	QMenu*			createGreateLessScaleMenu();															
+	QMenu*			createObjectsListMenu(QList<QStringList> objectsList);							    
+	QMenu*			createObjectsListComplexMenu(QList<QStringList> objectsList);											
 	void			showInformationDialog(QString information);
 	void			showViewScale();
-	void			changeObjectCoordInDB(double x, double y);
 	void			changeObjectCoordInDB();
 	//---- ћеню по нажатию правой кнопки мыши (специфичные дл€ конкретного программного комплекса) -------------------
 	QMenu*			createFormationsMenu(QStringList objInfo);
@@ -78,6 +81,7 @@ private slots:
 	void			slotFormationPsiLooses();
 	void			slotRegionMpos();
 	void			slotMoveObject(); //слот обработки перемещени€ объекта
+	void			changeObjectCoordInDB(double x, double y);
 	//------------ ќбработчики нажатий на кнопки мыши (общие дл€ разных программных комплексов) ------------------
 	void			slotMouseLeftButtonClicked(QPoint pe, QList<QStringList> objectsList);
 	void			slotMouseRightButtonClicked(QPoint pe, QList<QStringList> objectsList);
@@ -85,9 +89,12 @@ private slots:
 	//======================================================
 	void			showCheckedObjects();
 	void			showCheckedCalcResults();
-	
+	void			showCheckedEvents();
+
 	void			PrintMapSlot();
 	void			PrintScreenSlot();
+
+	void			slotSelectButtonToggled(bool checked);
 
 private: 
     QTextCodec		* MainCodec;
@@ -113,15 +120,23 @@ private:
 	QCheckBox *mps_enemy_checkbox;
 	QCheckBox *psi_looses_checkbox;
 	//--------------------------------------
+
+	//--- Ёлементы фильтра событий -------
+	QDateEdit *beginEventDate;
+	QDateEdit *endEventDate;
+	QRadioButton *allObjectsButton;
+	QRadioButton *selectObjectsButton;
+	QListView *selectedObjectsListView;
+	QStandardItemModel *selectedObjectsModel;
+	QWidget *selectObjectsWidget;
+	//---------------------------------------
 	ChangeCoordDialog *dlg;
 	QSettings *settings;
 	QMenu			* mouse_menu;
 	QDialog			* closeRSTdialog;
 	QLineEdit		* scale_info;
 
-	QTableWidget	* tableWidget;
-	QList <int>		number_int;
-	QMap<QString,int>	rstList;  //открытых растров
+	QMap<QString,int>	rstList;  //—ловарь открытых растров
 
 	QStandardItemModel *rstModel;
 	QListView *rstListView;

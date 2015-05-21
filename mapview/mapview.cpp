@@ -263,6 +263,44 @@ void MapView::initSaturnLeftMenu()
 	fr->setLineWidth(2);
 	
 	//--------------- Панель "Фильтр объектов" ----------------------------------------
+	QWidget *mapWorkWidget = createObjectPanel();
+	//----------------------------------------------------------------------------------
+	
+	//--------------- Панель "Расчетные задачи" ----------------------------------------
+
+	QWidget *calcWidget = createCalculatePanel();
+	
+	//----------------------------------------------------------------
+	
+	//--------------- Панель "Фильтр событий" ----------------------------------------
+
+	QWidget *eventWidget = createEventPanel();
+	
+	//----------------------------------------------------------------
+
+	QToolBox *mapWorkToolBox = new QToolBox;
+	mapWorkToolBox->addItem(mapWorkWidget,QIcon(":/Resources/map_search.png"),"Фильтр объектов");
+	mapWorkToolBox->addItem(calcWidget,QIcon(":/Resources/edit_1.png"),"Расчетные задачи");
+	mapWorkToolBox->addItem(eventWidget,QIcon(":/Resources/event-search.png"),"Фильтр событий");
+
+	QVBoxLayout *left_panel_layout = new QVBoxLayout();
+	left_panel_layout->setAlignment(Qt::AlignTop);
+	left_panel_layout->setMargin(2);
+	left_panel_layout->setContentsMargins(4,5,4,5);
+
+	left_panel_layout->addWidget(mapWorkToolBox);
+
+	fr->setLayout(left_panel_layout);
+	fr->setMaximumWidth(215);
+	centralLayout->addWidget(fr);
+}
+
+
+//====================================================================
+//====== Метод формирует панель фильтра отображения объектов =========
+//====================================================================
+QWidget* MapView::createObjectPanel()
+{
 	mpo_regions_checkbox = new QCheckBox("МПОб регионов");
 	mpo_regions_checkbox->setChecked(true);
 	
@@ -329,10 +367,16 @@ void MapView::initSaturnLeftMenu()
 	
 	QWidget *mapWorkWidget = new QWidget;
 	mapWorkWidget->setLayout(show_objects_layout);
-	//----------------------------------------------------------------------------------
-	
-	//--------------- Панель "Расчетные задачи" ----------------------------------------
+	return mapWorkWidget;
+}
 
+
+
+//====================================================================
+//====== Метод формирует панель расчетных задач ======================
+//====================================================================
+QWidget* MapView::createCalculatePanel()
+{
 	mps_our_Mil_checkbox = new QCheckBox("МПС своих войск");
 	mps_our_Mil_checkbox->setChecked(true);
 
@@ -355,7 +399,7 @@ void MapView::initSaturnLeftMenu()
 	calc_layout->addWidget(mps_enemy_checkbox);
 	calc_layout->addWidget(psi_looses_checkbox);
 
-	lineLabel = new QLabel();
+	QLabel *lineLabel = new QLabel();
 	lineLabel->setFrameStyle(QFrame::HLine | QFrame::Raised);
 	lineLabel->setLineWidth(2);
 
@@ -365,27 +409,140 @@ void MapView::initSaturnLeftMenu()
 	
 	QWidget *calcWidget = new QWidget;
 	calcWidget->setLayout(calc_layout);
-	
-	//----------------------------------------------------------------
-	
-	QToolBox *mapWorkToolBox = new QToolBox;
-	mapWorkToolBox->addItem(mapWorkWidget,QIcon(":/Resources/map_search.png"),"Фильтр отображения");
-	mapWorkToolBox->addItem(calcWidget,QIcon(":/Resources/edit_1.png"),"Расчетные задачи");
-
-	QVBoxLayout *left_panel_layout = new QVBoxLayout();
-	left_panel_layout->setAlignment(Qt::AlignTop);
-	left_panel_layout->setMargin(2);
-	left_panel_layout->setContentsMargins(10,5,10,5);
-
-	left_panel_layout->addWidget(mapWorkToolBox);
-	left_panel_layout->addStretch();
-
-	fr->setLayout(left_panel_layout);
-	fr->setMaximumWidth(200);
-	centralLayout->addWidget(fr);
+	return calcWidget;
 }
 
 
+//====================================================================
+//====== Метод формирует панель отображения событий ======================
+//====================================================================
+QWidget* MapView::createEventPanel()
+{
+	//----------- Панель "Период:" --------------------
+	QLabel *periodLabel = new QLabel("Период:");
+	QFont font("Arial",8);
+	font.setUnderline(true);
+	font.setBold(true);
+	periodLabel->setFont(font);
+
+	QDate currDate;
+	currDate = QDate::currentDate();
+	QDate yesterday = currDate.addDays(-1);
+	
+	beginEventDate = new QDateEdit(yesterday);
+	endEventDate = new QDateEdit(currDate);
+	
+	QCalendarWidget* cw = new QCalendarWidget();
+	cw->setFirstDayOfWeek(Qt::Monday);
+	beginEventDate->setCalendarWidget(cw);
+	beginEventDate->setCalendarPopup(true);
+
+	cw = new QCalendarWidget();
+	cw->setFirstDayOfWeek(Qt::Monday);
+	endEventDate->setCalendarWidget(cw);
+	endEventDate->setCalendarPopup(true);
+	
+	QLabel *defLabel = new QLabel("-");
+	
+	QHBoxLayout *periodLay = new QHBoxLayout;
+	periodLay->addWidget(beginEventDate);
+	periodLay->addWidget(defLabel);
+	periodLay->addWidget(endEventDate);
+
+	QVBoxLayout *dateLay = new QVBoxLayout;
+	dateLay->addWidget(periodLabel);
+	dateLay->addLayout(periodLay);
+
+	//------------------------------------------------------------
+
+	//------- Панель "По объектам:" -------------------
+	QLabel *lineLabel = new QLabel();
+	lineLabel->setFrameStyle(QFrame::HLine | QFrame::Raised);
+	lineLabel->setLineWidth(2);
+	
+	QLabel *objectsLabel = new QLabel("По объектам:");
+	QFont font1("Arial",8);
+	font1.setUnderline(true);
+	font1.setBold(true);
+	objectsLabel->setFont(font1);
+
+	allObjectsButton = new QRadioButton("Все объекты");
+	allObjectsButton->toggle();
+	selectObjectsButton = new QRadioButton("Выбор объектов");
+
+	connect(selectObjectsButton,SIGNAL(toggled(bool)),this,SLOT(slotSelectButtonToggled(bool)));
+
+	QLineEdit *searchObjectLineEdit = new QLineEdit;
+	QToolButton *searchObjectButton = new QToolButton;
+	searchObjectButton->setIcon(QIcon(":/Resources/search.png"));
+	QHBoxLayout *searchLay = new QHBoxLayout;
+	searchLay->addWidget(searchObjectLineEdit);
+	searchLay->addWidget(searchObjectButton);
+
+	QLabel *selectedObjLabel = new QLabel("Отобранные объекты:");
+	selectedObjectsListView = new QListView;
+	selectedObjectsModel = new QStandardItemModel;
+	selectedObjectsListView->setModel(selectedObjectsModel);
+
+	selectObjectsWidget = new QWidget;
+	QVBoxLayout *selLay = new QVBoxLayout;
+	selLay->addLayout(searchLay);
+	selLay->addWidget(selectedObjLabel);
+	selLay->addWidget(selectedObjectsListView);
+	selectObjectsWidget->setLayout(selLay);
+
+	QVBoxLayout *objectsLay = new QVBoxLayout;
+	objectsLay->addWidget(lineLabel);
+	objectsLay->addWidget(objectsLabel);
+	objectsLay->addWidget(allObjectsButton);
+	objectsLay->addWidget(selectObjectsButton);
+	objectsLay->addWidget(selectObjectsWidget);
+
+	selectObjectsWidget->hide();
+	
+	//-----------------------------------------------------
+
+
+	QPushButton * event_button = new QPushButton("Показать события");
+	connect(event_button, SIGNAL(clicked()), this, SLOT(showCheckedEvents()));
+
+
+	QVBoxLayout *event_layout = new QVBoxLayout;
+	event_layout->setMargin(2);
+	event_layout->setContentsMargins(5,2,5,2);
+	
+	event_layout->addLayout(dateLay);
+	event_layout->addLayout(objectsLay);
+	
+
+	lineLabel = new QLabel();
+	lineLabel->setFrameStyle(QFrame::HLine | QFrame::Raised);
+	lineLabel->setLineWidth(2);
+
+	event_layout->addWidget(lineLabel);
+	event_layout->addWidget(event_button);
+	
+	event_layout->addStretch();
+	QWidget *eventWidget = new QWidget;
+	eventWidget->setLayout(event_layout);
+	return eventWidget;
+}
+
+//===============================================================================
+//== Слот показа/сокрытия панели поиска объектов для отбора в фильтре событий ===
+//===============================================================================
+void MapView::slotSelectButtonToggled(bool checked)
+{
+	if(checked)
+	{
+		selectObjectsWidget->show();
+	
+	}
+	else
+	{
+		selectObjectsWidget->hide();
+	}
+}
 
 
 //====================================================================
@@ -1062,6 +1219,14 @@ void MapView::showCheckedCalcResults()
 
 
 
+//==========================================================================
+//== Слот отображения на карте событий в соответствии с фильтром событий ===
+//==========================================================================
+void MapView::showCheckedEvents()
+{
+
+}
+
 //============================================================================
 //==== Слот обработки нажатия левой кнопки мыши ==============================
 //============================================================================
@@ -1259,7 +1424,7 @@ void MapView::slotMoveObject()
 }
 
 //==================================================================================
-//=== Метод изменения координат объекта в БД и обновления соответствующего слоя ====
+//=== Слот изменения координат объекта в БД и обновления соответствующего слоя ====
 //==================================================================================
 void MapView::changeObjectCoordInDB(double x, double y)
 {
