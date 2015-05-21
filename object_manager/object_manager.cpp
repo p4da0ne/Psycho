@@ -796,7 +796,7 @@ query.exec(QString("SELECT id_region, id_special_conditions,name_special_conditi
 	while (query_count_sc.next()){
 		y = query_count_sc.value(0).toInt();}
 	
-	item=set_child_item("нянаше сякнбхъ ["  + QString::number(y) + "]","gr",parent_item,row,":/Resources/stop2.png");
+	item=set_child_item("нянаше сякнбхъ ["  + QString::number(y) + "]","gr",parent_item,row,":/Resources/Stop2.png");
 
 	//item = set_child_item("нпцюмхгюжхх","gr",parent_item,row,"./icons/group.png");
 	row++;
