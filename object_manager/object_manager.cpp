@@ -3468,9 +3468,9 @@ void Objectmanager::show_dialog_add_file()
     if(!index.data(Qt::UserRole).toBool()) return;
     QString id_sc=index.data(Qt::UserRole).toString();
     QStringList list_id=id_sc.split("_");
-    id_obj = list_id.value(1).toInt();
+    id_obj = list_id.value(1).toInt  ();
 	
-	if(list_id.value(0)=="region" || list_id.value(0)=="reg" ||list_id.value(0)=="dsc") {
+	if(list_id.value(0)=="region" || list_id.value(0)=="reg" ) {
 
     QString filepath = QFileDialog::getOpenFileName(this,
          "Открыть txt-файл", "../", tr("Text Files (*.txt *.csv)"));
@@ -3605,6 +3605,144 @@ void Objectmanager::show_dialog_add_file()
         show_coordinates(list_id.value(0),list_id.value(1).toInt(),"coord_region","id_region");
 		 return;
         }
+
+		else if(list_id.value(0)=="dsc" ) {
+
+		 QString filepath = QFileDialog::getOpenFileName(this,
+         "Открыть txt-файл", "../", tr("Text Files (*.txt *.csv)"));
+
+///============== проверку сделать на пустой стринг ========================================
+
+    QFile file(filepath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+             return;
+	
+    QSqlQuery query;
+    
+
+	query.clear();
+	QString str = QString("SELECT id_coordinates FROM coord_spec_cond where id_special_conditions=%1").arg(id_obj);
+	query.prepare(str);
+	if(!query.exec())
+		{
+			QString err = query.lastError().text();
+			return;
+		}
+		QSqlRecord rec = query.record();
+		while(query.next())
+		{
+			int id_coord = query.value(rec.indexOf("id_coordinates")).toInt();
+		QSqlQuery query1;
+		query1.prepare("DELETE FROM coordinates WHERE id_coordinates = ?");
+		query1.addBindValue(id_coord);
+			if(!query1.exec())
+			{
+			QString err = query1.lastError().text();
+			return;	
+			}
+		}
+	QSettings *settings = new QSettings("vka","saturnMap");
+    QString mapPath = settings->value("/mapSettings/mapPath","").toString();
+	if(mapPath.isEmpty())
+			{
+				 //================MessageBox===============================
+			QMessageBox msgBox;
+			msgBox.setWindowTitle("Сообщение");
+			msgBox.setText("Вы должны открыть карту, чтобы перевести координаты объекта\nОткрыть карту??");
+			msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+			msgBox.setButtonText(QMessageBox::Yes, "Да");
+			msgBox.setButtonText(QMessageBox::No, "Нет");
+
+			 switch (msgBox.exec()) {
+			 case QMessageBox::Yes:
+				 mapPath = QFileDialog::getOpenFileName(this, QString::null, QString::null,"Maps (*.map)" );
+				 break;
+			 case QMessageBox::No:
+				 return;
+				 break;
+			 default:
+				 return;
+				 break;
+			 }
+		  //==============================================================
+			}
+		
+		if(!query.exec(str))   {
+            QString err = query.lastError().text();
+            int sa=0;
+            return;
+        }
+
+        while (!file.atEnd())  {
+            QString line = file.readLine();
+            QStringList list = line.split("   ");
+			if (list.value(0)=="" || list.value(1) == ""){
+				QMessageBox::StandardButton ret;
+				ret = QMessageBox::critical (this,"Ошибка",("В файле нет координат "),QMessageBox::Ok );
+			return;
+			}
+
+		MyMapAccess *map = new MyMapAccess();
+		hmap = 0;
+		hmap = map->mapOpen(mapPath.toStdString().c_str(),0);
+		if(hmap == 0) return;
+		int nD,nM,eD,eM;
+		double nS,eS;
+			if(map->mapIsGeoSupported(hmap)){
+				GEODEGREE N, E;
+				double N_rad, E_rad, H;
+				N_rad = list.value(0).toDouble();;
+				E_rad = list.value(1).toDouble();;
+				map->mapPlaneToGeoWGS843D(hmap,&N_rad,&E_rad,&H);
+				map->mapRadianToDegree(&N_rad,&N);
+				map->mapRadianToDegree(&E_rad,&E);
+			    nD = N.Degree;	 
+				nM = N.Minute;
+				nS = N.Second;
+				eD = E.Degree;
+				eM = E.Minute;
+				eS = E.Second;
+			}
+				 
+			if(hmap){
+				 map->mapCloseData(hmap);
+			}
+ 	 
+			query.clear();
+            query.prepare("INSERT INTO coordinates(latitude_wgs_84_g,latitude_wgs_84_m,latitude_wgs_84_s,longitude_wgs_84_g,longitude_wgs_84_m,longitude_wgs_84_s) VALUES (?,?,?,?,?,?)RETURNING id_coordinates");
+			
+            query.addBindValue(nD);
+            query.addBindValue(nM);
+			query.addBindValue(nS);
+			query.addBindValue(eD);
+			query.addBindValue(eM);
+			query.addBindValue(eS);
+			
+			if(!query.exec()) {
+                QString err = query.lastError().text();
+                return;
+            }
+			int id_coordinates=0;
+			
+			while (query.next()){
+			 id_coordinates=query.value(0).toInt();
+			}
+			query.prepare("INSERT INTO coord_spec_cond (id_coordinates, id_special_conditions) VALUES (?,?)");
+			query.addBindValue(id_coordinates);
+			query.addBindValue(id_obj);
+			
+			if(!query.exec()) {
+                QString err = query.lastError().text();
+                return;
+            }
+			
+		}
+				
+        show_coordinates(list_id.value(0),list_id.value(1).toInt(),"coord_spec_cond","id_special_conditions");
+		 return;
+        }
+
+
 		else if (list_id.value(0)=="nations" || list_id.value(0)=="nationss" || list_id.value(0)=="nat" || list_id.value(0)=="dsmi" || list_id.value(0)=="ran" || list_id.value(0)=="rankss"
             || list_id.value(0)=="sexss" || list_id.value(0)=="sex" || list_id.value(0)=="se" || list_id.value(0)=="ag" || list_id.value(0)=="agess" || list_id.value(0)=="prof"
             || list_id.value(0)=="profess" || list_id.value(0)=="confess" || list_id.value(0)=="confesss" || list_id.value(0)=="conf" || list_id.value(0)=="psmi"
