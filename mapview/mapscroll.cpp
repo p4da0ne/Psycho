@@ -13,6 +13,7 @@ MapScroll::MapScroll(QWidget * parent)
 {
    	this->setMouseTracking(true);  //включает режим отлавливания событий движения мыши без нажатой клавиши
 	
+
 	MainCodec = QTextCodec::codecForName("CP1251");
 	MyViewport = 0;
     hMap = 0;

@@ -62,36 +62,6 @@ Coord* FormationsMPS::WGStoPlane(long int hMap,Coord *coordObject)
 	return tempCoord;
 }
 
-////================================================================================
-////============ Метод возвращает ПСИХПОТЕРИ формирований ==========================
-////========  для вывода на карту в диалоге по правому клику =======================
-////================================================================================
-//QString FormationsPsiLooses::getPsiLosses(int id_ls){
-//
-//	QSqlQuery query;
-//	QString name_ls,psiLsCalcInfo;
-//	QString str=QString("SELECT name_ls, enimy_ls, counte_ls FROM ls WHERE id_ls=%1").arg(id_ls); ///enemy и число на будущее - надо будет вставить в html-отчет-форму)
-//	if(query.exec(str))
-//	{
-//		while (query.next())
-//		{
-//			name_ls = query.value(0).toString();
-//		}
-//		query.clear();
-//	}
-//	psiCalculator->get_losses(id_ls);
-//	
-//	psiLsCalcInfo = "<style>table {border-color: black; border-style: solid;}</style><table border='1' cellpadding='4' cellspacing='0' >"
-//					"<tr align='center'><td colspan='2'><H3><CENTER><font color='black'>" + name_ls + "</font></CENTER></H3></td></tr>"
-//					"<tr align='center'><td colspan='2'><H4><CENTER><font color='black'> ПОТЕРИ Л/С </font></CENTER></H4></td></tr>"
-//					"<tr><td> Средние:</td><td>" + QString("%1 - %2").arg(psiCalculator->min[1][0]).arg(psiCalculator->max[1][0]) + "</td></tr>"
-//					"<tr><td> Какие-то:</td><td>" + QString("%3 - %4").arg(psiCalculator->min[1][1]).arg(psiCalculator->max[1][1]) + "</td></tr>"
-//					"<tr><td> Еще какие-то: </td><td>" + QString("%5 - %6").arg(psiCalculator->min[1][2]).arg(psiCalculator->max[1][2]) + "</td></tr>"
-//					"<tr><td> Самые-самые:</td><td>" + QString("%5 - %6").arg(psiCalculator->min[1][3]).arg(psiCalculator->max[1][3]) + "</td></tr></table>";
-//
-//	return psiLsCalcInfo;
-//}
-
 
 ////============ Метод возвращает МПС формирований ==========================
 ////========  для вывода на карту знака с цифрами по ПСИХАМ =======================
