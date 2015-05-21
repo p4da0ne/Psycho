@@ -766,10 +766,7 @@ HSITE MapView::openMapSit(QString sitFileName, QString rscFilePath)
 	if(!a) return 0;
 
 	this_hsite = mapwin->openSit(mapwin->hMap,sitFileName.toLocal8Bit().data(),rscFilePath.toLocal8Bit().data());
-	mapwin->flag2=TRUE;
 	mapwin->createsite.Length = sizeof(mapwin->createsite);
-	mapwin->hSite=this_hsite;
-	
 	return this_hsite;
 }
 
@@ -818,9 +815,9 @@ void MapView::createSitObjects(HSITE hSite, QList<SignData*> signsList)
 {
 	for(int i=0;i<signsList.count();i++)
 	{
-		mapwin->createObjectTest(hSite,&signsList.at(i)->getMetricList(),
-								 signsList.at(i)->getSignCode().toStdString().c_str(),
-								 &signsList.at(i)->getSemanticList());
+		mapwin->createObject(hSite,&signsList.at(i)->getMetricList(),
+							 signsList.at(i)->getSignCode().toStdString().c_str(),
+							 &signsList.at(i)->getSemanticList());
 	}
 	mapwin->updateScreen();
 }

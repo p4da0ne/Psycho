@@ -17,31 +17,16 @@ MapScroll::MapScroll(QWidget * parent)
 	MainCodec = QTextCodec::codecForName("CP1251");
 	MyViewport = 0;
     hMap = 0;
-    LibInst = 0;
 	map = new MyMapAccess();
 	rect = frameRect();
-	//delete
-	flag1=0;
-	flag2=FALSE;
-	flag=0;
-	number_action = 0;
-	hSite=0;
-	hSite_s=0;
-	hSite_w=0;
-	hSite_p=0;
-	hSite_line=0;
-	hSite_corr=0;
-	hSite_ok_weapon=0;
-	war_line_coord.clear();
-	dx=0; dy=0;
 
 	/////////////////////////
 	moveFlag = false;
 	////////////////////////
 }
-//-------------------------------------------------------------
-// Деструктор
-//-------------------------------------------------------------
+//==============================================================
+//=============== Деструктор ===================================
+//==============================================================
 MapScroll::~MapScroll()
 {
   if (hMap)
@@ -51,7 +36,9 @@ MapScroll::~MapScroll()
    }
 }
 
-
+//=============================================================================
+//============ Фильтр событий перерисовки окна карты ==========================
+//=============================================================================
 bool MapScroll::eventFilter (QObject * watched, QEvent * event)
 {
   if (event->type() == QEvent::Paint && MyViewport != 0 && MyViewport == watched)
@@ -68,10 +55,10 @@ bool MapScroll::eventFilter (QObject * watched, QEvent * event)
   else return QScrollArea::eventFilter(watched, event);
 }
 
-//-------------------------------------------------------------
-// Перерисовка окна
-//-------------------------------------------------------------
-void MapScroll::drawContents( QPainter* p, int cx, int cy, int cw, int ch)//перерисовка
+//=======================================================================================
+//====================== Перерисовка окна ===============================================
+//=======================================================================================
+void MapScroll::drawContents( QPainter* p, int cx, int cy, int cw, int ch)
 {
    if (hMap)
    {
@@ -122,8 +109,10 @@ void MapScroll::drawContents( QPainter* p, int cx, int cy, int cw, int ch)//пере
 }
 
 
-//открытие карты
-int	MapScroll::mapOpen(  const char *name )
+//=====================================================================
+//============= Открытие карты ========================================
+//=====================================================================
+int	MapScroll::mapOpen(const char *name)
 {
   char        drive[10];
   char        dir[MAX_PATH];
@@ -175,7 +164,7 @@ int	MapScroll::mapOpen(  const char *name )
   {
 	return 0;
   }
-};
+}
 
 
 //=====================================================================
@@ -185,15 +174,15 @@ void MapScroll::closeMap()
 {
   if (hMap!=0)
   {
-	  map->mapCloseData(hMap);
-     hMap=0;
-    MyViewport->hide();
+		map->mapCloseData(hMap);
+		hMap=0;
+		MyViewport->hide();
   }
 }
 
 
 //====================================================================
-//==== Метод установки скроллбаров в центр карты =======
+//==== Метод установки скроллбаров в центр карты =====================
 //====================================================================
 void MapScroll::setMapCenter()
 {
@@ -276,6 +265,7 @@ void MapScroll::changePos(long int dx,long int dy)
 
   horizontalScrollBar()->setValue(X);
   verticalScrollBar()->setValue(Y);
+  updateScreen();
 }
 
 
@@ -374,72 +364,6 @@ void MapScroll::mouseMoveEvent(QMouseEvent * event)
 
 
 
-
-//для левой клавиши мыши
-void		MapScroll::findObject(double *x, double *y)
-{	
-	select = map->mapCreateMapSelectContext(hMap);//создать условия поиска
-	info=map->mapCreateObject(hMap);
-	changeFrame();
-	info=map->mapWhatObject(hMap,info,&frame,WO_LAST,PP_PLANE);
-	//info=map->mapWhatActiveObject(hMap,info,&frame,WO_LAST,PP_PLANE);
-	IsObject(info);
-	double x1,y1;
-	x1=0;
-	y1=0;
-	map->mapPictureToPlane(hMap, &x1, &y1);
-//	HWND hwnd = map->mapGetHandleForEvent(hMap);
-
-	long int a1 = map->mapClearObject(info);
-	map->mapDeleteSelectContext(select);//удалить условия поиска
-}
-//для правой клавиши мыши
-QStringList	MapScroll::getHobj(double *x, double *y)
-{
-	QStringList list;
-	info=map->mapCreateObject(hMap);
-	changeFrame();
-	info=map->mapWhatObject(hMap,info,&frame,WO_LAST,PP_PLANE);
-	long int g1 = map->mapAvailableSemanticCount(info);
-			g1 = map->mapAvailableSemanticCode(info,g1);//код последней доступной семантики
-		char value[32], value_flag[16], value_coord[18];
-		long int a1=0,a2=0;
-		g1=17501;
-			a1 = map->mapSemanticCodeValue(info, g1, value, 32, 1);
-		g1 = 17502;
-			int a3 = map->mapSemanticCodeValue(info, g1, value_flag, 16, 1);
-		g1 = 17503;
-			a3 = map->mapSemanticCodeValue(info, g1, value_coord, 16, 1);
-		/*char value_test[32];
-		g1 = 25;//проверка семантики, где тип ракет
-			a3 = map->mapSemanticCodeValue(info, g1, value_test, 32, 1);*/
-		QString str_value_coord = value_coord;
-			int k=0, step=1;
-		for (int i=0; i<32; i++)
-		{
-			if ((int)value[i]!=0)
-				k++;
-			else break;
-		}
-		for (int i=k-1; i>=0; i--)
-		{
-			a2 = a2 + abs(((int)value[i]-48))*step;
-			step*=10;
-		}
-		if (a1!=0) 
-		{
-			if (a2!=0)
-			{
-				flag=1;
-			}
-			long int a1 = map->mapClearObject(info);
-		}
-		list.append(QString::number(a2));
-		list.append(QString::number(value_flag[0]));
-		list.append(str_value_coord);
-		return list;
-}
-
 //=====================================================================
 //===== Метод возвращает список значений семантик знака с ключами: ====
 //===== 17501 - idObject; 17502 - тип объекта =========================
@@ -534,8 +458,6 @@ void MapScroll::changeFrame(int pixels)
 
 
 
-
-
 //============================================================================
 //====Метод  открытия пользовательского слоя =================================
 //============================================================================
@@ -556,21 +478,15 @@ HSITE MapScroll::openSit(HMAP hMap, const char * mapname, const char * rscname)
 
 
 
-
-
-//Закрытие пользовательской карты
-void		MapScroll::closeSit(HMAP hMap, HSITE hsite)
+//=======================================================================
+//============= Закрытие пользовательской карты =========================
+//=======================================================================
+void MapScroll::closeSit(HMAP hMap, HSITE hsite)
 {
-	if (hsite!=0) {
+	if (hsite!=0)
+	{
 		map->mapCloseSiteForMap(hMap,hsite);
 	}
-		if (hsite==hSite) hSite=0;//чтоб проверять что слой закрыт
-		if (hsite==hSite_s) hSite_s=0;
-		if (hsite==hSite_line) hSite_line=0;
-		if (hsite==hSite_w) hSite_w=0;
-		if (hsite==hSite_p) hSite_p=0;
-		if (hsite==hSite_ok_weapon) hSite_ok_weapon=0;
-		flag2=0;
 }
 
 //======================================================================
@@ -582,8 +498,10 @@ void MapScroll::closeSitByName(HMAP hMap, const char * sitName)
 }
 
 
-//добавление существующего пользовательского слоя
-long int	MapScroll::appendData(const char* sitname)
+//=======================================================================
+//======= Добавление существующей пользовательской карты ================
+//=======================================================================
+long int MapScroll::appendData(const char* sitname)
 {
 	if (hMap)
 	{
@@ -591,193 +509,30 @@ long int	MapScroll::appendData(const char* sitname)
 	}
 	return 0;
 }
-//СОЗДАНИЕ ОБЪЕКТА!!
-long int	MapScroll::createObject(long int hSit, double x, double y, const char * name_ff, long int id_obj, long int flag, bool if_shtab, QString semantic, long int id_coordintes, float angle)
-{
-	QString str_id_obj = QString::number(id_obj);
-	QString str_flag = QString::number(flag);
-	info = map->mapCreateSiteObject(hMap,hSit);
-	long int a21;
-	if (id_obj!=0)		    a21 = map->mapAppendSemantic(info, 17501, str_id_obj.toLocal8Bit().data(), 18);//добавить значение в семантику
-	if (flag!=0)			
-		a21 = map->mapAppendSemantic(info, 17502, str_flag.toLocal8Bit().data(), 18);//добавить значение в семантику
-
-	if (id_coordintes!=0)		
-	{
-		str_flag = QString::number(id_coordintes);
-		a21 = map->mapAppendSemantic(info, 17503, str_flag.toLocal8Bit().data(), 18);//добавить значение в семантику
-	}
-	if (semantic!="")		
-	{
-		QStringList sem_list = semantic.split("_");
-		int list_i = sem_list.count();
-		a21 = map->mapAppendSemantic(info, 17, sem_list.at(0).toLocal8Bit().data(), 255);//добавить значение в семантику	
-		if(list_i>1)
-		{
-			a21 = map->mapAppendSemantic(info, 218, sem_list.at(1).toLocal8Bit().data(), 255);//добавить значение в семантику	
-			a21 = map->mapAppendSemantic(info, 24, sem_list.at(2).toLocal8Bit().data(), 255);//добавить значение в семантику	
-		}			
-	}
-	long int a1 = map->mapRegisterObjectByKey(info, name_ff);	
-	long int a24 = map->mapAppendPointPlane(info, x, y);
-	if (if_shtab) a24 = map->mapAppendPointPlane(info, x, y-10000);
-	else 
-	{
-		double dx=10000, dy=0;
-		if (angle!=0) 
-		{
-			if (angle>0&&angle<90)
-			{
-				dx=10000;
-				dy=abs(dx*tan(M_PI*angle/180));	
-			}
-			if (angle>90&&angle<180)
-			{
-				dx=-10000;
-				dy=abs(dx*tan(M_PI*angle/180));
-			}
-			if (angle>180&&angle<270)
-			{
-				dx=-10000;
-				dy=-1*abs(dx*tan(M_PI*angle/180));
-			}
-			if (angle>270&&angle<360)
-			{
-				dx=10000;
-				dy=-1*abs(dx*tan(M_PI*angle/180));
-			}
-			if (angle==90)
-			{
-				dy=0;
-				dx=10000;
-			}
-			if (angle==180)
-			{
-				dy=-10000;
-				dx=0;
-			}
-			if (angle==0||angle==360)
-			{
-				dy=10000;
-				dx=0;
-			}
-			if (angle==270)
-			{
-				dy=0;
-				dx=-10000;
-			}
-		}
-			a24 = map->mapAppendPointPlane(info, x+dx, y+dy);//
-	}
-	long int a3 = objectTopScale(info);//задать max масштаб отображения 40000000 128000000
-	//long int a4 = objectByMap(hMap,info); //не работает
-	a24 = map->mapCommitWithPlace(info);
-
-	map->mapClearObject(info);
-	return a24;
-}
-//L0012345109
-
-long int	MapScroll::createLine(long int hSit, const char * name_ff, long int id_obj)
-{
-
-	QString str_id_obj = QString::number(id_obj);
-	info = map->mapCreateSiteObject(hMap,hSit);
-	long int a21 = map->mapAppendSemantic(info, 17501, str_id_obj.toLocal8Bit().data(), 18);
-
-	long int a1 = map->mapRegisterObjectByKey(info, name_ff);//сохранить данные об объекте
-	Delete();
-	QList<double> war_line_xy;
-	double aa = war_line_coord.at(0).at(0), bb = war_line_coord.at(0).at(1);
-	long int a24 = map->mapAppendPointPlane(info, aa, bb);
-	long int a3 = objectTopScale(info);//задать max масштаб отображения 40000000
-	long int a4 = objectByMap(hMap,info);
-	for (int i=1; i<war_line_coord.count(); ++i)
-	{
-		aa = war_line_coord.at(i).at(0), bb = war_line_coord.at(i).at(1);
-		a24 = map->mapAppendPointPlane(info, aa, bb);
-	}
-	a24 = map->mapCommitWithPlace(info);
-	map->mapClearObject(info);
-
-	a21 = map->mapAppendSemantic(info, 17501, str_id_obj.toLocal8Bit().data(), 18);
-	a1 = map->mapRegisterObjectByKey(info, name_ff);//сохранить данные об объекте
-	long int a_kaliningrad = map->mapAppendPointPlane(info, X1[0], Y1[0]);
-	a3 = objectTopScale(info);//задать max масштаб отображения 40000000
-	a4 = objectByMap(hMap,info);	
-	for (int i=1; i<38; i++)
-	{
-		a_kaliningrad = map->mapAppendPointPlane(info, X1[i], Y1[i]);
-	}
-	a_kaliningrad = map->mapCommitWithPlace(info);
-	map->mapClearObject(info);
-
-	return a24;
-}
 
 
-void		MapScroll::Delete()
-{
-//======= Калининград =======
-X1[0] = 6358089.537102;    Y1[0] = 7961678.445230;
-X1[1] = 6340068.335689;    Y1[1] = 7978286.219081;
-X1[2] = 6338301.551237;    Y1[2] = 7995247.349823;
-X1[3] = 6333707.911661;    Y1[3] = 8026342.756184;
-X1[4] = 6330527.699647;    Y1[4] = 8059204.946996;
-X1[5] = 6328054.201413;    Y1[5] = 8082173.144876;
-X1[6] = 6326994.130742;    Y1[6] = 8093127.208481;
-X1[7] = 6328407.558304;    Y1[7] = 8109028.268551;
-X1[8] = 6330527.699647;    Y1[8] = 8133409.893993;
-X1[9] = 6330881.056537;    Y1[9] = 8152844.522968;
-X1[10] = 6334414.625442;   Y1[10] = 8170865.724382;
-X1[11] = 6335121.339223;   Y1[11] = 8177932.862191;
-X1[12] = 6343601.904594;   Y1[12] = 8172632.508834;
-X1[13] = 6351375.756184;   Y1[13] = 8169452.296820;
-X1[14] = 6359149.607774;   Y1[14] = 8170159.010601;
-X1[15] = 6365863.388693;   Y1[15] = 8174045.936396;
-X1[16] = 6371517.098940;   Y1[16] = 8172632.508834;
-X1[17] = 6378584.236749;   Y1[17] = 8178286.219081;
-X1[18] = 6380704.378092;   Y1[18] = 8181113.074205;
-X1[19] = 6386358.088339;   Y1[19] = 8181466.431095;
-X1[20] = 6392365.155477;   Y1[20] = 8178639.575972;
-X1[21] = 6396958.795053;   Y1[21] = 8172985.865724;
-X1[22] = 6401199.077739;   Y1[22] = 8167332.155477;
-X1[23] = 6401905.791519;   Y1[23] = 8165918.727915;
-X1[24] = 6408619.572438;   Y1[24] = 8160971.731449;
-X1[25] = 6410033.000000;   Y1[25] = 8160618.374558;
-X1[26] = 6406852.787986;   Y1[26] = 8154964.664311;
-X1[27] = 6408619.572438;   Y1[27] = 8137296.819788;
-X1[28] = 6404732.646643;   Y1[28] = 8131643.109541;
-X1[29] = 6406499.431095;   Y1[29] = 8125636.042403;
-X1[30] = 6411446.427562;   Y1[30] = 8126696.113074;
-X1[31] = 6410739.713781;   Y1[31] = 8121042.402827;
-X1[32] = 6413213.212014;   Y1[32] = 8113268.551237;
-X1[33] = 6419573.636042;   Y1[33] = 8103374.558304;
-X1[34] = 6422047.134276;   Y1[34] = 8093127.208481;
-X1[35] = 6430881.056537;   Y1[35] = 8086413.427562;
-X1[36] = 6437594.837456;   Y1[36] = 8085353.356890;
-X1[37] = 6439008.265018;   Y1[37] = 8082879.858657;
-X1[38] = 6437241.480565;   Y1[38] = 8077579.505300;
-}
-
+//=======================================================================
+//======= Проверка активности карты =====================================
+//=======================================================================
 long int	MapScroll::IsActive(HMAP hMap)
 {
 	return map->mapIsActive(hMap);
 }
 
-long int	MapScroll::GetError()
-{
-	return map->mapGetAccessError();
-	
-}
 
-long int	MapScroll::GetSiteLayerCount(HMAP hMap,HSITE hSite)
+//=======================================================================================
+//======== Возвращает число слоев пользовательской карты ================================
+//=======================================================================================
+long int MapScroll::GetSiteLayerCount(HMAP hMap,HSITE hSite)
 {
 	return map->mapGetSiteLayerCount(hMap,hSite);
 }
 
-//обновить изображение в размерах экрана
-long int	MapScroll::updateScreen()
+
+//=======================================================================
+//========= Обновить изображение в размерах экрана ======================
+//=======================================================================
+long int MapScroll::updateScreen()
 {
 	MyViewport->hide();
 	MyViewport->show();
@@ -797,45 +552,8 @@ QPoint MapScroll::getXY(double x, double y)
 	a.setY(y);
 	return a;
 }
-////получаем значение из семантики
-void		MapScroll::IsObject(HOBJ hobj)
-{
-				//запрос количества возможных для редактирования семантик для данного объекта
-		long int g1 = map->mapAvailableSemanticCount(hobj);
-		g1 = map->mapAvailableSemanticCode(hobj,g1);//код последней доступной семантики
-		//}
-			long int flag=0;
-		char value[32];
-		long int a1=0;
-		g1=17501;
-			a1 = map->mapSemanticCodeValue(hobj, g1, value, 32, 1);
-			int k=0, id_odject=0, step=1;
-		for (int i=0; i<32; i++)
-		{
-			if ((int)value[i]!=0)
-				k++;
-			else break;
-		}
-		for (int i=k-1; i>=0; i--)
-		{
-			id_odject = id_odject + abs(((int)value[i]-48))*step;
-			step*=10;
-		}
-		g1=17502;//flag
-		a1 = map->mapSemanticCodeValue(hobj, g1, value, 32, 1);
 
-		if (a1) flag=abs(int(value[0])-48);
-		if (a1!=0) 
-		{
-			if (id_odject!=0)
-			{
-				flag1=1;
-				emit signal_for_info(id_odject, flag);
-				//mouseRightMenu();
-			}
 
-		}
-}
 //==============================================================
 //== Методы возвращают прямоугольные координаты углов карты ====
 //==============================================================
@@ -861,23 +579,16 @@ double MapScroll::getMapY2(HMAP hMap)
 //==============================================================
 long int MapScroll::setObjectNoScale(HOBJ hobj)
 {
-	//map->mapSetObjectPress(hobj,1);
 	return map->mapSetObjectScale(hobj,0);
 }
+
 //запросить/установить границы видимости объектов
-long int MapScroll::objectTopScale(HOBJ hobj)
+long int MapScroll::setObjectTopScale(HOBJ hobj, int scale)
 {
-	return map->mapSetObjectTopScale(hobj,150000000);
+	return map->mapSetObjectTopScale(hobj,scale);
 }
-long int MapScroll::objectByMap(HMAP hMap, HOBJ object)
-{
-	long int a1=0;
-	/*HWND hwnd = map->mapGetHandleForEvent(hMap);
-	himage = map->mapCreateImage(hwnd);
-	PAINTPARM parm;
-	a1 = map->mapDrawImageMapObject(himage, hMap, &parm, object);*/
-	return a1;
-}
+
+
 
 //=====================================================================
 //== Метод возвращает текущее значение горизонтального скролбара ======
@@ -902,17 +613,6 @@ long int MapScroll::getLayerCount()
 	return map->mapGetLayerCount(hMap);
 }
 
-//====================================================================
-// ===== Установить масштаб карты ====================================
-//====================================================================
-long int MapScroll::setViewScale(float scale)
-{
-	long int x;
-	long int y;
-	x = 6000;   ///???????????????????????????????????????????????????????????????
-	y=x;
-	return map->mapSetViewScale(hMap,&x,&y,scale);
-}
 
 //===================================================================
 //=========== Запросить яркость карты ===============================
@@ -921,33 +621,55 @@ long int MapScroll::getMapBright()
 {
 	return map->mapGetBright(hMap);
 }
-//установить яркость
+
+//==================================================================
+//=========== Установить яркость ==================================
+//==================================================================
 long int	MapScroll::setMapBright(long int bright)
 {
 	return map->mapSetBright(hMap,bright);
 }
-//запросить контраст
+
+//==================================================================
+//=========== Запросить контраст ==================================
+//==================================================================
 long int	MapScroll::getMapContrast()
 {
 	return map->mapGetContrast(hMap);
 }
-//установить контраст
-long int	MapScroll::setMapContrast(long int contrast)
+
+
+//==================================================================
+//=========== Установить контраст ==================================
+//==================================================================
+long int MapScroll::setMapContrast(long int contrast)
 {
 	return map->mapSetContrast(hMap, contrast);
 }
-//запросить яркость печати
-long int	MapScroll::getMapIntensity()
+
+
+//==================================================================
+//============= Запросить яркость печати ===========================
+//==================================================================
+long int MapScroll::getMapIntensity()
 {
 	return map->mapGetIntensity(hMap);
 }
-//установить яркость печати
-long int	MapScroll::setMapIntensity(long int intensity)
+
+
+//==================================================================
+//=============== Установить яркость печати ========================
+//==================================================================
+long int MapScroll::setMapIntensity(long int intensity)
 {
 	return map->mapSetIntensity(hMap, intensity);
 }
-//перерисовка
-void		MapScroll::paint95()
+
+
+//======================================================================
+//============= Перерисовка ============================================ ?????????????????????????????????????????????????????????????
+//======================================================================
+void MapScroll::paint95()
 {
   if (hMap)
    {	
@@ -999,34 +721,23 @@ void		MapScroll::paint95()
       p.drawImage(cx, cy, img, 0, 0, cw, ch);
 	  FreeTheMemory(lpImage);
 	  p.end();
-	   }
+  }
 }
-//запростиь округленный масштаб
-long int	MapScroll::getScale()
+
+
+//===================================================================================
+//=========== Запросить округленный масштаб отображения карты =======================
+//===================================================================================
+long int MapScroll::getScale()
 {
 	return map->mapGetShowScale(hMap);
 }
-//создание линии из 2х точек
-long int	MapScroll::createV0(long int hSit, double x1, double y1, double x2, double y2, const char * name_ff, long int id_obj, int flag, long int id_coord)
-{
-	QString str_id_obj = QString::number(id_obj), str_coord = QString::number(id_coord);
-	info = map->mapCreateSiteObject(hMap,hSit);
-	long int a21 = map->mapAppendSemantic(info, 17501, str_id_obj.toLocal8Bit().data(), 18);
-	QString str_flag = QString::number(flag);
-	a21 = map->mapAppendSemantic(info, 17502, str_flag.toLocal8Bit().data(), 18);
-	a21 = map->mapAppendSemantic(info, 17503, str_coord.toLocal8Bit().data(), 18);
-	//нанесение на карте
-	long int a1 = map->mapRegisterObjectByKey(info, name_ff);//сохранить данные об объекте
-	long int a24 = map->mapAppendPointPlane(info, x1, y1);
-	long int a3 = objectTopScale(info);//задать max масштаб отображения
-	long int a4 = objectByMap(hMap,info);
-	a24 = map->mapAppendPointPlane(info, x2, y2);
-	a24 = map->mapCommitWithPlace(info);
-	map->mapClearObject(info);
-	return a24;
-}
-//получтиь название объекта из классификатора по коду
-long int	MapScroll::objectInfoFromRsc(HOBJ Info, const char * name)
+
+
+//===================================================================================
+//============== Получтиь название объекта из классификатора по коду ================
+//===================================================================================
+long int MapScroll::objectInfoFromRsc(HOBJ Info, const char * name)
 {
 	name = map->mapObjectName(Info);
 	return 0;
@@ -1038,10 +749,9 @@ long int	MapScroll::objectInfoFromRsc(HOBJ Info, const char * name)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-long int	MapScroll::createObjectTest(long int hSit,  QList<Coord*> *coordinates, const char * rscKey, QMap<long int,QString> *semantics)
+long int	MapScroll::createObject(long int hSit,  QList<Coord*> *coordinates, const char * rscKey, QMap<long int,QString> *semantics)
 {
 	info = map->mapCreateSiteObject(hMap,hSit);
-	objectTopScale(info);
 
 	map->mapRegisterObjectByKey(info, rscKey);
 	
@@ -1080,35 +790,35 @@ long int	MapScroll::createObjectTest(long int hSit,  QList<Coord*> *coordinates,
 
 
 //перевод координат
-long int	MapScroll::planeToGeo423D(double *Bx, double *Ly, double *H)
+long int MapScroll::planeToGeo423D(double *Bx, double *Ly, double *H)
 {
 	return map->mapPlaneToGeo423D(hMap, Bx, Ly, H);
 }
 
-void	MapScroll::degreeToRadian(GEODEGREE * degree, double * radian)
+void MapScroll::degreeToRadian(GEODEGREE * degree, double * radian)
 {
 	map->mapDegreeToRadian(degree, radian);
 }
-long int	MapScroll::geoWGS84ToPlane3D(HMAP hMap, double *Bx, double *Ly, double * H)
+long int MapScroll::geoWGS84ToPlane3D(HMAP hMap, double *Bx, double *Ly, double * H)
 {
 	return map->mapGeoWGS84ToPlane3D(hMap, Bx, Ly, H);
 }
-void	MapScroll::radianToDegree(double * radian, GEODEGREE * degree)
+void MapScroll::radianToDegree(double * radian, GEODEGREE * degree)
 {
-		map->mapRadianToDegree(radian, degree);
+	map->mapRadianToDegree(radian, degree);
 }
 //поддерживается ли перевод координат
-long int	MapScroll::isGeoSupported()
+long int MapScroll::isGeoSupported()
 {
 	return map->mapIsGeoSupported(hMap);
 }
 
-HPRINTER	MapScroll::loadPrinter()
+HPRINTER MapScroll::loadPrinter()
 {
 	return map->prnLoadPrinter();
 }
  // Преобразование из метров на местности (проекция карты) в геодезические координаты в радианах (общеземной эллипсоид WGS84)
-long int	MapScroll::planeToGeoWGS843D(double *Bx,  double *Ly,  double *H)
+long int MapScroll::planeToGeoWGS843D(double *Bx,  double *Ly,  double *H)
 {
 	 if (isGeoSupported())
     {
@@ -1116,58 +826,8 @@ long int	MapScroll::planeToGeoWGS843D(double *Bx,  double *Ly,  double *H)
     }
 	return 0;
 }
-//перемещение объекта мышью
-void		MapScroll::changeObjCoord()
-{
-		emit signalFor1Action(screenX, screenY);
-}
-void		MapScroll::changeHallCoord()
-{
-		emit signalFor2Action(screenX, screenY);
-}
-void		MapScroll::appointWeapon(double *x, double *y)
-{
-	select = map->mapCreateMapSelectContext(hMap);//создать условия поиска
-	HOBJ info1=map->mapCreateObject(hMap);
-	changeFrame();
-	info1=map->mapWhatObject(hMap,info1,&frame,WO_LAST,PP_PLANE);
-	//IsObject(info);
-	long int g1 = map->mapAvailableSemanticCount(info1);
-		g1 = map->mapAvailableSemanticCode(info1,g1);//код последней доступной семантики
-		//}
-			long int flag=0;
-		char value[32];
-		long int a1=0;
-		g1=17501;//id_object
-		a1 = map->mapSemanticCodeValue(info1, g1, value, 32, 1);
-		int k=0, id_odject=0, step=1;
-		for (int i=0; i<32; i++)
-		{
-			if ((int)value[i]!=0)
-				k++;
-			else break;
-		}
-		for (int i=k-1; i>=0; i--)
-		{
-			id_odject = id_odject + abs(((int)value[i]-48))*step;
-			step*=10;
-		}
-		g1=17502;//flag
-		a1 = map->mapSemanticCodeValue(info1, g1, value, 32, 1);
 
-		if (a1) flag=abs(int(value[0])-48);
-		if (flag==5) //средство, подходящее для распределения
-		{
-			if (id_odject!=0)//дальше нужно узнать что за средство
-			{
-				emit signalFor3Action(id_odject);
-			}
-		}
-}
-void		MapScroll::changeAngleWithMouse(double *x, double *y)
-{
-	emit signalFor4Action(*x, *y);
-}
+
 //перевод из координат в метрах в WGS
 GEODEGREEXY	 MapScroll::pictureToWGS(double * X, double * Y, double * H)
 {
@@ -1198,33 +858,43 @@ GEODEGREEXY	 MapScroll::pictureToWGS(double * X, double * Y, double * H)
 		}
 	return G_XY;
 }
-void		MapScroll::emitSignalForPlanner(long int  id_targeting_version, long int id)
-{
 
-}
-void		MapScroll::paintInDevice(HDC hdc, RECT * rect)
+////////////////////////////////////////////////////////////????????????????????????????????????????????????????
+void MapScroll::paintInDevice(HDC hdc, RECT * rect)
 {
 	map->mapPaint95(hMap, hdc, 0, rect);
 }
-// Изменить значение семантической характеристики объекта
-long int	MapScroll::changeSemanticValue(HOBJ info, long int number, char * place, long int maxsize)
+
+//=====================================================================================================
+//============ Изменить значение семантической характеристики объекта =================================
+//=====================================================================================================
+long int MapScroll::changeSemanticValue(HOBJ info, long int number, char * place, long int maxsize)
 {
 	return map->mapSetSemanticValue(info, number, place, maxsize);
 }
-//открытие растра
-long int	MapScroll::openRstOnMap(const char * rstname)
+
+//================================================================================
+//========== Открытие растра =====================================================
+//================================================================================
+long int MapScroll::openRstOnMap(const char * rstname)
 {
 	return map->openRstForMap(hMap, rstname, GENERIC_READ);
 }	
-//закрытие растра
-long int	MapScroll::closeRstForMap(long int number)
+
+//===============================================================================
+//============= Закрытие растра =================================================
+//===============================================================================
+long int MapScroll::closeRstForMap(long int number)
 {
 	long int a = map->closeRstForMap(hMap, number);
 	updateScreen();
 	return a;
 }
-//растр над картой
-long int	MapScroll::setRstOnMap(long int number)
+
+//================================================================================
+//=============== Установить растр над картой ====================================
+//================================================================================
+long int MapScroll::setRstOnMap(long int number)
 {
 	return map->setRstViewOrder(hMap, number, 1);
 }
