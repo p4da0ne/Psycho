@@ -3470,7 +3470,7 @@ void Objectmanager::show_dialog_add_file()
     QStringList list_id=id_sc.split("_");
     id_obj = list_id.value(1).toInt();
 	
-	if(list_id.value(0)=="region" || list_id.value(0)=="reg"){
+	if(list_id.value(0)=="region" || list_id.value(0)=="reg" ||list_id.value(0)=="dsc") {
 
     QString filepath = QFileDialog::getOpenFileName(this,
          "Открыть txt-файл", "../", tr("Text Files (*.txt *.csv)"));
@@ -3609,7 +3609,7 @@ void Objectmanager::show_dialog_add_file()
             || list_id.value(0)=="sexss" || list_id.value(0)=="sex" || list_id.value(0)=="se" || list_id.value(0)=="ag" || list_id.value(0)=="agess" || list_id.value(0)=="prof"
             || list_id.value(0)=="profess" || list_id.value(0)=="confess" || list_id.value(0)=="confesss" || list_id.value(0)=="conf" || list_id.value(0)=="psmi"
             || list_id.value(0)=="smi" || list_id.value(0)=="ls" || list_id.value(0)=="gr" || list_id.value(0)=="mpo" || list_id.value(0)=="perssmi" || list_id.value(0)=="persls" 
-			|| list_id.value(0)=="dls" || list_id.value(0)=="chls" || list_id.value(0)=="lss" || list_id.value(0)=="dgr" || list_id.value(0)=="dsc" || list_id.value(0)=="dmpo" 
+			|| list_id.value(0)=="dls" || list_id.value(0)=="chls" || list_id.value(0)=="lss" || list_id.value(0)=="dgr" || list_id.value(0)=="dmpo" 
 			|| list_id.value(0)=="dmpos" || list_id.value(0)=="dmposmi" || list_id.value(0)=="dpers" || list_id.value(0)=="dperssmi" || list_id.value(0)=="dpersls" || list_id.value(0)=="pers"){
 			QMessageBox::StandardButton ret;
 			ret = QMessageBox::critical (this,"Ошибка",("Для данного объекта невозможно добавить список координат"),QMessageBox::Ok );
