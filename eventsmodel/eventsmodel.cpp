@@ -42,11 +42,39 @@ void EventsModel::UpdateModel(){
     query.clear();
 }
 
-QStandardItem * EventsModel::InsertMediaItems(QStandardItem *parent, QString name, int id_event, QVariant data, int role){
-    QStandardItem *item = new QStandardItem(name);
-    item->setData(data, role);
-    parent->appendRow(item);
-    return item;
+int EventsModel::InsertMediaItems(QString path, int id_event, QString name_event_media,QString description){
+    QSqlQuery query;
+    query.prepare("INSERT INTO event_media (id_event,name_event_media,description, media) VALUES (?,?,?) RETURNING id_sign");
+    query.addBindValue(id_event);
+    query.addBindValue(name_event_media);
+    query.addBindValue(description);
+    QFile file(path);
+    if(!file.open(QIODevice::ReadOnly))
+    {
+        //================MessageBox===============================
+        QMessageBox msgBox;
+        msgBox.setWindowTitle(tr("Warning"));
+        msgBox.setText(tr("Can't open the file. Please, check the image filepath."));
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        switch (msgBox.exec()) {
+        case QMessageBox::Ok:
+            return 0;
+            break;
+        }
+    }
+
+    QByteArray ba = file.readAll();
+    query.addBindValue(ba);
+
+    if(!query.exec())
+    {
+        QMessageBox::about(0,"Error",query.lastError().text());
+    }
+
+    query.next();
+    int id_event_media = query.value(0).toInt();
+    query.clear();
+    return id_event_media;
 }
 
 QList<QStandardItem *> EventsModel::appendObjectEvent(int id_type_event_object, int id_object){
@@ -92,4 +120,23 @@ QList< QList<QStandardItem *> > EventsModel::appendMediaEvent(int id_event){
         items.append(media_items);
     }
     return items;
+}
+
+/*!
+Открывает медиа файлы из БД средствами ОС
+openMediaContent(int id_event_media)
+*/
+void EventsModel::openMediaContent(int id_event_media){
+    QSqlQuery query;
+    query.exec(QString("SELECT * FROM event_media where id_event_media = %1").arg(id_event_media));
+    int index_name_event_media = query.record().indexOf("name_event_media");
+    int index_media = query.record().indexOf("media");
+    while(!query.next()){
+        QString file_path=QDir::tempPath() + query.value(index_name_event_media).toString();
+        QFile file(file_path);
+        file.open(QIODevice::WriteOnly);
+        file.write(query.value(index_media).toByteArray());
+        file.close();
+        QDesktopServices::openUrl(QUrl(file_path));
+    }
 }
