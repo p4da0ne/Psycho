@@ -1765,7 +1765,8 @@ void MapView::showInformationDialog(QString information)
 {
 	info_dialog = new QDialog;
 	info_dialog->setWindowTitle("Информация об объекте");
-	
+	info_dialog->resize(400,400);
+
 	QTextBrowser *infoBrowser = new QTextBrowser;
 	infoBrowser->setHtml(information);
 	QVBoxLayout *vbox_layout = new QVBoxLayout;  

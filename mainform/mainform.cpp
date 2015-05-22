@@ -20,7 +20,9 @@ Mainform::Mainform(QMainWindow *parent, Qt::WFlags flags)
 	login_flag = false;
 	QImage img(":/Resources/saturn.png");
 	m_mdiArea = new myQMdiArea(img,this);
+	m_mdiArea->setTabShape(QTabWidget::Triangular);
 	setCentralWidget(m_mdiArea);
+	m_mdiArea->setViewMode(QMdiArea::TabbedView);
 	db=new db_saturn();
 	connect(this,SIGNAL(reopen_login()),this,SLOT(show_login_form()));
 	connect(this,SIGNAL(valid_user(int)),this,SLOT(create_user_menu(int)));
@@ -35,11 +37,35 @@ Mainform::Mainform(QMainWindow *parent, Qt::WFlags flags)
 	}
 
 	init_menu(0);
+
+	//-------------------------------------------------------------
+	Q_FOREACH (QTabBar* tab, m_mdiArea->findChildren<QTabBar*>())
+	{
+		tab->setTabsClosable(true);
+		tab->setExpanding(false);
+		connect(tab, SIGNAL(tabCloseRequested(int)),this, SLOT(closeTab(int)));
+	}
+//------------------------------------------------------------
+
 }
 
 Mainform::~Mainform()
 {
  delete UI;
+}
+
+
+void Mainform::closeTab(int i)
+{
+
+	QMdiSubWindow *sub =m_mdiArea->subWindowList()[i];
+	QWidget *win = sub->widget();
+
+	win->close();
+
+	m_mdiArea->setActiveSubWindow(sub);
+
+	m_mdiArea->closeActiveSubWindow();
 }
 
 //========== Создание и открытие диалогового окна настроек соединения с БД ===============
@@ -559,11 +585,20 @@ void Mainform::show_user_form()
 //============= Открытие формы работы с картой ==============
 void Mainform::show_map_form()
 {
-    MapView *mapView = new MapView(this);
-    QMdiSubWindow * mapW = m_mdiArea->addSubWindow (mapView);
+	QList<MapView*> lst = m_mdiArea->findChildren<MapView*>();
+	if(!lst.isEmpty())
+	{
+		m_mdiArea->setActiveSubWindow(mapW);
+		return;
+	}
+	
+	mapView = new MapView(this);
+    mapW = m_mdiArea->addSubWindow (mapView);
     mapW->setAttribute (Qt::WA_DeleteOnClose);
+	mapView->setWindowTitle("Работа с картой");
+	mapW->setWindowIcon(QIcon(":/Resources/mapwork.png"));
     mapView->showMaximized();
-	m_mdiArea->setActiveSubWindow (mapW);   
+	m_mdiArea->setActiveSubWindow(mapW);   
 
 }
 
@@ -576,12 +611,21 @@ void Mainform::show_supporting_tables_form(){
 }
 //================ Открытие формы управления объектами =================
 void Mainform::show_object_manager_form(){
-	Objectmanager *obman = new Objectmanager();
-	QMdiSubWindow * obmanager = m_mdiArea->addSubWindow (obman);
+	
+	QList<Objectmanager*> lst = m_mdiArea->findChildren<Objectmanager*>();
+	if(!lst.isEmpty())
+	{
+		m_mdiArea->setActiveSubWindow(obmanager);
+		return;
+	}
+	
+	obman = new Objectmanager();
+	obmanager = m_mdiArea->addSubWindow (obman);
 	obmanager->setAttribute (Qt::WA_DeleteOnClose);
 	obman->setWindowTitle("Управление объектами");
+	obmanager->setWindowIcon(QIcon(":/Resources/change_user.png"));
 	obman->showMaximized();
-    m_mdiArea->setActiveSubWindow (obmanager);
+    m_mdiArea->setActiveSubWindow(obmanager);
 
 }
 
@@ -590,23 +634,22 @@ void Mainform::show_object_manager_form(){
 void Mainform::show_signs_edit()
 */
 void Mainform::show_signs_edit(){
-    SignsEdit *signs = new SignsEdit();
-    QMdiSubWindow * signs_window = m_mdiArea->addSubWindow (signs);
+    
+	QList<SignsEdit*> lst = m_mdiArea->findChildren<SignsEdit*>();
+	if(!lst.isEmpty())
+	{
+		m_mdiArea->setActiveSubWindow(signs_window);
+		return;
+	}
+	
+	signs = new SignsEdit();
+    signs_window = m_mdiArea->addSubWindow (signs);
     signs_window->setAttribute (Qt::WA_DeleteOnClose);
     signs->setWindowTitle("Управление знаками типов объектов");
+	signs_window->setWindowIcon(QIcon(":/Resources/user_config.png"));
     signs->showMaximized();
     m_mdiArea->setActiveSubWindow (signs_window);
 }
-
-//void Mainform::show_calculating_form(){
-//	calc = new CalculatingProblemManager();
-//	QMdiSubWindow * obmanager = m_mdiArea->addSubWindow (calc);
-//	obmanager->setAttribute (Qt::WA_DeleteOnClose);
-//	calc->setWindowTitle("Расчетные задачи");
-//	calc->showMaximized();
-//	m_mdiArea->setActiveSubWindow (obmanager);
-//}
-
 
 
 void Mainform::slotOpenMapSettingsDialog()
