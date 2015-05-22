@@ -100,9 +100,12 @@ void Objectmanager::init_object_tree()
 				}	
 			}
 		}
+	
 	model->setHeaderData(0, Qt::Horizontal,"Ѕлоки и страны");
+	
 	UI->object_manager_tree->setModel(model);
-
+	UI->object_manager_tree->setSortingEnabled(true);
+	UI->object_manager_tree->sortByColumn(0,Qt::AscendingOrder);
 	query.clear();
 	
 }	
