@@ -567,7 +567,10 @@ QString ViewManage::getObjectTypeAndName(int idObject, int objectType)
 							   AND m.id_mpo_pso = %1").arg(idObject);
 				break;
 			case REGIONS:
-				str = QString("SELECT type_region,name_region FROM region WHERE id_region = %1").arg(idObject);
+				str = QString("SELECT t.name_type_region,r.name_region \
+								FROM region r, type_region t \
+								WHERE r.id_type_region = t.id_type_region \
+								AND r.id_region = %1").arg(idObject);
 				break;
 
 			case PERSONNEL:
