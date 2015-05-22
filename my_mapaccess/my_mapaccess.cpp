@@ -550,6 +550,36 @@ HMAP MyMapAccess::mapCreateSiteUn(const WCHAR * mapname,
 	(FARPROC&)lpfn_mapCreateSiteUn = ::GetProcAddress(LibInst, "mapCreateSiteUn");   
 	return( * lpfn_mapCreateSiteUn)( mapname, rscname,createsite); 
 }
+
+
+  // Установить порядок отображения карты   // 18/12/02
+  // hMap  - идентификатор открытой карты
+  // number - номер пользовательской карты в цепочке
+  // order  - флаг(0 - под основной картой, 1 - над основной картой)
+  // При ошибке возвращает 0
+
+long int MyMapAccess::mapSetSiteViewOrder(HMAP hMap, long int number, long int order)
+{
+	HMAP (WINAPI * lpfn_mapSetSiteOrder)(HMAP, long int, long int);          
+	(FARPROC&)lpfn_mapSetSiteOrder = ::GetProcAddress(LibInst, "mapSetSiteViewOrder");   
+	return( * lpfn_mapSetSiteOrder)( hMap, number,order); 
+}
+
+
+  // Определить номер пользовательской карты в цепочке
+  // по ее идентификатору
+  // hMap  - идентификатор открытой карты
+  // hSite - идентификатор открытой пользовательской карты
+  // При ошибке возвращает ноль
+
+long int MyMapAccess::mapGetSiteNumber(HMAP hMap,HSITE hSite)
+{
+	HMAP (WINAPI * lpfn_mapSitOrder)(HMAP, HSITE);          
+	(FARPROC&)lpfn_mapSitOrder = ::GetProcAddress(LibInst, "mapGetSiteNumber");   
+	return( * lpfn_mapSitOrder)( hMap, hSite); 
+}
+
+
 // Создать пользовательскую карту по открытой карте
   // hmap -  идентификатор открытых данных
   // mapname - полное имя файла карты

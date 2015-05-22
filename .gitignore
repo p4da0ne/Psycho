@@ -14,6 +14,10 @@ ui_*.h
 build/*lib
 */release/
 *.exe
+*.Debug
+*.Release
+*/Makefile
+*.autosave
 build/calculatingproblemmanager.dll
 build/dataaccess.dll
 build/db_saturn.dll
@@ -24,4 +28,6 @@ build/object_manager.dll
 build/output.dll
 build/reports.dll
 build/supporting_tables.dll
+build/textedit.dll
+build/signs_edit.dll
 saturn.suo

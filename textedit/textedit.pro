@@ -3,9 +3,6 @@ TARGET          = textedit
 DESTDIR = ../build
 CONFIG          += qt warn_on
 
-LIBS += -lqaxcontainer
-
-
 build_all:!build_pass {
     CONFIG -= build_all
     CONFIG += release

@@ -6,6 +6,8 @@ DESTDIR = ../build
 
 QT += sql
 
+RESOURCES       += mapview.qrc
+
 INCLUDEPATH += ./ \
 				../include \
 			   ../my_mapaccess \

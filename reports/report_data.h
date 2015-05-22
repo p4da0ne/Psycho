@@ -24,6 +24,7 @@ public:
     QMap<int, QMap<QString, QString> > smi_info(int id_object = 0);
     QMap<int, QMap<QString, QString> > ls_info(int id_object = 0);
     QMap<QString, QMap<QString, QString> > ls_info_coord(int id_object=0);
+    QString get_pers_foto_from_DB(int);
 //	QMultiMap<QString,QString> get_obj_v(int id_object = 0);
    
 private:
