@@ -77,7 +77,7 @@ void Objectmanager::init_object_tree()
 	font.setBold(true);
 	QString sSql;
 	QSqlQuery query;
-	query.exec(QString("SELECT id_blok, name_blok FROM BLOK"));
+	query.exec(QString("SELECT id_blok, name_blok,emblem_blok FROM BLOK"));
 	QSqlRecord rec = query.record();
 		QStandardItemModel *model = new QStandardItemModel(this);
 		QStandardItem *parentItem = model->invisibleRootItem();	
@@ -86,22 +86,36 @@ void Objectmanager::init_object_tree()
 		QStandardItem *item = new QStandardItem(query.value(1).toString());
 		int id_blok_type = query.value(0).toInt();
 		QString data_type_obj="type_" + QString::number(id_blok_type);
+		
+		QPixmap pixmap;
+        QSize size_pic(25,25);
+        pixmap.loadFromData(query.value(2).toByteArray());
+	    pixmap = pixmap.scaled(size_pic,Qt::KeepAspectRatio);
+		
 		item->setData(data_type_obj,Qt::UserRole);
+		item->setData(pixmap,Qt::DecorationRole);
 		parentItem->appendRow(item);
 		
-			sSql = (QString("select co.name_country,co.id_country, blc.id_country from blok_country blc,country co where co.id_country=blc.id_country and blc.id_blok=%1").arg(query.value(0).toInt()));
+			sSql = (QString("select co.name_country,co.id_country, blc.id_country, co.flag from blok_country blc,country co where co.id_country=blc.id_country and blc.id_blok=%1").arg(query.value(0).toInt()));
 			QSqlQuery childrenQuery;
 			if(childrenQuery.exec(sSql)){
 				while(childrenQuery.next()){
 				QStandardItem *item_1 = new QStandardItem(childrenQuery.value(0).toString());
-				QString country_data="country_"+QString::number(childrenQuery.value(1).toInt()) + "_" + QString::number(id_blok_type);
+				QString country_data="country_" +QString::number(childrenQuery.value(1).toInt()) + "_" + QString::number(id_blok_type);
+				QPixmap pixmap_co;
+				pixmap_co.loadFromData(childrenQuery.value(3).toByteArray());
+				pixmap_co = pixmap_co.scaled(size_pic,Qt::KeepAspectRatio);
+				
 				item_1->setData(country_data,Qt::UserRole);
+				item_1->setData(pixmap_co,Qt::DecorationRole);
+				
 				item->appendRow(item_1);
 				}	
 			}
 		}
 	
 	model->setHeaderData(0, Qt::Horizontal,"Ѕлоки и страны");
+	
 	
 	UI->object_manager_tree->setModel(model);
 	UI->object_manager_tree->setSortingEnabled(true);
