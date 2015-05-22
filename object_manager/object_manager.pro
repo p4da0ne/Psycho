@@ -5,6 +5,7 @@ QT += sql widgets gui
 
 DESTDIR = ../build
 
+RESOURCES       += object_manager.qrc
 
 INCLUDEPATH += . \
                 ../include \
