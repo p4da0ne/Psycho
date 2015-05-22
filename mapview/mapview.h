@@ -95,6 +95,7 @@ private slots:
 	void			PrintScreenSlot();
 
 	void			slotSelectButtonToggled(bool checked);
+	void			slotSearchObject();
 
 private: 
     QTextCodec		* MainCodec;
@@ -129,6 +130,7 @@ private:
 	QListView *selectedObjectsListView;
 	QStandardItemModel *selectedObjectsModel;
 	QWidget *selectObjectsWidget;
+	QLineEdit *searchObjectLineEdit;
 	//---------------------------------------
 	ChangeCoordDialog *dlg;
 	QSettings *settings;

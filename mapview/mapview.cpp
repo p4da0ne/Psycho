@@ -414,7 +414,7 @@ QWidget* MapView::createCalculatePanel()
 
 
 //====================================================================
-//====== Метод формирует панель отображения событий ======================
+//====== Метод формирует панель отображения событий ==================
 //====================================================================
 QWidget* MapView::createEventPanel()
 {
@@ -472,12 +472,15 @@ QWidget* MapView::createEventPanel()
 
 	connect(selectObjectsButton,SIGNAL(toggled(bool)),this,SLOT(slotSelectButtonToggled(bool)));
 
-	QLineEdit *searchObjectLineEdit = new QLineEdit;
+	searchObjectLineEdit = new QLineEdit;
 	QToolButton *searchObjectButton = new QToolButton;
 	searchObjectButton->setIcon(QIcon(":/Resources/search.png"));
+
+	connect(searchObjectButton,SIGNAL(clicked()),this,SLOT(slotSearchObject()));
+
 	QHBoxLayout *searchLay = new QHBoxLayout;
-	searchLay->addWidget(searchObjectLineEdit);
-	searchLay->addWidget(searchObjectButton);
+	searchLay->addWidget(searchObjectLineEdit); /// Поле ввода строки поиска
+	searchLay->addWidget(searchObjectButton);	/// Кнопка поиска объектов
 
 	QLabel *selectedObjLabel = new QLabel("Отобранные объекты:");
 	selectedObjectsListView = new QListView;
@@ -528,6 +531,7 @@ QWidget* MapView::createEventPanel()
 	return eventWidget;
 }
 
+
 //===============================================================================
 //== Слот показа/сокрытия панели поиска объектов для отбора в фильтре событий ===
 //===============================================================================
@@ -543,6 +547,18 @@ void MapView::slotSelectButtonToggled(bool checked)
 		selectObjectsWidget->hide();
 	}
 }
+
+
+//==========================================================================
+//====== Слот поиска объектов по введенной строке в поле ввода =============
+//====== Результаты поиска отображаются в диалоговом окне ==================
+//==========================================================================
+void MapView::slotSearchObject()
+{
+	QString searchPattern = searchObjectLineEdit->text();
+
+}
+
 
 
 //====================================================================
