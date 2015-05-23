@@ -32,6 +32,7 @@
 #include "formationsPsiLooses.h"
 #include "formationsMPS.h"
 #include "move_model.h"
+#include <reports.h>
 
 
 MapView::MapView(QWidget *parent, const char *name)
@@ -1552,16 +1553,43 @@ void MapView::updateSite(int objectType)
 void MapView::slotObjectReport()
 {
 	QAction *action = qobject_cast<QAction*>(sender());
-	QString str;
+	QString report;
+	Reports *r = new Reports;
+
 	if(action)
 	{
 		QStringList objInfo = action->data().toString().split("_");
+		int idObj = objInfo.at(0).toInt();
+		int objType = objInfo.at(1).toInt();
 
+		switch(objType)
+		{
+			case FORMATIONS:
+				report = r->create_object_formular_ls(idObj);
+				break;
+						
+			case SMI_MEANS:
+				report = r->create_object_formular_smi(idObj);
+				break;
+			
+			case FORMATIONS_MEANS:
+				report = r->create_object_formular_smi(idObj);
+				break;
+							
+			case GROUPS_MEANS:
+				report = r->create_object_formular(idObj);
+				break;
 
-		str += "Идентификатор объекта: " + objInfo.at(0) + "\n"; 
-		str += "Тип объекта: " + objInfo.at(1) + "\n"; 
-	
-		showInformationDialog(str);
+			case REGIONS:
+				
+				break;
+
+			case PERSONNEL:
+				report = r->create_object_formular_pers(idObj);
+				break;
+		}	
+
+		r->show_preview_dialog(report);
 
 	}
 
