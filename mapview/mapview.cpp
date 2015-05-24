@@ -600,35 +600,51 @@ void MapView::slotSearchObject()
 
 void MapView::chooseSelectedObjects()
 {
-	//for(int row=0;row<searchResultsModel->rowCount();row++)
-	//{
-	//	QModelIndex index = searchResultsModel->index(row,0);
+	for(int row=searchResultsModel->rowCount()-1;row>=0;row--)
+	{
+		QModelIndex index = searchResultsModel->index(row,0);
+	
+		QStandardItem *item = new QStandardItem;
 
-	//	if(searchResultsModel->itemFromIndex(index)->checkState() == Qt::Checked)
-	//	{
-	//		QStandardItem *item = new QStandardItem;
-	//		item->setData(searchResultsModel->item(row)->data(Qt::UserRole));
-	//		item->setData(searchResultsModel->item(row)->data(Qt::UserRole+1));
-	//		item->setData(searchResultsModel->item(row)->data(Qt::DisplayRole));
-	//		selectedObjectsModel->appendRow(item);
-	//	}
-	//}
+		if(searchResultsModel->item(row)->checkState() == Qt::Checked)
+		{
+			item->setData(searchResultsModel->data(index,Qt::DisplayRole),Qt::DisplayRole);
+			item->setData(searchResultsModel->data(index,Qt::UserRole),Qt::UserRole);
+			item->setData(searchResultsModel->data(index,Qt::UserRole+1),Qt::UserRole+1);
+		
+			selectedObjectsModel->appendRow(item);
+			searchResultsModel->removeRows(row,1);
+		}
+	}
 
-	//for(int row=0;row<searchResultsModel->rowCount();row++)
-	//{
-	//	QModelIndex index = searchResultsModel->index(row,0);
-
-	//	if(searchResultsModel->itemFromIndex(index)->checkState() == Qt::Checked)
-	//	{
-	//		searchResultsModel->removeRow(row);
-	//	}
-	//}
 }
 
 
 void MapView::chooseAllObjects()
 {
+	for(int row=searchResultsModel->rowCount()-1;row>=0;row--)
+	{
+		QModelIndex index = searchResultsModel->index(row,0);
+	
+		QStandardItem *item = new QStandardItem;
 
+		QString text = searchResultsModel->data(index,Qt::DisplayRole).toString();
+
+		QList<QStandardItem*> items = selectedObjectsModel->findItems(text);
+		if(items.isEmpty())
+		{
+			item->setData(searchResultsModel->data(index,Qt::DisplayRole),Qt::DisplayRole);
+			item->setData(searchResultsModel->data(index,Qt::UserRole),Qt::UserRole);
+			item->setData(searchResultsModel->data(index,Qt::UserRole+1),Qt::UserRole+1);
+			
+			selectedObjectsModel->appendRow(item);
+			searchResultsModel->removeRows(row,1);
+		}
+		else
+		{
+			searchResultsModel->clear();
+		}
+	}
 }
 
 
