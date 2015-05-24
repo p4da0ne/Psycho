@@ -12,17 +12,19 @@ INCLUDEPATH += ./ \
 				../include \
 			   ../my_mapaccess \
 			   ./calculatingClasses \
-			   ../reports
+			   ../reports \
+			   ../searchengine
 			   
 
 			   
 DEPENDPATH += 	. \
 				../my_mapaccess \
-				../reports
+				../reports \
+				../searchengine
 
 LIBPATH   += ../build
 
-LIBS += -lmy_mapaccess -lreports
+LIBS += -lmy_mapaccess -lreports -lsearchengine
 
 
 DEFINES += __USE_DLL_XXXXX

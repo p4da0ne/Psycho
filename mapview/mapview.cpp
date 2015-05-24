@@ -33,6 +33,7 @@
 #include "formationsMPS.h"
 #include "move_model.h"
 #include <reports.h>
+#include <searchengine.h>
 
 
 MapView::MapView(QWidget *parent, const char *name)
@@ -477,6 +478,7 @@ QWidget* MapView::createEventPanel()
 	QToolButton *searchObjectButton = new QToolButton;
 	searchObjectButton->setIcon(QIcon(":/Resources/search.png"));
 
+	connect(searchObjectLineEdit,SIGNAL(returnPressed()),searchObjectButton,SIGNAL(clicked()));
 	connect(searchObjectButton,SIGNAL(clicked()),this,SLOT(slotSearchObject()));
 
 	QHBoxLayout *searchLay = new QHBoxLayout;
@@ -557,6 +559,75 @@ void MapView::slotSelectButtonToggled(bool checked)
 void MapView::slotSearchObject()
 {
 	QString searchPattern = searchObjectLineEdit->text();
+	SearchEngine *searchEngine = new SearchEngine;
+	
+	searchResultsModel = searchEngine->findObjects(searchPattern);
+	
+	
+//////////////////////////////////////////////
+	searchResultsDialog = new QDialog(this);
+	searchResultsDialog->setAttribute(Qt::WA_DeleteOnClose);
+	searchResultsDialog->setWindowTitle("Результаты поиска объектов");
+
+	//-------- построение таблицы-------
+	searchResultListView = new QListView;
+	searchResultListView->setModel(searchResultsModel);
+
+	QHBoxLayout *buttonLay = new QHBoxLayout();
+
+	QPushButton *select_button = new QPushButton("Выбрать");
+	connect(select_button, SIGNAL(clicked()), this, SLOT(chooseSelectedObjects()));
+	buttonLay->addWidget(select_button);
+	buttonLay->addStretch();
+
+	QPushButton *select_all_button = new QPushButton("Выбрать все");
+	connect(select_all_button, SIGNAL(clicked()), this, SLOT(chooseAllObjects()));
+	buttonLay->addWidget(select_all_button);
+
+	QVBoxLayout *dlgVLay = new QVBoxLayout(searchResultsDialog);
+	dlgVLay->addWidget(searchResultListView);
+	dlgVLay->addLayout(buttonLay);
+					
+	if(searchResultsDialog->exec() == QDialog::Rejected)
+	{	
+	}
+
+/////////////////////////////////////////////
+	
+	
+	
+}
+
+void MapView::chooseSelectedObjects()
+{
+	//for(int row=0;row<searchResultsModel->rowCount();row++)
+	//{
+	//	QModelIndex index = searchResultsModel->index(row,0);
+
+	//	if(searchResultsModel->itemFromIndex(index)->checkState() == Qt::Checked)
+	//	{
+	//		QStandardItem *item = new QStandardItem;
+	//		item->setData(searchResultsModel->item(row)->data(Qt::UserRole));
+	//		item->setData(searchResultsModel->item(row)->data(Qt::UserRole+1));
+	//		item->setData(searchResultsModel->item(row)->data(Qt::DisplayRole));
+	//		selectedObjectsModel->appendRow(item);
+	//	}
+	//}
+
+	//for(int row=0;row<searchResultsModel->rowCount();row++)
+	//{
+	//	QModelIndex index = searchResultsModel->index(row,0);
+
+	//	if(searchResultsModel->itemFromIndex(index)->checkState() == Qt::Checked)
+	//	{
+	//		searchResultsModel->removeRow(row);
+	//	}
+	//}
+}
+
+
+void MapView::chooseAllObjects()
+{
 
 }
 

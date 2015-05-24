@@ -96,6 +96,8 @@ private slots:
 
 	void			slotSelectButtonToggled(bool checked);
 	void			slotSearchObject();
+	void			chooseSelectedObjects();
+	void			chooseAllObjects();
 
 private: 
     QTextCodec		* MainCodec;
@@ -136,9 +138,10 @@ private:
 	QSettings *settings;
 	QMenu			* mouse_menu;
 	QDialog			* closeRSTdialog;
+	QDialog			* searchResultsDialog;
 	QLineEdit		* scale_info;
-
-	QMap<QString,int>	rstList;  //Словарь открытых растров
+	QListView		* searchResultListView;
+	QStandardItemModel *searchResultsModel;
 
 	QStandardItemModel *rstModel;
 	QListView *rstListView;
