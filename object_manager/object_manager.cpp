@@ -8,6 +8,7 @@
 #include <QHeaderView>
 #include <QFileDialog>
 #include <QUrl>
+#include <QIcon>
 #include <QPainter>
 #include <QLineEdit>
 #include <QCheckBox>
@@ -57,9 +58,9 @@ Objectmanager::Objectmanager(QWidget *parent) //int in_id_object
 //==============================================================================================================
 
 	connect(UI->object_manager_tree,SIGNAL(clicked(const QModelIndex &)),this,SLOT(show_objects ( const QModelIndex & )));
-	connect(UI->columnView,SIGNAL(customContextMenuRequested(const QPoint &)),this,SLOT(customMenuView(const QPoint &)));
-	connect(UI->object_manager_tree,SIGNAL(customContextMenuRequested(const QPoint &)),this,SLOT(customMenuTree(const QPoint &)));
-	connect(UI->columnView,SIGNAL(clicked(const QModelIndex &)),this,SLOT(column_item_clicked ( const QModelIndex & )));
+    connect(UI->object_manager_tree,SIGNAL(customContextMenuRequested(const QPoint &)),this,SLOT(customMenuTree(const QPoint &)));
+    connect(UI->columnView,SIGNAL(clicked(QModelIndex)),this,SLOT(column_item_clicked ( const QModelIndex & )));
+    connect(UI->columnView,SIGNAL(customContextMenuRequested(const QPoint &)),this,SLOT(customMenuView(const QPoint &)));
 
     iconsList << ":/Resources/0.png" << ":/Resources/01.png" << ":/Resources/02.png" << ":/Resources/03.png";
 	init_object_tree();
@@ -68,6 +69,14 @@ Objectmanager::Objectmanager(QWidget *parent) //int in_id_object
 Objectmanager::~Objectmanager()
 {
 	delete UI;
+}
+void Objectmanager::mouseReleaseEvent(QMouseEvent *event){
+
+    if(event->button() == Qt::RightButton)
+    {
+
+    }
+
 }
 
 //======= Формирование списка таблиц управления объектами =======
@@ -137,6 +146,7 @@ void Objectmanager::customMenuView(const QPoint & pos)
 			QPushButton *popupButton = new QPushButton;
 			QMenu *menu = new QMenu(this);
 			QAction *act=new QAction("Удалить регион",this);
+            act->setIcon(QIcon(":/Resources/close.png"));
 			connect(act,SIGNAL(triggered()),this,SLOT(delete_region()));
             QAction *act_1 = new QAction(QString("Оценка морально-психологической обстановки: %1").arg(list.value(3)),this);
             rez_z_1 = list.value(3).toFloat();
@@ -144,9 +154,33 @@ void Objectmanager::customMenuView(const QPoint & pos)
             groud_id = list.value(1).toInt();
             connect(otch23,SIGNAL(triggered()),this,SLOT(reports_region()));
 
-            menu->addAction(act);
+            QAction *nac_sostav = new QAction(QString("Национальный состав"),this);
+            connect(nac_sostav,SIGNAL(triggered()),this,SLOT(show_nations_region()));
+
+            QAction *confess = new QAction(QString("Религиозный состав"),this);
+            connect(confess,SIGNAL(triggered()),this,SLOT(show_confess_region()));
+
+            QAction *profess = new QAction(QString("Профессиональный состав"),this);
+            connect(profess,SIGNAL(triggered()),this,SLOT(show_profess_region()));
+
+            QAction *age = new QAction(QString("Возрастной состав"),this);
+            connect(age,SIGNAL(triggered()),this,SLOT(show_age_region()));
+
+            QAction *sekas = new QAction(QString("Половой состав"),this);
+            connect(sekas,SIGNAL(triggered()),this,SLOT(show_sekas_region()));
+
             menu->addAction(act_1);
+            menu->addSeparator();
+            menu->addAction(nac_sostav);
+            menu->addAction(confess);
+            menu->addAction(profess);
+            menu->addAction(age);
+            menu->addAction(sekas);
+
+            menu->addSeparator();
             menu->addAction(otch23);
+            menu->addSeparator();
+            menu->addAction(act);
 			popupButton->setMenu(menu);
 			menu->exec(QCursor::pos());
             }
@@ -155,13 +189,16 @@ void Objectmanager::customMenuView(const QPoint & pos)
 			QPushButton *popupButton = new QPushButton;
 			QMenu *menu = new QMenu(this);
 			QAction *act=new QAction("Удалить СМИ",this);
+            act->setIcon(QIcon(":/Resources/close.png"));
 			connect(act,SIGNAL(triggered()),this,SLOT(delete_smi()));
 
             QAction *otch_smi = new QAction (QString("Сформировать отчет"),this);
             smi_id = list.value(1).toInt();
             connect(otch_smi,SIGNAL(triggered()),this,SLOT(otchet_groups()));
-			menu->addAction(act);
+
             menu->addAction(otch_smi);
+            menu->addSeparator();
+            menu->addAction(act);
 			popupButton->setMenu(menu);
 			menu->exec(QCursor::pos());
 			}
@@ -170,13 +207,22 @@ void Objectmanager::customMenuView(const QPoint & pos)
 			QMenu *menu = new QMenu(this);
 			QAction *act=new QAction("Удалить воинское формирование",this);
 			connect(act,SIGNAL(triggered()),this,SLOT(delete_ls()));
+            act->setIcon(QIcon(":/Resources/close.png"));
             QAction *otch_ls = new QAction (QString("Сформировать отчет"),this);
             ls_id = list.value(1).toInt();
             connect(otch_ls,SIGNAL(triggered()),this,SLOT(otchet_groups()));
+            QAction *nac_sostav = new QAction(QString("Национальный состав"),this); //.arg(list.value(3)),this);
+            connect(nac_sostav,SIGNAL(triggered()),this,SLOT(show_nations_ls()));
 
 
-            menu->addAction(act);
+
+
+            menu->addSeparator();
+            menu->addAction(nac_sostav);
+
             menu->addAction(otch_ls);
+            menu->addSeparator();
+            menu->addAction(act);
 			popupButton->setMenu(menu);
 			menu->exec(QCursor::pos());
 			}
@@ -226,13 +272,30 @@ void Objectmanager::customMenuView(const QPoint & pos)
 
             menu->addMenu(subMenu_1);
             QAction *act_del=new QAction("Удалить воинское формирование",this);
+            act_del->setIcon(QIcon(":/Resources/close.png"));
             connect(act_del,SIGNAL(triggered()),this,SLOT(delete_ls()));
             QAction *otch_ls = new QAction (QString("Сформировать отчет"),this);
             ls_id = list.value(1).toInt();
             connect(otch_ls,SIGNAL(triggered()),this,SLOT(otchet_groups()));
+
+            QAction *nac_sostav = new QAction(QString("Национальный состав"),this); //.arg(list.value(3)),this);
+            connect(nac_sostav,SIGNAL(triggered()),this,SLOT(show_nations_ls()));
+            QAction *confess = new QAction(QString("Религиозный состав"),this); //.arg(list.value(3)),this);
+            connect(confess,SIGNAL(triggered()),this,SLOT(show_confess_ls()));
+
+            QAction *state = new QAction(QString("Штатно-должностной состав"),this);
+            connect(state,SIGNAL(triggered()),this,SLOT(show_state_ls()));
+
             menu->addAction(act);
-            menu->addAction(act_del);
+
+            menu->addSeparator();
+            menu->addAction(nac_sostav);
+            menu->addAction(confess);
+            menu->addAction(state);
+            menu->addSeparator();
             menu->addAction(otch_ls);
+            menu->addSeparator();
+            menu->addAction(act_del);
             popupButton->setMenu(menu);
             menu->exec(QCursor::pos());
 
@@ -246,6 +309,7 @@ void Objectmanager::customMenuView(const QPoint & pos)
         //	calculating_mps calc;
             QAction *act=new QAction(QString("Оценка моралогического состояния %1: %2").arg(list.value(3)).arg(list.value(2)),this);
 			QAction *act_del=new QAction("Удалить воинское формирование",this);
+            act_del->setIcon(QIcon(":/Resources/close.png"));
             connect(act_del,SIGNAL(triggered()),this,SLOT(delete_ls()));
 			QMenu* subMenu_1 = new QMenu("Потери л/с",menu);
 
@@ -289,9 +353,23 @@ void Objectmanager::customMenuView(const QPoint & pos)
             QAction *otch_ls = new QAction (QString("Сформировать отчет"),this);
             ls_id = list.value(1).toInt();
             connect(otch_ls,SIGNAL(triggered()),this,SLOT(otchet_groups()));
+            QAction *nac_sostav = new QAction(QString("Национальный состав"),this); //.arg(list.value(3)),this);
+            connect(nac_sostav,SIGNAL(triggered()),this,SLOT(show_nations_ls()));
+            QAction *confess = new QAction(QString("Религиозный состав"),this); //.arg(list.value(3)),this);
+            connect(confess,SIGNAL(triggered()),this,SLOT(show_confess_ls()));
+
+            QAction *state = new QAction(QString("Штатно-должностной состав"),this);
+            connect(state,SIGNAL(triggered()),this,SLOT(show_state_ls()));
+
 			menu->addAction(act);
-			menu->addAction(act_del);
+            menu->addSeparator();
+            menu->addAction(nac_sostav);
+            menu->addAction(confess);
+            menu->addAction(state);
+            menu->addSeparator();
             menu->addAction(otch_ls);
+            menu->addSeparator();
+            menu->addAction(act_del);
 			popupButton->setMenu(menu);
 			menu->exec(QCursor::pos());
 			}
@@ -300,14 +378,42 @@ void Objectmanager::customMenuView(const QPoint & pos)
 			QPushButton *popupButton = new QPushButton;
 			QMenu *menu = new QMenu(this);
 			QAction *act=new QAction("Удалить организацию",this);
+            act->setIcon(QIcon(":/Resources/close.png"));
 			connect(act,SIGNAL(triggered()),this,SLOT(delete_groups()));
 
             QAction *otch_groups = new QAction (QString("Сформировать отчет"),this);
             group_id = list.value(1).toInt();
             connect(otch_groups,SIGNAL(triggered()),this,SLOT(otchet_groups()));
+            QAction *nac_sostav = new QAction(QString("Национальный состав"),this);
+            connect(nac_sostav,SIGNAL(triggered()),this,SLOT(show_nations_gr()));
+            QAction *confess = new QAction(QString("Религиозный состав"),this);
+            connect(confess,SIGNAL(triggered()),this,SLOT(show_confess_gr()));
 
-			menu->addAction(act);
+            QAction *profess = new QAction(QString("Профессиональный состав"),this);
+            connect(profess,SIGNAL(triggered()),this,SLOT(show_profess_gr()));
+
+            QAction *age = new QAction(QString("Возрастной состав"),this);
+            connect(age,SIGNAL(triggered()),this,SLOT(show_age_gr()));
+
+            QAction *sekas = new QAction(QString("Половой состав"),this);
+            connect(sekas,SIGNAL(triggered()),this,SLOT(show_sekas_gr()));
+
+            QAction *state = new QAction(QString("Штатно-должностной состав"),this);
+            connect(state,SIGNAL(triggered()),this,SLOT(show_state_gr()));
+
+
+
+            menu->addAction(nac_sostav);
+            menu->addAction(confess);
+            menu->addAction(profess);
+            menu->addAction(age);
+            menu->addAction(sekas);
+            menu->addAction(state);
+            menu->addSeparator();
             menu->addAction(otch_groups);
+            menu->addSeparator();
+            menu->addAction(act);
+
 			popupButton->setMenu(menu);
 			menu->exec(QCursor::pos());
 			}
@@ -315,15 +421,17 @@ void Objectmanager::customMenuView(const QPoint & pos)
 			QPushButton *popupButton = new QPushButton;
 			QMenu *menu = new QMenu(this);
 			QAction *act=new QAction("Удалить особое условие",this);
+            act->setIcon(QIcon(":/Resources/close.png"));
 			connect(act,SIGNAL(triggered()),this,SLOT(delete_sc()));
 			menu->addAction(act);
 			popupButton->setMenu(menu);
 			menu->exec(QCursor::pos());
 			}
-		else if(list.value(0)=="dmpo" || list.value(0)=="dmpos" || list.value(0)=="dmposmi" ){
+        else if(list.value(0)=="dmpo" || list.value(0)=="dmpos" || list.value(0)=="dmposmi" ){
 			QPushButton *popupButton = new QPushButton;
 			QMenu *menu = new QMenu(this);
 			QAction *act=new QAction("Удалить средство",this);
+            act->setIcon(QIcon(":/Resources/close.png"));
 			connect(act,SIGNAL(triggered()),this,SLOT(delete_mpo()));
 			menu->addAction(act);
 			popupButton->setMenu(menu);
@@ -332,6 +440,133 @@ void Objectmanager::customMenuView(const QPoint & pos)
 	}
 }
 
+//============== Штатка для групп по правому клику ================================
+void Objectmanager::show_state_gr(){
+
+    Add_elements_dialog *add_element= new Add_elements_dialog(22,group_id);
+    add_element->setModal(true);
+    add_element->setFixedSize(600,100);
+    add_element->exec();
+
+}
+//============== Штатка для регионов по правому клику ================================
+void Objectmanager::show_state_ls(){
+
+    Add_elements_dialog *add_element= new Add_elements_dialog(12,ls_id);
+    add_element->setModal(true);
+    add_element->setFixedSize(600,100);
+    add_element->exec();
+
+}
+//============== sex для регионов по правому клику ================================
+void Objectmanager::show_sekas_region(){
+
+    Add_elements_dialog *add_element= new Add_elements_dialog(9,groud_id);
+    add_element->setModal(true);
+    add_element->setFixedSize(600,100);
+    add_element->exec();
+
+}
+//============== sex для gr по правому клику ================================
+void Objectmanager::show_sekas_gr(){
+
+    Add_elements_dialog *add_element= new Add_elements_dialog(21,group_id);
+    add_element->setModal(true);
+    add_element->setFixedSize(600,100);
+    add_element->exec();
+
+}
+//============== age для gr по правому клику ================================
+void Objectmanager::show_age_gr(){
+
+    Add_elements_dialog *add_element= new Add_elements_dialog(20,group_id);
+    add_element->setModal(true);
+    add_element->setFixedSize(800,450);
+    add_element->exec();
+
+}
+//============== age для регионов по правому клику ================================
+void Objectmanager::show_age_region(){
+
+    Add_elements_dialog *add_element= new Add_elements_dialog(8,groud_id);
+    add_element->setModal(true);
+    add_element->setFixedSize(800,450);
+    add_element->exec();
+
+}
+//============== проф_состав для регионов по правому клику ================================
+void Objectmanager::show_profess_region(){
+
+    Add_elements_dialog *add_element= new Add_elements_dialog(7,groud_id);
+    add_element->setModal(true);
+    add_element->setFixedSize(500,450);
+    add_element->exec();
+
+}
+//============== проф_состав для gr по правому клику ================================
+void Objectmanager::show_profess_gr(){
+
+    Add_elements_dialog *add_element= new Add_elements_dialog(19,group_id);
+    add_element->setModal(true);
+    add_element->setFixedSize(500,450);
+    add_element->exec();
+
+}
+//============== религия для регионов по правому клику ================================
+void Objectmanager::show_confess_region(){
+
+    Add_elements_dialog *add_element= new Add_elements_dialog(6,groud_id);
+    add_element->setModal(true);
+    add_element->setFixedSize(500,350);
+    add_element->exec();
+
+}
+//============== религия для ВФ по правому клику ================================
+void Objectmanager::show_confess_ls(){
+
+    Add_elements_dialog *add_element= new Add_elements_dialog(11,ls_id);
+    add_element->setModal(true);
+    add_element->setFixedSize(500,350);
+    add_element->exec();
+
+}
+//============== религия для ВФ по правому клику ================================
+void Objectmanager::show_confess_gr(){
+
+    Add_elements_dialog *add_element= new Add_elements_dialog(18,group_id);
+    add_element->setModal(true);
+    add_element->setFixedSize(500,350);
+    add_element->exec();
+
+}
+//============== нац_состав для регионов по правому клику ================================
+void Objectmanager::show_nations_region(){
+
+    Add_elements_dialog *add_element= new Add_elements_dialog(4,groud_id);
+    add_element->setModal(true);
+    add_element->setFixedSize(700,350);
+    add_element->exec();
+
+}
+//============== нац_состав для ВФ по правому клику ================================
+void Objectmanager::show_nations_ls(){
+
+    Add_elements_dialog *add_element= new Add_elements_dialog(10,ls_id);
+    add_element->setModal(true);
+    add_element->setFixedSize(700,350);
+    add_element->exec();
+
+}
+//============== нац_состав для организаций по правому клику ================================
+void Objectmanager::show_nations_gr(){
+
+    Add_elements_dialog *add_element= new Add_elements_dialog(17,group_id);
+    add_element->setModal(true);
+    add_element->setFixedSize(700,350);
+    add_element->exec();
+
+}
+//===========================================================================================
 void Objectmanager::customMenuTree(const QPoint & pos)
 {
 	QModelIndex index = UI->object_manager_tree->currentIndex();
@@ -541,9 +776,6 @@ void Objectmanager::show_objects(const QModelIndex &index)
 		QString user_data=id.toString();
 
 		UI->add_many_coord_button->setEnabled(true);
-		
-
-		
 
 		QStringList list=user_data.split("_");
 		QStringList listtt;
@@ -554,7 +786,9 @@ void Objectmanager::show_objects(const QModelIndex &index)
 			QSqlQuery query;
 
 			query.exec(QString("SELECT id_region, name_region,parent_region FROM region WHERE id_country=%1 order by name_region").arg(id_country));
-			model = new QStandardItemModel(this);
+            model = new QStandardItemModel(this);
+
+
 			QStandardItem *parentItem = model->invisibleRootItem();
 			//progress.setValue(25);
 			int counter = 0;
@@ -584,7 +818,7 @@ void Objectmanager::show_objects(const QModelIndex &index)
 					QString data_region="region_" + QString::number(id_region) + "_" + QString::number(id_country) + "_" + QString::number(calc.get_Rez_on_id_region(id_region));
 					item->setData(data_region,Qt::UserRole);
 					//item->setData(QIcon(set_icon(query.value(2).toInt())),Qt::DecorationRole);
-					model->appendRow(item);
+                    model->appendRow(item);
 					child_region_objects(item,id_region);
 					
 				}
@@ -597,18 +831,18 @@ void Objectmanager::show_objects(const QModelIndex &index)
 			item->setFont(font);
 			item->setData(QString("pregion_%1").arg(id_country),Qt::UserRole);
 			//progress.setValue(75);
-			model->appendRow(item);
+            model->appendRow(item);
 			
 		//	model->sort(2,Qt::AscendingOrder);
-			UI->columnView->setModel(model);
-
+        //	UI->columnView->setModel(model);
+            model->setHeaderData(0,Qt::Horizontal,"Регионы");
+            UI->columnView->setModel(model);
 			progress.setValue(100);
 			progress.close();
 		}
 	}
 	return;
 }
-
 
 
 int Objectmanager::calcul(int id_region){
@@ -646,12 +880,10 @@ int Objectmanager::count_smi(int id){
 
 }
 
-
 void Objectmanager::child_region_objects(QStandardItem *parent_item,int id_parent_region)
 {
 	//select all Region 
-	
-	QSqlQuery query;
+    QSqlQuery query;
 	int row=0;
 	query.exec(QString("SELECT id_region, name_region, parent_region FROM region WHERE parent_region=%1 ORDER BY name_region").arg(id_parent_region));
 
@@ -686,14 +918,14 @@ void Objectmanager::child_region_objects(QStandardItem *parent_item,int id_paren
 	add_region_components(parent_item,id_parent_region,row);
 	query.clear();
 }
+
+//============================== Все для региона ===========================================================
 void Objectmanager::add_region_components(QStandardItem *parent_item,int id_parent_region,int start_row){
-//СМИ ====================================================================================================
+//=== СМИ ===
 	QSqlQuery query;
     query.exec(QString("SELECT sm.id_region,sm.id_smi,sm.id_smi_region,poz.id_position_smi,poz.id_smi FROM smi_region sm,smi poz WHERE id_region=%1 AND sm.id_smi = poz.id_smi").arg(id_parent_region));
 	int row=start_row+1;
 	int row_sw=0;
-//SELECT sm.id_region,sm.id_smi,sm.id_smi_region,poz.id_position_smi,poz.id_smi FROM smi_region sm,smi poz WHERE id_region=%1 AND sm.id_smi = poz.id_smi
-
     int ggg= calcul(id_parent_region);
 
     int g;
@@ -741,9 +973,10 @@ void Objectmanager::add_region_components(QStandardItem *parent_item,int id_pare
 	}
 	QFont font;
 	font.setBold(true);
-	set_child_item("Добавить CМИ",QString("psmi_%1").arg(id_parent_region),item,row_sw);
+
+    set_child_item("Добавить CМИ",QString("psmi_%1").arg(id_parent_region),item,row_sw,font);
 	query.clear();
-//Воинские формирования =============================================================================================
+//=== Воинские формирования ===
 	query.exec(QString("SELECT id_region, id_ls,name_ls,enimy_ls FROM ls WHERE id_region=%1 ORDER BY name_ls").arg(id_parent_region));
 	int row_vf=0;
 	int b; 
@@ -778,10 +1011,10 @@ void Objectmanager::add_region_components(QStandardItem *parent_item,int id_pare
 			row_vf++;
 		}
 	}
-	
-	set_child_item("Добавить Воинские формирования",QString("pls_%1").arg(id_parent_region),item,row_vf);
+
+    set_child_item("Добавить Воинские формирования",QString("pls_%1").arg(id_parent_region),item,row_vf,font);
 	query.clear();
-//Организации =============================================================================================
+//=== Организации ===
 	query.exec(QString("SELECT id_region, id_groups,name_groups FROM groups WHERE id_region=%1").arg(id_parent_region));
 	int row_gr=0;
 
@@ -812,13 +1045,13 @@ void Objectmanager::add_region_components(QStandardItem *parent_item,int id_pare
 				
 //				(set_child_item(query_gr.value(1).toString(),QString("dgr_%1").arg(query_gr.value(0).toInt()),item,row_gr);
 
-			}
+            }
 			row_gr++;
 		}
 	}
-	set_child_item("Добавить Организации",QString("pgr_%1").arg(id_parent_region),item,row_gr);
+    set_child_item("Добавить Организации",QString("pgr_%1").arg(id_parent_region),item,row_gr,font);
 	query.clear();
-//Условия=============================================================================================
+//=== Условия ===
 query.exec(QString("SELECT id_region, id_special_conditions,name_special_conditions FROM special_conditions WHERE id_region=%1 ORDER BY name_special_conditions").arg(id_parent_region));
 	int row_sc=0;
 
@@ -834,7 +1067,7 @@ query.exec(QString("SELECT id_region, id_special_conditions,name_special_conditi
 	//item = set_child_item("ОРГАНИЗАЦИИ","gr",parent_item,row,"./icons/group.png");
 	row++;
 	if (query.size() != 0)
-	{//Ветка организации
+    {//Ветка условия
 		row_sc=0;
 		while (query.next())
 		{
@@ -852,94 +1085,13 @@ query.exec(QString("SELECT id_region, id_special_conditions,name_special_conditi
 			row_sc++;
 		}
 	}
-    set_child_item("Добавить Особые условия",QString("psc_%1").arg(id_parent_region),item,row_sc);
+    set_child_item("Добавить Особые условия",QString("psc_%1").arg(id_parent_region),item,row_sc,font);
 	query.clear();
-//========================= Национальность =========================================================
-	query.exec(QString("SELECT id_nations,id_region,id_ls_nations FROM ls_nations WHERE id_region=%1").arg(id_parent_region));
-//	int row=start_row+1;
-	int row_nat=0;
-
-	item=set_child_item("Национальный состав",QString("nations_%1").arg(id_parent_region),parent_item,row,font);
-	row++;
-	int id_nations;
-	int id_ls_nations;
-	if (query.size() != 0)
-	{row_nat=0;
-		while (query.next())
-		{
-			int id_nations=query.value(0).toInt();
-			int id_ls_nations=query.value(2).toInt();
-		row_nat++;
-		}
-	int r =id_nations; 
-	int s = id_ls_nations;
-	}
-	query.clear();
-//============================ Религия =============================================================
-query.exec(QString("SELECT id_confessions,id_region,id_ls_confessions FROM ls_confessions WHERE id_region=%1").arg(id_parent_region));
-
-	int row_conf=0;
-	item=set_child_item("Религиозный состав",QString("confess_%1").arg(id_parent_region),parent_item,row,font);
-	row++;	
-	if (query.size() != 0)
-	{row_conf=0;
-		while (query.next())
-		{
-		//	int id_conf=query.value(0).toInt();
-		//	int id_ls_conf=query.value(2).toInt();
-		row_conf++;
-		}
-	}
-	query.clear();
-//============================ Профессиональный состав =============================================================
-query.exec(QString("SELECT id_profession,id_region,id_pop_profession FROM pop_profession WHERE id_region=%1").arg(id_parent_region));
-
-	int row_prof=0;
-	item=set_child_item("Профессиональный состав",QString("profess_%1").arg(id_parent_region),parent_item,row,font);
-	row++;	
-	if (query.size() != 0)
-	{row_prof=0;
-		while (query.next())
-		{
-		row_prof++;
-		}
-	}
-	query.clear();
-	//============================ Возрастной состав =============================================================
-query.exec(QString("SELECT id_age,id_region,id_pop_age FROM pop_age WHERE id_region=%1").arg(id_parent_region));
-
-	int row_age=0;
-	item=set_child_item("Возрастной состав",QString("agess_%1").arg(id_parent_region),parent_item,row,font);
-	row++;	
-	if (query.size() != 0)
-	{row_age=0;
-		while (query.next())
-		{
-	
-		row_age++;
-		}
-	}
-	query.clear();
-	//============================ Половой состав =============================================================
-query.exec(QString("SELECT id_region,id_pop_sex FROM pop_sex WHERE id_region=%1").arg(id_parent_region));
-
-	int row_sex=0;
-	item=set_child_item("Половой состав",QString("sexss_%1").arg(id_parent_region),parent_item,row,font);
-	row++;	
-	if (query.size() != 0)
-	{row_sex=0;
-		while (query.next())
-		{
-	
-		row_sex++;
-		}
-	}
-	query.clear();
-//==========================================================================================================================
 }	
 void Objectmanager::column_item_clicked ( const QModelIndex &index){
 	
-    clear_tableWidget(UI->coord_table);
+    QFont font;
+    font.setBold(true);
     UI->property_object->setModel(0);
 	QVariant id=index.data(Qt::UserRole);
 	if (id.type() == QVariant::String) 
@@ -978,7 +1130,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 			child_smi_objects(set_child_item(name_smi,user_data_smi,par,r1),result);
 
 				//вновь добавляем элемент "Добавить СМИ"
-			set_child_item("Добавить СМИ",QString("psmi_%1").arg(list.value(1)),par,r2);
+            set_child_item("Добавить СМИ",QString("psmi_%1").arg(list.value(1)),par,r2,font);
 		
 			}
 		} 
@@ -1006,7 +1158,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 					
 					child_ls_objects(set_child_item(name_ls,user_data_ls,par,r1,b),result);
 					
-					set_child_item("Добавить воинское формирование",QString("pls_%1").arg(list.value(1)),par,r2);
+                    set_child_item("Добавить воинское формирование",QString("pls_%1").arg(list.value(1)),par,r2,font);
 			}
 			else{
 			QBrush b(Qt::red);
@@ -1016,7 +1168,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 				//
 				child_ls_objects(set_child_item(name_ls,user_data_ls,par,r1,b),result);
 				//
-				set_child_item("Добавить воинское формирование",QString("pls_%1").arg(list.value(1)),par,r2);
+                set_child_item("Добавить воинское формирование",QString("pls_%1").arg(list.value(1)),par,r2,font);
 			
 			}
 			}
@@ -1047,23 +1199,23 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 				b.setColor(Qt::red);
 			}
 			QStandardItem *par = model->itemFromIndex(index)->parent();
-			int r7 = model->itemFromIndex(index)->parent()->rowCount()-6;
+            int r4 = model->itemFromIndex(index)->parent()->rowCount()-6;
 			int r1 = model->itemFromIndex(index)->parent()->rowCount()-5;
 			int r2 = model->itemFromIndex(index)->parent()->rowCount()-4;  
 			int r3 = model->itemFromIndex(index)->parent()->rowCount()-3;   
-			int r4 = model->itemFromIndex(index)->parent()->rowCount()-2;  
-			int r5 = model->itemFromIndex(index)->parent()->rowCount()-1;  
-			int r6 = model->itemFromIndex(index)->parent()->rowCount(); 
+//			int r4 = model->itemFromIndex(index)->parent()->rowCount()-2;
+//			int r5 = model->itemFromIndex(index)->parent()->rowCount()-1;
+//			int r6 = model->itemFromIndex(index)->parent()->rowCount();
 
 			QStandardItem *par_i=par->takeChild(r1);
 			QStandardItem *par_y=par->takeChild(r2);
-			child_ls_objects(set_child_item(name_ls,user_data_ls,par,r7,b),result);
-			set_child_item("Добавить подчиненные ВФ",QString("plss_%1").arg(list.value(1)),par,r1);
+            child_ls_objects(set_child_item(name_ls,user_data_ls,par,r4,b),result);
+            set_child_item("Добавить подчиненные ВФ",QString("plss_%1").arg(list.value(1)),par,r1,font);
 			par->setChild(r2,par_i);
 			par->setChild(r3,par_y);
-			set_child_item("Национальный состав",QString("nationss_%1").arg(list.value(1)),par,r4,font);
-			set_child_item("Религиозный состав",QString("confesss_%1").arg(list.value(1)),par,r5,font);
-			set_child_item("Штатно-должностной состав",QString("rankss_%1").arg(list.value(1)),par,r6,font);				
+//			set_child_item("Национальный состав",QString("nationss_%1").arg(list.value(1)),par,r4,font);
+//			set_child_item("Религиозный состав",QString("confesss_%1").arg(list.value(1)),par,r5,font);
+//			set_child_item("Штатно-должностной состав",QString("rankss_%1").arg(list.value(1)),par,r6,font);
 			}
 
 		}
@@ -1088,7 +1240,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 						
 				child_groups_objects(set_child_item(name_group,user_data_group,par,r1),result);	
 			
-				set_child_item("Добавить организацию",QString("pgr_%1").arg(list.value(1)),par,r2);
+                set_child_item("Добавить организацию",QString("pgr_%1").arg(list.value(1)),par,r2,font);
 			}
 		}
 		// ================  условия =========================================================
@@ -1112,7 +1264,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 						
 				set_child_item(name_sc,user_data_sc,par,r1);	
 			
-				set_child_item("Добавить Особые условия",QString("psc_%1").arg(list.value(1)),par,r2);
+                set_child_item("Добавить Особые условия",QString("psc_%1").arg(list.value(1)),par,r2,font);
 			}
 		}
 	// ==================================== средства ======================================
@@ -1137,7 +1289,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 
 			set_child_item(name_mpo,user_data_mpo,par,r1);
 			
-			set_child_item("Добавить Средства",QString("pmpo_%1").arg(list.value(1)),par,r2);
+            set_child_item("Добавить Средства",QString("pmpo_%1").arg(list.value(1)),par,r2,font);
 		
 			}
 		}
@@ -1162,7 +1314,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 
 			set_child_item(name_mpo,user_data_mpo,par,r1);
 			
-			set_child_item("Добавить Средства",QString("pmpos_%1").arg(list.value(1)),par,r2);
+            set_child_item("Добавить Средства",QString("pmpos_%1").arg(list.value(1)),par,r2,font);
 		
 			}
 		}
@@ -1187,7 +1339,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 
 			set_child_item(name_mpo,user_data_mpo,par,r1);
 			
-			set_child_item("Добавить Средства",QString("pmposmi_%1").arg(list.value(1)),par,r2);
+            set_child_item("Добавить Средства",QString("pmposmi_%1").arg(list.value(1)),par,r2,font);
 		
 			}
 		}
@@ -1212,7 +1364,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 
 			set_child_item(name_pers,user_data_pers,par,r1);
 			
-			set_child_item("Добавить Персоналии",QString("ppers_%1").arg(list.value(1)),par,r2);
+            set_child_item("Добавить Персоналии",QString("ppers_%1").arg(list.value(1)),par,r2,font);
 		
 			}
         }
@@ -1237,7 +1389,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 
             set_child_item(name_pers_smi,user_data_pers_smi,par,r1);
 
-            set_child_item("Добавить персоналии",QString("pperssmi_%1").arg(list.value(1)),par,r2);
+            set_child_item("Добавить персоналии",QString("pperssmi_%1").arg(list.value(1)),par,r2,font);
 
             }
         }
@@ -1264,97 +1416,11 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 
 			set_child_item(name_pers,user_data_pers,par,r1);
 			
-            set_child_item("Добавить Персоналии",QString("ppersls_%1").arg(list.value(1)),par,r2);
+            set_child_item("Добавить Персоналии",QString("ppersls_%1").arg(list.value(1)),par,r2,font);
 		
 			}
 		}
-
-		// ======================= национальность ======================================
-		else if(list.value(0)=="nations"){
-			Add_elements_dialog *add_element= new Add_elements_dialog(4,list.value(1).toInt());
-			add_element->setModal(true);
-			add_element->setFixedSize(700,350);
-			add_element->exec();
-		}
-		else if(list.value(0)=="nationss"){
-			Add_elements_dialog *add_element= new Add_elements_dialog(10,list.value(1).toInt());
-			add_element->setModal(true);
-			add_element->setFixedSize(700,350);
-			add_element->exec();
-		}
-		else if(list.value(0)=="nat"){
-			Add_elements_dialog *add_element= new Add_elements_dialog(17,list.value(1).toInt());
-			add_element->setModal(true);
-			add_element->setFixedSize(700,350);
-			add_element->exec();
-		}
-		// ======================= религия ======================================
-		else if(list.value(0)=="confess"){
-			Add_elements_dialog *add_element= new Add_elements_dialog(6,list.value(1).toInt());
-			add_element->setModal(true);
-			add_element->setFixedSize(500,350);
-			add_element->exec();
-		}
-		else if(list.value(0)=="confesss"){
-			Add_elements_dialog *add_element= new Add_elements_dialog(11,list.value(1).toInt());
-			add_element->setModal(true);
-			add_element->setFixedSize(500,350);
-			add_element->exec();
-		}
-		else if(list.value(0)=="conf"){
-			Add_elements_dialog *add_element= new Add_elements_dialog(18,list.value(1).toInt());
-			add_element->setModal(true);
-			add_element->setFixedSize(500,350);
-			add_element->exec();
-		}// ======================= профессиональный состав ======================================
-		else if(list.value(0)=="profess"){
-			Add_elements_dialog *add_element= new Add_elements_dialog(7,list.value(1).toInt());
-			add_element->setModal(true);
-			add_element->setFixedSize(500,350);
-			add_element->exec();
-		}
-		else if(list.value(0)=="prof"){
-			Add_elements_dialog *add_element= new Add_elements_dialog(19,list.value(1).toInt());
-			add_element->setModal(true);
-			add_element->setFixedSize(500,350);
-			add_element->exec();
-		}// ======================= возрастной состав ======================================
-		else if(list.value(0)=="agess"){
-			Add_elements_dialog *add_element= new Add_elements_dialog(8,list.value(1).toInt());
-			add_element->setModal(true);
-			add_element->setFixedSize(500,350);
-			add_element->exec();
-		}//===================== для организаций =============================================
-		else if(list.value(0)=="ag"){
-			Add_elements_dialog *add_element= new Add_elements_dialog(20,list.value(1).toInt());
-			add_element->setModal(true);
-			add_element->setFixedSize(500,350);
-			add_element->exec();
-		}// ======================= половой состав ======================================
-		else if(list.value(0)=="sexss"){
-			Add_elements_dialog *add_element= new Add_elements_dialog(9,list.value(1).toInt());
-			add_element->setModal(true);
-			add_element->setFixedSize(600,100);
-			add_element->exec();
-		}
-			else if(list.value(0)=="se"){
-			Add_elements_dialog *add_element= new Add_elements_dialog(21,list.value(1).toInt());
-			add_element->setModal(true);
-			add_element->setFixedSize(600,100);
-			add_element->exec();
-		}// ======================= Штатка =================================================
-		else if(list.value(0)=="rankss"){
-			Add_elements_dialog *add_element= new Add_elements_dialog(12,list.value(1).toInt());
-			add_element->setModal(true);
-			add_element->setFixedSize(600,100);
-			add_element->exec();
-		}//=================== для организаций ===========================================
-		else if(list.value(0)=="ran"){
-			Add_elements_dialog *add_element= new Add_elements_dialog(22,list.value(1).toInt());
-			add_element->setModal(true);
-			add_element->setFixedSize(600,100);
-			add_element->exec();
-		}
+//================== работа с координатами ***** АПГРЕЙД САТУРНА *****
 		else if(list.value(0)=="dpers"){
             show_coordinates(list.value(0),list.value(1).toInt(),"coord_persones","id_persones");
 			Add_elements_dialog *add_element= new Add_elements_dialog(24,list.value(1).toInt());
@@ -1422,10 +1488,13 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 	   	}
     }
 }
+
 //========================== ветка для воинских формирований ===========================================
 void Objectmanager::child_ls_objects(QStandardItem *parent_item,int parent_ls)
-{
-	QSqlQuery query;
+{	
+    QFont font;
+    font.setBold(true);
+    QSqlQuery query;
 	int row=0;
 	query.exec(QString("SELECT id_ls, name_ls, parent_ls,enimy_ls FROM ls WHERE parent_ls=%1 ORDER BY name_ls").arg(parent_ls));
 
@@ -1454,13 +1523,16 @@ void Objectmanager::child_ls_objects(QStandardItem *parent_item,int parent_ls)
 			row++;
 		}
 	}
-	set_child_item("Добавить подчиненные ВФ",QString("plss_%1").arg(parent_ls),parent_item,row);
+    set_child_item("Добавить подчиненные ВФ",QString("plss_%1").arg(parent_ls),parent_item,row,font);
 	add_ls_components(parent_item,parent_ls,row);
 	query.clear();
 }
 void Objectmanager::child_groups_objects(QStandardItem *parent_item,int gr)
 {
-	QSqlQuery query;
+    QFont font;
+    font.setBold(true);
+
+    QSqlQuery query;
 	int row=0;
 	query.exec(QString("SELECT id_groups, name_groups FROM groups WHERE id_groups=%1 ORDER BY name_groups").arg(gr));
 
@@ -1506,7 +1578,10 @@ void Objectmanager::child_smi_objects(QStandardItem *parent_item,int smi)
 }
 void Objectmanager::add_ls_components(QStandardItem *parent_item,int id_parent_region,int start_row){
 // ========================================= средства =================================================	
-	QSqlQuery query;
+
+    QFont font;
+    font.setBold(true);
+    QSqlQuery query;
 	query.exec(QString("SELECT id_ls,id_mpo_pso FROM mpo_pso WHERE id_ls=%1").arg(id_parent_region));
 	int row=start_row+1;
 	int row_sw=0;				
@@ -1537,7 +1612,7 @@ void Objectmanager::add_ls_components(QStandardItem *parent_item,int id_parent_r
 		}
 	 
 	}	
-	set_child_item("Добавить Средства",QString("pmpo_%1").arg(id_parent_region),item,row_sw);
+    set_child_item("Добавить Средства",QString("pmpo_%1").arg(id_parent_region),item,row_sw,font);
 	query.clear();
 // ========================================= персонал =================================================	
 	QSqlQuery query_pers;
@@ -1569,33 +1644,17 @@ void Objectmanager::add_ls_components(QStandardItem *parent_item,int id_parent_r
 		}
 	 
 	}	
-	set_child_item("Добавить Персоналии",QString("ppersls_%1").arg(id_parent_region),item,row_p);
+    set_child_item("Добавить Персоналии",QString("ppersls_%1").arg(id_parent_region),item,row_p,font);
 	query.clear();
-
-//========================= Национальность =========================================================
-	QFont font;
-	font.setBold(true);
-//	int row=start_row+1;
-	item=set_child_item("Национальный состав",QString("nationss_%1").arg(id_parent_region),parent_item,row,font);
-	row++;
-//============================ Религия =============================================================
-	item=set_child_item("Религиозный состав",QString("confesss_%1").arg(id_parent_region),parent_item,row,font);
-	row++;	
-//============================ Штатка ==============================================================
-	item=set_child_item("Штатно-должностной состав",QString("rankss_%1").arg(id_parent_region),parent_item,row,font);
-	row++;	
-//==========================================================================================================================
-	
-
-
-
-
 }	
 
 void Objectmanager::add_groups_components(QStandardItem *parent_item,int id_parent_region,int start_row)
 {
 // ========================================= средства =================================================	
-	QSqlQuery query;
+    QFont font;
+    font.setBold(true);
+
+    QSqlQuery query;
     query.exec(QString("SELECT id_groups,id_mpo_pso FROM mpo_pso WHERE id_groups=%1").arg(id_parent_region));
 	int row=0;
 	int row_sw=0;				
@@ -1625,7 +1684,7 @@ void Objectmanager::add_groups_components(QStandardItem *parent_item,int id_pare
 		}
 	 
 	}	
-	set_child_item("Добавить Средства",QString("pmpos_%1").arg(id_parent_region),item,row_sw);
+    set_child_item("Добавить Средства",QString("pmpos_%1").arg(id_parent_region),item,row_sw,font);
 	query.clear();
 // ========================================= персонал =================================================	
 	QSqlQuery query_pers;
@@ -1657,38 +1716,18 @@ void Objectmanager::add_groups_components(QStandardItem *parent_item,int id_pare
 		}
 	 
 	}	
-	set_child_item("Добавить Персоналии",QString("ppers_%1").arg(id_parent_region),item,row_p);
+    set_child_item("Добавить Персоналии",QString("ppers_%1").arg(id_parent_region),item,row_p,font);
 	query.clear();
 
-//========================= Национальность =========================================================
-	QFont font;
-	font.setBold(true);
-	item=set_child_item("Национальный состав",QString("nat_%1").arg(id_parent_region),parent_item,row,font);
-	row++;
-//============================ Религия =============================================================
-	item=set_child_item("Религиозный состав",QString("conf_%1").arg(id_parent_region),parent_item,row,font);
-	row++;	
-//============================ Профессиональный состав =============================================================
-
-	item=set_child_item("Профессиональный состав",QString("prof_%1").arg(id_parent_region),parent_item,row,font);
-	row++;	
-//============================ Возрастной состав =============================================================
-	item=set_child_item("Возрастной состав",QString("ag_%1").arg(id_parent_region),parent_item,row,font);
-	row++;	
-//============================ Половой состав =============================================================
-	item=set_child_item("Половой состав",QString("se_%1").arg(id_parent_region),parent_item,row,font);
-	row++;	
-//============================ Штатка ==============================================================
-	item=set_child_item("Штатно-должностной состав",QString("ran_%1").arg(id_parent_region),parent_item,row,font);
-	row++;	
-//==========================================================================================================================
 }
-
 
 void Objectmanager::add_smi_components(QStandardItem *parent_item,int id_parent_region,int start_row)
 {
 // ========================================= средства =================================================	
-	QSqlQuery query;
+    QFont font;
+    font.setBold(true);
+
+    QSqlQuery query;
 	query.exec(QString("SELECT id_smi,id_mpo_pso FROM mpo_pso WHERE id_smi=%1").arg(id_parent_region));
 	int row=0;
 	int row_sw=0;				
@@ -1718,7 +1757,7 @@ void Objectmanager::add_smi_components(QStandardItem *parent_item,int id_parent_
 		}
 	 
 	}	
-	set_child_item("Добавить Средства",QString("pmposmi_%1").arg(id_parent_region),item,row_sw);
+    set_child_item("Добавить Средства",QString("pmposmi_%1").arg(id_parent_region),item,row_sw,font);
 	query.clear();
  // ========================================= персонал =================================================
         QSqlQuery query_pers;
@@ -1750,7 +1789,7 @@ void Objectmanager::add_smi_components(QStandardItem *parent_item,int id_parent_
             }
 
         }
-        set_child_item("Добавить Персоналии",QString("pperssmi_%1").arg(id_parent_region),item,row_p);
+        set_child_item("Добавить Персоналии",QString("pperssmi_%1").arg(id_parent_region),item,row_p,font);
         query.clear();
 }
 
@@ -1758,7 +1797,8 @@ QStandardItem * Objectmanager::set_child_item(QString item_text,QString user_dat
 	{
 		QStandardItem *item = new QStandardItem(item_text.toStdString().c_str());
 		item->setData(user_data,Qt::UserRole);
-		parent_item->setChild(row,item);
+
+        parent_item->setChild(row,item);
 		return item;
 	}
 QStandardItem * Objectmanager::set_child_item(QString item_text,QString user_data,QStandardItem *parent_item,int row,QBrush b)
@@ -1774,7 +1814,7 @@ QStandardItem * Objectmanager::set_child_item(QString item_text,QString user_dat
 		QStandardItem *item = new QStandardItem(item_text.toStdString().c_str());
 		item->setFont(font);
 		item->setData(user_data,Qt::UserRole);
-		parent_item->setChild(row,item);
+        parent_item->setChild(row,item);
 		return item;
 	}
 QStandardItem * Objectmanager::set_child_item(QString item_text,QString user_data,QStandardItem *parent_item,int row,QString icon_path)	{

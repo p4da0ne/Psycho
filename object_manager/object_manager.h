@@ -24,6 +24,7 @@
 #include <QProgressDialog>
 #include <my_mapaccess.h>
 #include "mylabel.h"
+#include <QMouseEvent>
 
 class simledelegate;
 
@@ -58,6 +59,21 @@ public slots:
 	void delete_country_blok();
 
 private slots:
+    void show_nations_region();
+    void show_nations_ls();
+    void show_nations_gr();
+    void show_confess_region();
+    void show_confess_ls();
+    void show_confess_gr();
+    void show_profess_region();
+    void show_profess_gr();
+    void show_age_region();
+    void show_age_gr();
+    void show_sekas_region();
+    void show_sekas_gr();
+    void show_state_gr();
+    void show_state_ls();
+//================================================================================
 	void show_objects(const QModelIndex &index);
 	void column_item_clicked ( const QModelIndex &index );
 	void delete_region();
@@ -81,7 +97,12 @@ private slots:
     void edit_coordinates_view();
     void WGS_to_other();
     void PLANE_to_other();
+
+protected:
+     void mouseReleaseEvent(QMouseEvent *event);
+
 private:
+
 	QDialog *edit_dlg_pers;
 	QCheckBox *checkbox_enemy;
     void edit_coordinates(QString,int id_obj,QString,QString);

@@ -606,7 +606,7 @@ void MapView::closeSitByName(QString sitFileName)
 //======================================================================
 void MapView::openRST()
 {
-	long int a = mapwin->IsActive(mapwin->hMap);
+/*	long int a = mapwin->IsActive(mapwin->hMap);
 	if (a)
 	{
 		QString filePath = QFileDialog::getOpenFileName(this, QString::null, 
@@ -617,7 +617,7 @@ void MapView::openRST()
 		long int a2 = mapwin->setRstOnMap(a1);
 		
 		QStandardItem *item = new QStandardItem(filePath);
-		item->setData(a1,Qt::UserRole);
+        item->setData(a1,Qt::UserRole);
 		item->setCheckable(true);
 		item->setCheckState(Qt::Unchecked);
 		rstModel->appendRow(item);
@@ -627,7 +627,7 @@ void MapView::openRST()
 	else
 	{
 		showInformationDialog("Ќе открыта карта местности\n дл€ открыти€ растра необходимо открыть карту");
-	}
+    }*/
 }
 
 //=====================================================================

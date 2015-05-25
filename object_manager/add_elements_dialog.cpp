@@ -816,7 +816,7 @@ case 7:{// ============ Профессиональный состав ================================
 case 8:{// ============ Возрастной состав ================================================
 
 		age_view = new QTableWidget;
-		age_view->setFixedSize(400,300);
+      //  age_view->resizeColumnToContents(3);
 
 		addButton = new QPushButton("Добавить");
 		addButton->setDefault(true);
@@ -833,7 +833,7 @@ case 8:{// ============ Возрастной состав ======================================
 		h_lay->addWidget(age_view);
 				 
 		QGridLayout *mainLayout = new QGridLayout;
-		mainLayout->setSizeConstraint(QLayout::SetFixedSize);
+    //	mainLayout->setSizeConstraint(QLayout::SetFixedSize);
 		mainLayout->addLayout(h_lay, 1, 0);
 		mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		this->setLayout(mainLayout);
@@ -1536,7 +1536,7 @@ case 19:{// ============ Профессиональный состав Организаций ===================
 case 20:{// ============ Возрастной состав для организаций ================================================
 
 		age_view = new QTableWidget;
-		age_view->setFixedSize(400,300);
+        //setFixedSize(400,500);
 
 		addButton = new QPushButton("Добавить");
 		addButton->setDefault(true);
@@ -1553,7 +1553,7 @@ case 20:{// ============ Возрастной состав для организаций =====================
 		h_lay->addWidget(age_view);
 				 
 		QGridLayout *mainLayout = new QGridLayout;
-		mainLayout->setSizeConstraint(QLayout::SetFixedSize);
+    //	mainLayout->setSizeConstraint(QLayout::SetFixedSize);
 		mainLayout->addLayout(h_lay, 1, 0);
 		mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		this->setLayout(mainLayout);
