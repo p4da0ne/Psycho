@@ -489,7 +489,7 @@ QWidget* MapView::createEventPanel()
 	selectedObjectsListView = new QListView;
 	selectedObjectsModel = new QStandardItemModel;
 	selectedObjectsListView->setModel(selectedObjectsModel);
-
+	selectedObjectsListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
 	selectedObjectsListView->setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(selectedObjectsListView, SIGNAL(customContextMenuRequested(const QPoint &)),this, SLOT(slotSelectedObjectsListViewCustomMenu(const QPoint &))); 
@@ -614,12 +614,14 @@ void MapView::slotSearchObject()
 	
 //////////////////////////////////////////////
 	searchResultsDialog = new QDialog(this);
+	searchResultsDialog->resize(400,300);
 	searchResultsDialog->setAttribute(Qt::WA_DeleteOnClose);
 	searchResultsDialog->setWindowTitle("Результаты поиска объектов");
 
 	//-------- построение таблицы-------
 	searchResultListView = new QListView;
 	searchResultListView->setModel(searchResultsModel);
+	searchResultListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
 
 	QHBoxLayout *buttonLay = new QHBoxLayout();
@@ -668,6 +670,7 @@ void MapView::chooseSelectedObjects()
 			if(items.isEmpty())
 			{
 				item->setData(searchResultsModel->data(index,Qt::DisplayRole),Qt::DisplayRole);
+				item->setData(searchResultsModel->data(index,Qt::ToolTipRole),Qt::ToolTipRole);
 				item->setData(searchResultsModel->data(index,Qt::UserRole),Qt::UserRole);
 				item->setData(searchResultsModel->data(index,Qt::UserRole+1),Qt::UserRole+1);
 			
@@ -706,6 +709,7 @@ void MapView::chooseAllObjects()
 		if(items.isEmpty())
 		{
 			item->setData(searchResultsModel->data(index,Qt::DisplayRole),Qt::DisplayRole);
+			item->setData(searchResultsModel->data(index,Qt::ToolTipRole),Qt::ToolTipRole);
 			item->setData(searchResultsModel->data(index,Qt::UserRole),Qt::UserRole);
 			item->setData(searchResultsModel->data(index,Qt::UserRole+1),Qt::UserRole+1);
 			

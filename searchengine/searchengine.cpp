@@ -54,6 +54,7 @@ QStandardItemModel* SearchEngine::findPersones(QString objNamePart)
 		item->setData(PERSONNEL,Qt::UserRole+1);
 		QString personName = query.value(rec.indexOf("name_persones")).toString() + " (" + query.value(rec.indexOf("name_type_persones")).toString() + ")";
 		item->setData(personName,Qt::DisplayRole);
+		item->setData(personName,Qt::ToolTipRole);
 		item->setCheckable(true);
 		item->setCheckState(Qt::Unchecked);
 		searchResultModel->appendRow(item);
@@ -93,6 +94,7 @@ QStandardItemModel* SearchEngine::findFormations(QString objNamePart)
 		item->setData(FORMATIONS,Qt::UserRole+1);
 		QString lsName = query.value(rec.indexOf("name_ls")).toString() + " (" + query.value(rec.indexOf("name_type_ls")).toString() + ")";
 		item->setData(lsName,Qt::DisplayRole);
+		item->setData(lsName,Qt::ToolTipRole);
 		item->setCheckable(true);
 		item->setCheckState(Qt::Unchecked);
 		searchResultModel->appendRow(item);
@@ -131,6 +133,7 @@ QStandardItemModel* SearchEngine::findMeans(QString objNamePart)
 		item->setData(SMI_MEANS,Qt::UserRole+1);
 		QString meansName = query.value(rec.indexOf("name_mpo_pso")).toString() + " (" + query.value(rec.indexOf("name_type_mpo_pso")).toString() + ")";
 		item->setData(meansName,Qt::DisplayRole);
+		item->setData(meansName,Qt::ToolTipRole);
 		item->setCheckable(true);
 		item->setCheckState(Qt::Unchecked);
 		searchResultModel->appendRow(item);
@@ -170,6 +173,7 @@ QStandardItemModel* SearchEngine::findRegions(QString objNamePart)
 		item->setData(REGIONS,Qt::UserRole+1);
 		QString regionName = query.value(rec.indexOf("name_region")).toString() + " (" + query.value(rec.indexOf("name_type_region")).toString() + ")";
 		item->setData(regionName,Qt::DisplayRole);
+		item->setData(regionName,Qt::ToolTipRole);
 		item->setCheckable(true);
 		item->setCheckState(Qt::Unchecked);
 		searchResultModel->appendRow(item);
