@@ -137,6 +137,9 @@ private:
 	QStandardItemModel *selectedObjectsModel;
 	QWidget *selectObjectsWidget;
 	QLineEdit *searchObjectLineEdit;
+
+	QListView *eventStatesView;
+	QStandardItemModel *eventStatesModel;
 	//---------------------------------------
 	ChangeCoordDialog *dlg;
 	QSettings *settings;
@@ -149,7 +152,8 @@ private:
 
 	QStandardItemModel *rstModel;
 	QListView *rstListView;
-	
+	// События: актуальное (1), планируемое (2), завершенное (3), несостоявшееся (4)
+	enum EventStates{ACTUAL = 1,PLANNING = 2,ENDED = 3, UNOCCURED = 4}; 
 };
 
 #endif

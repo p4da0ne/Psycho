@@ -511,10 +511,67 @@ QWidget* MapView::createEventPanel()
 	selectObjectsWidget->hide();
 	
 	//-----------------------------------------------------
+	QLabel *stateLabel = new QLabel("По состоянию:");
+	QFont font2("Arial",8);
+	font2.setUnderline(true);
+	font2.setBold(true);
+	stateLabel->setFont(font2);
 
+	eventStatesModel = new QStandardItemModel;
+	
+	QStandardItem *stateItem = new QStandardItem;
+	stateItem->setData(QString("Актуальные"),Qt::DisplayRole);
+	stateItem->setData(ACTUAL,Qt::UserRole);
+	stateItem->setCheckable(true);
+	stateItem->setCheckState(Qt::Checked);
+	eventStatesModel->appendRow(stateItem);
+
+	stateItem = new QStandardItem;
+	stateItem->setData(QString("Завершенные"),Qt::DisplayRole);
+	stateItem->setData(ENDED,Qt::UserRole);
+	stateItem->setCheckable(true);
+	stateItem->setCheckState(Qt::Checked);
+	eventStatesModel->appendRow(stateItem);
+
+	stateItem = new QStandardItem;
+	stateItem->setData(QString("Планируемые"),Qt::DisplayRole);
+	stateItem->setData(PLANNING,Qt::UserRole);
+	stateItem->setCheckable(true);
+	stateItem->setCheckState(Qt::Checked);
+	eventStatesModel->appendRow(stateItem);
+
+	stateItem = new QStandardItem;
+	stateItem->setData(QString("Несостоявшиеся"),Qt::DisplayRole);
+	stateItem->setData(UNOCCURED,Qt::UserRole);
+	stateItem->setCheckable(true);
+	stateItem->setCheckState(Qt::Checked);
+	eventStatesModel->appendRow(stateItem);
+
+	eventStatesView = new QListView;
+	eventStatesView->setModel(eventStatesModel);
+	eventStatesView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	eventStatesView->setFixedHeight(65);
+
+	QVBoxLayout *statesLay = new QVBoxLayout;
+	
+	lineLabel = new QLabel();
+	lineLabel->setFrameStyle(QFrame::HLine | QFrame::Raised);
+	lineLabel->setLineWidth(2);
+	statesLay->addWidget(lineLabel);
+	statesLay->addWidget(stateLabel);
+	statesLay->addWidget(eventStatesView);
+
+	lineLabel = new QLabel();
+	lineLabel->setFrameStyle(QFrame::HLine | QFrame::Raised);
+	lineLabel->setLineWidth(2);
+	statesLay->addWidget(lineLabel);
+	//-----------------------------------------------------
 
 	QPushButton * event_button = new QPushButton("Показать события");
 	connect(event_button, SIGNAL(clicked()), this, SLOT(showCheckedEvents()));
+	
+	statesLay->addWidget(event_button);
+	statesLay->addStretch();
 
 
 	QVBoxLayout *event_layout = new QVBoxLayout;
@@ -523,18 +580,12 @@ QWidget* MapView::createEventPanel()
 	
 	event_layout->addLayout(dateLay);
 	event_layout->addLayout(objectsLay);
-	
-
-	lineLabel = new QLabel();
-	lineLabel->setFrameStyle(QFrame::HLine | QFrame::Raised);
-	lineLabel->setLineWidth(2);
-
-	event_layout->addWidget(lineLabel);
-	event_layout->addWidget(event_button);
-	
+	event_layout->addLayout(statesLay);
 	event_layout->addStretch();
+
 	QWidget *eventWidget = new QWidget;
 	eventWidget->setLayout(event_layout);
+
 	return eventWidget;
 }
 
@@ -801,7 +852,8 @@ void MapView::openRST()
 		long int a1 = mapwin->openRstOnMap(filePath.toLocal8Bit().data());
 		long int a2 = mapwin->setRstOnMap(a1);
 		
-		QStandardItem *item = new QStandardItem(filePath);
+		QStandardItem *item = new QStandardItem;
+		item->setData(filePath,Qt::DisplayRole);
 		item->setData(a1,Qt::UserRole);
 		item->setCheckable(true);
 		item->setCheckState(Qt::Unchecked);
