@@ -21,6 +21,7 @@ QStandardItemModel* SearchEngine::findObjects(QString objNamePart)
 	findFormations(objNamePart);
 	findMeans(objNamePart);
 	findRegions(objNamePart);
+	findSpecialConditions(objNamePart);
 
 	return searchResultModel;
 }
@@ -174,6 +175,46 @@ QStandardItemModel* SearchEngine::findRegions(QString objNamePart)
 		QString regionName = query.value(rec.indexOf("name_region")).toString() + " (" + query.value(rec.indexOf("name_type_region")).toString() + ")";
 		item->setData(regionName,Qt::DisplayRole);
 		item->setData(regionName,Qt::ToolTipRole);
+		item->setCheckable(true);
+		item->setCheckState(Qt::Unchecked);
+		searchResultModel->appendRow(item);
+	}
+
+	//---------------------------------------------------
+
+	return searchResultModel;
+}
+
+
+//========================================================================
+//======= Метод поиска особых условий ====================================
+//========================================================================
+QStandardItemModel* SearchEngine::findSpecialConditions(QString objNamePart)
+{
+	//---------------------------------------------------
+	QSqlQuery query;
+	QString str = QString("SELECT s.id_special_conditions, t.name_type_special_conditions, s.name_special_conditions \
+							FROM special_conditions s, type_special_conditions t \
+							WHERE s.id_type_special_conditions = t.id_type_special_conditions \
+							AND s.name_special_conditions ILIKE '%%1%' \
+							ORDER BY s.name_special_conditions").arg(objNamePart);
+	
+	if(!query.exec(str))
+	{
+		QString err = query.lastError().text();
+		return searchResultModel;
+	}
+
+	QSqlRecord rec = query.record();
+
+	while(query.next())
+	{
+		QStandardItem *item = new QStandardItem;
+		item->setData(query.value(rec.indexOf("id_special_conditions")).toInt(),Qt::UserRole);
+		item->setData(SPECIAL_CONDITIONS,Qt::UserRole+1);
+		QString conditionsName = query.value(rec.indexOf("name_special_conditions")).toString() + " (" + query.value(rec.indexOf("name_type_special_conditions")).toString() + ")";
+		item->setData(conditionsName,Qt::DisplayRole);
+		item->setData(conditionsName,Qt::ToolTipRole);
 		item->setCheckable(true);
 		item->setCheckState(Qt::Unchecked);
 		searchResultModel->appendRow(item);

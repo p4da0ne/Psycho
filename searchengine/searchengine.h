@@ -21,6 +21,7 @@ public:
 	QStandardItemModel* findFormations(QString objNamePart = "");
 	QStandardItemModel* findMeans(QString objNamePart = "");
 	QStandardItemModel* findRegions(QString objNamePart = "");
+	QStandardItemModel* findSpecialConditions(QString objNamePart = "");
 
 private:
 	QStandardItemModel *searchResultModel;
