@@ -490,6 +490,10 @@ QWidget* MapView::createEventPanel()
 	selectedObjectsModel = new QStandardItemModel;
 	selectedObjectsListView->setModel(selectedObjectsModel);
 
+
+	selectedObjectsListView->setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(selectedObjectsListView, SIGNAL(customContextMenuRequested(const QPoint &)),this, SLOT(slotSelectedObjectsListViewCustomMenu(const QPoint &))); 
+
 	selectObjectsWidget = new QWidget;
 	QVBoxLayout *selLay = new QVBoxLayout;
 	selLay->addLayout(searchLay);
@@ -534,6 +538,50 @@ QWidget* MapView::createEventPanel()
 	return eventWidget;
 }
 
+//===============================================================================
+//== Слот контекстного меню для списка отобранных объектов в фильтре событий ====
+//===============================================================================
+void MapView::slotSelectedObjectsListViewCustomMenu(const QPoint &pe)
+{
+	if(selectedObjectsModel->rowCount() > 0)
+	{
+		QPushButton *popupButton = new QPushButton;
+		QMenu *menu = new QMenu(this);
+		QAction *removeOne = new QAction("Удалить объект из списка",this);
+		connect(removeOne,SIGNAL(triggered()),this,SLOT(slotRemoveOneObject()));
+
+		QAction *clearAct=new QAction("Очистить список",this);
+		connect(clearAct,SIGNAL(triggered()),this,SLOT(slotClearSelectedList()));
+		menu->addAction(removeOne);
+		menu->addAction(clearAct);
+		popupButton->setMenu(menu);
+		menu->exec(QCursor::pos());
+	}
+}
+
+
+//===============================================================================
+//== Слот удаления объекта из списка отобранных объектов в фильтре событий ======
+//===============================================================================
+void MapView::slotRemoveOneObject()
+{
+	QModelIndex index = selectedObjectsListView->currentIndex();
+	if(index.isValid())
+	{
+		int row = selectedObjectsModel->itemFromIndex(index)->row();
+		selectedObjectsModel->removeRow(row);
+	}
+}
+
+
+//===============================================================================
+//== Слот очистки списка отобранных объектов в фильтре событий ==================
+//===============================================================================
+void MapView::slotClearSelectedList()
+{
+	selectedObjectsModel->clear();
+}
+
 
 //===============================================================================
 //== Слот показа/сокрытия панели поиска объектов для отбора в фильтре событий ===
@@ -562,7 +610,7 @@ void MapView::slotSearchObject()
 	SearchEngine *searchEngine = new SearchEngine;
 	
 	searchResultsModel = searchEngine->findObjects(searchPattern);
-	
+	searchResultsModel->sort(0,Qt::AscendingOrder);
 	
 //////////////////////////////////////////////
 	searchResultsDialog = new QDialog(this);
@@ -572,6 +620,7 @@ void MapView::slotSearchObject()
 	//-------- построение таблицы-------
 	searchResultListView = new QListView;
 	searchResultListView->setModel(searchResultsModel);
+
 
 	QHBoxLayout *buttonLay = new QHBoxLayout();
 
@@ -598,8 +647,13 @@ void MapView::slotSearchObject()
 	
 }
 
+
+//============================================================================================================
+//===== Слот отбора отмеченных среди найденных объектов для работы с событиями (с ними связанными) ===========
+//============================================================================================================
 void MapView::chooseSelectedObjects()
 {
+	bool alreadySelectedFlag = false;
 	for(int row=searchResultsModel->rowCount()-1;row>=0;row--)
 	{
 		QModelIndex index = searchResultsModel->index(row,0);
@@ -608,20 +662,38 @@ void MapView::chooseSelectedObjects()
 
 		if(searchResultsModel->item(row)->checkState() == Qt::Checked)
 		{
-			item->setData(searchResultsModel->data(index,Qt::DisplayRole),Qt::DisplayRole);
-			item->setData(searchResultsModel->data(index,Qt::UserRole),Qt::UserRole);
-			item->setData(searchResultsModel->data(index,Qt::UserRole+1),Qt::UserRole+1);
-		
-			selectedObjectsModel->appendRow(item);
-			searchResultsModel->removeRows(row,1);
+			QString text = searchResultsModel->data(index,Qt::DisplayRole).toString();
+
+			QList<QStandardItem*> items = selectedObjectsModel->findItems(text);
+			if(items.isEmpty())
+			{
+				item->setData(searchResultsModel->data(index,Qt::DisplayRole),Qt::DisplayRole);
+				item->setData(searchResultsModel->data(index,Qt::UserRole),Qt::UserRole);
+				item->setData(searchResultsModel->data(index,Qt::UserRole+1),Qt::UserRole+1);
+			
+				selectedObjectsModel->appendRow(item);
+				searchResultsModel->removeRows(row,1);
+			}
+			else
+			{
+				alreadySelectedFlag = true;
+			}
 		}
 	}
+	if((searchResultsModel->rowCount() == 0) || (alreadySelectedFlag))  //если все объекты были отобраны
+	{
+		searchResultsDialog->reject();
+	}
 
+	selectedObjectsModel->sort(0,Qt::AscendingOrder);
 }
 
-
+//================================================================================================
+//===== Слот отбора всех найденных объектов для работы с событиями (с ними связанными) ===========
+//================================================================================================
 void MapView::chooseAllObjects()
 {
+	bool alreadySelectedFlag = false;
 	for(int row=searchResultsModel->rowCount()-1;row>=0;row--)
 	{
 		QModelIndex index = searchResultsModel->index(row,0);
@@ -642,9 +714,14 @@ void MapView::chooseAllObjects()
 		}
 		else
 		{
-			searchResultsModel->clear();
+			alreadySelectedFlag = true;
 		}
 	}
+	if((searchResultsModel->rowCount() == 0) || (alreadySelectedFlag))  //если все объекты были отобраны
+	{
+		searchResultsDialog->reject();
+	}
+	selectedObjectsModel->sort(0,Qt::AscendingOrder);
 }
 
 

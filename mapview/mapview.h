@@ -99,6 +99,10 @@ private slots:
 	void			chooseSelectedObjects();
 	void			chooseAllObjects();
 
+	void			slotSelectedObjectsListViewCustomMenu(const QPoint &pe);
+	void			slotRemoveOneObject();
+	void			slotClearSelectedList();
+
 private: 
     QTextCodec		* MainCodec;
     MapScroll		* mapwin;
