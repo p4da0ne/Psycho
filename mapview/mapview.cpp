@@ -855,7 +855,7 @@ void MapView::openRST()
 
 		QStandardItem *item = new QStandardItem;
 		item->setData(filePath,Qt::DisplayRole);
-		item->setData(a1,Qt::UserRole);
+        item->setData((int)a1,Qt::UserRole);
 		item->setCheckable(true);
 		item->setCheckState(Qt::Unchecked);
 		rstModel->appendRow(item);
