@@ -15,10 +15,12 @@ SUBDIRS += \
         db_saturn \
         supporting_tables \
         object_manager \
-        mainform \
         signs_edit \
         textedit \
-                eventsmodel
+        eventsmodel \
+		searchengine \
+		mainform \
+
 	
 
 INSTALLS += transl

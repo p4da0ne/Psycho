@@ -32,6 +32,8 @@
 #include "formationsPsiLooses.h"
 #include "formationsMPS.h"
 #include "move_model.h"
+#include <reports.h>
+#include <searchengine.h>
 
 
 MapView::MapView(QWidget *parent, const char *name)
@@ -414,7 +416,7 @@ QWidget* MapView::createCalculatePanel()
 
 
 //====================================================================
-//====== Метод формирует панель отображения событий ======================
+//====== Метод формирует панель отображения событий ==================
 //====================================================================
 QWidget* MapView::createEventPanel()
 {
@@ -472,17 +474,25 @@ QWidget* MapView::createEventPanel()
 
 	connect(selectObjectsButton,SIGNAL(toggled(bool)),this,SLOT(slotSelectButtonToggled(bool)));
 
-	QLineEdit *searchObjectLineEdit = new QLineEdit;
+	searchObjectLineEdit = new QLineEdit;
 	QToolButton *searchObjectButton = new QToolButton;
 	searchObjectButton->setIcon(QIcon(":/Resources/search.png"));
+
+	connect(searchObjectLineEdit,SIGNAL(returnPressed()),searchObjectButton,SIGNAL(clicked()));
+	connect(searchObjectButton,SIGNAL(clicked()),this,SLOT(slotSearchObject()));
+
 	QHBoxLayout *searchLay = new QHBoxLayout;
-	searchLay->addWidget(searchObjectLineEdit);
-	searchLay->addWidget(searchObjectButton);
+	searchLay->addWidget(searchObjectLineEdit); /// Поле ввода строки поиска
+	searchLay->addWidget(searchObjectButton);	/// Кнопка поиска объектов
 
 	QLabel *selectedObjLabel = new QLabel("Отобранные объекты:");
 	selectedObjectsListView = new QListView;
 	selectedObjectsModel = new QStandardItemModel;
 	selectedObjectsListView->setModel(selectedObjectsModel);
+	selectedObjectsListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+	selectedObjectsListView->setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(selectedObjectsListView, SIGNAL(customContextMenuRequested(const QPoint &)),this, SLOT(slotSelectedObjectsListViewCustomMenu(const QPoint &))); 
 
 	selectObjectsWidget = new QWidget;
 	QVBoxLayout *selLay = new QVBoxLayout;
@@ -501,10 +511,67 @@ QWidget* MapView::createEventPanel()
 	selectObjectsWidget->hide();
 	
 	//-----------------------------------------------------
+	QLabel *stateLabel = new QLabel("По состоянию:");
+	QFont font2("Arial",8);
+	font2.setUnderline(true);
+	font2.setBold(true);
+	stateLabel->setFont(font2);
 
+	eventStatesModel = new QStandardItemModel;
+	
+	QStandardItem *stateItem = new QStandardItem;
+	stateItem->setData(QString("Актуальные"),Qt::DisplayRole);
+	stateItem->setData(ACTUAL,Qt::UserRole);
+	stateItem->setCheckable(true);
+	stateItem->setCheckState(Qt::Checked);
+	eventStatesModel->appendRow(stateItem);
+
+	stateItem = new QStandardItem;
+	stateItem->setData(QString("Завершенные"),Qt::DisplayRole);
+	stateItem->setData(ENDED,Qt::UserRole);
+	stateItem->setCheckable(true);
+	stateItem->setCheckState(Qt::Checked);
+	eventStatesModel->appendRow(stateItem);
+
+	stateItem = new QStandardItem;
+	stateItem->setData(QString("Планируемые"),Qt::DisplayRole);
+	stateItem->setData(PLANNING,Qt::UserRole);
+	stateItem->setCheckable(true);
+	stateItem->setCheckState(Qt::Checked);
+	eventStatesModel->appendRow(stateItem);
+
+	stateItem = new QStandardItem;
+	stateItem->setData(QString("Несостоявшиеся"),Qt::DisplayRole);
+	stateItem->setData(UNOCCURED,Qt::UserRole);
+	stateItem->setCheckable(true);
+	stateItem->setCheckState(Qt::Checked);
+	eventStatesModel->appendRow(stateItem);
+
+	eventStatesView = new QListView;
+	eventStatesView->setModel(eventStatesModel);
+	eventStatesView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	eventStatesView->setFixedHeight(65);
+
+	QVBoxLayout *statesLay = new QVBoxLayout;
+	
+	lineLabel = new QLabel();
+	lineLabel->setFrameStyle(QFrame::HLine | QFrame::Raised);
+	lineLabel->setLineWidth(2);
+	statesLay->addWidget(lineLabel);
+	statesLay->addWidget(stateLabel);
+	statesLay->addWidget(eventStatesView);
+
+	lineLabel = new QLabel();
+	lineLabel->setFrameStyle(QFrame::HLine | QFrame::Raised);
+	lineLabel->setLineWidth(2);
+	statesLay->addWidget(lineLabel);
+	//-----------------------------------------------------
 
 	QPushButton * event_button = new QPushButton("Показать события");
 	connect(event_button, SIGNAL(clicked()), this, SLOT(showCheckedEvents()));
+	
+	statesLay->addWidget(event_button);
+	statesLay->addStretch();
 
 
 	QVBoxLayout *event_layout = new QVBoxLayout;
@@ -513,20 +580,59 @@ QWidget* MapView::createEventPanel()
 	
 	event_layout->addLayout(dateLay);
 	event_layout->addLayout(objectsLay);
-	
-
-	lineLabel = new QLabel();
-	lineLabel->setFrameStyle(QFrame::HLine | QFrame::Raised);
-	lineLabel->setLineWidth(2);
-
-	event_layout->addWidget(lineLabel);
-	event_layout->addWidget(event_button);
-	
+	event_layout->addLayout(statesLay);
 	event_layout->addStretch();
+
 	QWidget *eventWidget = new QWidget;
 	eventWidget->setLayout(event_layout);
+
 	return eventWidget;
 }
+
+//===============================================================================
+//== Слот контекстного меню для списка отобранных объектов в фильтре событий ====
+//===============================================================================
+void MapView::slotSelectedObjectsListViewCustomMenu(const QPoint &pe)
+{
+	if(selectedObjectsModel->rowCount() > 0)
+	{
+		QPushButton *popupButton = new QPushButton;
+		QMenu *menu = new QMenu(this);
+		QAction *removeOne = new QAction("Удалить объект из списка",this);
+		connect(removeOne,SIGNAL(triggered()),this,SLOT(slotRemoveOneObject()));
+
+		QAction *clearAct=new QAction("Очистить список",this);
+		connect(clearAct,SIGNAL(triggered()),this,SLOT(slotClearSelectedList()));
+		menu->addAction(removeOne);
+		menu->addAction(clearAct);
+		popupButton->setMenu(menu);
+		menu->exec(QCursor::pos());
+	}
+}
+
+
+//===============================================================================
+//== Слот удаления объекта из списка отобранных объектов в фильтре событий ======
+//===============================================================================
+void MapView::slotRemoveOneObject()
+{
+	QModelIndex index = selectedObjectsListView->currentIndex();
+	if(index.isValid())
+	{
+		int row = selectedObjectsModel->itemFromIndex(index)->row();
+		selectedObjectsModel->removeRow(row);
+	}
+}
+
+
+//===============================================================================
+//== Слот очистки списка отобранных объектов в фильтре событий ==================
+//===============================================================================
+void MapView::slotClearSelectedList()
+{
+	selectedObjectsModel->clear();
+}
+
 
 //===============================================================================
 //== Слот показа/сокрытия панели поиска объектов для отбора в фильтре событий ===
@@ -543,6 +649,136 @@ void MapView::slotSelectButtonToggled(bool checked)
 		selectObjectsWidget->hide();
 	}
 }
+
+
+//==========================================================================
+//====== Слот поиска объектов по введенной строке в поле ввода =============
+//====== Результаты поиска отображаются в диалоговом окне ==================
+//==========================================================================
+void MapView::slotSearchObject()
+{
+	QString searchPattern = searchObjectLineEdit->text();
+	SearchEngine *searchEngine = new SearchEngine;
+	
+	searchResultsModel = searchEngine->findObjects(searchPattern);
+	searchResultsModel->sort(0,Qt::AscendingOrder);
+	
+//////////////////////////////////////////////
+	searchResultsDialog = new QDialog(this);
+	searchResultsDialog->resize(400,300);
+	searchResultsDialog->setAttribute(Qt::WA_DeleteOnClose);
+	searchResultsDialog->setWindowTitle("Результаты поиска объектов");
+
+	//-------- построение таблицы-------
+	searchResultListView = new QListView;
+	searchResultListView->setModel(searchResultsModel);
+	searchResultListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+
+	QHBoxLayout *buttonLay = new QHBoxLayout();
+
+	QPushButton *select_button = new QPushButton("Выбрать");
+	connect(select_button, SIGNAL(clicked()), this, SLOT(chooseSelectedObjects()));
+	buttonLay->addWidget(select_button);
+	buttonLay->addStretch();
+
+	QPushButton *select_all_button = new QPushButton("Выбрать все");
+	connect(select_all_button, SIGNAL(clicked()), this, SLOT(chooseAllObjects()));
+	buttonLay->addWidget(select_all_button);
+
+	QVBoxLayout *dlgVLay = new QVBoxLayout(searchResultsDialog);
+	dlgVLay->addWidget(searchResultListView);
+	dlgVLay->addLayout(buttonLay);
+					
+	if(searchResultsDialog->exec() == QDialog::Rejected)
+	{	
+	}
+
+/////////////////////////////////////////////
+	
+	
+	
+}
+
+
+//============================================================================================================
+//===== Слот отбора отмеченных среди найденных объектов для работы с событиями (с ними связанными) ===========
+//============================================================================================================
+void MapView::chooseSelectedObjects()
+{
+	bool alreadySelectedFlag = false;
+	for(int row=searchResultsModel->rowCount()-1;row>=0;row--)
+	{
+		QModelIndex index = searchResultsModel->index(row,0);
+	
+		QStandardItem *item = new QStandardItem;
+
+		if(searchResultsModel->item(row)->checkState() == Qt::Checked)
+		{
+			QString text = searchResultsModel->data(index,Qt::DisplayRole).toString();
+
+			QList<QStandardItem*> items = selectedObjectsModel->findItems(text);
+			if(items.isEmpty())
+			{
+				item->setData(searchResultsModel->data(index,Qt::DisplayRole),Qt::DisplayRole);
+				item->setData(searchResultsModel->data(index,Qt::ToolTipRole),Qt::ToolTipRole);
+				item->setData(searchResultsModel->data(index,Qt::UserRole),Qt::UserRole);
+				item->setData(searchResultsModel->data(index,Qt::UserRole+1),Qt::UserRole+1);
+			
+				selectedObjectsModel->appendRow(item);
+				searchResultsModel->removeRows(row,1);
+			}
+			else
+			{
+				alreadySelectedFlag = true;
+			}
+		}
+	}
+	if((searchResultsModel->rowCount() == 0) || (alreadySelectedFlag))  //если все объекты были отобраны
+	{
+		searchResultsDialog->reject();
+	}
+
+	selectedObjectsModel->sort(0,Qt::AscendingOrder);
+}
+
+//================================================================================================
+//===== Слот отбора всех найденных объектов для работы с событиями (с ними связанными) ===========
+//================================================================================================
+void MapView::chooseAllObjects()
+{
+	bool alreadySelectedFlag = false;
+	for(int row=searchResultsModel->rowCount()-1;row>=0;row--)
+	{
+		QModelIndex index = searchResultsModel->index(row,0);
+	
+		QStandardItem *item = new QStandardItem;
+
+		QString text = searchResultsModel->data(index,Qt::DisplayRole).toString();
+
+		QList<QStandardItem*> items = selectedObjectsModel->findItems(text);
+		if(items.isEmpty())
+		{
+			item->setData(searchResultsModel->data(index,Qt::DisplayRole),Qt::DisplayRole);
+			item->setData(searchResultsModel->data(index,Qt::ToolTipRole),Qt::ToolTipRole);
+			item->setData(searchResultsModel->data(index,Qt::UserRole),Qt::UserRole);
+			item->setData(searchResultsModel->data(index,Qt::UserRole+1),Qt::UserRole+1);
+			
+			selectedObjectsModel->appendRow(item);
+			searchResultsModel->removeRows(row,1);
+		}
+		else
+		{
+			alreadySelectedFlag = true;
+		}
+	}
+	if((searchResultsModel->rowCount() == 0) || (alreadySelectedFlag))  //если все объекты были отобраны
+	{
+		searchResultsDialog->reject();
+	}
+	selectedObjectsModel->sort(0,Qt::AscendingOrder);
+}
+
 
 
 //====================================================================
@@ -606,7 +842,7 @@ void MapView::closeSitByName(QString sitFileName)
 //======================================================================
 void MapView::openRST()
 {
-/*	long int a = mapwin->IsActive(mapwin->hMap);
+    long int a = mapwin->IsActive(mapwin->hMap);
 	if (a)
 	{
 		QString filePath = QFileDialog::getOpenFileName(this, QString::null, 
@@ -615,9 +851,11 @@ void MapView::openRST()
 		if (filePath.isEmpty()) return;//если растр не выбран
 		long int a1 = mapwin->openRstOnMap(filePath.toLocal8Bit().data());
 		long int a2 = mapwin->setRstOnMap(a1);
-		
-		QStandardItem *item = new QStandardItem(filePath);
-        item->setData(a1,Qt::UserRole);
+
+
+		QStandardItem *item = new QStandardItem;
+		item->setData(filePath,Qt::DisplayRole);
+		item->setData(a1,Qt::UserRole);
 		item->setCheckable(true);
 		item->setCheckState(Qt::Unchecked);
 		rstModel->appendRow(item);
@@ -627,7 +865,7 @@ void MapView::openRST()
 	else
 	{
 		showInformationDialog("Не открыта карта местности\n для открытия растра необходимо открыть карту");
-    }*/
+    }
 }
 
 //=====================================================================
@@ -1552,16 +1790,43 @@ void MapView::updateSite(int objectType)
 void MapView::slotObjectReport()
 {
 	QAction *action = qobject_cast<QAction*>(sender());
-	QString str;
+	QString report;
+	Reports *r = new Reports;
+
 	if(action)
 	{
 		QStringList objInfo = action->data().toString().split("_");
+		int idObj = objInfo.at(0).toInt();
+		int objType = objInfo.at(1).toInt();
 
+		switch(objType)
+		{
+			case FORMATIONS:
+				report = r->create_object_formular_ls(idObj);
+				break;
+						
+			case SMI_MEANS:
+				report = r->create_object_formular_smi(idObj);
+				break;
+			
+			case FORMATIONS_MEANS:
+				report = r->create_object_formular_smi(idObj);
+				break;
+							
+			case GROUPS_MEANS:
+				report = r->create_object_formular(idObj);
+				break;
 
-		str += "Идентификатор объекта: " + objInfo.at(0) + "\n"; 
-		str += "Тип объекта: " + objInfo.at(1) + "\n"; 
-	
-		showInformationDialog(str);
+			case REGIONS:
+				
+				break;
+
+			case PERSONNEL:
+				report = r->create_object_formular_pers(idObj);
+				break;
+		}	
+
+		r->show_preview_dialog(report);
 
 	}
 
