@@ -21,6 +21,9 @@ public:
     EventsModel(QObject *parent = 0);
     void UpdateModel();
 
+public slots:
+    void UpdateItem(QStandardItem &item);
+
 protected:
     void openMediaContent(int id_event_media);
     QList<QList<QStandardItem *> > appendMediaEvent(int id_event);

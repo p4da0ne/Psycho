@@ -148,3 +148,5 @@ void EventsModel::openMediaContent(int id_event_media){
 void EventsModel::UpdateItem(QStandardItem &item){
 
 }
+
+
