@@ -4,13 +4,22 @@
 #include <QObject>
 #include <QString>
 #include <QDateTime>
+#include <QList>
+#include "coord.h"
 
 class Event : public QObject
 {
     Q_OBJECT
 public:
     explicit Event(QObject *parent = 0);
-    Event();
+    Event(QString event_name,
+          QString description,
+          int id_status,
+          int id_type_event,
+          QDateTime start_date,
+          QDateTime end_date,
+          QString type_object,
+          int id_object);
     
 signals:
     
@@ -25,6 +34,9 @@ protected:
     QDateTime end_date;
     QString type_object;
     int id_object;
+    QString signCode;
+    QList<Coord *> coordinates;
+
     
 };
 
