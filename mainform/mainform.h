@@ -57,6 +57,7 @@ private slots:
     void show_signs_edit();
 	void slotOpenMapSettingsDialog();
 	void slotOpenBackupDbDialog();
+	void closeTab(int i);
 	//void show_dialog_add_new_region(int id_parent,bool is_parent_ko);
 
 private:
@@ -90,6 +91,16 @@ private:
 	QLineEdit *login_password_edit;
 	QComboBox *ServDB_combobox;
 	Settings *settings;
+
+
+
+	Objectmanager *obman;
+	MapView *mapView;
+	SignsEdit *signs;
+
+	QMdiSubWindow * mapW;
+	QMdiSubWindow * obmanager;
+	QMdiSubWindow * signs_window;
 //	CalculatingProblemManager *calc;
    // MapView * mapView;
 

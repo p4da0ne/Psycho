@@ -70,11 +70,8 @@ private slots:
 	void edit_persones();
 	void clicked_open_file();
 	
-    void otchet();
     void otchet_groups();
-    void save_pdf();
-    void print_formul();
-
+    void reports_region();
     void add_new_coordinates();
     void show_dialog_add_file();
     void get_coordinates(int,QString,QString,QString);
@@ -90,7 +87,9 @@ private:
     void edit_coordinates(QString,int id_obj,QString,QString);
     int calcul(int);
     int count_smi(int);
+    int id_persers;
 	simleDelegate *delegat; 
+    void fill_combobox_persones_(QComboBox *Box,int);
 	QStandardItem * set_child_item(QString item_text,QString user_data,QStandardItem *parent_item,int row);
 	QStandardItem * set_child_item(QString item_text,QString user_data,QStandardItem *parent_item,int row,QFont font);
 	QStandardItem * set_child_item(QString item_text,QString user_data,QStandardItem *parent_item,int row,QString icon_path);

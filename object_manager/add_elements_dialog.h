@@ -35,6 +35,8 @@ private:
 	 void fill_combobox_prof(QComboBox *comboBox,int current_index);
 	 void fill_combobox_age(QComboBox *comboBox,int current_index);
 	 void fill_combobox_rank(QComboBox *comboBox,int current_index);
+     void fill_combobox_persones_(QComboBox *Box,int);
+     void fill_combobox_type_pers(QComboBox*);
 //	 void fill_combobox_pers(QComboBox *in_comboBox, QString table, QStringList name_column);
 //	 void fill_combobox(QComboBox *in_comboBox, QString table, QString name_column, QString conditions);
 	 int insert_in_table(QString table,QMap<QString,QString> map,QString id);
@@ -123,6 +125,7 @@ private:
 	 QComboBox *comboBox_8;
 	 QComboBox *comboBox_9;
 	 QComboBox *comboBox_10;
+     QComboBox *Box;
 	 QCheckBox *checkbox;
 	 QCheckBox *checkbox_enemy;
 	 QComboBox *sexComboBox;

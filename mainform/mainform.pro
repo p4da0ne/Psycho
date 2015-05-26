@@ -4,6 +4,8 @@ DESTDIR         = ../build
 
 QT              += sql network
 
+RESOURCES       += saturn.qrc
+
 DEPENDPATH += ../my_mapaccess \
               ../dataaccess \
               ../db_saturn \

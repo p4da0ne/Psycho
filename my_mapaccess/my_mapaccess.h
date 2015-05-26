@@ -56,6 +56,14 @@ public:
 	HMAP mapCreateSite(const char * mapname, const char * rscname,CREATESITE * createsite);
 	HMAP mapCreateSiteEx(const char * mapname,const char * rscname,CREATESITEEX * createsite);
 	HMAP mapCreateSiteUn(const WCHAR * mapname, const WCHAR * rscname,CREATESITEUN * createsite);
+
+
+	//»зменить пор€док отображени€ пользовательской карты
+	long int mapSetSiteViewOrder(HMAP hMap, long int number,long int order);
+
+	//ѕолучить номер пользовательской карты в цепочке
+	long int mapGetSiteNumber(HMAP hMap,HSITE hSite);
+
 	//ќткрыть пользовательскую карту
 	HMAP mapOpenData(const char * name, long int mode = 0);
 	 // «апросить - может ли карта редактироватьс€

@@ -1,0 +1,24 @@
+<RCC>
+    <qresource prefix="/" >
+        <file>Resources/0.png</file>
+        <file>Resources/01.png</file>
+        <file>Resources/02.png</file>
+        <file>Resources/03.png</file>
+        <file>Resources/Stop2.png</file>
+        <file>Resources/add.png</file>
+        <file>Resources/add_but.png</file>
+        <file>Resources/book.png</file>
+        <file>Resources/change_user.png</file>
+        <file>Resources/connect_saturn.png</file>
+        <file>Resources/delete_but.png</file>
+        <file>Resources/edit_1.png</file>
+        <file>Resources/edit_but.png</file>
+        <file>Resources/group.png</file>
+        <file>Resources/open.png</file>
+        <file>Resources/planet.png</file>
+        <file>Resources/printer.png</file>
+        <file>Resources/saturn_delete.png</file>
+        <file>Resources/user_config.png</file>
+        <file>Resources/weapon.png</file>
+    </qresource>
+</RCC>

@@ -77,8 +77,11 @@ void SupportingTables::init_supporting_tree()
 		add_child(root_item,"Виды воинских формирований ","type_ls");
 
 	root_item = add_root("Регионы","-");
+		add_child(root_item,"Типы регионов","type_region");
 		add_child(root_item,"Особые условия","type_special_conditions");
 		
+	root_item = add_root("Персоналии","-");
+		add_child(root_item,"Типы персоналий","type_persones");
 		
 
 		//root_item = add_root("Организации","-");

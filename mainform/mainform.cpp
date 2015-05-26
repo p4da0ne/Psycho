@@ -13,12 +13,16 @@ Mainform::Mainform(QMainWindow *parent, Qt::WFlags flags)
 {
 	UI->setupUi(this);
 	settings=new Settings(this);   
-    setWindowIcon(QIcon(":/icons/metacontact.png"));
+
+	setWindowIcon(QIcon(":/Resources/metacontact.png"));
+
 	connection_flag = false;
 	login_flag = false;
-	QImage img("./icons/saturn.png");
+	QImage img(":/Resources/saturn.png");
 	m_mdiArea = new myQMdiArea(img,this);
+	m_mdiArea->setTabShape(QTabWidget::Triangular);
 	setCentralWidget(m_mdiArea);
+	m_mdiArea->setViewMode(QMdiArea::TabbedView);
 	db=new db_saturn();
 	connect(this,SIGNAL(reopen_login()),this,SLOT(show_login_form()));
 	connect(this,SIGNAL(valid_user(int)),this,SLOT(create_user_menu(int)));
@@ -33,11 +37,35 @@ Mainform::Mainform(QMainWindow *parent, Qt::WFlags flags)
 	}
 
 	init_menu(0);
+
+	//-------------------------------------------------------------
+	Q_FOREACH (QTabBar* tab, m_mdiArea->findChildren<QTabBar*>())
+	{
+		tab->setTabsClosable(true);
+		tab->setExpanding(false);
+		connect(tab, SIGNAL(tabCloseRequested(int)),this, SLOT(closeTab(int)));
+	}
+//------------------------------------------------------------
+
 }
 
 Mainform::~Mainform()
 {
  delete UI;
+}
+
+
+void Mainform::closeTab(int i)
+{
+
+	QMdiSubWindow *sub =m_mdiArea->subWindowList()[i];
+	QWidget *win = sub->widget();
+
+	win->close();
+
+	m_mdiArea->setActiveSubWindow(sub);
+
+	m_mdiArea->closeActiveSubWindow();
 }
 
 //========== Создание и открытие диалогового окна настроек соединения с БД ===============
@@ -306,48 +334,48 @@ return;
 
 void Mainform::add_menu_enter_system(QMenu *menu){
 	action1 = new QAction("Вход в систему",this);
-	action1->setIcon(QIcon("./icons/enter.png"));
+	action1->setIcon(QIcon(":/Resources/enter.png"));
 	menu->addAction(action1);
 	connect(action1, SIGNAL(triggered()),this, SLOT(show_login_form()));
 }
 
 void Mainform::add_menu_change_user(QMenu *menu){
 	action1 = new QAction("Сменить пользователя",this);
-	action1->setIcon(QIcon("./icons/change_user.png"));
+	action1->setIcon(QIcon(":/Resources/change_user.png"));
 	menu->addAction(action1);
 	connect(action1, SIGNAL(triggered()),this, SLOT(show_login_form()));
 }
 
 void Mainform::add_menu_exit(QMenu *menu){
 	action2 = new QAction("Выход",this);
-	action2->setIcon(QIcon("./icons/exit.png"));
+	action2->setIcon(QIcon(":/Resources/exit.png"));
 	menu->addAction(action2);
 	connect(action2, SIGNAL(triggered()),this, SLOT(close()));
 }
 
 void Mainform::add_mapwork(QMenu *oper_menu){
 	map_act = new QAction("Работа с картой",this);
-	map_act->setIcon(QIcon("./icons/mapwork.png"));
+	map_act->setIcon(QIcon(":/Resources/mapwork.png"));
 	oper_menu->addAction(map_act);
 	connect(map_act, SIGNAL(triggered()),this, SLOT(show_map_form()));
 }
 
 void Mainform::add_menu_db_connection(QMenu *settings_menu){
 	sett_act1 = new QAction("Подключение к БД",this);
-	sett_act1->setIcon(QIcon("./icons/db_settings.png"));
+	sett_act1->setIcon(QIcon(":/Resources/db_settings.png"));
 	settings_menu->addAction(sett_act1);
 	connect(sett_act1, SIGNAL(triggered()),this, SLOT(show_connect_settings_dialog()));
 }
 
 void Mainform::add_menu_map_settings(QMenu *settings_menu){
 	open_map_sett_action = new QAction("Размещение файлов карт",this);
-	open_map_sett_action->setIcon(QIcon("./icons/planet.png"));
+	open_map_sett_action->setIcon(QIcon(":/Resources/planet.png"));
 	settings_menu->addAction(open_map_sett_action);
 	connect(open_map_sett_action, SIGNAL(triggered()),this, SLOT(slotOpenMapSettingsDialog()));
 }
 void Mainform::add_menu_backup_db(QMenu *settings_menu){
 	backup_db_action = new QAction("Резервное копирование БД",this);
-	backup_db_action->setIcon(QIcon("./icons/database.png"));
+	backup_db_action->setIcon(QIcon(":/Resources/database.png"));
 	settings_menu->addAction(backup_db_action);
     connect(backup_db_action, SIGNAL(triggered()),this, SLOT(slotOpenBackupDbDialog()));
 }
@@ -355,7 +383,7 @@ void Mainform::add_menu_backup_db(QMenu *settings_menu){
 void Mainform::add_menu_signs_edit(QMenu *settings_menu)
 {
     sett_act5 = new QAction("Редактирование знаков типов объектов",this);
-    sett_act5->setIcon(QIcon("./icons/user_config.png"));
+    sett_act5->setIcon(QIcon(":/Resources/user_config.png"));
     settings_menu->addAction(sett_act5);
     connect(sett_act5, SIGNAL(triggered()),this, SLOT(show_signs_edit()));
 }
@@ -363,21 +391,21 @@ void Mainform::add_menu_signs_edit(QMenu *settings_menu)
 
 void Mainform::add_menu_manage_users(QMenu *settings_menu){
 	sett_act4 = new QAction("Управление пользователями",this);
-	sett_act4->setIcon(QIcon("./icons/user_config.png"));
+	sett_act4->setIcon(QIcon(":/Resources/user_config.png"));
 	settings_menu->addAction(sett_act4);
 	connect(sett_act4, SIGNAL(triggered()),this, SLOT(show_user_form()));
 }
 
 void Mainform::add_menu_supporting_tables(QMenu *oper_menu){
 	sett_act2 = new QAction("Справочники",this);
-	sett_act2->setIcon(QIcon("./icons/book.png"));
+	sett_act2->setIcon(QIcon(":/Resources/book.png"));
 	oper_menu->addAction(sett_act2);
 	connect(sett_act2, SIGNAL(triggered()),this, SLOT(show_supporting_tables_form()));
 }
 
 void Mainform::add_menu_object_manager(QMenu *oper_menu){
 	sett_act3 = new QAction("Управление объектами",this);
-	sett_act3->setIcon(QIcon("./icons/change_user.png"));
+	sett_act3->setIcon(QIcon(":/Resources/change_user.png"));
 	oper_menu->addAction(sett_act3);
 	connect(sett_act3, SIGNAL(triggered()),this, SLOT(show_object_manager_form()));
 }
@@ -557,11 +585,20 @@ void Mainform::show_user_form()
 //============= Открытие формы работы с картой ==============
 void Mainform::show_map_form()
 {
-    MapView *mapView = new MapView(this);
-    QMdiSubWindow * mapW = m_mdiArea->addSubWindow (mapView);
+	QList<MapView*> lst = m_mdiArea->findChildren<MapView*>();
+	if(!lst.isEmpty())
+	{
+		m_mdiArea->setActiveSubWindow(mapW);
+		return;
+	}
+	
+	mapView = new MapView(this);
+    mapW = m_mdiArea->addSubWindow (mapView);
     mapW->setAttribute (Qt::WA_DeleteOnClose);
+	mapView->setWindowTitle("Работа с картой");
+	mapW->setWindowIcon(QIcon(":/Resources/mapwork.png"));
     mapView->showMaximized();
-	m_mdiArea->setActiveSubWindow (mapW);   
+	m_mdiArea->setActiveSubWindow(mapW);   
 
 }
 
@@ -574,12 +611,21 @@ void Mainform::show_supporting_tables_form(){
 }
 //================ Открытие формы управления объектами =================
 void Mainform::show_object_manager_form(){
-	Objectmanager *obman = new Objectmanager();
-	QMdiSubWindow * obmanager = m_mdiArea->addSubWindow (obman);
+	
+	QList<Objectmanager*> lst = m_mdiArea->findChildren<Objectmanager*>();
+	if(!lst.isEmpty())
+	{
+		m_mdiArea->setActiveSubWindow(obmanager);
+		return;
+	}
+	
+	obman = new Objectmanager();
+	obmanager = m_mdiArea->addSubWindow (obman);
 	obmanager->setAttribute (Qt::WA_DeleteOnClose);
 	obman->setWindowTitle("Управление объектами");
+	obmanager->setWindowIcon(QIcon(":/Resources/change_user.png"));
 	obman->showMaximized();
-    m_mdiArea->setActiveSubWindow (obmanager);
+    m_mdiArea->setActiveSubWindow(obmanager);
 
 }
 
@@ -588,23 +634,22 @@ void Mainform::show_object_manager_form(){
 void Mainform::show_signs_edit()
 */
 void Mainform::show_signs_edit(){
-    SignsEdit *signs = new SignsEdit();
-    QMdiSubWindow * signs_window = m_mdiArea->addSubWindow (signs);
+    
+	QList<SignsEdit*> lst = m_mdiArea->findChildren<SignsEdit*>();
+	if(!lst.isEmpty())
+	{
+		m_mdiArea->setActiveSubWindow(signs_window);
+		return;
+	}
+	
+	signs = new SignsEdit();
+    signs_window = m_mdiArea->addSubWindow (signs);
     signs_window->setAttribute (Qt::WA_DeleteOnClose);
     signs->setWindowTitle("Управление знаками типов объектов");
+	signs_window->setWindowIcon(QIcon(":/Resources/user_config.png"));
     signs->showMaximized();
     m_mdiArea->setActiveSubWindow (signs_window);
 }
-
-//void Mainform::show_calculating_form(){
-//	calc = new CalculatingProblemManager();
-//	QMdiSubWindow * obmanager = m_mdiArea->addSubWindow (calc);
-//	obmanager->setAttribute (Qt::WA_DeleteOnClose);
-//	calc->setWindowTitle("Расчетные задачи");
-//	calc->showMaximized();
-//	m_mdiArea->setActiveSubWindow (obmanager);
-//}
-
 
 
 void Mainform::slotOpenMapSettingsDialog()

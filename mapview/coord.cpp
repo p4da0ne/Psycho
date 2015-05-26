@@ -134,22 +134,28 @@ double Coord::getLongSeconds()
 QString Coord::latitudeToString()
 {
 	QString lat;
-	lat.append(QString::number(latDegrees));
-	lat.append("-");
-	lat.append(QString::number(latMinutes));
-	lat.append("-");
-	lat.append(QString::number(latSeconds));
+	QString number = QString("%1").arg(latDegrees, 2, 10, QChar('0')); 
+	lat.append(number);
+	lat.append("\xB0-");
+	number = QString("%1").arg(latMinutes, 2, 10, QChar('0')); 
+	lat.append(number);
+	lat.append("'-");
+	lat.append(QString::number(latSeconds,'f',2));
+	lat.append("\"");
 	return lat;
 }
 
 QString Coord::longitudeToString()
 {
 	QString longitude;
-	longitude.append(QString::number(longDegrees));
-	longitude.append("-");
-	longitude.append(QString::number(longMinutes));
-	longitude.append("-");
-	longitude.append(QString::number(latSeconds));
+	QString number = QString("%1").arg(longDegrees, 2, 10, QChar('0')); 
+	longitude.append(number);
+	longitude.append("\xB0-");
+	number = QString("%1").arg(longMinutes, 2, 10, QChar('0')); 
+	longitude.append(number);
+	longitude.append("'-");
+	longitude.append(QString::number(longSeconds,'f',2));
+	longitude.append("\"");
 	return longitude;
 }
 
