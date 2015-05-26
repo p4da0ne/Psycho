@@ -43,6 +43,7 @@ Objectmanager::Objectmanager(QWidget *parent) //int in_id_object
     UI->edit_coord_button->setIcon(QIcon(":/Resources/edit_but.png"));
     UI->add_many_coord_button->setIcon(QIcon(":/Resources/open.png"));
 
+
 //==============================COMBOBOX 0 строка нафиг + работа с координатами ===============================
 
     QListView* listView = qobject_cast<QListView*>(UI->coord_system_comboBox->view());
@@ -61,6 +62,10 @@ Objectmanager::Objectmanager(QWidget *parent) //int in_id_object
     connect(UI->object_manager_tree,SIGNAL(customContextMenuRequested(const QPoint &)),this,SLOT(customMenuTree(const QPoint &)));
     connect(UI->columnView,SIGNAL(clicked(QModelIndex)),this,SLOT(column_item_clicked ( const QModelIndex & )));
     connect(UI->columnView,SIGNAL(customContextMenuRequested(const QPoint &)),this,SLOT(customMenuView(const QPoint &)));
+//================================== Блоки и Страны ============================================================
+
+    connect(UI->add_pushButton_blok,SIGNAL(clicked()),this,SLOT(add_new_blok()));
+    connect(UI->add_pushButton_country,SIGNAL(clicked()),this,SLOT(add_new_country()));
 
     iconsList << ":/Resources/0.png" << ":/Resources/01.png" << ":/Resources/02.png" << ":/Resources/03.png";
 	init_object_tree();
@@ -69,14 +74,6 @@ Objectmanager::Objectmanager(QWidget *parent) //int in_id_object
 Objectmanager::~Objectmanager()
 {
 	delete UI;
-}
-void Objectmanager::mouseReleaseEvent(QMouseEvent *event){
-
-    if(event->button() == Qt::RightButton)
-    {
-
-    }
-
 }
 
 //======= Формирование списка таблиц управления объектами =======
@@ -581,7 +578,18 @@ void Objectmanager::customMenuTree(const QPoint & pos)
 			QMenu *menu = new QMenu(this);
 			QAction *act=new QAction("Добавить страну в блок",this);
 			connect(act,SIGNAL(triggered()),this,SLOT(add_country_blok()));
+
+            QAction *act_edit=new QAction("Информация о блоках",this);
+            connect(act_edit,SIGNAL(triggered()),this,SLOT(edit_country_blok()));
+
+            QAction *act_del=new QAction("Удалить блок",this);
+            act_del->setIcon(QIcon(":/Resources/close.png"));
+            connect(act_del,SIGNAL(triggered()),this,SLOT(delete_blok()));
+
 			menu->addAction(act);
+            menu->addAction(act_edit);
+            menu->addSeparator();
+            menu->addAction(act_del);
 			popupButton->setMenu(menu);
 			menu->exec(QCursor::pos());
 			}
@@ -590,7 +598,14 @@ void Objectmanager::customMenuTree(const QPoint & pos)
 			QMenu *menu = new QMenu(this);
 			QAction *act=new QAction("Удалить страну из блока",this);
 			connect(act,SIGNAL(triggered()),this,SLOT(delete_country_blok()));
+
+            QAction *act_del=new QAction("Удалить страну",this);
+            act_del->setIcon(QIcon(":/Resources/close.png"));
+            connect(act_del,SIGNAL(triggered()),this,SLOT(delete_country()));
+
 			menu->addAction(act);
+            menu->addSeparator();
+            menu->addAction(act_del);
 			popupButton->setMenu(menu);
 			menu->exec(QCursor::pos());
 			}
@@ -633,6 +648,568 @@ void Objectmanager::fill_combobox_blok(QComboBox *box, int id_current_blok)
 	box->setCurrentIndex(current_index);
 	query.clear();
 	
+}
+
+//========================= добавление и удаление блока ======================================
+void Objectmanager::add_new_blok(){
+
+    add_blok = new QDialog();
+    add_blok->setMinimumSize(500,200);
+    add_blok->setWindowTitle("Добавить новый блок");
+    add_blok->setWindowIcon(QIcon(":/Resources/add_but.png"));
+
+    path_lab = new QLabel("Эмблема блока:");
+    path_lab->setMinimumWidth(100);
+    blok_desc = new QLabel("Описание блока");
+    blok_desc->setMinimumWidth(100);
+    blok_name = new QLabel("Наименование блока:");
+    blok_name->setMinimumWidth(100);
+
+    blok_filepath_edit = new QLineEdit();
+    blok_desc_edit = new QTextEdit();
+    blok_desc_edit->setFixedHeight(100);
+    blok_name_edit = new QLineEdit();
+
+    path_button = new QToolButton();
+    path_button->setText("...");
+    connect(path_button,SIGNAL(clicked()),this,SLOT(get_path()));
+
+    ok_button = new QPushButton("OK");
+    connect(ok_button,SIGNAL(clicked()),add_blok,SLOT(accept()));
+    cancel_button = new QPushButton("Отмена");
+    connect(cancel_button,SIGNAL(clicked()),add_blok,SLOT(close()));
+
+    QHBoxLayout *buttons_layout = new QHBoxLayout();
+    buttons_layout->addWidget(ok_button);
+    buttons_layout->addWidget(cancel_button);
+
+    QHBoxLayout *path_layout = new QHBoxLayout();
+    path_layout->addWidget(path_lab);
+    QHBoxLayout *path_layout_2 = new QHBoxLayout();
+    path_layout_2->addWidget(blok_filepath_edit);
+    path_layout_2->addWidget(path_button);
+
+    QHBoxLayout *code_layout = new QHBoxLayout();
+    code_layout->addWidget(blok_desc);
+    QHBoxLayout *code_layout_2 = new QHBoxLayout();
+    code_layout_2->addWidget(blok_desc_edit);
+
+    QHBoxLayout *name_layout = new QHBoxLayout();
+    name_layout->addWidget(blok_name);
+    QHBoxLayout *name_layout_2 = new QHBoxLayout();
+    name_layout_2->addWidget(blok_name_edit);
+
+
+    QGridLayout *mainLayout = new QGridLayout;
+    mainLayout->setSizeConstraint(QLayout::SetFixedSize);
+    mainLayout->addLayout(path_layout, 0, 0);
+    mainLayout->addLayout(path_layout_2, 0, 1);
+    mainLayout->addLayout(name_layout, 1, 0);
+    mainLayout->addLayout(name_layout_2, 1, 1);
+    mainLayout->addLayout(code_layout, 2, 0);
+    mainLayout->addLayout(code_layout_2, 2, 1);
+    mainLayout->addLayout(buttons_layout, 3, 1);
+
+    add_blok->setLayout(mainLayout);
+
+    if(add_blok->exec() == QDialog::Accepted)
+    {
+
+      if((blok_desc_edit->toPlainText() == "") || (blok_name_edit->text() == "")) return;
+
+      //------ По кнопке ОК добавление в БД блока --------
+      QSqlQuery query;
+      query.prepare("INSERT INTO blok (name_blok,description_blok,emblem_blok) VALUES (?,?,?)");
+      query.addBindValue(blok_name_edit->text());
+      query.addBindValue(blok_desc_edit->toPlainText());
+
+      QFile file(blok_filepath_edit->text());
+      if(!file.open(QIODevice::ReadOnly))
+      {
+       /*   //================MessageBox===============================
+          QMessageBox msgBox;
+          msgBox.setWindowTitle("Внимание");
+          msgBox.setText("Необходимо выбрать изображение");
+          msgBox.setStandardButtons(QMessageBox::Yes);
+          switch (msgBox.exec()) {
+          case QMessageBox::Yes:
+              return;
+              break;
+          }*/
+      }
+
+      QByteArray ba = file.readAll();
+      query.addBindValue(ba);
+
+      if(!query.exec())
+      {
+          QMessageBox::about(this,"Ошибка",query.lastError().text());
+      }
+        init_object_tree();
+      return;
+    }
+    return;
+ }
+void Objectmanager::get_path()
+{
+    QFileDialog *file_dlg = new QFileDialog(add_blok);
+    QString filepath =  file_dlg->getOpenFileName(this,
+                                                  "Открыть изображение", "", tr("Image Files (*.png *.jpg *.bmp)"));
+    blok_filepath_edit->setText(filepath);
+    add_blok->raise();
+}
+void Objectmanager::get_path_edit()
+{
+    QFileDialog *file_dlg = new QFileDialog(edit_dlg);
+    QString filepath =  file_dlg->getOpenFileName(this,
+                                                  "Открыть изображение", "", tr("Image Files (*.png *.jpg *.bmp)"));
+    blok_filepath_edit->setText(filepath);
+    edit_dlg->raise();
+}
+void Objectmanager::delete_blok(){
+
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Предупреждение");
+    msgBox.setText("Вы действительно удалить блок?");
+
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setButtonText(QMessageBox::Yes, "Да");
+    msgBox.setButtonText(QMessageBox::No, "Нет");
+    switch (msgBox.exec()) {
+     case QMessageBox::Yes:
+         // yes was clicked
+         break;
+     case QMessageBox::No:
+         return;
+         break;
+     default:
+         return;
+         break;
+     }
+
+    QSqlQuery query;
+
+    QModelIndex index = UI->object_manager_tree->currentIndex();
+    if(!index.data(Qt::UserRole).toBool()) return;
+    QString id_country=index.data(Qt::UserRole).toString();
+    QStringList list=id_country.split("_");
+
+    QString str = QString("DELETE FROM blok WHERE id_blok = %1").arg(list.value(1).toInt());
+    if(!query.exec(str)){
+     return;
+        }
+
+    init_object_tree();
+    return;
+
+}
+void Objectmanager::edit_country_blok(){
+
+    edit_blok = new QDialog;
+    edit_blok->setMinimumSize(600,300);
+    edit_blok->setWindowTitle("Информация о блоках");
+    edit_blok->setWindowIcon(QIcon(":/Resources/add_but.png"));
+
+    blok_edit_table = new QTableWidget;
+    blok_edit_table->setWordWrap(true);
+   // blok_edit_table->setMinimumSize(600,300);
+
+  //  QPushButton *addButton = new QPushButton("Добавить");
+  //  addButton->setDefault(true);
+  //  connect(addButton,SIGNAL(clicked()),this,SLOT(add_prof_table_dlg()));
+    QPushButton *cancelButton = new QPushButton("Выход");
+    connect(cancelButton,SIGNAL(clicked()),edit_blok,SLOT(close()));
+
+    QHBoxLayout *buttonsLayout = new QHBoxLayout;
+    buttonsLayout->addStretch();
+    buttonsLayout->addWidget(cancelButton);
+    QHBoxLayout *h_lay = new QHBoxLayout;
+
+    h_lay->addWidget(blok_edit_table);
+
+    QGridLayout *mainLayout = new QGridLayout;
+    //mainLayout->setSizeConstraint(QLayout::SetFixedSize);
+    mainLayout->addLayout(h_lay, 0, 0);
+    mainLayout->addLayout(buttonsLayout, 1, 0);
+    edit_blok->setLayout(mainLayout);
+
+    table_blok();
+    connect(blok_edit_table,SIGNAL(cellClicked(int,int)),this,SLOT(show_redaktor_blok(int,int)));
+
+    if(edit_blok->exec() == QDialog::Accepted)
+    {
+
+    }
+}
+
+void Objectmanager::table_blok(){
+
+    blok_edit_table->setColumnCount(5);
+    blok_edit_table->hideColumn(1);
+    blok_edit_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    connect(blok_edit_table, SIGNAL(cellChanged(int,int)),
+                 blok_edit_table, SLOT(resizeRowsToContents()));
+
+    QStringList header_list;
+    header_list<<" "<<" "<<"Наименование блока"<<"Описание блока"<<"Эмблема";
+    blok_edit_table->setHorizontalHeaderLabels(header_list);
+
+    QSqlQuery query;
+    QString str = QString("SELECT id_blok,name_blok, description_blok, emblem_blok FROM blok");
+    if(!query.exec(str))
+    {
+        return;
+    }
+
+    QSqlRecord rec = query.record();
+    int id_blok;
+    int row = 0;
+    QString name_bl,desc_bl;
+    QTableWidgetItem *item;
+    blok_edit_table->setIconSize(QSize(25,25));
+    while(query.next())
+    {
+        id_blok = query.value(rec.indexOf("id_blok")).toInt();
+        name_bl = query.value(rec.indexOf("name_blok")).toString();
+        desc_bl = query.value(rec.indexOf("description_blok")).toString();
+
+        blok_edit_table->insertRow(row);
+
+        QIcon icon(QString(":/Resources/edit_1.png"));
+        item = new QTableWidgetItem(icon,0);
+        item->setToolTip("Редактировать блок");
+        blok_edit_table->setItem(row,0,item);
+
+        item = new QTableWidgetItem(QString::number(id_blok));
+        blok_edit_table->setItem(row,1,item);
+
+        item = new QTableWidgetItem(name_bl);
+        blok_edit_table->setItem(row,2,item);
+
+        item = new QTableWidgetItem(desc_bl);
+        blok_edit_table->setItem(row,3,item);
+
+        QPixmap pixmap;
+        pixmap.loadFromData( query.value(rec.indexOf("emblem_blok")).toByteArray());
+        QTableWidgetItem *foto_item = new QTableWidgetItem(QIcon(pixmap),"");
+        blok_edit_table->setItem(row,4,foto_item);
+
+    }
+    row++;
+    blok_edit_table->resizeColumnsToContents();
+}
+
+void Objectmanager::show_redaktor_blok(int row,int column){
+
+    if(column==0){
+
+    int id_blok = blok_edit_table->item(row,1)->text().toInt();
+
+    edit_dlg = new QDialog;
+    edit_dlg->setWindowTitle("Редактирование информации о блоке");
+    edit_dlg->setMinimumSize(QSize(600,400));
+
+    path_lab = new QLabel("Эмблема блока:");
+    path_lab->setMinimumWidth(100);
+    blok_desc = new QLabel("Описание блока");
+    blok_desc->setMinimumWidth(100);
+    blok_name = new QLabel("Наименование блока:");
+    blok_name->setMinimumWidth(100);
+
+    blok_filepath_edit = new QLineEdit();
+    blok_desc_edit = new QTextEdit();
+    blok_desc_edit->setFixedHeight(100);
+    blok_name_edit = new QLineEdit();
+
+    path_button = new QToolButton();
+    path_button->setText("...");
+    connect(path_button,SIGNAL(clicked()),this,SLOT(get_path_edit()));
+
+    QSqlQuery query;
+    QString str = QString("SELECT id_blok,name_blok, description_blok, emblem_blok FROM blok WHERE id_blok = %1").arg(id_blok);
+    if(!query.exec(str)){
+     return;
+    }
+
+    QSqlRecord rec = query.record();
+    int id_blok_;
+    QByteArray emblem;
+    while(query.next()){
+
+        id_blok_= query.value(rec.indexOf("id_blok")).toInt();
+        blok_name_edit->setText(query.value(rec.indexOf("name_blok")).toString());
+        blok_desc_edit->setPlainText(query.value(rec.indexOf("description_blok")).toString());
+        emblem = query.value(rec.indexOf("emblem_blok")).toByteArray();
+     }
+
+
+     ok_button = new QPushButton("Сохранить");
+     connect(ok_button,SIGNAL(clicked()),edit_dlg,SLOT(accept()));
+     cancel_button = new QPushButton("Отмена");
+     connect(cancel_button,SIGNAL(clicked()),edit_dlg,SLOT(close()));
+
+     QHBoxLayout *buttons_layout = new QHBoxLayout();
+     buttons_layout->addWidget(ok_button);
+     buttons_layout->addWidget(cancel_button);
+
+     QHBoxLayout *path_layout = new QHBoxLayout();
+     path_layout->addWidget(path_lab);
+     QHBoxLayout *path_layout_2 = new QHBoxLayout();
+     path_layout_2->addWidget(blok_filepath_edit);
+     path_layout_2->addWidget(path_button);
+
+     QHBoxLayout *code_layout = new QHBoxLayout();
+     code_layout->addWidget(blok_desc);
+     QHBoxLayout *code_layout_2 = new QHBoxLayout();
+     code_layout_2->addWidget(blok_desc_edit);
+
+     QHBoxLayout *name_layout = new QHBoxLayout();
+     name_layout->addWidget(blok_name);
+     QHBoxLayout *name_layout_2 = new QHBoxLayout();
+     name_layout_2->addWidget(blok_name_edit);
+
+     QGridLayout *mainLayout = new QGridLayout;
+     mainLayout->setSizeConstraint(QLayout::SetFixedSize);
+     mainLayout->addLayout(path_layout, 0, 0);
+     mainLayout->addLayout(path_layout_2, 0, 1);
+     mainLayout->addLayout(name_layout, 1, 0);
+     mainLayout->addLayout(name_layout_2, 1, 1);
+     mainLayout->addLayout(code_layout, 2, 0);
+     mainLayout->addLayout(code_layout_2, 2, 1);
+     mainLayout->addLayout(buttons_layout, 3, 1);
+
+     edit_dlg->setLayout(mainLayout);
+
+     if(edit_dlg->exec() == QDialog::Accepted){
+
+      clear_tableWidget(blok_edit_table);
+      
+	 if(emblem.isEmpty()){
+
+	  QSqlQuery query;
+      query.prepare("UPDATE blok SET name_blok = ?,description_blok = ?,emblem_blok = ? WHERE id_blok = ?");
+      query.addBindValue(blok_name_edit->text());
+      query.addBindValue(blok_desc_edit->toPlainText());
+
+      QFile file(blok_filepath_edit->text());
+        if(!file.open(QIODevice::ReadOnly)){
+        }
+
+        QByteArray ba = file.readAll();
+        query.addBindValue(ba);
+        query.addBindValue(id_blok_);
+        if(!query.exec())
+        {
+          QMessageBox::about(this,"Ошибка",query.lastError().text());
+        }
+
+		table_blok();
+      }
+	 else if((!emblem.isEmpty()) && (blok_filepath_edit->text()=="")){
+
+		QSqlQuery query;
+        query.prepare("UPDATE blok SET name_blok = ?, description_blok = ?,emblem_blok = ? WHERE id_blok = ?");
+        query.addBindValue(blok_name_edit->text());
+        query.addBindValue(blok_desc_edit->toPlainText());
+		query.addBindValue(emblem);
+        query.addBindValue(id_blok_);
+		if(!query.exec())
+        {
+          QMessageBox::about(this,"Ошибка",query.lastError().text());
+        }
+		table_blok();
+	  }
+	 else 	{
+		QSqlQuery query;
+		query.prepare("UPDATE blok SET name_blok = ?,description_blok = ?,emblem_blok = ? WHERE id_blok = ?");
+		query.addBindValue(blok_name_edit->text());
+		query.addBindValue(blok_desc_edit->toPlainText());
+
+		QFile file(blok_filepath_edit->text());
+        if(!file.open(QIODevice::ReadOnly)){
+        }
+
+        QByteArray ba = file.readAll();
+        query.addBindValue(ba);
+        query.addBindValue(id_blok_);
+        if(!query.exec())
+        {
+          QMessageBox::about(this,"Ошибка",query.lastError().text());
+        }
+
+		table_blok();
+	 }
+	 }
+
+	  init_object_tree();
+   return;
+    }
+
+
+}
+
+//========================= добавление и удаление страны ======================================
+void Objectmanager::add_new_country(){
+    add_country = new QDialog();
+    add_country->setMinimumSize(500,200);
+    add_country->setWindowTitle("Добавить новую страну");
+    add_country->setWindowIcon(QIcon(":/Resources/add_but.png"));
+
+    path_lab = new QLabel("Флаг страны:");
+    path_lab->setMinimumWidth(100);
+    blok_desc = new QLabel("Описание страны");
+    blok_desc->setMinimumWidth(100);
+    blok_name = new QLabel("Наименование страны:");
+    blok_name->setMinimumWidth(100);
+
+    blok_filepath_edit = new QLineEdit();
+    blok_desc_edit = new QTextEdit();
+    blok_desc_edit->setFixedWidth(300);
+    blok_name_edit = new QLineEdit();
+
+    QLabel *label_enemy = new QLabel("Враждебность страны:");
+    checkbox_enemy = new QCheckBox(" [-V- враждебное]", add_country);
+    label_enemy->setBuddy(checkbox_enemy);
+
+    path_button = new QToolButton();
+    path_button->setText("...");
+    connect(path_button,SIGNAL(clicked()),this,SLOT(get_path_flag()));
+
+    ok_button = new QPushButton("OK");
+    connect(ok_button,SIGNAL(clicked()),add_country,SLOT(accept()));
+    cancel_button = new QPushButton("Отмена");
+    connect(cancel_button,SIGNAL(clicked()),add_country,SLOT(close()));
+
+    QHBoxLayout *buttons_layout = new QHBoxLayout();
+    buttons_layout->addWidget(ok_button);
+    buttons_layout->addWidget(cancel_button);
+
+    QHBoxLayout *path_layout = new QHBoxLayout();
+    path_layout->addWidget(path_lab);
+    QHBoxLayout *path_layout_2 = new QHBoxLayout();
+    path_layout_2->addWidget(blok_filepath_edit);
+    path_layout_2->addWidget(path_button);
+
+    QHBoxLayout *code_layout = new QHBoxLayout();
+    code_layout->addWidget(blok_desc);
+    QHBoxLayout *code_layout_2 = new QHBoxLayout();
+    code_layout_2->addWidget(blok_desc_edit);
+
+    QHBoxLayout *check_layout = new QHBoxLayout;
+    check_layout->addWidget(label_enemy);
+    QHBoxLayout *check_layout_2 = new QHBoxLayout;
+    check_layout_2->addWidget(checkbox_enemy);
+
+    QHBoxLayout *name_layout = new QHBoxLayout();
+    name_layout->addWidget(blok_name);
+    QHBoxLayout *name_layout_2 = new QHBoxLayout();
+    name_layout_2->addWidget(blok_name_edit);
+
+    QGridLayout *mainLayout = new QGridLayout;
+    mainLayout->setSizeConstraint(QLayout::SetFixedSize);
+    mainLayout->addLayout(path_layout, 0, 0);
+    mainLayout->addLayout(path_layout_2, 0, 1);
+    mainLayout->addLayout(name_layout, 1, 0);
+    mainLayout->addLayout(name_layout_2, 1, 1);
+    mainLayout->addLayout(check_layout, 2, 0);
+    mainLayout->addLayout(check_layout_2, 2, 1);
+    mainLayout->addLayout(code_layout, 3, 0);
+    mainLayout->addLayout(code_layout_2, 3, 1);
+    mainLayout->addLayout(buttons_layout, 4, 1);
+
+    add_country->setLayout(mainLayout);
+
+    if(add_country->exec() == QDialog::Accepted)
+    {
+
+        if((blok_desc_edit->toPlainText() == "") || (blok_name_edit->text() == "")) return;
+
+        //------ По кнопке ОК добавление в БД блока --------
+        QSqlQuery query;
+        query.prepare("INSERT INTO country (name_country,description_country,enimy_coutry,flag) VALUES (?,?,?,?)");
+        query.addBindValue(blok_name_edit->text());
+        query.addBindValue(blok_desc_edit->toPlainText());
+        query.addBindValue(checkbox_enemy->isChecked());
+
+        QFile file(blok_filepath_edit->text());
+        if(!file.open(QIODevice::ReadOnly))
+        {
+           /* //================MessageBox===============================
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("Внимание");
+            msgBox.setText("Необходимо выбрать изображение");
+            msgBox.setStandardButtons(QMessageBox::Yes);
+            switch (msgBox.exec()) {
+            case QMessageBox::Yes:
+                return;
+                break;
+            }*/
+        }
+
+        QByteArray ba = file.readAll();
+        query.addBindValue(ba);
+
+        if(!query.exec())
+        {
+            QMessageBox::about(this,"Ошибка",query.lastError().text());
+        }
+
+        return;
+      }
+      return;
+}
+void Objectmanager::get_path_flag()
+{
+    QFileDialog *file_dlg = new QFileDialog(add_country);
+    QString filepath =  file_dlg->getOpenFileName(this,
+                                                  "Открыть изображение", "", tr("Image Files (*.png *.jpg *.bmp)"));
+    blok_filepath_edit->setText(filepath);
+    add_country->raise();
+}
+void Objectmanager::delete_country(){
+
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Предупреждение");
+    msgBox.setText("Вы действительно удалить страну?");
+
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setButtonText(QMessageBox::Yes, "Да");
+    msgBox.setButtonText(QMessageBox::No, "Нет");
+    switch (msgBox.exec()) {
+     case QMessageBox::Yes:
+         // yes was clicked
+         break;
+     case QMessageBox::No:
+         return;
+         break;
+     default:
+         return;
+         break;
+     }
+
+    QSqlQuery query;
+
+    QModelIndex index = UI->object_manager_tree->currentIndex();
+    if(!index.data(Qt::UserRole).toBool()) return;
+    QString id_country=index.data(Qt::UserRole).toString();
+    QStringList list=id_country.split("_");
+
+    QString str = QString("DELETE FROM blok_country WHERE id_country = %1 and id_blok=%2").arg(list.value(1)).arg(list.value(2));
+
+    if(!query.exec(str)){
+     return;
+        }
+
+    QSqlQuery query_co;
+    QString str_co = QString("DELETE FROM country WHERE id_country = %1").arg(list.value(1).toInt());
+    if(!query_co.exec(str_co)){
+     return;
+        }
+
+    init_object_tree();
+    return;
+
 }
 
 //========================= добавление страны в блок ==============================
