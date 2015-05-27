@@ -28,7 +28,7 @@ DEPENDPATH += 	. \
 
 LIBPATH   += ../build
 
-LIBS += -lmy_mapaccess -lreports -lsearchengine -leventsmodel
+LIBS += -lcoord -lmy_mapaccess -lreports -lsearchengine -leventsmodel
 
 
 

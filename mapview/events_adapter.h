@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QStandardItemModel>
 #include "signdata.h"
-#include "coord.h"
+//#include "coord.h"
 #include "mapscroll.h"
 #include <saturnSignTypes.h>
 
