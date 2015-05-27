@@ -1,5 +1,5 @@
-#if !defined(__GUI_config_eventsmodel_h)
-#define __GUI_config_eventsmodel_h
+#if !defined(__GUI_config_searchengine_h)
+#define __GUI_config_searchengine_h
 /* ==================================================================== */
 /*      We will use WIN32 as a standard windows define.                 */
 /* ==================================================================== */
@@ -17,14 +17,14 @@
 #include <windows.h>
 #pragma warning (disable:4251)
 #pragma warning (disable:4530)
-#ifdef __USE_DLL_EVENTSMODEL
+#ifdef __USE_DLL_SEARCHENGINE
 
-	#define __EXPORT_EVENTSMODEL __declspec(dllexport)
+	#define __EXPORT_SEARCHENGINE __declspec(dllexport)
 #else
-	#define __EXPORT_EVENTSMODEL __declspec(dllimport)
+	#define __EXPORT_SEARCHENGINE __declspec(dllimport)
 #endif
 #else
-	#define __EXPORT_EVENTSMODEL
+	#define __EXPORT_SEARCHENGINE
 #endif
 
 #endif

@@ -95,6 +95,13 @@ private slots:
 	void			PrintScreenSlot();
 
 	void			slotSelectButtonToggled(bool checked);
+	void			slotSearchObject();
+	void			chooseSelectedObjects();
+	void			chooseAllObjects();
+
+	void			slotSelectedObjectsListViewCustomMenu(const QPoint &pe);
+	void			slotRemoveOneObject();
+	void			slotClearSelectedList();
 
 private: 
     QTextCodec		* MainCodec;
@@ -129,18 +136,24 @@ private:
 	QListView *selectedObjectsListView;
 	QStandardItemModel *selectedObjectsModel;
 	QWidget *selectObjectsWidget;
+	QLineEdit *searchObjectLineEdit;
+
+	QListView *eventStatesView;
+	QStandardItemModel *eventStatesModel;
 	//---------------------------------------
 	ChangeCoordDialog *dlg;
 	QSettings *settings;
 	QMenu			* mouse_menu;
 	QDialog			* closeRSTdialog;
+	QDialog			* searchResultsDialog;
 	QLineEdit		* scale_info;
-
-	QMap<QString,int>	rstList;  //Словарь открытых растров
+	QListView		* searchResultListView;
+	QStandardItemModel *searchResultsModel;
 
 	QStandardItemModel *rstModel;
 	QListView *rstListView;
-	
+	// События: актуальное (1), планируемое (2), завершенное (3), несостоявшееся (4)
+	enum EventStates{ACTUAL = 1,PLANNING = 2,ENDED = 3, UNOCCURED = 4}; 
 };
 
 #endif

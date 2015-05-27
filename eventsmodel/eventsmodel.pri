@@ -1,4 +1,3 @@
-
 #Header files
 HEADERS +=  config_eventsmodel.h \
                         ./eventsmodel.h \
@@ -10,4 +9,5 @@ coord.h
 SOURCES += ./eventsmodel.cpp \
             event.cpp \
 coord.cpp
+
 

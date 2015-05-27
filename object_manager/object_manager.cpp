@@ -77,7 +77,7 @@ void Objectmanager::init_object_tree()
 	font.setBold(true);
 	QString sSql;
 	QSqlQuery query;
-	query.exec(QString("SELECT id_blok, name_blok FROM BLOK"));
+	query.exec(QString("SELECT id_blok, name_blok,emblem_blok FROM BLOK"));
 	QSqlRecord rec = query.record();
 		QStandardItemModel *model = new QStandardItemModel(this);
 		QStandardItem *parentItem = model->invisibleRootItem();	
@@ -86,22 +86,36 @@ void Objectmanager::init_object_tree()
 		QStandardItem *item = new QStandardItem(query.value(1).toString());
 		int id_blok_type = query.value(0).toInt();
 		QString data_type_obj="type_" + QString::number(id_blok_type);
+		
+		QPixmap pixmap;
+        QSize size_pic(25,25);
+        pixmap.loadFromData(query.value(2).toByteArray());
+	    pixmap = pixmap.scaled(size_pic,Qt::KeepAspectRatio);
+		
 		item->setData(data_type_obj,Qt::UserRole);
+		item->setData(pixmap,Qt::DecorationRole);
 		parentItem->appendRow(item);
 		
-			sSql = (QString("select co.name_country,co.id_country, blc.id_country from blok_country blc,country co where co.id_country=blc.id_country and blc.id_blok=%1").arg(query.value(0).toInt()));
+			sSql = (QString("select co.name_country,co.id_country, blc.id_country, co.flag from blok_country blc,country co where co.id_country=blc.id_country and blc.id_blok=%1").arg(query.value(0).toInt()));
 			QSqlQuery childrenQuery;
 			if(childrenQuery.exec(sSql)){
 				while(childrenQuery.next()){
 				QStandardItem *item_1 = new QStandardItem(childrenQuery.value(0).toString());
-				QString country_data="country_"+QString::number(childrenQuery.value(1).toInt()) + "_" + QString::number(id_blok_type);
+				QString country_data="country_" +QString::number(childrenQuery.value(1).toInt()) + "_" + QString::number(id_blok_type);
+				QPixmap pixmap_co;
+				pixmap_co.loadFromData(childrenQuery.value(3).toByteArray());
+				pixmap_co = pixmap_co.scaled(size_pic,Qt::KeepAspectRatio);
+				
 				item_1->setData(country_data,Qt::UserRole);
+				item_1->setData(pixmap_co,Qt::DecorationRole);
+				
 				item->appendRow(item_1);
 				}	
 			}
 		}
 	
 	model->setHeaderData(0, Qt::Horizontal,"Блоки и страны");
+	
 	
 	UI->object_manager_tree->setModel(model);
 	UI->object_manager_tree->setSortingEnabled(true);
@@ -518,69 +532,85 @@ void Objectmanager::delete_country_blok()
 //================= выбор объекта из дерева =====================================
 void Objectmanager::show_objects(const QModelIndex &index)
 {
-    clear_tableWidget(UI->coord_table);
-	UI->property_object->setModel(0);
+ 	UI->property_object->setModel(0);
 	QFont font;
 	font.setBold(true);
 	QVariant id=index.data(Qt::UserRole);
-	if (id.type() == QVariant::String) { 
-    QString user_data=id.toString();
+	if (id.type() == QVariant::String) 
+	{ 
+		QString user_data=id.toString();
 
-	UI->add_many_coord_button->setEnabled(true);
-    QProgressDialog progress("Формирование информации о регионах", "Отмена", 0, 100);
-    progress.setWindowModality(Qt::WindowModal);
-    progress.setWindowTitle("Формирование информации о регионах");
+		UI->add_many_coord_button->setEnabled(true);
+		
 
-    progress.show();
+		
 
+		QStringList list=user_data.split("_");
+		QStringList listtt;
+		//progress.setValue(15);
+		if(list.value(0)=="country") 
+		{
+			int id_country = list.value(1).toInt();
+			QSqlQuery query;
 
-    QStringList list=user_data.split("_");
-	QStringList listtt;
-    progress.setValue(15);
-		if(list.value(0)=="country") {
-        int id_country = list.value(1).toInt();
-        QSqlQuery query;
+			query.exec(QString("SELECT id_region, name_region,parent_region FROM region WHERE id_country=%1 order by name_region").arg(id_country));
+			model = new QStandardItemModel(this);
+			QStandardItem *parentItem = model->invisibleRootItem();
+			//progress.setValue(25);
+			int counter = 0;
+			QSqlRecord rez = query.record();
+			int maxCount = rez.count();
+			
+			QProgressDialog progress("Формирование информации о регионах", "Отмена", 0, maxCount);
+			progress.setWindowModality(Qt::WindowModal);
+			progress.setWindowTitle("Формирование информации о регионах");
+						
 
-		query.exec(QString("SELECT id_region, name_region,parent_region FROM region WHERE id_country=%1 order by name_region").arg(id_country));
-		model = new QStandardItemModel(this);
-		QStandardItem *parentItem = model->invisibleRootItem();
-        progress.setValue(25);
-		while (query.next()) {
+			while (query.next()) 
+			{
+				progress.setValue(counter);
+				if(progress.wasCanceled())	break;
 
-			QSqlQuery query_count; // подсчет ********
-			query_count.exec(QString("select count(name_region) from region where parent_region = %1").arg(query.value(0).toInt()));
+				QSqlQuery query_count; // подсчет ********
+				query_count.exec(QString("select count(name_region) from region where parent_region = %1").arg(query.value(0).toInt()));
 
-            while (query_count.next()) {
-            int g = query_count.value(0).toInt(); //********
-            int id_region=query.value(0).toInt();
-			QIcon icon = QIcon(iconsList.at(calc_info_for_region(query.value(0).toString())));		
-			QStandardItem *item = new QStandardItem(query.value(1).toString() + " ["  + QString::number(g) + "]");
-			item->setIcon(icon);
-			QString data_region="region_" + QString::number(id_region) + "_" + QString::number(id_country) + "_" + QString::number(calc.get_Rez_on_id_region(id_region));
-			item->setData(data_region,Qt::UserRole);
-			//item->setData(QIcon(set_icon(query.value(2).toInt())),Qt::DecorationRole);
-			model->appendRow(item);
-            child_region_objects(item,id_region);
-        }
-        progress.setValue(35);
+				while (query_count.next()) 
+				{
+					int g = query_count.value(0).toInt(); //********
+					int id_region=query.value(0).toInt();
+					QIcon icon = QIcon(iconsList.at(calc_info_for_region(query.value(0).toString())));		
+					QStandardItem *item = new QStandardItem(query.value(1).toString() + " ["  + QString::number(g) + "]");
+					item->setIcon(icon);
+					QString data_region="region_" + QString::number(id_region) + "_" + QString::number(id_country) + "_" + QString::number(calc.get_Rez_on_id_region(id_region));
+					item->setData(data_region,Qt::UserRole);
+					//item->setData(QIcon(set_icon(query.value(2).toInt())),Qt::DecorationRole);
+					model->appendRow(item);
+					child_region_objects(item,id_region);
+					
+				}
+	   // progress.setValue(35);
+				counter++;
 			}
 
-        progress.setValue(55);
-	QStandardItem *item = new QStandardItem(QIcon(":/Resources/add.png"),"Добавить регион");
-    item->setFont(font);
-	item->setData(QString("pregion_%1").arg(id_country),Qt::UserRole);
-    progress.setValue(75);
-	model->appendRow(item);
-	
-//	model->sort(2,Qt::AscendingOrder);
-	UI->columnView->setModel(model);
+    //progress.setValue(55);
+			QStandardItem *item = new QStandardItem(QIcon(":/Resources/add.png"),"Добавить регион");
+			item->setFont(font);
+			item->setData(QString("pregion_%1").arg(id_country),Qt::UserRole);
+			//progress.setValue(75);
+			model->appendRow(item);
+			
+		//	model->sort(2,Qt::AscendingOrder);
+			UI->columnView->setModel(model);
 
-    progress.setValue(100);
-    progress.close();
+			progress.setValue(100);
+			progress.close();
 		}
-	return;
 	}
+	return;
 }
+
+
+
 int Objectmanager::calcul(int id_region){
 
     int count_smi_ = count_smi(id_region);

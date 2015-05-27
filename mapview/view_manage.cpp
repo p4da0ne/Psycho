@@ -454,30 +454,90 @@ QList<SignData*> ViewManage::getPersones(long int hMap,double x1,double y1,doubl
 }
 
 //==================================================================================
-//==== Метод возвращает список объектов SignData с информацией =====================
+//==== Метод(ы) возвращает список объектов SignData с информацией =====================
 //==== для нанесения на карту и инициализации условных знаков специальных условий ==
 //==================================================================================
 QList<SignData*> ViewManage::getSpecialConditions(long int hMap,double x1,double y1,double x2,double y2)
 {
-	QList<SignData*> conditionsList;
-
+	QList<SignData*> spec_cond_List;
+///
 	QSqlQuery query;
-	QString str=QString("SELECT special_conditions.name_special_conditions, special_conditions.semantika_1, \
-						special_conditions.semantika_2 , type_special_conditions.id_sign, si.sign_key, \
-						coordinates.latitude_wgs_84_g,coordinates.latitude_wgs_84_m,coordinates.latitude_wgs_84_s,\
-						coordinates.longitude_wgs_84_g,coordinates.longitude_wgs_84_m,coordinates.longitude_wgs_84_s, \
-						special_conditions.id_special_conditions \
-						FROM special_conditions, region, type_special_conditions, coordinates, coord_spec_cond, signs si \
-						WHERE special_conditions.id_region=region.id_region \
-						AND special_conditions.id_type_special_conditions=type_special_conditions.id_type_special_conditions \
-						AND coord_spec_cond.id_special_conditions=special_conditions.id_special_conditions \
-						AND coord_spec_cond.id_coordinates=coordinates.id_coordinates\
-						AND type_special_conditions.id_sign=si.id_sign");
+	int idSc;
+	
+	QList<int> scList;
+
+	query.exec(QString("SELECT id_special_conditions from special_conditions ORDER BY id_special_conditions"));
+	while (query.next())
+	{ 
+		idSc = query.value(0).toInt();
+
+		scList.append(idSc);
+	}
+	
+	for(int i=0;i<scList.count();i++)
+	{
+		if(isScOnMap(hMap,scList.at(i),x1,y1,x2,y2))
+		{
+			//========== Код условного знака   =================
+			QSqlQuery query_;
+			QString ex_cod_;
+				QString str = QString("SELECT s.sign_key \
+									 FROM special_conditions sc, type_special_conditions tsc, signs s \
+									 WHERE sc.id_type_special_conditions=tsc.id_type_special_conditions \
+									 AND tsc.id_sign = s.id_sign \
+									 AND sc.id_special_conditions = %1").arg(scList.at(i));
+			if(query_.exec(str))
+			{
+				QSqlRecord rec = query_.record();
+					query_.next();
+					ex_cod_ = query_.value(rec.indexOf("sign_key")).toString();
+			}
+		
+			//============== список координат =======================
+			QList<Coord*> coordList = getSCMetric(hMap,scList.at(i));
+
+			//================= cемантики ============================
+			QMap<long int,QString> semantic_map;
+			QSqlQuery query_sem;
+			QString str_sem = QString("SELECT special_conditions.semantika_1, special_conditions.semantika_2 \
+								FROM special_conditions \
+								WHERE special_conditions.id_special_conditions = %1").arg(scList.at(i));
+			if(query_sem.exec(str_sem))
+				{
+				
+				QSqlRecord rec_sem = query_sem.record();
+				query_sem.next();
+			
+				semantic_map[17] = query_sem.value(rec_sem.indexOf("semantika_1")).toString();
+				semantic_map[19] = query_sem.value(rec_sem.indexOf("semantika_2")).toString();
+				semantic_map[17501] = QString::number(scList.at(i));
+				semantic_map[17502] = QString::number(SPECIAL_CONDITIONS);
+				
+				}
+						
+			SignData *signData = new SignData(ex_cod_,coordList,semantic_map);
+
+			spec_cond_List.append(signData);
+		}
+	}
+	
+	return spec_cond_List;
+}
+//========== проверяем попадос особых условий на нашу карту =================================
+bool ViewManage::isScOnMap(long int hMap,int idSc,double x1,double y1,double x2,double y2)
+{  
+	QSqlQuery query;
+	
+	QString str=QString("SELECT c.latitude_wgs_84_g, c.latitude_wgs_84_m, c.latitude_wgs_84_s, \
+								c.longitude_wgs_84_g, c.longitude_wgs_84_m, c.longitude_wgs_84_s \
+						 FROM coord_spec_cond c_sc, coordinates c \
+						 WHERE c_sc.id_coordinates = c.id_coordinates \
+						 AND c_sc.id_special_conditions = %1").arg(idSc);
 	if(query.exec(str))
 	{
 		QSqlRecord rec = query.record();
 		while (query.next())
-		{
+		{		
 			int wgs_g = query.value(rec.indexOf("latitude_wgs_84_g")).toInt();
 			int wgs_m = query.value(rec.indexOf("latitude_wgs_84_m")).toInt();
 			double wgs_s = query.value(rec.indexOf("latitude_wgs_84_s")).toDouble();
@@ -487,40 +547,55 @@ QList<SignData*> ViewManage::getSpecialConditions(long int hMap,double x1,double
 					
 			///получить из запроса 6 параметров координат WGS
 
-			Coord c1(wgs_g,wgs_m,wgs_s,long_wgs_g,long_wgs_m,long_wgs_s);
+			Coord scCoordinates(wgs_g,wgs_m,wgs_s,long_wgs_g,long_wgs_m,long_wgs_s);
 			
-			Coord *c2 = WGStoPlane(hMap,&c1);		
+			Coord *plainscCoordinates = WGStoPlane(hMap,&scCoordinates);		
 			
-			double x_coord = c2->getX();
-			double y_coord = c2->getY();
+			double x_coord = plainscCoordinates->getX();
+			double y_coord = plainscCoordinates->getY();
 
+			//если хоть одна координата региона попадает в область карты, то выходим с true
+			if(((x_coord > x1) && (y_coord > y1) && (x_coord < x2) && (y_coord < y2))) return true;
+		}
+		return false;
+	}
+	return false;
+}
+//============== Возвращаем координаты для ОСОБЫХ УСЛОВИЙ ======================================
+QList<Coord*> ViewManage::getSCMetric(long int hMap,int idSC)
+{
+	QSqlQuery query;
+	QList<Coord*> coordList;
+
+	QString str=QString("SELECT c.latitude_wgs_84_g, c.latitude_wgs_84_m, c.latitude_wgs_84_s, \
+								c.longitude_wgs_84_g, c.longitude_wgs_84_m, c.longitude_wgs_84_s \
+						 FROM coord_spec_cond c_sc, coordinates c \
+						 WHERE c_sc.id_coordinates = c.id_coordinates \
+						 AND c_sc.id_special_conditions = %1 \
+						 ORDER BY c.id_coordinates").arg(idSC);
+	if(query.exec(str))
+	{
+		QSqlRecord rec = query.record();
+		while (query.next())
+		{		
+			int wgs_g = query.value(rec.indexOf("latitude_wgs_84_g")).toInt();
+			int wgs_m = query.value(rec.indexOf("latitude_wgs_84_m")).toInt();
+			double wgs_s = query.value(rec.indexOf("latitude_wgs_84_s")).toDouble();
+			int long_wgs_g = query.value(rec.indexOf("longitude_wgs_84_g")).toInt();
+			int long_wgs_m = query.value(rec.indexOf("longitude_wgs_84_m")).toInt();
+			double long_wgs_s = query.value(rec.indexOf("longitude_wgs_84_s")).toDouble();
+					
+			///получить из запроса 6 параметров координат WGS
+
+			Coord scCoordinates(wgs_g,wgs_m,wgs_s,long_wgs_g,long_wgs_m,long_wgs_s);
 			
-			if(!((x_coord > x1) && (y_coord > y1) && (x_coord < x2) && (y_coord < y2))) continue;
-
-			QString name_spec_cond = query.value(rec.indexOf("name_special_conditions")).toString();
-			QString signCode = query.value(rec.indexOf("sign_key")).toString();
-			QString Sem_1_spec_cond = query.value(rec.indexOf("semantika_1")).toString();
-			QString Sem_2_spec_cond = query.value(rec.indexOf("semantika_2")).toString();
-			QString idSpecialConditions = query.value(rec.indexOf("id_special_conditions")).toString();
-
-			QList<Coord*> coordList;
-			Coord *coord = new Coord(x_coord,y_coord);	
-			coordList.append(coord);
-
-			QMap<long int,QString> semantic_map;
-			semantic_map[17] = Sem_1_spec_cond;
-			semantic_map[19] = Sem_2_spec_cond;
-			semantic_map[17501] = idSpecialConditions;
-			semantic_map[17502] = QString::number(SPECIAL_CONDITIONS);
-
-			SignData *signData = new SignData(signCode,coordList,semantic_map);
-				
-			conditionsList.append(signData);
+			Coord *plainscCoordinates = WGStoPlane(hMap,&scCoordinates);		
+			
+			coordList.append(plainscCoordinates);			
 		}
 	}
-	return conditionsList;
+	return coordList;	
 }
-
 
 //================================================================================
 //====== Метод возвращает строку с типом и наименованием объекта =================

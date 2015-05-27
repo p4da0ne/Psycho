@@ -26,6 +26,9 @@ public:
 	QList<SignData*> getFormations(long int hMap,double x1,double y1,double x2,double y2);
 	QList<SignData*> getSpecialConditions(long int hMap,double x1,double y1,double x2,double y2);
 	QList<SignData*> getPersones(long int hMap,double x1,double y1,double x2,double y2);
+	QList<Coord*> getSCMetric(long int hMap,int idSC);
+	bool isScOnMap(long int hMap,int idRegion,double x1,double y1,double x2,double y2);
+
 
 	QString getObjectTypeAndName(int idObject, int objectType);
 	QString getObjectInfo(int idObject, int objectType);
