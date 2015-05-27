@@ -13,18 +13,20 @@ INCLUDEPATH += ./ \
 			   ../my_mapaccess \
 			   ./calculatingClasses \
 			   ../reports \
-			   ../searchengine
+			   ../searchengine \
+			   ../eventsmodel
 			   
 
 			   
 DEPENDPATH += 	. \
 				../my_mapaccess \
 				../reports \
-				../searchengine
+				../searchengine \
+				 ../eventsmodel
 
 LIBPATH   += ../build
 
-LIBS += -lmy_mapaccess -lreports -lsearchengine
+LIBS += -lmy_mapaccess -lreports -lsearchengine -leventsmodel
 
 
 DEFINES += __USE_DLL_XXXXX

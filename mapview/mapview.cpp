@@ -34,6 +34,7 @@
 #include "move_model.h"
 #include <reports.h>
 #include <searchengine.h>
+#include "events_adapter.h"
 
 
 MapView::MapView(QWidget *parent, const char *name)
@@ -1462,6 +1463,20 @@ void MapView::showCheckedCalcResults()
 void MapView::showCheckedEvents()
 {
 
+	QDate *startDate = new QDate(beginEventDate->date());
+	QDate *endDate = new QDate(endEventDate->date());
+
+	//------ Получение координат углов карты ---------
+	double x1 = mapwin->getMapX1(mapwin->hMap);
+	double y1 = mapwin->getMapY1(mapwin->hMap);
+	double x2 = mapwin->getMapX2(mapwin->hMap);
+	double y2 = mapwin->getMapY2(mapwin->hMap);
+	//-------------------------------------------------
+	
+	
+	EventsAdapter *adapter = new EventsAdapter(startDate,endDate,selectedObjectsModel,eventStatesModel);
+	adapter->getEvents(mapwin->hMap,x1,y1,x2,y2);
+	
 }
 
 //============================================================================

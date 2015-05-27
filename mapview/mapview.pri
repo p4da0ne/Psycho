@@ -11,7 +11,8 @@ HEADERS		= config_mapview.h \
 			  calculatingClasses/formationsPsiLooses.h \
 			  calculatingClasses/formationsMPS.h \
 			  move_model.h \
-			  change_coord_dialog.h
+			  change_coord_dialog.h \
+			  events_adapter.h
 			  
 SOURCES		= mapview.cpp \
 			  mapscroll.cpp \
@@ -25,5 +26,6 @@ SOURCES		= mapview.cpp \
 			  calculatingClasses/formationsPsiLooses.cpp \
 			  calculatingClasses/formationsMPS.cpp \
 			  move_model.cpp \
-			  change_coord_dialog.cpp
+			  change_coord_dialog.cpp \
+			  events_adapter.cpp
 			  
