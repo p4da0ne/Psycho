@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include "signdata.h"
-#include "coord.h"
+#include "../coord/coord.h"
 #include "mapscroll.h"
 #include <saturnSignTypes.h>
 
