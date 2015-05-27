@@ -1,6 +1,5 @@
 HEADERS		= config_mapview.h \
 			  mapview.h \
-			  coord.h \
 			  mapscroll.h \
 			  view_manage.h \
 			  signdata.h \
@@ -16,7 +15,6 @@ HEADERS		= config_mapview.h \
 			  
 SOURCES		= mapview.cpp \
 			  mapscroll.cpp \
-			  coord.cpp \
 			  view_manage.cpp \
 			  signdata.cpp \
 			  calculatingClasses/calculating_mps.cpp \
@@ -28,4 +26,3 @@ SOURCES		= mapview.cpp \
 			  move_model.cpp \
 			  change_coord_dialog.cpp \
 			  events_adapter.cpp
-			  
