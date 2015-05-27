@@ -520,7 +520,11 @@ QWidget* MapView::createEventPanel()
 
 	eventStatesModel = new QStandardItemModel;
 	
-	QStandardItem *stateItem = new QStandardItem;
+	EventsAdapter *adapter = new EventsAdapter;
+
+	eventStatesModel = adapter->getEventStatusList();
+
+	/*QStandardItem *stateItem = new QStandardItem;
 	stateItem->setData(QString("Актуальные"),Qt::DisplayRole);
 	stateItem->setData(ACTUAL,Qt::UserRole);
 	stateItem->setCheckable(true);
@@ -546,7 +550,7 @@ QWidget* MapView::createEventPanel()
 	stateItem->setData(UNOCCURED,Qt::UserRole);
 	stateItem->setCheckable(true);
 	stateItem->setCheckState(Qt::Checked);
-	eventStatesModel->appendRow(stateItem);
+	eventStatesModel->appendRow(stateItem);*/
 
 	eventStatesView = new QListView;
 	eventStatesView->setModel(eventStatesModel);

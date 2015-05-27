@@ -12,16 +12,20 @@
 class EventsAdapter : public QObject
 {
  public:
-    EventsAdapter(QDate *startPeriod=0,QDate *endPeriod=0,
+    EventsAdapter(QDate *startPeriod,QDate *endPeriod,
 				  QStandardItemModel *objectsModel=0,QStandardItemModel *statesModel=0,
 				  QStandardItemModel *eventTypesModel=0,QObject *parent=0);
+
+	EventsAdapter(QObject *parent=0);
     ~EventsAdapter();
 
 	
 public:
 	Coord * WGStoPlane(long int hMap,Coord *coordObject);
 	Coord * planeToWGS(long int hMap,Coord *coordObject);
-	
+	QStandardItemModel * getEventStatusList();
+
+
 	QList<SignData*> getEvents(long int hMap,double x1,double y1,double x2,double y2);
 private:
 	QDate *startPeriod;

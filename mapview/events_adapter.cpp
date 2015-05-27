@@ -19,6 +19,13 @@ EventsAdapter::EventsAdapter(QDate *startPeriod,QDate *endPeriod,
 	
 }
 
+EventsAdapter::EventsAdapter(QObject *parent)
+    : QObject(parent)
+{
+
+	
+}
+
 EventsAdapter::~EventsAdapter()
 {
     
@@ -96,6 +103,35 @@ Coord* EventsAdapter::planeToWGS(long int hMap,Coord *coordObject)
     }
 	return tempCoord;
 }
+
+
+QStandardItemModel * EventsAdapter::getEventStatusList()
+{
+	QStandardItemModel *eventStatusList = new QStandardItemModel;
+
+	QSqlQuery query;
+	QString str=QString("SELECT id_event_status, name_event_status \
+						 FROM event_status \
+						 ORDER BY id_event_status");
+	if(query.exec(str))
+	{
+		QSqlRecord rec = query.record();
+		while (query.next())
+		{
+			int idStatus = query.value(rec.indexOf("id_event_status")).toInt();
+			QString statusName = query.value(rec.indexOf("name_event_status")).toString();
+		
+			QStandardItem *stateItem = new QStandardItem;
+			stateItem->setData(statusName,Qt::DisplayRole);
+			stateItem->setData(idStatus,Qt::UserRole);
+			stateItem->setCheckable(true);
+			stateItem->setCheckState(Qt::Checked);
+			eventStatusList->appendRow(stateItem);
+		}
+	}
+	return eventStatusList;
+}
+
 
 
 //================================================================================
