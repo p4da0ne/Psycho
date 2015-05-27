@@ -60,6 +60,7 @@ public slots:
 	void delete_country_blok();
 
 private slots:
+    void updateDB(QStandardItem* item);
     void show_nations_region();
     void show_nations_ls();
     void show_nations_gr();
@@ -79,11 +80,14 @@ private slots:
     void get_path();
 	void get_path_edit();
     void get_path_flag();
+    void get_path_flag_edit();
     void delete_blok();
     void delete_country();
     void add_new_country();
     void edit_country_blok();
+    void edit_country();
     void show_redaktor_blok(int row, int column);
+    void show_redaktor_country(int row, int column);
 	void show_objects(const QModelIndex &index);
 	void column_item_clicked ( const QModelIndex &index );
 	void delete_region();
@@ -110,7 +114,9 @@ private slots:
 
 private:
     QTableWidget *blok_edit_table;
+    QTableWidget *country_edit_table;
     QDialog *edit_blok;
+    QDialog *edit_country_dlg;
     QDialog *add_blok;
     QDialog *add_country;
     QDialog *edit_dlg;
@@ -157,6 +163,7 @@ private:
 	void fill_combobox_blok(QComboBox *box, int id_current_blok);
     void show_coordinates(QString,int,QString,QString);
     void table_blok();
+    void table_country();
     Calculate_K_omkrf calc;
     calculating_mps calc_mps;
     int calc_info_for_region(QString id_region);

@@ -2,9 +2,10 @@
 #define SIMLEDELEGATE_H
 
 #include <QSqlRelationalDelegate>
+#include <QItemDelegate>
 #include <QPainter>
 
-class simleDelegate : public QSqlRelationalDelegate
+class simleDelegate : public QItemDelegate
 {
 	Q_OBJECT
 

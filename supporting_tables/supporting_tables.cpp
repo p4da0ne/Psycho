@@ -86,9 +86,9 @@ void SupportingTables::init_supporting_tree()
 
 		//root_item = add_root("Организации","-");
 
-		root_item = add_root("Страны","country");
+    //	root_item = add_root("Страны","country");
 		
-		root_item = add_root("Блоки стран","blok");
+    //	root_item = add_root("Блоки стран","blok");
 		
 		root_item = add_root("Воинские звания","military_rank");
 

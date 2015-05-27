@@ -3,7 +3,7 @@
 
 
 simleDelegate::simleDelegate(QObject *parent=0)
-	: QSqlRelationalDelegate(parent)
+    : QItemDelegate(parent)
 {
 
 
@@ -32,30 +32,30 @@ void simleDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & opt
 //	o.font.setBold(true);
 //	o.palette.setBrush(QPalette::Base,fontt);
 
-	QSqlRelationalDelegate::paint(painter,option,index);
+    QItemDelegate::paint(painter,option,index);
 }
 QSize simleDelegate::sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index )
 {
-	return QSqlRelationalDelegate::sizeHint (option,index);
+    return QItemDelegate::sizeHint (option,index);
 }
 
 void simleDelegate::updateEditorGeometry ( QWidget * editor, const QStyleOptionViewItem & option, const QModelIndex & index ) const
 {
-	QSqlRelationalDelegate::updateEditorGeometry (editor,option,index );
+    QItemDelegate::updateEditorGeometry (editor,option,index );
 }
 void simleDelegate::setModelData ( QWidget * editor, QAbstractItemModel * model, const QModelIndex & index ) const{
 
-	QSqlRelationalDelegate::setModelData (editor,model,index );
+    QItemDelegate::setModelData (editor,model,index );
 
 }
 void simleDelegate::setEditorData ( QWidget * editor, const QModelIndex & index ) const{
 
-QSqlRelationalDelegate::setEditorData (editor,index );
+QItemDelegate::setEditorData (editor,index );
 }
 QWidget * simleDelegate::createEditor ( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const{
 
 
-	QWidget *w = QSqlRelationalDelegate::createEditor(parent,option,index);
+    QWidget *w = QItemDelegate::createEditor(parent,option,index);
 	if (QDoubleSpinBox *sb = qobject_cast<QDoubleSpinBox *>(w)){
 	//	sb->setDecimals(5);
 		sb->setSingleStep(0.01);

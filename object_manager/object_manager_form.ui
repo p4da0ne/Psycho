@@ -57,7 +57,7 @@
              <string>добавить новый блок</string>
             </property>
             <property name="text">
-             <string>Новый блок</string>
+             <string>  Новый блок</string>
             </property>
             <property name="icon">
              <iconset resource="object_manager.qrc">
@@ -90,7 +90,7 @@
              <string>добавить новую страну</string>
             </property>
             <property name="text">
-             <string>Новая страна</string>
+             <string>  Новая страна</string>
             </property>
             <property name="icon">
              <iconset resource="object_manager.qrc">
@@ -227,7 +227,11 @@
          <property name="title">
           <string>Информация об объекте</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_5"/>
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <widget class="QTableView" name="info_tableView"/>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
