@@ -10,16 +10,17 @@ SUBDIRS += \
 		coord \
         manage_users \
         output \
+		textedit \
         reports \
         dataaccess \
         db_saturn \
         supporting_tables \
         object_manager \
         signs_edit \
-        textedit \
         eventsmodel \
 		searchengine \
 		mapview \
+		event_manager \
 		mainform \
 
 	

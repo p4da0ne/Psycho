@@ -14,12 +14,24 @@ DEPENDPATH += ../my_mapaccess \
               ../mapview \
               ../output \
               ../reports \
-              ../signs_edit
+              ../signs_edit \
+			  ../event_manager
 
 include(mainform.pri)
 
 
-LIBS += -L../build -lmy_mapaccess -ldataaccess -ldb_saturn -lsupporting_tables -lmanage_users -lmapview  -loutput -lreports -lobject_manager -lsigns_edit
+LIBS += -L../build -lmy_mapaccess \
+					-ldataaccess \
+					-ldb_saturn \
+					-lsupporting_tables \
+					-lmanage_users \
+					-lmapview \
+					-loutput \
+					-lreports \
+					-lobject_manager \
+					-lsigns_edit \
+					-levent_manager
+					
 DEFINES     += BUILD_DLL
 
 win32 {
@@ -34,6 +46,7 @@ INCLUDEPATH += . \
         ../mapview \
         ../output \
         ../reports \
-        ../signs_edit
+        ../signs_edit \
+		../event_manager
 }
 

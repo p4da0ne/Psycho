@@ -19,6 +19,7 @@
 #include "mapsettingsdialog.h"
 #include "dbbackup.h"
 #include "signs_edit.h"
+#include "event_manager.h"
 
 
 namespace Ui
@@ -57,6 +58,7 @@ private slots:
     void show_signs_edit();
 	void slotOpenMapSettingsDialog();
 	void slotOpenBackupDbDialog();
+	void slotOpenEventManagerForm();
 	void closeTab(int i);
 	//void show_dialog_add_new_region(int id_parent,bool is_parent_ko);
 
@@ -71,6 +73,7 @@ private:
 	QAction * sett_act3;
 	QAction * sett_act4;
     QAction * sett_act5;
+	QAction * event_act;
 
 	QMenu * DB_work_menu;
 	QMenu * oper_menu;
@@ -97,12 +100,13 @@ private:
 	Objectmanager *obman;
 	MapView *mapView;
 	SignsEdit *signs;
+	EventManager *eventManager;
 
-	QMdiSubWindow * mapW;
+	QMdiSubWindow * mapWin;
 	QMdiSubWindow * obmanager;
 	QMdiSubWindow * signs_window;
-//	CalculatingProblemManager *calc;
-   // MapView * mapView;
+	QMdiSubWindow * events_window;
+
 
     bool create_connection(QString,QString,QString,QString,QString);
 	bool close_connection();
@@ -120,6 +124,7 @@ private:
 	void add_menu_enter_system(QMenu *menu);
 	void add_menu_supporting_tables(QMenu *oper_menu);
 	void add_menu_object_manager(QMenu *oper_menu);
+	void add_menu_event_manager(QMenu *oper_menu);
 	bool connection_flag;
 	db_saturn *db;
 	//add_object *reg;
