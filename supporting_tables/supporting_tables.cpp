@@ -83,7 +83,7 @@ void SupportingTables::init_supporting_tree()
 	root_item = add_root("Персоналии","-");
 		add_child(root_item,"Типы персоналий","type_persones");
 		
-
+    root_item = add_root("События","type_event");
 		//root_item = add_root("Организации","-");
 
 		root_item = add_root("Страны","country");

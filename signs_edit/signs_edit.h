@@ -11,6 +11,9 @@
 #include <QStandardItemModel>
 #include <QHeaderView>
 #include <QToolButton>
+#include <QMoveEvent>
+#include <QMenu>
+
 
 
 namespace Ui

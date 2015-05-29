@@ -1,7 +1,7 @@
 #ifndef SIGNDATA_H
 #define SIGNDATA_H
 
-#include "coord.h"
+#include "../coord/coord.h"
 
 #include <QString>
 #include <QList>

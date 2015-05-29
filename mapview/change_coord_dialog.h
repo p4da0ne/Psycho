@@ -10,7 +10,7 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QMessageBox>
-#include "coord.h"
+#include "../coord/coord.h"
 
 class ChangeCoordDialog : public QDialog
 {

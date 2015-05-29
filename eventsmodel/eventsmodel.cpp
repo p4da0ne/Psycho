@@ -14,28 +14,32 @@ void EventsModel::UpdateModel(){
     this->clear();
     QStandardItem * rootItem = this->invisibleRootItem();
     QSqlQuery query;
-    query.exec("SELECT * FROM events ORDER BY time_event_start");
+    query.exec("SELECT e.id_event, e.description_event, e.name_event,e.id_type_event_object,e.id_object,e.resume_event,e.time_event_start,e.time_event_end, s.name_event_status,ty.name_type_event, si.sign_key FROM events e, event_status s, type_event ty, signs si WHERE e.id_event_status = s.id_event_status AND e.id_type_event = ty.id_type_event AND ty.id_sign = si.id_sign ORDER BY time_event_start");
     int name_event = query.record().indexOf("name_event");
     int time_event_start = query.record().indexOf("time_event_start");
     int time_event_end = query.record().indexOf("time_event_end");
     int description_event = query.record().indexOf("description_event");
     int id_type_event_object = query.record().indexOf("id_type_event_object");
     int id_object = query.record().indexOf("id_object");
+    int resume_event = query.record().indexOf("resume_event");
     int id_event = query.record().indexOf("id_event");
+    int name_event_status = query.record().indexOf("name_event_status");
+    int name_type_event = query.record().indexOf("name_type_event");
+    int sign_key = query.record().indexOf("sign_key");
     while (query.next())
     {
+
         QList<QStandardItem *> items;
         QStandardItem * item = new QStandardItem(query.value(name_event).toString());
-        QList<QList<QStandardItem *> > media_items;
-        media_items = appendMediaEvent(query.value(id_event).toInt());
-        for (int i = 0; i < media_items.size(); ++i) {
-            item->appendRow(media_items.at(i));
-        }
         items.append(item);
-        items.append(new QStandardItem(query.value(name_event).toString()));
-        items.append(new QStandardItem(query.value(time_event_start).toString()));
-        items.append(new QStandardItem(query.value(time_event_end).toString()));
-        items.append(new QStandardItem(query.value(description_event).toString()));
+        QStandardItem * name_event_item = new QStandardItem(query.value(name_event).toString());
+        items.append(name_event_item);
+        QStandardItem * time_event_start_item = new QStandardItem(query.value(time_event_start).toString());
+        items.append(time_event_start_item);
+        QStandardItem * time_event_end_item = new QStandardItem(query.value(time_event_end).toString());
+        items.append(time_event_end_item);
+        QStandardItem * description_event_item = new QStandardItem(query.value(description_event).toString());
+        items.append(description_event_item);
         items.append(this->appendObjectEvent(query.value(id_type_event_object).toInt(),query.value(id_object).toInt()));
         rootItem->appendRow(items);
     }
@@ -140,3 +144,9 @@ void EventsModel::openMediaContent(int id_event_media){
         QDesktopServices::openUrl(QUrl(file_path));
     }
 }
+
+void EventsModel::UpdateItem(QStandardItem &item){
+
+}
+
+

@@ -286,6 +286,7 @@ void Mainform::init_menu(int id_user_group)
 			add_menu_supporting_tables(oper_menu);
 			add_menu_object_manager(oper_menu);
 			add_mapwork(oper_menu);
+			add_menu_event_manager(oper_menu);
 			UI->menuBar->addMenu(oper_menu);
 			Mainform::setWindowTitle("Сатурн - сессия разработчика");
 			break;
@@ -309,6 +310,7 @@ void Mainform::init_menu(int id_user_group)
 			add_menu_supporting_tables(oper_menu);
 			add_menu_object_manager(oper_menu);
 			add_mapwork(oper_menu);
+			add_menu_event_manager(oper_menu);
 			UI->menuBar->addMenu(oper_menu);
 
 			Mainform::setWindowTitle("Сатурн - сессия администратора");
@@ -324,6 +326,7 @@ void Mainform::init_menu(int id_user_group)
             oper_menu = new QMenu("Оперативная работа");
 			add_menu_object_manager(oper_menu);
 			add_mapwork(oper_menu);
+			add_menu_event_manager(oper_menu);
 			UI->menuBar->addMenu(oper_menu);
 
 			Mainform::setWindowTitle("Сатурн - пользовательская сессия");
@@ -409,6 +412,15 @@ void Mainform::add_menu_object_manager(QMenu *oper_menu){
 	oper_menu->addAction(sett_act3);
 	connect(sett_act3, SIGNAL(triggered()),this, SLOT(show_object_manager_form()));
 }
+
+void Mainform::add_menu_event_manager(QMenu *oper_menu)
+{
+	event_act = new QAction("Управление событиями",this);
+	event_act->setIcon(QIcon(":/Resources/change_user.png"));
+	oper_menu->addAction(event_act);
+	connect(event_act, SIGNAL(triggered()),this, SLOT(slotOpenEventManagerForm()));
+}
+
 
 //============= Создание и открытие формы входа (смены) пользователя ==========
 void Mainform::show_login_form()
@@ -588,19 +600,39 @@ void Mainform::show_map_form()
 	QList<MapView*> lst = m_mdiArea->findChildren<MapView*>();
 	if(!lst.isEmpty())
 	{
-		m_mdiArea->setActiveSubWindow(mapW);
+		m_mdiArea->setActiveSubWindow(mapWin);
 		return;
 	}
 	
 	mapView = new MapView(this);
-    mapW = m_mdiArea->addSubWindow (mapView);
-    mapW->setAttribute (Qt::WA_DeleteOnClose);
+    mapWin = m_mdiArea->addSubWindow(mapView);
+    mapWin->setAttribute (Qt::WA_DeleteOnClose);
 	mapView->setWindowTitle("Работа с картой");
-	mapW->setWindowIcon(QIcon(":/Resources/mapwork.png"));
+	mapWin->setWindowIcon(QIcon(":/Resources/mapwork.png"));
     mapView->showMaximized();
-	m_mdiArea->setActiveSubWindow(mapW);   
+	m_mdiArea->setActiveSubWindow(mapWin);   
+}
+
+//============= Открытие формы работы с событиями ==============
+void Mainform::slotOpenEventManagerForm()
+{
+	QList<EventManager*> list = m_mdiArea->findChildren<EventManager*>();
+	if(!list.isEmpty())
+	{
+		m_mdiArea->setActiveSubWindow(events_window);
+		return;
+	}
+	
+	eventManager = new EventManager(this);
+    events_window = m_mdiArea->addSubWindow(eventManager);
+    events_window->setAttribute (Qt::WA_DeleteOnClose);
+	eventManager->setWindowTitle("Управление событиями");
+	events_window->setWindowIcon(QIcon(":/Resources/mapwork.png"));
+    eventManager->showMaximized();
+	m_mdiArea->setActiveSubWindow(events_window);   
 
 }
+
 
 //================ Диалог редактирования вспомогательных таблиц =================
 void Mainform::show_supporting_tables_form(){

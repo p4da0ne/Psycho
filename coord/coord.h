@@ -1,9 +1,10 @@
 #ifndef COORD_H
 #define COORD_H
 
+#include "config_coord.h"
 #include <QString>
 
-class Coord 
+class __EXPORT_COORD Coord 
 {
  private:
 	double x,y,h; //прямоугольные координаты

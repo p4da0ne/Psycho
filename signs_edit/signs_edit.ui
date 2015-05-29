@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>signs_edit_form</class>
- <widget class="QDialog" name="signs_edit_form" >
-  <property name="geometry" >
+ <widget class="QDialog" name="signs_edit_form">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,51 +10,43 @@
     <height>600</height>
    </rect>
   </property>
-  <property name="minimumSize" >
+  <property name="minimumSize">
    <size>
     <width>800</width>
     <height>600</height>
    </size>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Редактирование знаков объектов поражения</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_5" >
+  <layout class="QVBoxLayout" name="verticalLayout_5">
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_4" >
+    <layout class="QVBoxLayout" name="verticalLayout_4">
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_3" >
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout_3" >
-         <item>
-          <widget class="QTreeView" name="object_types_treeView" >
-           <property name="minimumSize" >
-            <size>
-             <width>230</width>
-             <height>0</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <layout class="QVBoxLayout" name="verticalLayout_3"/>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox" >
-         <property name="minimumSize" >
+        <widget class="QTreeView" name="object_types_treeView"/>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox">
+         <property name="minimumSize">
           <size>
            <width>600</width>
            <height>0</height>
           </size>
          </property>
-         <property name="title" >
+         <property name="title">
           <string>Условные знаки</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_2" >
+         <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout" >
+           <layout class="QVBoxLayout" name="verticalLayout">
             <item>
-             <widget class="QLabel" name="object_typename_label" >
-              <property name="font" >
+             <widget class="QLabel" name="object_typename_label">
+              <property name="font">
                <font>
                 <family>MS Shell Dlg 2</family>
                 <pointsize>10</pointsize>
@@ -64,36 +57,36 @@
                 <strikeout>false</strikeout>
                </font>
               </property>
-              <property name="alignment" >
+              <property name="alignment">
                <set>Qt::AlignCenter</set>
               </property>
-              <property name="wordWrap" >
+              <property name="wordWrap">
                <bool>true</bool>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QTableWidget" name="object_signs_table" >
-              <property name="editTriggers" >
+             <widget class="QTableWidget" name="object_signs_table">
+              <property name="editTriggers">
                <set>QAbstractItemView::DoubleClicked</set>
               </property>
              </widget>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout" >
+             <layout class="QHBoxLayout" name="horizontalLayout">
               <item>
-               <widget class="QPushButton" name="add_sign_button" >
-                <property name="text" >
+               <widget class="QPushButton" name="add_sign_button">
+                <property name="text">
                  <string>Добавить знак</string>
                 </property>
                </widget>
               </item>
               <item>
-               <spacer name="horizontalSpacer" >
-                <property name="orientation" >
+               <spacer name="horizontalSpacer">
+                <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>
-                <property name="sizeHint" stdset="0" >
+                <property name="sizeHint" stdset="0">
                  <size>
                   <width>40</width>
                   <height>20</height>
@@ -102,8 +95,8 @@
                </spacer>
               </item>
               <item>
-               <widget class="QPushButton" name="save_changes_button" >
-                <property name="text" >
+               <widget class="QPushButton" name="save_changes_button">
+                <property name="text">
                  <string>Сохранить изменения</string>
                 </property>
                </widget>
@@ -118,14 +111,14 @@
       </layout>
      </item>
      <item>
-      <spacer name="verticalSpacer" >
-       <property name="orientation" >
+      <spacer name="verticalSpacer">
+       <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
-       <property name="sizeType" >
+       <property name="sizeType">
         <enum>QSizePolicy::Fixed</enum>
        </property>
-       <property name="sizeHint" stdset="0" >
+       <property name="sizeHint" stdset="0">
         <size>
          <width>20</width>
          <height>20</height>
@@ -134,13 +127,13 @@
       </spacer>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2" >
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <spacer name="horizontalSpacer_2" >
-         <property name="orientation" >
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
-         <property name="sizeHint" stdset="0" >
+         <property name="sizeHint" stdset="0">
           <size>
            <width>40</width>
            <height>20</height>
@@ -149,8 +142,8 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="close_button" >
-         <property name="text" >
+        <widget class="QPushButton" name="close_button">
+         <property name="text">
           <string>Закрыть</string>
          </property>
         </widget>
@@ -161,7 +154,7 @@
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="6" margin="11" />
+ <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections/>
 </ui>

@@ -1,5 +1,5 @@
-#if !defined(__GUI_config_signs_edit_h)
-#define __GUI_config_signs_edit_h
+#if !defined(__GUI_config_event_manager_h)
+#define __GUI_config_event_manager_h
 /* ==================================================================== */
 /*      We will use WIN32 as a standard windows define.                 */
 /* ==================================================================== */
@@ -16,14 +16,14 @@
 
 #include <windows.h>
 
-#ifdef __USE_DLL_SIGNS_EDIT
+#ifdef __USE_DLL_EVENT_MANAGER
 
-	#define __EXPORT_SIGNS_EDIT __declspec(dllexport)
+	#define __EXPORT_EVENT_MANAGER __declspec(dllexport)
 #else
-	#define __EXPORT_SIGNS_EDIT __declspec(dllimport)
+	#define __EXPORT_EVENT_MANAGER __declspec(dllimport)
 #endif
 #else
-	#define __EXPORT_SIGNS_EDIT
+	#define __EXPORT_EVENT_MANAGER
 #endif
 
 #include <math.h>

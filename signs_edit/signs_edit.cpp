@@ -10,12 +10,14 @@ SignsEdit::SignsEdit(QDialog *parent, Qt::WFlags flags)
       UI (new Ui::signs_edit_form)
 {
     UI->setupUi(this);
+
     show_object_types();
     connect(UI->close_button,SIGNAL(clicked()),this,SLOT(close()));
     connect(UI->object_types_treeView,SIGNAL(clicked(const QModelIndex &)),this,SLOT(show_signs_table(const QModelIndex &)));
     connect(UI->add_sign_button,SIGNAL(clicked()),this,SLOT(add_new_sign()));
     connect(UI->object_signs_table,SIGNAL(cellClicked(int,int)),this,SLOT(delete_sign(int, int)));
     connect(UI->save_changes_button,SIGNAL(clicked()),this,SLOT(save_changes()));
+    this->installEventFilter(UI->object_types_treeView);
 }
 
 SignsEdit::~SignsEdit(){
@@ -65,6 +67,13 @@ void SignsEdit::show_object_types(){
     parentItem->appendRow(type_region_item);
     str_query="SELECT id_sign, name_type_region, id_type_region FROM type_region order by id_type_region";
     this->add_type_to_model(str_query,type_region_item);
+
+    // Add type from type_region table
+    QStandardItem *type_event_item = new QStandardItem("Типы событий");
+    type_event_item->setData("type_event",Qt::UserRole);
+    parentItem->appendRow(type_event_item);
+    str_query="SELECT id_sign, name_type_event, id_type_event FROM type_event order by id_type_event";
+    this->add_type_to_model(str_query,type_event_item);
 
     model->setHeaderData(0, Qt::Horizontal, QObject::tr("Types of objects"));
     UI->object_types_treeView->setModel(model);
@@ -396,3 +405,5 @@ void SignsEdit::add_type_to_model(QString str_query, QStandardItem *parent)
     }
     query.clear();
 }
+
+
