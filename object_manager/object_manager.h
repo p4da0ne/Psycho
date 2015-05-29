@@ -56,8 +56,8 @@ public:
 	MyLabel *label_foto; 
 	QLabel *label_foto_hide;
 
-    QSqlRelationalTableModel *model_region;// = new QSqlRelationalTableModel(this);
-    TransposeProxyModel *trans;
+
+   // TransposeProxyModel *trans;
 
   //  QTableView *test;
 public slots:

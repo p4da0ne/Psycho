@@ -2780,82 +2780,75 @@ void Objectmanager::region_click(int id_region){
 
 //=======================================================================================
 //***************************************************************************************
-
-
-        model_region= new QSqlRelationalTableModel(this);
-     //   trans = new  TransposeProxyModel(UI->property_object);
-
+    QSqlRelationalTableModel *model_region = new QSqlRelationalTableModel(this);
         QString db_name=model_region->database().databaseName();
         QStringList tables=model_region->database().tables();
+
 
         const QString tableName="region";
         model_region->setTable(tableName);
         model_region->setFilter(QString("id_region=%1").arg(id_region));
 
 
+        QSqlRelationalDelegate *delegat_reg=new QSqlRelationalDelegate(UI->property_object);
+
+        model_region->setHeaderData(3, Qt::Horizontal,"Наименование региона");model_region->setHeaderData(5, Qt::Horizontal, "Описание региона");
+
+        model_region->setHeaderData(6, Qt::Horizontal, "Численность населения");
+        model_region->setHeaderData(7, Qt::Horizontal, "Плотность населения");model_region->setHeaderData(8, Qt::Horizontal, "Уровень имиграции");
+        model_region->setHeaderData(9, Qt::Horizontal, "Уровень эммиграции");model_region->setHeaderData(10, Qt::Horizontal, "Уровень рождаемости");
+        model_region->setHeaderData(11, Qt::Horizontal, "Уровень смертности");model_region->setHeaderData(12, Qt::Horizontal, "Естественный прирост населения");
+        model_region->setHeaderData(13, Qt::Horizontal, "Уровень бедности(спф1)");
+        model_region->setHeaderData(14, Qt::Horizontal, "Pспф1");model_region->setHeaderData(15, Qt::Horizontal, "Уровень цен(спф2)");
+        model_region->setHeaderData(16, Qt::Horizontal, "Pспф2");model_region->setHeaderData(17, Qt::Horizontal, "Уровень образования(спф3)");
+        model_region->setHeaderData(18, Qt::Horizontal, "Pспф3");model_region->setHeaderData(19, Qt::Horizontal, "Степень доверия населения(спф4)");
+        model_region->setHeaderData(20, Qt::Horizontal, "Pспф4");model_region->setHeaderData(21, Qt::Horizontal, "Степень поддержки населением(спф5)");
+        model_region->setHeaderData(22, Qt::Horizontal, "Pспф5");model_region->setHeaderData(23, Qt::Horizontal, "Поддержка гос.структур(спф6)");
+        model_region->setHeaderData(24, Qt::Horizontal, "Pспф6");model_region->setHeaderData(25, Qt::Horizontal, "Поддержка организациями ВС(спф7)");
+        model_region->setHeaderData(26, Qt::Horizontal, "Pспф7");model_region->setHeaderData(27, Qt::Horizontal, "Влияние оппозиционных организаций(спф8)");
+        model_region->setHeaderData(28, Qt::Horizontal, "Pспф8");model_region->setHeaderData(29, Qt::Horizontal, "Поддержка авторитетных деятелей(спф9)");
+        model_region->setHeaderData(30, Qt::Horizontal, "Pспф9");model_region->setHeaderData(31, Qt::Horizontal, "Уровень безработицы(спф10)");
+        model_region->setHeaderData(32, Qt::Horizontal, "Pспф10");model_region->setHeaderData(33, Qt::Horizontal, "Миграция населения (спф11)");
+        model_region->setHeaderData(34, Qt::Horizontal, "Pспф11");model_region->setHeaderData(35, Qt::Horizontal, "Демография(спф12)");
+        model_region->setHeaderData(36, Qt::Horizontal, "Pспф12");model_region->setHeaderData(37, Qt::Horizontal, "Уровень информатизации(спф13)");
+        model_region->setHeaderData(38, Qt::Horizontal, "Pспф13");model_region->setHeaderData(39, Qt::Horizontal, "Направленность информации(спф14)");
+        model_region->setHeaderData(40, Qt::Horizontal, "Pспф14");model_region->setHeaderData(41, Qt::Horizontal, "Защищенность инфроструктуры(спф15)");
+        model_region->setHeaderData(42, Qt::Horizontal, "Pспф15");model_region->setHeaderData(43, Qt::Horizontal, "Неправительственные организации(спф16)");
+        model_region->setHeaderData(44, Qt::Horizontal, "Pспф16");model_region->setHeaderData(45, Qt::Horizontal, "Уровень патриотизма(спф17)");
+        model_region->setHeaderData(46, Qt::Horizontal, "Pспф17");model_region->setHeaderData(47, Qt::Horizontal, "Уровень преступности(кф1)");
+        model_region->setHeaderData(48, Qt::Horizontal, "Pкф1");model_region->setHeaderData(49, Qt::Horizontal, "Корупция(кф2)");
+        model_region->setHeaderData(50, Qt::Horizontal, "Pкф2");model_region->setHeaderData(51, Qt::Horizontal, "Теневой сектор(кф3)");
+        model_region->setHeaderData(52, Qt::Horizontal, "Pкф3");model_region->setHeaderData(53, Qt::Horizontal, "Влияние некоренного населения(кф4)");
+        model_region->setHeaderData(54, Qt::Horizontal, "Pкф4");model_region->setHeaderData(55, Qt::Horizontal, "Экстремизм,НВФ(кф5)");
+        model_region->setHeaderData(56, Qt::Horizontal, "Pкф5");model_region->setHeaderData(57, Qt::Horizontal, "Исправительные учереждения(кф6)");
+        model_region->setHeaderData(58, Qt::Horizontal, "Pкф6");model_region->setHeaderData(59, Qt::Horizontal, "Протестная активность(кф7)");
+        model_region->setHeaderData(60, Qt::Horizontal, "Pкф7");model_region->setHeaderData(61, Qt::Horizontal, "Организованная преступность(кф8)");
+        model_region->setHeaderData(62, Qt::Horizontal, "Pкф8");model_region->setHeaderData(63, Qt::Horizontal, "Оружие,наркотрафик(кф9)");
+        model_region->setHeaderData(64, Qt::Horizontal, "Pкф9");model_region->setHeaderData(65, Qt::Horizontal, "Межнациональные конфликты(кф10)");
+        model_region->setHeaderData(66, Qt::Horizontal, "Pкф10");model_region->setHeaderData(67, Qt::Horizontal, "Поддержка религиозных объединений(рф1)");
+        model_region->setHeaderData(68, Qt::Horizontal, "Pрф1");model_region->setHeaderData(69, Qt::Horizontal, "Культовые сооружения(рф2)");
+        model_region->setHeaderData(70, Qt::Horizontal, "Pрф2");model_region->setHeaderData(71, Qt::Horizontal, "Авторитет религиозных лидеров(рф3)");
+        model_region->setHeaderData(72, Qt::Horizontal, "Pрф3");model_region->setHeaderData(73, Qt::Horizontal, "Поддержка религиозных лидеров(рф4)");
+        model_region->setHeaderData(74, Qt::Horizontal, "Pрф4");model_region->setHeaderData(75, Qt::Horizontal, "Религиозность противника(рф5)");
+        model_region->setHeaderData(76, Qt::Horizontal, "Pрф5");model_region->setHeaderData(77, Qt::Horizontal, "Религиозность своих войск(рф6)");
+        model_region->setHeaderData(78, Qt::Horizontal, "Pрф6");model_region->setHeaderData(79, Qt::Horizontal, "Групповой коэффициент(спф)");
+        model_region->setHeaderData(80, Qt::Horizontal, "Групповой коэффициент(кф)");model_region->setHeaderData(81, Qt::Horizontal, "Групповой коэффициент(рф)");
+        model_region->setHeaderData(82, Qt::Horizontal, "Код значка региона");
+        model_region->setRelation(83,QSqlRelation("type_region","id_type_region","name_type_region"));
+        model_region->setHeaderData(83, Qt::Horizontal, "Тип региона");
+
+        model_region->setEditStrategy(QSqlTableModel::OnFieldChange);
+
+        bool is= model_region->select();
+        QString str=model_region->lastError().text();
 
 
-            model_region->setHeaderData(0, Qt::Vertical,"Наименование региона",Qt::DisplayRole);model_region->setHeaderData(5, Qt::Vertical, "Описание региона",Qt::DisplayRole);
+        UI->property_object->setModel(model_region);
 
-            model_region->setHeaderData(6, Qt::Horizontal, "Численность населения");
-            model_region->setHeaderData(7, Qt::Horizontal, "Плотность населения");model_region->setHeaderData(8, Qt::Horizontal, "Уровень имиграции");
-            model_region->setHeaderData(9, Qt::Horizontal, "Уровень эммиграции");model_region->setHeaderData(10, Qt::Horizontal, "Уровень рождаемости");
-            model_region->setHeaderData(11, Qt::Horizontal, "Уровень смертности");model_region->setHeaderData(12, Qt::Horizontal, "Естественный прирост населения");
-            model_region->setHeaderData(13, Qt::Horizontal, "Уровень бедности(спф1)");
-            model_region->setHeaderData(14, Qt::Horizontal, "Pспф1");model_region->setHeaderData(15, Qt::Horizontal, "Уровень цен(спф2)");
-            model_region->setHeaderData(16, Qt::Horizontal, "Pспф2");model_region->setHeaderData(17, Qt::Horizontal, "Уровень образования(спф3)");
-            model_region->setHeaderData(18, Qt::Horizontal, "Pспф3");model_region->setHeaderData(19, Qt::Horizontal, "Степень доверия населения(спф4)");
-            model_region->setHeaderData(20, Qt::Horizontal, "Pспф4");model_region->setHeaderData(21, Qt::Horizontal, "Степень поддержки населением(спф5)");
-            model_region->setHeaderData(22, Qt::Horizontal, "Pспф5");model_region->setHeaderData(23, Qt::Horizontal, "Поддержка гос.структур(спф6)");
-            model_region->setHeaderData(24, Qt::Horizontal, "Pспф6");model_region->setHeaderData(25, Qt::Horizontal, "Поддержка организациями ВС(спф7)");
-            model_region->setHeaderData(26, Qt::Horizontal, "Pспф7");model_region->setHeaderData(27, Qt::Horizontal, "Влияние оппозиционных организаций(спф8)");
-            model_region->setHeaderData(28, Qt::Horizontal, "Pспф8");model_region->setHeaderData(29, Qt::Horizontal, "Поддержка авторитетных деятелей(спф9)");
-            model_region->setHeaderData(30, Qt::Horizontal, "Pспф9");model_region->setHeaderData(31, Qt::Horizontal, "Уровень безработицы(спф10)");
-            model_region->setHeaderData(32, Qt::Horizontal, "Pспф10");model_region->setHeaderData(33, Qt::Horizontal, "Миграция населения (спф11)");
-            model_region->setHeaderData(34, Qt::Horizontal, "Pспф11");model_region->setHeaderData(35, Qt::Horizontal, "Демография(спф12)");
-            model_region->setHeaderData(36, Qt::Horizontal, "Pспф12");model_region->setHeaderData(37, Qt::Horizontal, "Уровень информатизации(спф13)");
-            model_region->setHeaderData(38, Qt::Horizontal, "Pспф13");model_region->setHeaderData(39, Qt::Horizontal, "Направленность информации(спф14)");
-            model_region->setHeaderData(40, Qt::Horizontal, "Pспф14");model_region->setHeaderData(41, Qt::Horizontal, "Защищенность инфроструктуры(спф15)");
-            model_region->setHeaderData(42, Qt::Horizontal, "Pспф15");model_region->setHeaderData(43, Qt::Horizontal, "Неправительственные организации(спф16)");
-            model_region->setHeaderData(44, Qt::Horizontal, "Pспф16");model_region->setHeaderData(45, Qt::Horizontal, "Уровень патриотизма(спф17)");
-            model_region->setHeaderData(46, Qt::Horizontal, "Pспф17");model_region->setHeaderData(47, Qt::Horizontal, "Уровень преступности(кф1)");
-            model_region->setHeaderData(48, Qt::Horizontal, "Pкф1");model_region->setHeaderData(49, Qt::Horizontal, "Корупция(кф2)");
-            model_region->setHeaderData(50, Qt::Horizontal, "Pкф2");model_region->setHeaderData(51, Qt::Horizontal, "Теневой сектор(кф3)");
-            model_region->setHeaderData(52, Qt::Horizontal, "Pкф3");model_region->setHeaderData(53, Qt::Horizontal, "Влияние некоренного населения(кф4)");
-            model_region->setHeaderData(54, Qt::Horizontal, "Pкф4");model_region->setHeaderData(55, Qt::Horizontal, "Экстремизм,НВФ(кф5)");
-            model_region->setHeaderData(56, Qt::Horizontal, "Pкф5");model_region->setHeaderData(57, Qt::Horizontal, "Исправительные учереждения(кф6)");
-            model_region->setHeaderData(58, Qt::Horizontal, "Pкф6");model_region->setHeaderData(59, Qt::Horizontal, "Протестная активность(кф7)");
-            model_region->setHeaderData(60, Qt::Horizontal, "Pкф7");model_region->setHeaderData(61, Qt::Horizontal, "Организованная преступность(кф8)");
-            model_region->setHeaderData(62, Qt::Horizontal, "Pкф8");model_region->setHeaderData(63, Qt::Horizontal, "Оружие,наркотрафик(кф9)");
-            model_region->setHeaderData(64, Qt::Horizontal, "Pкф9");model_region->setHeaderData(65, Qt::Horizontal, "Межнациональные конфликты(кф10)");
-            model_region->setHeaderData(66, Qt::Horizontal, "Pкф10");model_region->setHeaderData(67, Qt::Horizontal, "Поддержка религиозных объединений(рф1)");
-            model_region->setHeaderData(68, Qt::Horizontal, "Pрф1");model_region->setHeaderData(69, Qt::Horizontal, "Культовые сооружения(рф2)");
-            model_region->setHeaderData(70, Qt::Horizontal, "Pрф2");model_region->setHeaderData(71, Qt::Horizontal, "Авторитет религиозных лидеров(рф3)");
-            model_region->setHeaderData(72, Qt::Horizontal, "Pрф3");model_region->setHeaderData(73, Qt::Horizontal, "Поддержка религиозных лидеров(рф4)");
-            model_region->setHeaderData(74, Qt::Horizontal, "Pрф4");model_region->setHeaderData(75, Qt::Horizontal, "Религиозность противника(рф5)");
-            model_region->setHeaderData(76, Qt::Horizontal, "Pрф5");model_region->setHeaderData(77, Qt::Horizontal, "Религиозность своих войск(рф6)");
-            model_region->setHeaderData(78, Qt::Horizontal, "Pрф6");model_region->setHeaderData(79, Qt::Horizontal, "Групповой коэффициент(спф)");
-            model_region->setHeaderData(80, Qt::Horizontal, "Групповой коэффициент(кф)");model_region->setHeaderData(81, Qt::Horizontal, "Групповой коэффициент(рф)");
-            model_region->setHeaderData(82, Qt::Horizontal, "Код значка региона");
-            model_region->setRelation(83,QSqlRelation("type_region","id_type_region","name_type_region"));
-            model_region->setHeaderData(83, Qt::Horizontal, "Тип региона");
-
-          bool is= model_region->select();
-          model_region->setEditStrategy(QSqlTableModel::OnFieldChange);
-
-          QString str=model_region->lastError().text();
-
-          UI->property_object->setModel(model_region);
-//          trans->setSourceModel(model_region);
-//          UI->property_object->setModel(trans);
-
-           mySqlRelationalDelegate * delegat_reg = new mySqlRelationalDelegate(UI->property_object);
-
-        UI->property_object->hideRow(0);
+        UI->property_object->hideColumn(0);
         UI->property_object->hideColumn(1);
         UI->property_object->hideColumn(2);
-        UI->property_object->verticalHeader()->moveSection(83,4);
-
+        UI->property_object->horizontalHeader()->moveSection(83,4);
         UI->property_object->hideColumn(4);
         UI->property_object->hideColumn(82);
         UI->property_object->setColumnWidth(3,150);UI->property_object->setColumnWidth(7,150);UI->property_object->setColumnWidth(11,150);
@@ -2893,7 +2886,7 @@ void Objectmanager::region_click(int id_region){
         UI->property_object->setColumnWidth(82,140);
         UI->property_object->setShowGrid(true);
 
-       UI->property_object->setItemDelegateForColumn(13,delegat); UI->property_object->setItemDelegateForColumn(14,delegat);
+        UI->property_object->setItemDelegateForColumn(13,delegat); UI->property_object->setItemDelegateForColumn(14,delegat);
         UI->property_object->setItemDelegateForColumn(15,delegat); UI->property_object->setItemDelegateForColumn(16,delegat);
         UI->property_object->setItemDelegateForColumn(17,delegat); UI->property_object->setItemDelegateForColumn(18,delegat);
         UI->property_object->setItemDelegateForColumn(19,delegat); UI->property_object->setItemDelegateForColumn(20,delegat);
@@ -2927,9 +2920,10 @@ void Objectmanager::region_click(int id_region){
         UI->property_object->setItemDelegateForColumn(75,delegat); UI->property_object->setItemDelegateForColumn(76,delegat);
         UI->property_object->setItemDelegateForColumn(77,delegat); UI->property_object->setItemDelegateForColumn(78,delegat);
         UI->property_object->setItemDelegateForColumn(79,delegat); UI->property_object->setItemDelegateForColumn(80,delegat);
-          UI->property_object->setItemDelegateForRow(81,delegat);
-          UI->property_object->setItemDelegateForColumn(83,delegat_reg);
-
+        UI->property_object->setItemDelegateForColumn(81,delegat);
+        UI->property_object->setItemDelegateForColumn(83,delegat_reg);
+    //	UI->property_object->setItemDelegate(new QSqlRelationalDelegate(UI->property_object));
+    //=============================================================================================
 
     //=============================================================================================
 }
