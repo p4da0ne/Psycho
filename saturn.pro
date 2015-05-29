@@ -7,8 +7,8 @@ QT   += gui widgets sql
 # Directories
 SUBDIRS += \
         my_mapaccess \
+		coord \
         manage_users \
-        mapview \
         output \
         reports \
         dataaccess \
@@ -19,6 +19,7 @@ SUBDIRS += \
         textedit \
         eventsmodel \
 		searchengine \
+		mapview \
 		mainform \
 
 	

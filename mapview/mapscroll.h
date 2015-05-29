@@ -8,7 +8,7 @@
 #include <QList>
 #include <mapapi.h>
 #include <QMenu>
-#include "coord.h"
+#include "../coord/coord.h"
 
 #include <my_mapaccess.h>
 

@@ -10,7 +10,8 @@ RESOURCES       += mapview.qrc
 
 INCLUDEPATH += ./ \
 				../include \
-			   ../my_mapaccess \
+				../coord \
+				../my_mapaccess \
 			   ./calculatingClasses \
 			   ../reports \
 			   ../searchengine
@@ -18,13 +19,14 @@ INCLUDEPATH += ./ \
 
 			   
 DEPENDPATH += 	. \
+				../coord \
 				../my_mapaccess \
 				../reports \
 				../searchengine
 
 LIBPATH   += ../build
 
-LIBS += -lmy_mapaccess -lreports -lsearchengine
+LIBS += -lcoord -lmy_mapaccess -lreports -lsearchengine
 
 
 DEFINES += __USE_DLL_XXXXX
