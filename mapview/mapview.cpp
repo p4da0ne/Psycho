@@ -524,33 +524,38 @@ QWidget* MapView::createEventPanel()
 
 	eventStatesModel = adapter->getEventStatusList();
 
-	/*QStandardItem *stateItem = new QStandardItem;
-	stateItem->setData(QString("Актуальные"),Qt::DisplayRole);
-	stateItem->setData(ACTUAL,Qt::UserRole);
-	stateItem->setCheckable(true);
-	stateItem->setCheckState(Qt::Checked);
-	eventStatesModel->appendRow(stateItem);
+	eventStatesView = new QListView;
+	eventStatesView->setModel(eventStatesModel);
+	eventStatesView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	eventStatesView->setFixedHeight(65);
 
-	stateItem = new QStandardItem;
-	stateItem->setData(QString("Завершенные"),Qt::DisplayRole);
-	stateItem->setData(ENDED,Qt::UserRole);
-	stateItem->setCheckable(true);
-	stateItem->setCheckState(Qt::Checked);
-	eventStatesModel->appendRow(stateItem);
+	QVBoxLayout *statesLay = new QVBoxLayout;
+	
+	lineLabel = new QLabel();
+	lineLabel->setFrameStyle(QFrame::HLine | QFrame::Raised);
+	lineLabel->setLineWidth(2);
+	statesLay->addWidget(lineLabel);
+	statesLay->addWidget(stateLabel);
+	statesLay->addWidget(eventStatesView);
 
-	stateItem = new QStandardItem;
-	stateItem->setData(QString("Планируемые"),Qt::DisplayRole);
-	stateItem->setData(PLANNING,Qt::UserRole);
-	stateItem->setCheckable(true);
-	stateItem->setCheckState(Qt::Checked);
-	eventStatesModel->appendRow(stateItem);
+	lineLabel = new QLabel();
+	lineLabel->setFrameStyle(QFrame::HLine | QFrame::Raised);
+	lineLabel->setLineWidth(2);
+	statesLay->addWidget(lineLabel);
+	//-----------------------------------------------------
 
-	stateItem = new QStandardItem;
-	stateItem->setData(QString("Несостоявшиеся"),Qt::DisplayRole);
-	stateItem->setData(UNOCCURED,Qt::UserRole);
-	stateItem->setCheckable(true);
-	stateItem->setCheckState(Qt::Checked);
-	eventStatesModel->appendRow(stateItem);*/
+	//-----------------------------------------------------
+	QLabel *eventTypeLabel = new QLabel("По типу:");
+	QFont font3("Arial",8);
+	font3.setUnderline(true);
+	font3.setBold(true);
+	eventTypeLabel->setFont(font3);
+
+	eventStatesModel = new QStandardItemModel;
+	
+	EventsAdapter *adapter = new EventsAdapter;
+
+	eventStatesModel = adapter->getEventStatusList();
 
 	eventStatesView = new QListView;
 	eventStatesView->setModel(eventStatesModel);
