@@ -11,6 +11,9 @@
 #include <QStandardItemModel>
 #include <QHeaderView>
 #include <QToolButton>
+#include <QMoveEvent>
+#include <QMenu>
+#include <signstree.h>
 
 
 namespace Ui
@@ -28,6 +31,7 @@ public:
     ~SignsEdit();
     void delete_sign();
 
+    void mousePressEvent(QMouseEvent *event);
 public slots:
     void show_object_types();
     void show_signs_table(const QModelIndex &index);
@@ -54,6 +58,7 @@ private:
     QToolButton *path_button;
     QPushButton *ok_button;
     QPushButton *cancel_button;
+    SignsTree * object_types_treeView;
 
     Ui::signs_edit_form *UI;
 };

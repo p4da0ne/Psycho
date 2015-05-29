@@ -47,7 +47,7 @@ signals:
 public slots:
 
 protected:
-    QString event_name = "";
+    QString event_name;
     QString event_description;
     int status;
     int type_event;
