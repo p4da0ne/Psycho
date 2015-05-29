@@ -106,7 +106,7 @@ private slots:
 	void delete_pers();
 	void edit_persones();
 	void clicked_open_file();
-	
+    void slotSearchObject();
     void otchet_groups();
     void reports_region();
     void add_new_coordinates();
@@ -120,6 +120,7 @@ private slots:
     void PLANE_to_other();
 
 private:
+
     QTableWidget *blok_edit_table;
     QTableWidget *country_edit_table;
     QDialog *edit_blok;

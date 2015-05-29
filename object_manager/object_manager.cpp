@@ -24,6 +24,7 @@
 #include <QProxyModel>
 #include "mysqlrelationaldelegate.h"
 
+
 Objectmanager::Objectmanager(QWidget *parent) //int in_id_object
     : QWidget(parent),
       UI (new Ui::object_manager_form)
@@ -44,7 +45,8 @@ Objectmanager::Objectmanager(QWidget *parent) //int in_id_object
     UI->del_coord_button->setIcon(QIcon(":/Resources/delete_but.png"));
     UI->edit_coord_button->setIcon(QIcon(":/Resources/edit_but.png"));
     UI->add_many_coord_button->setIcon(QIcon(":/Resources/open.png"));
-
+    UI->searchButton->setDisabled(true);
+    UI->searchLineEdit->setDisabled(true);
 
     //==============================COMBOBOX 0 строка нафиг + работа с координатами ===============================
 
@@ -68,6 +70,11 @@ Objectmanager::Objectmanager(QWidget *parent) //int in_id_object
 
     connect(UI->add_pushButton_blok,SIGNAL(clicked()),this,SLOT(add_new_blok()));
     connect(UI->add_pushButton_country,SIGNAL(clicked()),this,SLOT(add_new_country()));
+
+    //================================== Поиск =====================================================================
+
+    connect(UI->searchButton,SIGNAL(clicked()),this,SLOT(slotSearchObject()));
+    connect(UI->searchLineEdit,SIGNAL(returnPressed()),UI->searchButton,SIGNAL(clicked()));
 
     iconsList << ":/Resources/0.png" << ":/Resources/01.png" << ":/Resources/02.png" << ":/Resources/03.png";
     init_object_tree();
@@ -1711,6 +1718,7 @@ void Objectmanager::show_objects(const QModelIndex &index)
             progress.close();
         }
     }
+
     return;
 }
 //================= Расчеты МПО ================================================================================
@@ -1785,6 +1793,8 @@ void Objectmanager::child_region_objects(QStandardItem *parent_item,int id_paren
     set_child_item("Добавить регион",QString("preg_%1").arg(id_parent_region),parent_item,row,":/Resources/add.png" ,font);
     add_region_components(parent_item,id_parent_region,row);
     query.clear();
+    UI->searchButton->setEnabled(true);
+    UI->searchLineEdit->setEnabled(true);
 }
 
 //============================== Все для региона ===============================================================
@@ -5402,4 +5412,29 @@ void Objectmanager::fill_combobox_persones_(QComboBox *Box,int current_index)
     }
 
     Box->setCurrentIndex(ci_3);
+}
+//==========================================================================
+//====== Слот поиска объектов по введенной строке в поле ввода =============
+//====== Результаты поиска отображаются в диалоговом окне ==================
+//==========================================================================
+void Objectmanager::slotSearchObject()
+{
+    int iCurrSearch = 0;
+    QModelIndexList indexes = UI->columnView->model()->match(UI->columnView->model()->index(0, 0), Qt::DisplayRole, QVariant( UI->searchLineEdit->text() ), -1, Qt::MatchFlags(Qt::MatchRecursive | Qt::MatchExactly | Qt::MatchFixedString | Qt::MatchWrap | Qt::MatchStartsWith));
+
+    if(indexes.isEmpty() ) {
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Результат поиска");
+        msgBox.setText("Указанный объект не найден");
+
+        msgBox.setStandardButtons(QMessageBox::Yes);
+        msgBox.setButtonText(QMessageBox::Yes, "Да");
+        switch (msgBox.exec()) {
+       case QMessageBox::Yes:
+            return;
+         break;
+        }
+    }
+
+    UI->columnView->setCurrentIndex( indexes.at(iCurrSearch));
 }
