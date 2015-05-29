@@ -1,5 +1,4 @@
-#include "events_adapter.h"
-
+#include "events_map_model.h"
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QSqlRecord>
@@ -9,7 +8,7 @@
 #include "mapview.h"
 #include <eventsmodel.h>
 
-EventsAdapter::EventsAdapter(QDate *startPeriod,QDate *endPeriod,
+EventsMapModel::EventsMapModel(QDate *startPeriod,QDate *endPeriod,
 				  QStandardItemModel *objectsModel,QStandardItemModel *statesModel,
 				  QStandardItemModel *eventTypesModel,QObject *parent)
     : QObject(parent),objectsModel(objectsModel),statesModel(statesModel),
@@ -19,14 +18,14 @@ EventsAdapter::EventsAdapter(QDate *startPeriod,QDate *endPeriod,
 	
 }
 
-EventsAdapter::EventsAdapter(QObject *parent)
+EventsMapModel::EventsMapModel(QObject *parent)
     : QObject(parent)
 {
 
 	
 }
 
-EventsAdapter::~EventsAdapter()
+EventsMapModel::~EventsMapModel()
 {
     
 }
@@ -35,7 +34,7 @@ EventsAdapter::~EventsAdapter()
 //======================================================================================
 //========= Метод перевода геодезических координат (WGS84) в прямоугольные =============
 //======================================================================================
-Coord* EventsAdapter::WGStoPlane(long int hMap,Coord *coordObject)
+Coord* EventsMapModel::WGStoPlane(long int hMap,Coord *coordObject)
 {
    Coord *tempCoord = coordObject;
    
@@ -72,7 +71,7 @@ Coord* EventsAdapter::WGStoPlane(long int hMap,Coord *coordObject)
 //======================================================================================
 //========= Метод перевода прямоугольных координат в геодезические (WGS-84) ============
 //======================================================================================
-Coord* EventsAdapter::planeToWGS(long int hMap,Coord *coordObject)
+Coord* EventsMapModel::planeToWGS(long int hMap,Coord *coordObject)
 {
 	Coord *tempCoord = coordObject;
    
@@ -108,7 +107,7 @@ Coord* EventsAdapter::planeToWGS(long int hMap,Coord *coordObject)
 //============================================================================
 //======= Метод возвращает список статусов событий ===========================
 //============================================================================
-QStandardItemModel * EventsAdapter::getEventStatusList()
+QStandardItemModel * EventsMapModel::getEventStatusList()
 {
 	QStandardItemModel *eventStatusList = new QStandardItemModel;
 
@@ -139,7 +138,7 @@ QStandardItemModel * EventsAdapter::getEventStatusList()
 //============================================================================
 //======= Метод возвращает список типов событий ==============================
 //============================================================================
-QStandardItemModel * EventsAdapter::getEventTypesList()
+QStandardItemModel * EventsMapModel::getEventTypesList()
 {
 	QStandardItemModel *eventTypesList = new QStandardItemModel;
 
@@ -171,7 +170,7 @@ QStandardItemModel * EventsAdapter::getEventTypesList()
 //==== Метод возвращает список событий ===========================================
 //==== для нанесения на карту и инициализации условных знаков событий ============
 //================================================================================
-QList<SignData*> EventsAdapter::getEvents(long int hMap,double x1,double y1,double x2,double y2)
+QList<SignData*> EventsMapModel::getEvents(long int hMap,double x1,double y1,double x2,double y2)
 {
 	QList<SignData*> eventsList;
 

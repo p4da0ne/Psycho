@@ -1,10 +1,9 @@
-#ifndef EVENTS_ADAPTER_H
-#define EVENTS_ADAPTER_H
+#ifndef EVENTS_MAP_H
+#define EVENTS_MAP_H
 
 #include <QObject>
 #include <QStandardItemModel>
 #include "signdata.h"
-//#include "coord.h"
 #include "mapscroll.h"
 #include <saturnSignTypes.h>
 
@@ -36,4 +35,4 @@ private:
 	QStandardItemModel *eventTypesModel;
 };
 
-#endif // EVENTS_ADAPTER_H
+#endif // EVENTS_MAP_H

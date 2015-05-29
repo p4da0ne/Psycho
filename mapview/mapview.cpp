@@ -520,9 +520,9 @@ QWidget* MapView::createEventPanel()
 
 	eventStatesModel = new QStandardItemModel;
 	
-	EventsAdapter *adapter = new EventsAdapter;
+	EventsMapModel *eventsMapModel = new EventsMapModel;
 
-	eventStatesModel = adapter->getEventStatusList();
+	eventStatesModel = eventsMapModel->getEventStatusList();
 
 	eventStatesView = new QListView;
 	eventStatesView->setModel(eventStatesModel);
@@ -538,10 +538,10 @@ QWidget* MapView::createEventPanel()
 	statesLay->addWidget(stateLabel);
 	statesLay->addWidget(eventStatesView);
 
-	lineLabel = new QLabel();
-	lineLabel->setFrameStyle(QFrame::HLine | QFrame::Raised);
-	lineLabel->setLineWidth(2);
-	statesLay->addWidget(lineLabel);
+	//lineLabel = new QLabel();
+	//lineLabel->setFrameStyle(QFrame::HLine | QFrame::Raised);
+	//lineLabel->setLineWidth(2);
+	//statesLay->addWidget(lineLabel);
 	//-----------------------------------------------------
 
 	//-----------------------------------------------------
@@ -553,7 +553,7 @@ QWidget* MapView::createEventPanel()
 
 	eventTypesModel = new QStandardItemModel;
 	
-	eventTypesModel = adapter->getEventTypesList();
+	eventTypesModel = eventsMapModel->getEventTypesList();
 
 	eventTypesView = new QListView;
 	eventTypesView->setModel(eventTypesModel);
@@ -1483,8 +1483,8 @@ void MapView::showCheckedEvents()
 	//-------------------------------------------------
 	
 	
-	EventsAdapter *adapter = new EventsAdapter(startDate,endDate,selectedObjectsModel,eventStatesModel);
-	adapter->getEvents(mapwin->hMap,x1,y1,x2,y2);
+	EventsMapModel *eventsMapModel = new EventsMapModel(startDate,endDate,selectedObjectsModel,eventStatesModel);
+	eventsMapModel->getEvents(mapwin->hMap,x1,y1,x2,y2);
 	
 }
 
