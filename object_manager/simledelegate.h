@@ -5,7 +5,7 @@
 #include <QItemDelegate>
 #include <QPainter>
 
-class simleDelegate : public QItemDelegate
+class simleDelegate : public QSqlRelationalDelegate
 {
 	Q_OBJECT
 

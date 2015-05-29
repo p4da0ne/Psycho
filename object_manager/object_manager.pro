@@ -23,3 +23,4 @@ DEFINES += __USE_DLL_XXXXX
 DEFINES += BUILD_DLL
 
 include(object_manager.pri)
+

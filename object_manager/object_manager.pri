@@ -10,7 +10,9 @@ HEADERS += \
          calculating_mps.h \
          textprinter.h \
          People_Losses.h \
-    mylabel.h
+         mylabel.h \
+         transposeproxymodel.h \
+        mysqlrelationaldelegate.h
 
 #Source files
 SOURCES +=  object_manager.cpp \
@@ -21,7 +23,9 @@ SOURCES +=  object_manager.cpp \
         calculating_mps.cpp \
         textprinter.cpp \
         People_Losses.cpp \
-    mylabel.cpp
+        mylabel.cpp \
+        transposeproxymodel.cpp \
+        mysqlrelationaldelegate.cpp
 
 		
 #Forms

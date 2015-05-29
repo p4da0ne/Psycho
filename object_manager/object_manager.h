@@ -26,6 +26,8 @@
 #include "mylabel.h"
 #include <QMouseEvent>
 #include <QToolButton>
+#include "transposeproxymodel.h"
+#include "mysqlrelationaldelegate.h"
 
 class simledelegate;
 
@@ -53,6 +55,11 @@ public:
     HMAP hmap;
 	MyLabel *label_foto; 
 	QLabel *label_foto_hide;
+
+    QSqlRelationalTableModel *model_region;// = new QSqlRelationalTableModel(this);
+    TransposeProxyModel *trans;
+
+  //  QTableView *test;
 public slots:
 	void customMenuTree(const QPoint &);
 	void customMenuView(const QPoint &);
