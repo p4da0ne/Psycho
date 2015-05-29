@@ -26,7 +26,7 @@
 #include "mylabel.h"
 #include <QMouseEvent>
 #include <QToolButton>
-#include "transposeproxymodel.h"
+//#include "transposeproxymodel.h"
 #include "mysqlrelationaldelegate.h"
 
 class simledelegate;

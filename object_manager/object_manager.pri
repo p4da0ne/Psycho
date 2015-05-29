@@ -11,7 +11,6 @@ HEADERS += \
          textprinter.h \
          People_Losses.h \
          mylabel.h \
-         transposeproxymodel.h \
         mysqlrelationaldelegate.h
 
 #Source files
@@ -24,7 +23,6 @@ SOURCES +=  object_manager.cpp \
         textprinter.cpp \
         People_Losses.cpp \
         mylabel.cpp \
-        transposeproxymodel.cpp \
         mysqlrelationaldelegate.cpp
 
 		
