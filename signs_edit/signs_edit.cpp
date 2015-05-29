@@ -11,8 +11,6 @@ SignsEdit::SignsEdit(QDialog *parent, Qt::WFlags flags)
 {
     UI->setupUi(this);
 
-    UI->horizontalLayout_3->addWidget(object_types_treeView);
-
     show_object_types();
     connect(UI->close_button,SIGNAL(clicked()),this,SLOT(close()));
     connect(UI->object_types_treeView,SIGNAL(clicked(const QModelIndex &)),this,SLOT(show_signs_table(const QModelIndex &)));
