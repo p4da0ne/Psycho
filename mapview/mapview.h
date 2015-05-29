@@ -140,6 +140,9 @@ private:
 
 	QListView *eventStatesView;
 	QStandardItemModel *eventStatesModel;
+
+	QStandardItemModel *eventTypesModel;
+	QListView *eventTypesView;
 	//---------------------------------------
 	ChangeCoordDialog *dlg;
 	QSettings *settings;

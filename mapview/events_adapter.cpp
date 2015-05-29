@@ -105,6 +105,9 @@ Coord* EventsAdapter::planeToWGS(long int hMap,Coord *coordObject)
 }
 
 
+//============================================================================
+//======= Метод возвращает список статусов событий ===========================
+//============================================================================
 QStandardItemModel * EventsAdapter::getEventStatusList()
 {
 	QStandardItemModel *eventStatusList = new QStandardItemModel;
@@ -132,6 +135,36 @@ QStandardItemModel * EventsAdapter::getEventStatusList()
 	return eventStatusList;
 }
 
+
+//============================================================================
+//======= Метод возвращает список типов событий ==============================
+//============================================================================
+QStandardItemModel * EventsAdapter::getEventTypesList()
+{
+	QStandardItemModel *eventTypesList = new QStandardItemModel;
+
+	QSqlQuery query;
+	QString str=QString("SELECT id_type_event, name_type_event \
+						 FROM type_event \
+						 ORDER BY id_type_event");
+	if(query.exec(str))
+	{
+		QSqlRecord rec = query.record();
+		while (query.next())
+		{
+			int idType = query.value(rec.indexOf("id_type_event")).toInt();
+			QString typeName = query.value(rec.indexOf("name_type_event")).toString();
+		
+			QStandardItem *typeItem = new QStandardItem;
+			typeItem->setData(typeName,Qt::DisplayRole);
+			typeItem->setData(idType,Qt::UserRole);
+			typeItem->setCheckable(true);
+			typeItem->setCheckState(Qt::Checked);
+			eventTypesList->appendRow(typeItem);
+		}
+	}
+	return eventTypesList;
+}
 
 
 //================================================================================

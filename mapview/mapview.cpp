@@ -551,37 +551,35 @@ QWidget* MapView::createEventPanel()
 	font3.setBold(true);
 	eventTypeLabel->setFont(font3);
 
-	eventStatesModel = new QStandardItemModel;
+	eventTypesModel = new QStandardItemModel;
 	
-	EventsAdapter *adapter = new EventsAdapter;
+	eventTypesModel = adapter->getEventTypesList();
 
-	eventStatesModel = adapter->getEventStatusList();
+	eventTypesView = new QListView;
+	eventTypesView->setModel(eventTypesModel);
+	eventTypesView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	//eventTypesView->setFixedHeight(65);
 
-	eventStatesView = new QListView;
-	eventStatesView->setModel(eventStatesModel);
-	eventStatesView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-	eventStatesView->setFixedHeight(65);
-
-	QVBoxLayout *statesLay = new QVBoxLayout;
+	QVBoxLayout *typesLay = new QVBoxLayout;
 	
 	lineLabel = new QLabel();
 	lineLabel->setFrameStyle(QFrame::HLine | QFrame::Raised);
 	lineLabel->setLineWidth(2);
-	statesLay->addWidget(lineLabel);
-	statesLay->addWidget(stateLabel);
-	statesLay->addWidget(eventStatesView);
+	typesLay->addWidget(lineLabel);
+	typesLay->addWidget(eventTypeLabel);
+	typesLay->addWidget(eventTypesView);
 
 	lineLabel = new QLabel();
 	lineLabel->setFrameStyle(QFrame::HLine | QFrame::Raised);
 	lineLabel->setLineWidth(2);
-	statesLay->addWidget(lineLabel);
+	typesLay->addWidget(lineLabel);
 	//-----------------------------------------------------
 
 	QPushButton * event_button = new QPushButton("Показать события");
 	connect(event_button, SIGNAL(clicked()), this, SLOT(showCheckedEvents()));
 	
-	statesLay->addWidget(event_button);
-	statesLay->addStretch();
+	typesLay->addWidget(event_button);
+	typesLay->addStretch();
 
 
 	QVBoxLayout *event_layout = new QVBoxLayout;
@@ -591,6 +589,8 @@ QWidget* MapView::createEventPanel()
 	event_layout->addLayout(dateLay);
 	event_layout->addLayout(objectsLay);
 	event_layout->addLayout(statesLay);
+	event_layout->addLayout(typesLay);
+	
 	event_layout->addStretch();
 
 	QWidget *eventWidget = new QWidget;
