@@ -28,6 +28,9 @@
         <layout class="QVBoxLayout" name="verticalLayout_3"/>
        </item>
        <item>
+        <widget class="QTreeView" name="object_types_treeView"/>
+       </item>
+       <item>
         <widget class="QGroupBox" name="groupBox">
          <property name="minimumSize">
           <size>
