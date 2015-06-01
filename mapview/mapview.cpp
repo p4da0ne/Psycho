@@ -34,6 +34,7 @@
 #include "move_model.h"
 #include <reports.h>
 #include <searchengine.h>
+#include "events_map_model.h"
 
 
 MapView::MapView(QWidget *parent, const char *name)
@@ -519,33 +520,9 @@ QWidget* MapView::createEventPanel()
 
 	eventStatesModel = new QStandardItemModel;
 	
-	QStandardItem *stateItem = new QStandardItem;
-	stateItem->setData(QString("Актуальные"),Qt::DisplayRole);
-	stateItem->setData(ACTUAL,Qt::UserRole);
-	stateItem->setCheckable(true);
-	stateItem->setCheckState(Qt::Checked);
-	eventStatesModel->appendRow(stateItem);
+	EventsMapModel *eventsMapModel = new EventsMapModel;
 
-	stateItem = new QStandardItem;
-	stateItem->setData(QString("Завершенные"),Qt::DisplayRole);
-	stateItem->setData(ENDED,Qt::UserRole);
-	stateItem->setCheckable(true);
-	stateItem->setCheckState(Qt::Checked);
-	eventStatesModel->appendRow(stateItem);
-
-	stateItem = new QStandardItem;
-	stateItem->setData(QString("Планируемые"),Qt::DisplayRole);
-	stateItem->setData(PLANNING,Qt::UserRole);
-	stateItem->setCheckable(true);
-	stateItem->setCheckState(Qt::Checked);
-	eventStatesModel->appendRow(stateItem);
-
-	stateItem = new QStandardItem;
-	stateItem->setData(QString("Несостоявшиеся"),Qt::DisplayRole);
-	stateItem->setData(UNOCCURED,Qt::UserRole);
-	stateItem->setCheckable(true);
-	stateItem->setCheckState(Qt::Checked);
-	eventStatesModel->appendRow(stateItem);
+	eventStatesModel = eventsMapModel->getEventStatusList();
 
 	eventStatesView = new QListView;
 	eventStatesView->setModel(eventStatesModel);
@@ -561,17 +538,48 @@ QWidget* MapView::createEventPanel()
 	statesLay->addWidget(stateLabel);
 	statesLay->addWidget(eventStatesView);
 
+	//lineLabel = new QLabel();
+	//lineLabel->setFrameStyle(QFrame::HLine | QFrame::Raised);
+	//lineLabel->setLineWidth(2);
+	//statesLay->addWidget(lineLabel);
+	//-----------------------------------------------------
+
+	//-----------------------------------------------------
+	QLabel *eventTypeLabel = new QLabel("По типу:");
+	QFont font3("Arial",8);
+	font3.setUnderline(true);
+	font3.setBold(true);
+	eventTypeLabel->setFont(font3);
+
+	eventTypesModel = new QStandardItemModel;
+	
+	eventTypesModel = eventsMapModel->getEventTypesList();
+
+	eventTypesView = new QListView;
+	eventTypesView->setModel(eventTypesModel);
+	eventTypesView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	//eventTypesView->setFixedHeight(65);
+
+	QVBoxLayout *typesLay = new QVBoxLayout;
+	
 	lineLabel = new QLabel();
 	lineLabel->setFrameStyle(QFrame::HLine | QFrame::Raised);
 	lineLabel->setLineWidth(2);
-	statesLay->addWidget(lineLabel);
+	typesLay->addWidget(lineLabel);
+	typesLay->addWidget(eventTypeLabel);
+	typesLay->addWidget(eventTypesView);
+
+	lineLabel = new QLabel();
+	lineLabel->setFrameStyle(QFrame::HLine | QFrame::Raised);
+	lineLabel->setLineWidth(2);
+	typesLay->addWidget(lineLabel);
 	//-----------------------------------------------------
 
 	QPushButton * event_button = new QPushButton("Показать события");
 	connect(event_button, SIGNAL(clicked()), this, SLOT(showCheckedEvents()));
 	
-	statesLay->addWidget(event_button);
-	statesLay->addStretch();
+	typesLay->addWidget(event_button);
+	typesLay->addStretch();
 
 
 	QVBoxLayout *event_layout = new QVBoxLayout;
@@ -581,6 +589,8 @@ QWidget* MapView::createEventPanel()
 	event_layout->addLayout(dateLay);
 	event_layout->addLayout(objectsLay);
 	event_layout->addLayout(statesLay);
+	event_layout->addLayout(typesLay);
+	
 	event_layout->addStretch();
 
 	QWidget *eventWidget = new QWidget;
@@ -1463,6 +1473,20 @@ void MapView::showCheckedCalcResults()
 void MapView::showCheckedEvents()
 {
 
+	QDate *startDate = new QDate(beginEventDate->date());
+	QDate *endDate = new QDate(endEventDate->date());
+
+	//------ Получение координат углов карты ---------
+	double x1 = mapwin->getMapX1(mapwin->hMap);
+	double y1 = mapwin->getMapY1(mapwin->hMap);
+	double x2 = mapwin->getMapX2(mapwin->hMap);
+	double y2 = mapwin->getMapY2(mapwin->hMap);
+	//-------------------------------------------------
+	
+	
+	EventsMapModel *eventsMapModel = new EventsMapModel(startDate,endDate,selectedObjectsModel,eventStatesModel);
+	eventsMapModel->getEvents(mapwin->hMap,x1,y1,x2,y2);
+	
 }
 
 //============================================================================
