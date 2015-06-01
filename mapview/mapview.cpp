@@ -34,7 +34,7 @@
 #include "move_model.h"
 #include <reports.h>
 #include <searchengine.h>
-#include "events_adapter.h"
+#include "events_map_model.h"
 
 
 MapView::MapView(QWidget *parent, const char *name)
