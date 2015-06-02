@@ -174,60 +174,27 @@ QList<SignData*> EventsMapModel::getEvents(long int hMap,double x1,double y1,dou
 {
 	QList<SignData*> eventsList;
 
-	QMultiMap<QString,int> objects;
+	if(startPeriod >= endPeriod) return eventsList;  //если дата начала и конца событий некорректны, то выходим
 
-	for(int row=0;row<objectsModel->rowCount();row++)
-	{
-		QModelIndex index = objectsModel->index(row,0);
-		int objectType = objectsModel->data(index,Qt::UserRole+1).toInt();
-		int idObject = objectsModel->data(index,Qt::UserRole).toInt();
-		
-		switch(objectType)
-		{
-			case FORMATIONS:
-				objects.insert("ls",idObject);
-				break;
-			case REGIONS:
-				objects.insert("region",idObject);
-				break;
-			case SPECIAL_CONDITIONS:
-				objects.insert("special_conditions",idObject);
-				break;
-			case PERSONNEL:
-				objects.insert("persones",idObject);
-				break;
-			case SMI_MEANS:
-				objects.insert("mpo_pso",idObject);
-				break;
-			case FORMATIONS_MEANS:
-				objects.insert("mpo_pso",idObject);
-				break;
-			case GROUPS_MEANS:
-				objects.insert("mpo_pso",idObject);
-				break;
-		}
-	}
+
+
 
 	QStandardItemModel *eventsModel = new QStandardItemModel;
 	
-	//eventsModel = getEvents(
+		
 	
-	
-	
-	
-	///
-	//QSqlQuery query;
-	//QString str=QString("SELECT name_type_mpo_pso, coordinates.latitude_wgs_84_g,coordinates.latitude_wgs_84_m,coordinates.latitude_wgs_84_s,coordinates.longitude_wgs_84_g, \
-	//					coordinates.longitude_wgs_84_m,coordinates.longitude_wgs_84_s, \
-	//					type_mpo_pso.id_sign, mpo_pso.id_mpo_pso, mpo_pso.semantika_digit1, mpo_pso.semantika_digit2, mpo_pso.semantika_1,si.sign_key \
-	//					FROM mpo_pso, coord_mpo_pso cmp, coordinates, type_mpo_pso, signs si \
-	//					WHERE cmp.id_coordinates=coordinates.id_coordinates \
-	//					AND mpo_pso.id_type_mpo_pso=type_mpo_pso.id_type_mpo_pso \
-	//					AND mpo_pso.id_mpo_pso = cmp.id_mpo_pso \
-	//					AND type_mpo_pso.id_sign = si.id_sign \
-	//					AND type_mpo_pso.excode_type_mpo_pso <> '' \
-	//					AND mpo_pso.id_smi > 0 ");
-	//if(query.exec(str))
+	QSqlQuery query;
+	QString str=QString("SELECT name_type_mpo_pso, coordinates.latitude_wgs_84_g,coordinates.latitude_wgs_84_m,coordinates.latitude_wgs_84_s,coordinates.longitude_wgs_84_g, \
+						coordinates.longitude_wgs_84_m,coordinates.longitude_wgs_84_s, \
+						type_mpo_pso.id_sign, mpo_pso.id_mpo_pso, mpo_pso.semantika_digit1, mpo_pso.semantika_digit2, mpo_pso.semantika_1,si.sign_key \
+						FROM mpo_pso, coord_mpo_pso cmp, coordinates, type_mpo_pso, signs si \
+						WHERE cmp.id_coordinates=coordinates.id_coordinates \
+						AND mpo_pso.id_type_mpo_pso=type_mpo_pso.id_type_mpo_pso \
+						AND mpo_pso.id_mpo_pso = cmp.id_mpo_pso \
+						AND type_mpo_pso.id_sign = si.id_sign \
+						AND type_mpo_pso.excode_type_mpo_pso <> '' \
+						AND mpo_pso.id_smi > 0 ");
+	if(query.exec(str))
 	//{
 	//	QSqlRecord rec = query.record();
 	//	while (query.next())
