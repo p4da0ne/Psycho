@@ -1842,7 +1842,7 @@ void MapView::slotObjectReport()
 				break;
 
 			case REGIONS:
-				
+                report = r->create_object_formular_region(idObj);
 				break;
             case SPECIAL_CONDITIONS:
                 report = r->create_object_formular_sc(idObj);
