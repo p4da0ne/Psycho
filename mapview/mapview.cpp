@@ -1806,20 +1806,23 @@ void MapView::slotObjectReport()
 				break;
 						
 			case SMI_MEANS:
-				report = r->create_object_formular_smi(idObj);
+                report = r->create_object_formular_mpo_pso_smi(idObj);
 				break;
 			
 			case FORMATIONS_MEANS:
-				report = r->create_object_formular_smi(idObj);
+                report = r->create_object_formular_mpo_pso_ls(idObj);
 				break;
 							
 			case GROUPS_MEANS:
-				report = r->create_object_formular(idObj);
+                report = r->create_object_formular_mpo_pso_gr(idObj);
 				break;
 
 			case REGIONS:
 				
 				break;
+            case SPECIAL_CONDITIONS:
+                report = r->create_object_formular_sc(idObj);
+                break;
 
 			case PERSONNEL:
 				report = r->create_object_formular_pers(idObj);
