@@ -160,7 +160,25 @@ QString Reports::create_object_formular_sc(int id_object)
     s.append(out->createHtmlFooter());
     return s;
 }
+QString Reports::create_object_formular_region(int id_object)
+{
+    ReportData *report_model = new ReportData;
+    QMap <int, QMap< QString,QString> > obj_data;
+    obj_data = report_model->region_info(id_object);
 
+    QMap<int,QMap<QString,QString> > obj_data2;
+    obj_data2 = report_model->region_info_pop(id_object);
+
+    Output *out = new Output;
+
+    QString s = out->createHtmlHeader();
+    s.append(out->createHtmlH("Формуляр региона (района)", 2));
+    s.append(out->createHtmlTable_2(obj_data));
+    s.append(out->createHtmlH("1. Население", 2));
+    s.append(out->createHtmlTable_2(obj_data2));
+    s.append(out->createHtmlFooter());
+    return s;
+}
 void Reports::show_preview_dialog(QString html)
 {
  ReportView *view = new ReportView;

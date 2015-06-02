@@ -481,6 +481,234 @@ QMap<QString, QMap<QString, QString> > ReportData::sc_info_coord(int id_object)
 
             return *sc_elem_obj;
 }
+//=============================== РЕГИОНЫ ============================================================
+QMap<int, QMap<QString, QString> > ReportData::region_info(int id_object)
+{
+    region_info_date = new QMap<int, QMap<QString, QString> >;
+    region_info_date->clear();
+
+
+    QSqlQuery query;
+    query.prepare ("SELECT reg.name_region, tr.name_type_region, reg.description_region \
+                   FROM region reg, type_region tr \
+                   WHERE (reg.id_region = ?) \
+                   AND tr.id_type_region = reg.id_type_region");
+
+    query.addBindValue(id_object);
+    if(!query.exec())
+    {
+        QString sss = query.lastError().text();
+        return *region_info_date;
+    }
+
+    QMap<QString, QString> map;
+    QSqlRecord rec = query.record();
+    query.next();
+        map.clear();
+        map.insert("Наименование региона:",query.value(rec.indexOf("name_region")).toString());
+        region_info_date->insert(1,map);
+        map.clear();
+        map.insert("Тип региона:",query.value(rec.indexOf("name_type_region")).toString());
+        region_info_date->insert(2,map);
+        map.clear();
+        map.insert("Описание региона:",query.value(rec.indexOf("description_region")).toString());
+        region_info_date->insert(3,map);
+        map.clear();
+
+        return *region_info_date;
+}
+QMap<int, QMap<QString, QString> > ReportData::region_info_pop(int id_object)
+{
+    reg_info_date = new QMap<int, QMap<QString, QString> >;
+    reg_info_date->clear();
+
+    QSqlQuery query;
+    query.prepare ("SELECT reg.counte_population, reg.density_population, reg.emmigration_population, \
+                   reg.immigration_population, reg.birth_population, reg.dead_population \
+                   FROM region reg, type_region tr \
+                   WHERE (reg.id_region = ?) \
+                   AND tr.id_type_region = reg.id_type_region");
+
+    query.addBindValue(id_object);
+    if(!query.exec())
+    {
+        QString sss = query.lastError().text();
+        return *reg_info_date;
+    }
+
+    QMap<QString, QString> map;
+    QSqlRecord rec = query.record();
+    query.next();
+        map.clear();
+        map.insert("Население:",query.value(rec.indexOf("counte_population")).toString() + " чел.( " + query.value(rec.indexOf("density_population")).toString() + " чел на км2 плотность населения )");
+        reg_info_date->insert(1,map);
+        map.clear();
+
+    QString str;
+    QSqlQuery query_nations;
+    QSqlRecord data;
+
+    str=QString("SELECT name_nations,persent_nations \
+                    FROM region,ls_nations,nations \
+                    WHERE region.id_region = ls_nations.id_region \
+                    AND ls_nations.id_nations = nations.id_nations AND region.id_region = %1").arg(id_object);
+
+    query_nations.exec(str);
+    data.clear();
+    data = query_nations.record();
+
+    number = query.value(rec.indexOf("counte_population")).toInt();
+    QString q;
+    while(query_nations.next())
+    {
+        name_nations_string = query_nations.value(data.indexOf("name_nations")).toString();
+        persent_nations = query_nations.value(data.indexOf("persent_nations")).toDouble();
+        number_nations = persent_nations/100*number;
+        q.append("</P>  <P> - ");
+        q.append(name_nations_string.toLocal8Bit());
+        q.append(" (");
+        q.append(QString("%1").arg(persent_nations).toLocal8Bit());
+        q.append(" %, ");
+        q.append(QString("%1").arg(number_nations).toLocal8Bit());
+        q.append(" чел)");
+    }
+    map.insert("Национальный состав:",q);
+    reg_info_date->insert(2,map);
+    map.clear();
+    map.insert("Уровень эммиграции:",query.value(rec.indexOf("emmigration_population")).toString());
+    reg_info_date->insert(3,map);
+    map.clear();
+    map.insert("Уровень иммиграции:",query.value(rec.indexOf("immigration_population")).toString());
+    reg_info_date->insert(4,map);
+    map.clear();
+    map.insert("Уровень рождаемости:",query.value(rec.indexOf("birth_population")).toString());
+    reg_info_date->insert(5,map);
+    map.clear();
+    map.insert("Уровень смертности:",query.value(rec.indexOf("dead_population")).toString());
+    reg_info_date->insert(6,map);
+    map.clear();
+
+    number_sex_m = 0;
+    number_sex_w = 0;
+
+    number_m = 0;
+    number_w = 0;
+    QStringList list;
+    QString str_pol,str_percent;
+    str_pol=QString("SELECT persent_sex_m FROM pop_sex WHERE id_region = %1").arg(id_object);
+    QSqlQuery query_pol;
+    query_pol.exec(str_pol);
+    data.clear();
+    data = query_pol.record();
+
+    while(query_pol.next())
+    {
+        number = query_pol.value(data.indexOf("persent_sex_m")).toDouble();
+        number_sex_m = number;
+    }
+
+    str_percent = QString("SELECT persent_sex_w FROM pop_sex WHERE id_region = %1").arg(id_object);
+    query_pol.clear();
+    query_pol.exec(str_percent);
+    data.clear();
+    data = query_pol.record();
+    QString q_pol;
+    while(query_pol.next())
+    {
+        number = query_pol.value(data.indexOf("persent_sex_w")).toDouble();
+        number_sex_w = number;
+    }
+    if(number_sex_m==0)
+    {
+        map.insert("Половой состав:","Данных нет");
+        reg_info_date->insert(7,map);
+        map.clear();
+    }
+    else
+    {
+        number = query.value(rec.indexOf("counte_population")).toInt();
+        number_m = number_sex_m/100*number;
+        number_w = number - number_m;
+
+        q_pol.append(" </P>  <P> Мужской пол: "); q_pol.append(QString("%1").arg(number_m).toLocal8Bit());
+        q_pol.append(" чел. (");q_pol.append(QString("%1").arg(number_sex_m).toLocal8Bit()); q_pol.append("%)");
+        q_pol.append(" </P> <P>  Женский пол: "); q_pol.append(QString("%1").arg(number_w).toLocal8Bit());
+        q_pol.append(" чел. (");q_pol.append(QString("%1").arg(number_sex_w).toLocal8Bit()); q_pol.append("%)");
+
+        map.insert("Половой состав:",q_pol);
+        reg_info_date->insert(7,map);
+        map.clear();
+    }
+
+    QString str_age;
+    str_age=QString("SELECT name_age,persent_age FROM age,pop_age WHERE pop_age.id_age = age.id_age AND id_region = %1").arg(id_object);
+    QSqlQuery query_age;
+    QString q_age;
+    query_age.exec(str_age);
+    data.clear();
+    data = query_age.record();
+    if(query_age.size()==0)
+    {
+        map.insert("Возрастной состав:","Данных нет");
+        reg_info_date->insert(8,map);
+        map.clear();
+    }
+    else
+    {
+     while(query_age.next())
+        {
+            name_age_string = query_age.value(data.indexOf("name_age")).toString();
+            persent_age_string = query_age.value(data.indexOf("persent_age")).toString();
+            q_age.append("</P>  <P>");
+            q_age.append(name_age_string.toLocal8Bit());
+            q_age.append(" - ");
+            q_age.append(persent_age_string.toLocal8Bit());
+            q_age.append("%");
+        }
+        map.insert("Возрастной состав:",q_age);
+        reg_info_date->insert(8,map);
+        map.clear();
+    }
+    QString str_conf,q_conf;
+    str_conf=QString("SELECT name_confessions,persent_confessions FROM ls_confessions,confessions WHERE id_region = %1 AND ls_confessions.id_confessions = confessions.id_confessions").arg(id_object);
+    QSqlQuery query_conf;
+    query_conf.exec(str_conf);
+    data.clear();
+    data = query_conf.record();
+    if(query_conf.size()==0)
+    {
+        map.insert("Религиозный состав:","Данных нет");
+        reg_info_date->insert(9,map);
+        map.clear();
+    }
+    else
+    {
+    while(query_conf.next())
+        {
+            name_confessions = query_conf.value(data.indexOf("name_confessions")).toString();
+            persent_confessions = query_conf.value(data.indexOf("persent_confessions")).toString();
+
+            q_conf.append(" </P>  <P>");
+            q_conf.append(name_confessions.toLocal8Bit());
+            q_conf.append(" - ");
+            q_conf.append(persent_confessions.toLocal8Bit());
+            q_conf.append("%");
+        }
+    map.insert("Религиозный состав:",q_conf);
+    reg_info_date->insert(9,map);
+    map.clear();
+
+    }
+
+
+
+
+
+
+    return *reg_info_date;
+}
+
+
 //****************************************************************************************************
 //============================== отчеты по средствам =================================================
 

@@ -158,7 +158,7 @@ void Objectmanager::customMenuView(const QPoint & pos)
             rez_z_1 = list.value(3).toFloat();
             QAction *otch23 = new QAction(QString("Сформировать отчет"),this);
             groud_id = list.value(1).toInt();
-            connect(otch23,SIGNAL(triggered()),this,SLOT(reports_region()));
+            connect(otch23,SIGNAL(triggered()),this,SLOT(otchet_groups()));
 
             QAction *nac_sostav = new QAction(QString("Национальный состав"),this);
             connect(nac_sostav,SIGNAL(triggered()),this,SLOT(show_nations_region()));
@@ -3778,12 +3778,18 @@ void Objectmanager::otchet_groups()
             QString report = r->create_object_formular_ls(id_suka_ls);
             r->show_preview_dialog(report);
         }
+        else if((list.value(0)=="region") || (list.value(0) == "reg")){
+            Reports *r = new Reports;
+            int id_region = list.value(1).toInt();
+            QString report = r->create_object_formular_region(id_region);
+            r->show_preview_dialog(report);
+
+        }
     }
 }
 // QString str = QString("select gr.name_groups,gr.counte_groups,gr.founder_group,gr.menegement_groups,gr.officce_groups,gr.description_groups,gr.propaganda_groups,tr.name_trend_groups,sph.name_sphere_groups, form.name_form_groups, reg.name_region FROM groups gr,trend_groups tr,sphere_groups sph, form_groups form, region reg where gr.id_trend=tr.id_trend_groups AND gr.id_sphere_groups=sph.id_sphere_groups AND gr.id_form_groups=form.id_form_groups AND gr.id_region = reg.id_region AND gr.id_groups=%1").arg(group_id);
 void Objectmanager::reports_region()
 {
-
     QSqlQuery query_;
     QString str_ = QString("SELECT reg.name_region, tr.name_type_region, reg.description_region, reg.counte_population, reg.density_population, reg.emmigration_population, reg.immigration_population, reg.birth_population, reg.dead_population FROM region reg, type_region tr WHERE reg.id_region = %1 AND tr.id_type_region = reg.id_type_region").arg(groud_id);
     query_.exec(str_);

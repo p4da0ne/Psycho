@@ -31,7 +31,7 @@ QString Output::createHtmlH(QString text,int size,QString align)
 {   
 	if(size <1) size = 1;
 	if(size >6) size = 6;
-	QString t = "<h" + QString::number(size) + " align='"+ align+ "'>" + text + "</h" + QString::number(size) + ">";
+    QString t = "<h" + QString::number(size) + " align='"+ align+ "'>" + text + "</h" + QString::number(size) + ">";
 	return t;
 }
 
