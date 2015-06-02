@@ -88,6 +88,79 @@ QString Reports::create_object_formular_ls(int id_object)
     return s;
 }
 
+QString Reports::create_object_formular_mpo_pso_smi(int id_object)
+{
+    ReportData *report_model = new ReportData;
+    QMap <int, QMap< QString,QString> > obj_data;
+    obj_data = report_model->mpo_pso_smi_info(id_object);
+
+    QMap<QString,QMap<QString,QString> > obj_data2;
+    obj_data2 = report_model->mpo_pso_info_coord(id_object);
+
+    Output *out = new Output;
+
+    QString s = out->createHtmlHeader();
+    s.append(out->createHtmlH("‘ормул€р средства —ћ»", 2));
+    s.append(out->createHtmlTable_2(obj_data));
+    s.append(out->createHtmlTableM(obj_data2));
+    s.append(out->createHtmlFooter());
+    return s;
+}
+QString Reports::create_object_formular_mpo_pso_ls(int id_object)
+{
+    ReportData *report_model = new ReportData;
+    QMap <int, QMap< QString,QString> > obj_data;
+    obj_data = report_model->mpo_pso_ls_info(id_object);
+
+    QMap<QString,QMap<QString,QString> > obj_data2;
+    obj_data2 = report_model->mpo_pso_info_coord(id_object);
+
+    Output *out = new Output;
+
+    QString s = out->createHtmlHeader();
+    s.append(out->createHtmlH("‘ормул€р средства ¬оинского формировани€", 2));
+    s.append(out->createHtmlTable_2(obj_data));
+    s.append(out->createHtmlTableM(obj_data2));
+    s.append(out->createHtmlFooter());
+    return s;
+}
+QString Reports::create_object_formular_mpo_pso_gr(int id_object)
+{
+    ReportData *report_model = new ReportData;
+    QMap <int, QMap< QString,QString> > obj_data;
+    obj_data = report_model->mpo_pso_gr_info(id_object);
+
+    QMap<QString,QMap<QString,QString> > obj_data2;
+    obj_data2 = report_model->mpo_pso_info_coord(id_object);
+
+    Output *out = new Output;
+
+    QString s = out->createHtmlHeader();
+    s.append(out->createHtmlH("‘ормул€р средства организации", 2));
+    s.append(out->createHtmlTable_2(obj_data));
+    s.append(out->createHtmlTableM(obj_data2));
+    s.append(out->createHtmlFooter());
+    return s;
+}
+QString Reports::create_object_formular_sc(int id_object)
+{
+    ReportData *report_model = new ReportData;
+    QMap <int, QMap< QString,QString> > obj_data;
+    obj_data = report_model->sc_info(id_object);
+
+    QMap<QString,QMap<QString,QString> > obj_data2;
+    obj_data2 = report_model->sc_info_coord(id_object);
+
+    Output *out = new Output;
+
+    QString s = out->createHtmlHeader();
+    s.append(out->createHtmlH("‘ормул€р особого услови€", 2));
+    s.append(out->createHtmlTable_2(obj_data));
+    s.append(out->createHtmlTableM(obj_data2));
+    s.append(out->createHtmlFooter());
+    return s;
+}
+
 void Reports::show_preview_dialog(QString html)
 {
  ReportView *view = new ReportView;
