@@ -1,4 +1,5 @@
 #include "supporting_tables.h"
+#include <QDebug>
 #include "ui_supporting_tables_form.h"
 #if defined Q_OS_WIN
 #define kodec QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Windows-1251"));
@@ -86,9 +87,9 @@ void SupportingTables::init_supporting_tree()
     root_item = add_root("События","type_event");
 		//root_item = add_root("Организации","-");
 
-		root_item = add_root("Страны","country");
+    //	root_item = add_root("Страны","country");
 		
-		root_item = add_root("Блоки стран","blok");
+    //	root_item = add_root("Блоки стран","blok");
 		
 		root_item = add_root("Воинские звания","military_rank");
 
@@ -146,20 +147,19 @@ void SupportingTables::fill_supp_table(QTreeWidgetItem * item, int column)
 	QSqlRecord rec = query.record();
 	QStringList list;
 	int col_count = rec.count();
-	UI->supp_table->setColumnCount(col_count+1);
+	
+	rec.contains("id_sign")?UI->supp_table->setColumnCount(col_count):UI->supp_table->setColumnCount(col_count+1);
+
 	UI->supp_table->setColumnWidth(0,25);
 	QTableWidgetItem * h_itm = new QTableWidgetItem("");
 	UI->supp_table->setHorizontalHeaderItem(0,h_itm);
-	for(int col=1;col<=col_count;col++){
-		h_itm = new QTableWidgetItem(rec.fieldName(col-1));
-		UI->supp_table->setHorizontalHeaderItem(col,h_itm);
-	}
-//================ Если выбрана таблица object_class ===============================
-	if(table_name == "object_class"){
-		UI->supp_table->insertColumn(col_count+1);	
-		UI->supp_table->setColumnWidth(col_count+1,25);
-		QTableWidgetItem * h = new QTableWidgetItem("");
-		UI->supp_table->setHorizontalHeaderItem(col_count+1,h);
+	int sch=1;
+	for(int col=0;col < col_count;col++){
+		QString fielName = rec.fieldName(col);
+		if ( fielName == "id_sign") continue;
+		h_itm = new QTableWidgetItem(rec.fieldName(col));
+		UI->supp_table->setHorizontalHeaderItem(sch,h_itm);
+		sch++;
 	}
 //======================================================================
 	UI->supp_table->hideColumn(1);
@@ -169,19 +169,15 @@ void SupportingTables::fill_supp_table(QTreeWidgetItem * item, int column)
 		QTableWidgetItem *i = new QTableWidgetItem;
 		i->setData(Qt::CheckStateRole, Qt::Unchecked);
 		UI->supp_table->setItem(row,0,i);
-		for(int col=1;col<=col_count;col++){
-			QTableWidgetItem * itm = new QTableWidgetItem((query.value(col-1)).toString());
+		sch=1;
+		for(int col = 0;col < col_count; col++){
+			if (rec.fieldName(col) == "id_sign") continue;
+			QTableWidgetItem * itm = new QTableWidgetItem((query.value(col)).toString());
 			//itm->setBackgroundColor(Qt::lightGray);
 			itm->setTextColor(Qt::darkBlue);
-			UI->supp_table->setItem(row,col,itm);
+			UI->supp_table->setItem(row,sch,itm);
+			sch++;
 		}
-		//====================
-		if(table_name == "object_class"){	 
-			QIcon icon(QString("./icons/edit.png"));
-			QTableWidgetItem *t_item = new QTableWidgetItem(icon,"",0);
-			UI->supp_table->setItem(row,col_count+1,t_item);
-		}
-		//====================
 		row++;
 	}
 	UI->supp_table->resizeColumnsToContents();
@@ -265,6 +261,7 @@ void SupportingTables::save_supp_table_data(){
 			//=== запрос на вставку === 
 			if(!query.exec(str_q_ins))
 			{
+				qDebug() << query.lastError().text() << " query" << str_q_ins;
 				return;
 			}
 			//=======================================

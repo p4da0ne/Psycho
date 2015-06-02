@@ -24,6 +24,10 @@
 #include <QProgressDialog>
 #include <my_mapaccess.h>
 #include "mylabel.h"
+#include <QMouseEvent>
+#include <QToolButton>
+//#include "transposeproxymodel.h"
+#include "mysqlrelationaldelegate.h"
 
 class simledelegate;
 
@@ -51,6 +55,11 @@ public:
     HMAP hmap;
 	MyLabel *label_foto; 
 	QLabel *label_foto_hide;
+
+
+   // TransposeProxyModel *trans;
+
+  //  QTableView *test;
 public slots:
 	void customMenuTree(const QPoint &);
 	void customMenuView(const QPoint &);
@@ -58,6 +67,34 @@ public slots:
 	void delete_country_blok();
 
 private slots:
+    void updateDB(QStandardItem* item);
+    void show_nations_region();
+    void show_nations_ls();
+    void show_nations_gr();
+    void show_confess_region();
+    void show_confess_ls();
+    void show_confess_gr();
+    void show_profess_region();
+    void show_profess_gr();
+    void show_age_region();
+    void show_age_gr();
+    void show_sekas_region();
+    void show_sekas_gr();
+    void show_state_gr();
+    void show_state_ls();
+//================================================================================
+    void add_new_blok();
+    void get_path();
+	void get_path_edit();
+    void get_path_flag();
+    void get_path_flag_edit();
+    void delete_blok();
+    void delete_country();
+    void add_new_country();
+    void edit_country_blok();
+    void edit_country();
+    void show_redaktor_blok(int row, int column);
+    void show_redaktor_country(int row, int column);
 	void show_objects(const QModelIndex &index);
 	void column_item_clicked ( const QModelIndex &index );
 	void delete_region();
@@ -69,7 +106,7 @@ private slots:
 	void delete_pers();
 	void edit_persones();
 	void clicked_open_file();
-	
+    void slotSearchObject();
     void otchet_groups();
     void reports_region();
     void add_new_coordinates();
@@ -81,7 +118,25 @@ private slots:
     void edit_coordinates_view();
     void WGS_to_other();
     void PLANE_to_other();
+
 private:
+
+    QTableWidget *blok_edit_table;
+    QTableWidget *country_edit_table;
+    QDialog *edit_blok;
+    QDialog *edit_country_dlg;
+    QDialog *add_blok;
+    QDialog *add_country;
+    QDialog *edit_dlg;
+    QLabel *path_lab;
+    QLabel *blok_desc;
+    QLabel *blok_name;
+    QLineEdit *blok_filepath_edit;
+    QTextEdit *blok_desc_edit;
+    QLineEdit *blok_name_edit;
+    QToolButton *path_button;
+    QPushButton *ok_button;
+    QPushButton *cancel_button;
 	QDialog *edit_dlg_pers;
 	QCheckBox *checkbox_enemy;
     void edit_coordinates(QString,int id_obj,QString,QString);
@@ -115,7 +170,8 @@ private:
 	void fill_combobox_country(QComboBox *box);
 	void fill_combobox_blok(QComboBox *box, int id_current_blok);
     void show_coordinates(QString,int,QString,QString);
-
+    void table_blok();
+    void table_country();
     Calculate_K_omkrf calc;
     calculating_mps calc_mps;
     int calc_info_for_region(QString id_region);

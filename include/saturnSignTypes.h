@@ -21,7 +21,8 @@
 	FORMATIONS_MEANS = 4, 		// средства формирований
 	GROUPS_MEANS = 5, 			// средства организаций
 	REGIONS = 6,				// регионы
-	PERSONNEL = 7				// персоналии
+	PERSONNEL = 7,				// персоналии
+	EVENTS = 8					// события
 } 
 	SignObjectsTypes;
 
