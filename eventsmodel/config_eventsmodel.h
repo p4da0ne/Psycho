@@ -15,8 +15,6 @@
 #ifdef WIN32
 
 #include <windows.h>
-#pragma warning (disable:4251)
-#pragma warning (disable:4530)
 #ifdef __USE_DLL_EVENTSMODEL
 
 	#define __EXPORT_EVENTSMODEL __declspec(dllexport)

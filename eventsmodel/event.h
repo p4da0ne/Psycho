@@ -5,7 +5,7 @@
 #include <QString>
 #include <QDateTime>
 #include <QList>
-#include "coord.h"
+#include "../coord/coord.h"
 
 class Event : public QObject
 {

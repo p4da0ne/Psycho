@@ -6,6 +6,7 @@ EventsModel::EventsModel(QObject *parent)
     this->UpdateModel();
 }
 
+
 /*!
 Обновление модели на основании данных в БД (таблица events)
 UpdateModel()
@@ -150,5 +151,6 @@ void EventsModel::UpdateItem(QStandardItem &item){
 }
 
 void EventsModel::insertEvent(Event * event){
-    QString str = QString("INSERT INTO events (name_event, time_event_start,time_event_end,description_event, id_type_event_object,id_object,id_type_event,id_event_status) VALUES ('%1','%2','%3','%4',%5,%6,%7,%8)").arg(event->getName());
+    QString str = QString("INSERT INTO events (name_event, time_event_start, time_event_end, description_event, id_type_event_object,id_object,id_type_event,id_event_status)\n"
+                          "VALUES ('%1','%2','%3','%4',%5,%6,%7,%8)").arg(event->getName()).arg(event->getStartDate()).arg(event->getEndDate()).arg(event->getDescription()).arg(event->getTypeEvent());
 }

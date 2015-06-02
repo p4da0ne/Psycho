@@ -19,7 +19,7 @@ INCLUDEPATH += ./ \
 DEPENDPATH += 	./ \
                 ../coord
 
-LIBPATH   += ../build
+LIBS   += -L../build
 
 LIBS += -lcoord
 

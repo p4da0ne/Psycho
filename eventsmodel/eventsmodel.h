@@ -2,9 +2,9 @@
 #define EVENTSMODEL_H
 
 #include "config_eventsmodel.h"
-#include <QSqlQuery>
-#include <QSqlRecord>
-#include <QSqlError>
+#include <QtSql/QSqlQuery>
+#include <QtSql/QSqlRecord>
+#include <QtSql/QSqlError>
 #include <QStandardItemModel>
 #include <QStandardItem>
 #include <QFile>
