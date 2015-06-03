@@ -8,10 +8,12 @@ QT += sql
 
 INCLUDEPATH += . \
                 ../output \
-                ../textedit
+                ../textedit \
+                ../Calculate_K_omkrf
 
 DEPENDPATH +=   ../output \
-                ../textedit
+                ../textedit \
+                ../Calculate_K_omkrf
 
 LIBS += -L../build -loutput -ltextedit
 

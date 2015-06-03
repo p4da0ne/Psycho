@@ -162,6 +162,7 @@ QString Reports::create_object_formular_sc(int id_object)
 }
 QString Reports::create_object_formular_region(float rez_,int id_object)
 {
+
     ReportData *report_model = new ReportData;
     QMap <int, QMap< QString,QString> > obj_data;
     obj_data = report_model->region_info(id_object);
