@@ -185,7 +185,7 @@ QList<SignData*> EventsMapModel::getEvents(long int hMap,double x1,double y1,dou
 		QSqlRecord rec = query.record();
 		while (query.next())
 		{		
-			int idEvent = query.value(rec.indexOf("id_event")).toInt();
+			int idEvent = query.value(rec.indexOf("id_event")).toInt();	
 			int idTypeEvent = query.value(rec.indexOf("id_type_event")).toInt();
 			int idObject = query.value(rec.indexOf("id_object")).toInt();
 			bool isObjectEventSource = query.value(rec.indexOf("is_events_source")).toBool();
@@ -202,9 +202,14 @@ QList<SignData*> EventsMapModel::getEvents(long int hMap,double x1,double y1,dou
 				semantic_map[17501] = QString::number(idEvent);
 				semantic_map[17502] = QString::number(EVENTS);
 				semantic_map[60030] = QString::number(getEventStatusId(idEvent));	
-					//semantic_map[19]=semantika_1_mpo_pso;	// подпись значка
-					//semantic_map[32811]=semantika_digit1_mpo_pso;	//дальность действия средства
-					//semantic_map[32852]=semantika_digit2_mpo_pso;	//направление (угол) действия средства
+				
+				if(isObjectEventSource)
+				{
+					semantic_map[19] = getObjectShortName(idObject, objectTableName);	// сокращенное наименование инициатора события (например п/д, осуществляющее ИТВ или др.)
+				}
+					
+				semantic_map[218] = QString("987"); //номер цели
+				//semantic_map[17] = ;	//дата и время события
 
 				QList<Coord*> eventMetric = getEventCoordinates(hMap,idEvent);
 				QList<Coord*> objectMetric = getObjectCoordinates(hMap,idObject, objectTableName);
@@ -407,6 +412,48 @@ QList<Coord*> EventsMapModel::getObjectCoordinates(long int hMap,int idObject, Q
 	return coordList;	
 }
 
+
+//=======================================================================
+//====== Метод возвращает сокращенное наименование объекта =====================
+//=======================================================================
+QString EventsMapModel::getObjectShortName(int idObject,QString tableName)
+{
+	QSqlQuery query;
+	QString objectName;
+
+	QString queryStr;
+
+	if(tableName == "persones")
+	{
+		queryStr = QString("SELECT name_persones FROM persones WHERE id_persones = %1").arg(idObject);
+	}
+	if(tableName == "ls")
+	{
+		queryStr = QString("SELECT short_name_ls FROM ls WHERE id_ls = %1").arg(idObject);
+	}
+	if(tableName == "mpo_pso")
+	{
+		queryStr = QString("SELECT name_mpo_pso FROM mpo_pso WHERE id_mpo_pso = %1").arg(idObject);
+	}
+	if(tableName == "region")
+	{
+		queryStr = QString("SELECT name_region FROM region WHERE id_region = %1").arg(idObject);
+	}
+	if(tableName == "special_conditions")
+	{
+		queryStr = QString("SELECT name_special_conditions FROM special_conditions WHERE id_special_conditions = %1").arg(idObject);
+	}
+	
+	if(query.exec(queryStr))
+	{
+		while(query.next())
+		{		
+			objectName = query.value(0).toString();	
+		}
+	}
+	return objectName;	
+}
+
 //==============================================================================================
 //== Метод формирует строку запроса в БД для поиска событий в соответствии с фильтром ==========
 //== Параметры фильтрации инициализируются в конструкторе при создании объекта модели событий ==
@@ -502,7 +549,7 @@ QString EventsMapModel::createEventsFilterQuery()
 		}
 		queryStr.append(QString("AND (%1) ").arg(orStr));
 	}
-
+	queryStr.append(QString("ORDER BY e.id_event"));
 
 	return queryStr;
 }
