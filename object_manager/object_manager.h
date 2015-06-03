@@ -108,7 +108,6 @@ private slots:
 	void clicked_open_file();
     void slotSearchObject();
     void otchet_groups();
-    void reports_region();
     void add_new_coordinates();
     void show_dialog_add_file();
     void get_coordinates(int,QString,QString,QString);

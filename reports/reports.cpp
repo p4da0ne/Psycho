@@ -160,7 +160,7 @@ QString Reports::create_object_formular_sc(int id_object)
     s.append(out->createHtmlFooter());
     return s;
 }
-QString Reports::create_object_formular_region(int id_object)
+QString Reports::create_object_formular_region(float rez_,int id_object)
 {
     ReportData *report_model = new ReportData;
     QMap <int, QMap< QString,QString> > obj_data;
@@ -169,13 +169,33 @@ QString Reports::create_object_formular_region(int id_object)
     QMap<int,QMap<QString,QString> > obj_data2;
     obj_data2 = report_model->region_info_pop(id_object);
 
+    QMap<int,QMap<QString,QString> > obj_data3;
+    obj_data3 = report_model->region_info_smi(id_object);
+
+    QMap<int,QMap<QString,QString> > obj_data4;
+    obj_data4 = report_model->region_info_group(id_object);
+
+    QMap<QString,QString> obj_data5;
+    obj_data5 = report_model->region_info_factor(id_object);
+
+    QMap<QString,QString> obj_data6;
+    obj_data6 = report_model->region_info_itog(rez_);
+
     Output *out = new Output;
 
     QString s = out->createHtmlHeader();
     s.append(out->createHtmlH("Ôîðìóëÿð ðåãèîíà (ðàéîíà)", 2));
     s.append(out->createHtmlTable_2(obj_data));
-    s.append(out->createHtmlH("1. Íàñåëåíèå", 2));
+    s.append(out->createHtmlH("1. ÍÀÑÅËÅÍÈÅ", 2));
     s.append(out->createHtmlTable_2(obj_data2));
+    s.append(out->createHtmlH("2. ÑÌÈ", 2));
+    s.append(out->createHtmlTable_2(obj_data3));
+    s.append(out->createHtmlH("3. ÎÐÃÀÍÈÇÀÖÈÈ", 2));
+    s.append(out->createHtmlTable_2(obj_data4));
+    s.append(out->createHtmlH("4. ÔÀÊÒÎÐÛ", 2));
+    s.append(out->createHtmlTable_row(obj_data5));
+    s.append(out->createHtmlH("5. ÂÛÂÎÄ", 2));
+    s.append(out->createHtmlTable_row(obj_data6));
     s.append(out->createHtmlFooter());
     return s;
 }

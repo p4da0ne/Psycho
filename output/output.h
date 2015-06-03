@@ -21,6 +21,7 @@ public:
 	QString createHtmlTable(QMap<QString ,QString> table_data, QStringList header_list, int width = 100);
     QString createHtmlTable_2(QMap<int, QMap<QString, QString> > table_data, int width = 100);
     QString createHtmlTable_3(QMap<QString,QString> table_data,int width =100);
+    QString createHtmlTable_row(QMap<QString,QString> table_data,int width =100);
     QString createHtmlLi(QStringList list, int type = 1 , int type_style = 0);
     QString createHtmlTableM(QMap<QString,QMap<QString,QString> > table_data, int width = 100);
 

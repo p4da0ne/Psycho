@@ -481,7 +481,8 @@ QMap<QString, QMap<QString, QString> > ReportData::sc_info_coord(int id_object)
 
             return *sc_elem_obj;
 }
-//=============================== РЕГИОНЫ ============================================================
+//***********************************************************************************************************
+//=============================== ОТЧЕТЫ РЕГИОНЫ ============================================================
 QMap<int, QMap<QString, QString> > ReportData::region_info(int id_object)
 {
     region_info_date = new QMap<int, QMap<QString, QString> >;
@@ -540,7 +541,7 @@ QMap<int, QMap<QString, QString> > ReportData::region_info_pop(int id_object)
     QSqlRecord rec = query.record();
     query.next();
         map.clear();
-        map.insert("Население:",query.value(rec.indexOf("counte_population")).toString() + " чел.( " + query.value(rec.indexOf("density_population")).toString() + " чел на км2 плотность населения )");
+        map.insert("Население:",query.value(rec.indexOf("counte_population")).toString() + " чел.( " + query.value(rec.indexOf("density_population")).toString() + " чел на км<span style=' vertical-align:super;'>2</span>  плотность населения )");
         reg_info_date->insert(1,map);
         map.clear();
 
@@ -699,16 +700,304 @@ QMap<int, QMap<QString, QString> > ReportData::region_info_pop(int id_object)
     map.clear();
 
     }
-
-
-
-
-
-
     return *reg_info_date;
 }
+QMap<int, QMap<QString, QString> > ReportData::region_info_smi(int id_object)
+{
+    region_info_date = new QMap<int, QMap<QString, QString> >;
+    region_info_date->clear();
+    QMap<QString, QString> map;
+    QSqlQuery query,query1,query2;
+    QSqlRecord data,data1,data2;
+    QString str,str1,str2,q_pos;
+    int l=0;
+    int d=0;
+
+    str=QString("SELECT id_position_smi,name_position_smi FROM position_smi");
+    query.clear();
+    query.exec(str);
+    data.clear();
+    data = query.record();
+    QString name_position_smi,nametype_smi,name_smi;
+    int id_position_smi,id_type_smi;
+
+    while(query.next())
+    {
+        name_position_smi = query.value(data.indexOf("name_position_smi")).toString();
+        id_position_smi = query.value(data.indexOf("id_position_smi")).toInt();
+
+        str1 = QString("SELECT id_type_smi,nametype_smi FROM type_smi");
+        query1.clear();
+        query1.exec(str1);
+        data1.clear();
+        data1 = query1.record();
+        l=0;
+
+        while(query1.next())
+        {
+            nametype_smi = query1.value(data1.indexOf("nametype_smi")).toString();
+            id_type_smi = query1.value(data1.indexOf("id_type_smi")).toInt();
+
+            str2=QString("SELECT smi.name_smi \
+                         FROM smi,smi_region \
+                         WHERE smi_region.id_smi = smi.id_smi \
+                         AND id_position_smi = %1 AND id_type_smi = %2 \
+                         AND  id_region = %3").arg(id_position_smi).arg(id_type_smi).arg(id_object);
+            query2.clear();
+            query2.exec(str2);
+            data2.clear();
+            data2 = query2.record();
+            smi_number = query2.size();
+            if(smi_number>0)
+            {
+                l++;
+                d=1;
+                if(l<2)
+                {
+                    q_pos.append(" </P>  <P> </strong> <strong>");
+                    q_pos.append(name_position_smi.toLocal8Bit() + ": ");
+                }
+                q_pos.append("</P> <P> ");
+                q_pos.append(nametype_smi.toLocal8Bit());
+                q_pos.append(": ");
+                q_pos.append(QString("%1").arg(smi_number).toLocal8Bit());
+
+                while(query2.next())
+                {
+                    name_smi = query2.value(data2.indexOf("name_smi")).toString();
+                    q_pos.append("</P>  <P> - ");
+                    q_pos.append(name_smi.toLocal8Bit());
+
+                    map.insert("Позиция СМИ:",q_pos);
+                    region_info_date->insert(1,map);
+                    map.clear();
+                }
+            }
+        }
+
+    }
+
+    if(d==0)
+    map.insert("Информация о CМИ:","Данных нет");
+    region_info_date->insert(2,map);
+    map.clear();
+
+    return *region_info_date;
+}
+QMap<int, QMap<QString, QString> > ReportData::region_info_group(int id_object){
+
+    region_info_date = new QMap<int, QMap<QString, QString> >;
+    region_info_date->clear();
+
+    QMap<QString, QString> map;
+    QSqlQuery query,query1,query2;
+    QSqlRecord data,data1,data2;
+    QString str,str1,str2,q_pos;
+    QString name_trend_groups,name_sphere_groups,name_groups;
+    int id_trend_groups,id_sphere_groups;
+    int l=0;
+    int d=0;
+    str=QString("SELECT id_trend_groups,name_trend_groups FROM trend_groups");
+    query.clear();
+    query.exec(str);
+    data.clear();
+    data = query.record();
+
+    while(query.next())
+    {
+        name_trend_groups = query.value(data.indexOf("name_trend_groups")).toString();
+        id_trend_groups = query.value(data.indexOf("id_trend_groups")).toInt();
+
+        str1 = QString("SELECT id_sphere_groups,name_sphere_groups FROM sphere_groups");
+        query1.clear();
+        query1.exec(str1);
+        data1.clear();
+        data1 = query1.record();
+        l=0;
+
+        while(query1.next())
+        {
+            name_sphere_groups = query1.value(data1.indexOf("name_sphere_groups")).toString();
+            id_sphere_groups = query1.value(data1.indexOf("id_sphere_groups")).toInt();
+
+            str2=QString("SELECT name_groups \
+                         FROM groups \
+                         WHERE id_sphere_groups = %1 AND id_trend = %2 \
+                         AND  id_region = %3").arg(id_sphere_groups).arg(id_trend_groups).arg(id_object);
+            query2.clear();
+            query2.exec(str2);
+            data2.clear();
+            data2 = query2.record();
+            smi_number = query2.size();
+            if(smi_number>0)
+            {
+                l++;
+                d=1;
+                if(l<2)
+                {
+                    q_pos.append(" </P>  <P> </strong> <strong>");
+                    q_pos.append(name_trend_groups.toLocal8Bit() + ": ");
+                }
+                q_pos.append("</P>  <P>");
+                q_pos.append(name_sphere_groups.toLocal8Bit());
+                q_pos.append(": ");
+                q_pos.append(QString("%1").arg(smi_number).toLocal8Bit());
+
+                while(query2.next())
+                {
+                    name_groups = query2.value(data2.indexOf("name_groups")).toString();
+                    q_pos.append("</P>  <P> - ");
+                    q_pos.append(name_groups.toLocal8Bit());
+
+                    map.insert("Направленность организации:",q_pos);
+                    region_info_date->insert(1,map);
+                    map.clear();
+                }
+            }
+        }
+    }
+    if(d==0)
+    map.insert("Информация о организации:","Данных нет");
+    region_info_date->insert(2,map);
+    map.clear();
+
+    return *region_info_date;
+}
+QMap<QString, QString> ReportData::region_info_factor(int id_object){
+
+    info_date = new QMap<QString, QString>;
+    info_date->clear();
+
+    QSqlQuery query;
+    QSqlRecord data;
+    QString str,q_pos;
+
+    str.clear();
+    query.clear();
+    data.clear();
+
+    str = QString("SELECT * FROM region WHERE id_region = %1").arg(id_object);
+    query.exec(str);
+    data=query.record();
+
+    for(int i=0;i<33;i++) factori[i]=0;
+    factorflag=0;
+
+    while(query.next())
+    {
+        int i=0;
+        factori[i] = query.value(data.indexOf("poverty_population")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("price_population")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("education")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("trust_vs_population")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("support_vs_population")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("ability_vs_population")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("proposition_org_population")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("opposition_org_population")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("position_vip")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("unemployment_population")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("refugees")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("demography")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("availability_smi_population")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("smi_o_vs")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("protection_iti")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("ungov_org")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("patriotic_population")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("crim_population")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("corruption_population")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("shadow_population")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("illegal_migration_population")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("extremism_population")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("prison_population")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("protest_population")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("opg_population")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("drug_population")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("conflict_population")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("cooperation_ro")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("cult_object_population")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("autoritet_liders")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("regard_liders")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("religion_ls_enemy")).toDouble(); i++;
+        factori[i] = query.value(data.indexOf("religion_ls_their")).toDouble();
+
+    }
+    factor_text << "Высокий уровень бедности и доли населения с денежными доходами, ниже региональной величины прожиточного минимума"
+                << "Высокий уровень цен на продукты и услуги первой необходимости."
+                << "Низкий уровень образования населения, недостаточное количество высших учебных заведений."
+                << "Низкая степень доверия населения органам государственной власти, командованию Вооруженных Сил."
+                << "Низкая степень поддержки населением действий Вооруженных Сил."
+                << "Неспособность и отсутствие возможностей государственных (региональных) структур оказать содействие Вооружённым Силам в выполнении задач в период непосредственной угрозы агрессии и военное время."
+                << "Низкая степень влияния на общественное мнение населения основных политических партий, неправительственных, общественных и религиозных организаций, выступающих в поддержку государства и Вооруженных сил."
+                << "Наличие оппозиционных, радикальных политических движений и организаций (в том числе и молодежных) и достаточно высокий уровень их поддержки населением. "
+                << "Негативная позиция государственных (региональных) авторитетных деятелей политики, культуры, искусства по отношению к Вооруженным Силам."
+                << "Высокий уровень безработицы в регионе."
+                << "Наличие беженцев из других регионов Российской Федерации, сопредельных с ней территорий."
+                << "Сложная демографическая ситуация в регионе."
+                << "Низкий уровень информатизации региона и степень доступности средств массовой информации и коммуникации, затрудняющие ведение пропаганды и контрпропаганды."
+                << "Деструктивная направленность информации, публикуемой в региональных СМИ в отношении Вооруженных Сил."
+                << "Низкая степень защищенности объектов телерадиовещания, сотовой связи, инфо - и телекоммуникационной инфраструктуры региона."
+                << "Высокая степень активности неправительственных организаций и фондов деструктивной направленности."
+                << "Низкий уровень сформированности патриотического сознания населения."
+                << "Высокий уровень преступности в регионе."
+                << "Высокая степень коррумпированности органов власти."
+                << "Высокая степень влияния теневого сектора экономики и финансов региона на общественное мнение."
+                << "Наличие нелегальных миграционных потоков."
+                << "Наличие экстремистских проявлений и НВФ."
+                << "Большое количество исправительно-трудовых учреждений, и число осужденных."
+                << "Высокий уровень протестной активности населения."
+                << "Наличие организованных преступных группировок."
+                << "Наличие в peгионе путей незаконного экспорта (импорта) оружия и наркотиков."
+                << "Наличие межнациональных, межэтнических конфликтов.";
+
+    for(int i=0;i<33;i++) if(factori[i]>0 && factori[i]<=0.3) factorflag=1;
+    if(factorflag == 0)
+    {
+        q_pos.append("</P>  <P> <B> <CENTER> Факторы, дестабилизирующие моральную обстановку в регионе, отсутствуют, либо о них неизвестно. </CENTER></B>  ");
+        info_date->insert("",q_pos);
+     }
+    else
+    {
+        q_pos.append("</P>  <P> <B> <CENTER> Факторами, дестабилизирующими моральную обстановку в регионе, являются: </CENTER></B>  ");
 
 
+        for(int i=0;i<26;i++)
+        {
+            if(factori[i]>0 && factori[i]<=0.3)
+            {
+                q_pos.append(" </P>  <P> - ");
+                q_pos.append(factor_text.at(i).toLocal8Bit());
+            }
+            info_date->insert("",q_pos);
+
+        }
+    }
+
+
+    return *info_date;
+}
+QMap<QString, QString> ReportData::region_info_itog(float rez_){
+
+    info_date = new QMap<QString, QString>;
+
+
+    QString q_pos;
+
+    if(rez_ < 0.3)
+        q_pos.append(" </P>  <P> <b> <CENTER> Обстановка затрудняет выполнение задач </CENTER> </b>");
+    else
+    {
+        if(rez_ > 0.3 && rez_ <0.5)
+        q_pos.append(" </P>  <P> <b> <CENTER> Обстановка не оказывает существенного влияния на выполнение задач </CENTER> </b>");
+        else
+        q_pos.append(" </P>  <P> <b> <CENTER> Обстановка способствует выполнению задач </CENTER> </b>");
+
+    }
+
+    info_date->insert("",q_pos);
+
+    return *info_date;
+}
+//****************************************************************************************************
 //****************************************************************************************************
 //============================== отчеты по средствам =================================================
 
