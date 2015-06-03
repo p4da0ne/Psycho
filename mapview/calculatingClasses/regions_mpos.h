@@ -31,9 +31,8 @@ public:
 	QList<Coord*> getRegionMetric(long int hMap,int idRegion);
 	QMap<long int,QString> getRegionSemantics(int idRegion);
 	QString getRegionMpos(int idRegion);
-
-private:
 	Calculate_K_omkrf *regionCalculator;
+	
 
 };
 
