@@ -28,8 +28,11 @@ public:
 
 	QList<SignData*> getEvents(long int hMap,double x1,double y1,double x2,double y2);
 
-	QString createEventsFilterQuery();
+	QString createEventsFilterQuery(int idEvent);
 	bool isEventOnMap(const int idEvent,long int hMap,double x1,double y1,double x2,double y2);
+
+
+	QList<int> getIdEventsByFilter();
 
 	QList<Coord*> getEventCoordinates(long int hMap,const int idEvent);
 	QList<Coord*> getObjectCoordinates(long int hMap,int idObject, QString tableName);
