@@ -94,7 +94,21 @@ QString Output::createHtmlTable_2(QMap <int, QMap< QString,QString> > table_data
         r.append("</table>");
 return r;
 }
+QString Output::createHtmlTable_row(QMap<QString,QString> table_data,int width)
+{
+    QString r;
+     r.append("<TABLE style=\"border-color:#808080;\" border=\"1\" cellpadding=\"4\" cellspacing=\"1\" width='"+ QString::number(width)+ "%'>");
 
+    QMap<QString,QString>::iterator it=table_data.begin();
+    for (;it !=table_data.end(); ++it)
+    {
+        r.append("<TR><TD>");
+        r.append(it.value());
+        r.append("</TR></TD>");
+    }
+    r.append("</TABLE>");
+return r;
+}
 
 //===== Формирование таблицы на основе двумерного массива и списка ======
 QString Output::createHtmlTable(QMap<QString,QString> table_data, QStringList header_list,int width)
