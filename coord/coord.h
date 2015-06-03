@@ -43,6 +43,7 @@ public:
 	QString latitudeToString();
 	QString longitudeToString();
 
+	bool operator ==(Coord& coord);
 
 };
 
