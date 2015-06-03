@@ -12,6 +12,7 @@ DEFINES += BUILD_DLL
 
 
 INCLUDEPATH += ./ \
+                ../include \
                ../coord
 
 
