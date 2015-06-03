@@ -159,3 +159,25 @@ QString Coord::longitudeToString()
 	return longitude;
 }
 
+
+//================================================================
+//==== Оператор проверки на равенство объектов класса координат ==
+//================================================================
+bool Coord::operator ==(Coord& coord)
+{
+	if( this->latDegrees == coord.getLatDegrees() &&
+		this->latMinutes == coord.getLatMinutes() &&
+		this->latSeconds == coord.getLatSeconds() &&
+		this->longDegrees == coord.getLongDegrees() &&
+		this->longMinutes == coord.getLongMinutes() &&
+		this->longSeconds == coord.getLongSeconds() )
+	{
+		return true;
+	}
+	else if(this->x == coord.getX() &&
+			this->y == coord.getY())
+	{
+		return true;
+	}
+	return false;
+}

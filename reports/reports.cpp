@@ -88,6 +88,97 @@ QString Reports::create_object_formular_ls(int id_object)
     return s;
 }
 
+QString Reports::create_object_formular_mpo_pso_smi(int id_object)
+{
+    ReportData *report_model = new ReportData;
+    QMap <int, QMap< QString,QString> > obj_data;
+    obj_data = report_model->mpo_pso_smi_info(id_object);
+
+    QMap<QString,QMap<QString,QString> > obj_data2;
+    obj_data2 = report_model->mpo_pso_info_coord(id_object);
+
+    Output *out = new Output;
+
+    QString s = out->createHtmlHeader();
+    s.append(out->createHtmlH("Формуляр средства СМИ", 2));
+    s.append(out->createHtmlTable_2(obj_data));
+    s.append(out->createHtmlTableM(obj_data2));
+    s.append(out->createHtmlFooter());
+    return s;
+}
+QString Reports::create_object_formular_mpo_pso_ls(int id_object)
+{
+    ReportData *report_model = new ReportData;
+    QMap <int, QMap< QString,QString> > obj_data;
+    obj_data = report_model->mpo_pso_ls_info(id_object);
+
+    QMap<QString,QMap<QString,QString> > obj_data2;
+    obj_data2 = report_model->mpo_pso_info_coord(id_object);
+
+    Output *out = new Output;
+
+    QString s = out->createHtmlHeader();
+    s.append(out->createHtmlH("Формуляр средства Воинского формирования", 2));
+    s.append(out->createHtmlTable_2(obj_data));
+    s.append(out->createHtmlTableM(obj_data2));
+    s.append(out->createHtmlFooter());
+    return s;
+}
+QString Reports::create_object_formular_mpo_pso_gr(int id_object)
+{
+    ReportData *report_model = new ReportData;
+    QMap <int, QMap< QString,QString> > obj_data;
+    obj_data = report_model->mpo_pso_gr_info(id_object);
+
+    QMap<QString,QMap<QString,QString> > obj_data2;
+    obj_data2 = report_model->mpo_pso_info_coord(id_object);
+
+    Output *out = new Output;
+
+    QString s = out->createHtmlHeader();
+    s.append(out->createHtmlH("Формуляр средства организации", 2));
+    s.append(out->createHtmlTable_2(obj_data));
+    s.append(out->createHtmlTableM(obj_data2));
+    s.append(out->createHtmlFooter());
+    return s;
+}
+QString Reports::create_object_formular_sc(int id_object)
+{
+    ReportData *report_model = new ReportData;
+    QMap <int, QMap< QString,QString> > obj_data;
+    obj_data = report_model->sc_info(id_object);
+
+    QMap<QString,QMap<QString,QString> > obj_data2;
+    obj_data2 = report_model->sc_info_coord(id_object);
+
+    Output *out = new Output;
+
+    QString s = out->createHtmlHeader();
+    s.append(out->createHtmlH("Формуляр особого условия", 2));
+    s.append(out->createHtmlTable_2(obj_data));
+    s.append(out->createHtmlTableM(obj_data2));
+    s.append(out->createHtmlFooter());
+    return s;
+}
+QString Reports::create_object_formular_region(int id_object)
+{
+    ReportData *report_model = new ReportData;
+    QMap <int, QMap< QString,QString> > obj_data;
+    obj_data = report_model->region_info(id_object);
+
+    QMap<int,QMap<QString,QString> > obj_data2;
+    obj_data2 = report_model->region_info_pop(id_object);
+
+    Output *out = new Output;
+
+    QString s = out->createHtmlHeader();
+    s.append(out->createHtmlH("Формуляр региона (района)", 2));
+    s.append(out->createHtmlTable_2(obj_data));
+    s.append(out->createHtmlH("1. Население", 2));
+    s.append(out->createHtmlTable_2(obj_data2));
+    s.append(out->createHtmlFooter());
+    return s;
+}
 void Reports::show_preview_dialog(QString html)
 {
  ReportView *view = new ReportView;

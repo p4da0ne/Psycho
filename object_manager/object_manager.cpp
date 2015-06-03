@@ -158,7 +158,7 @@ void Objectmanager::customMenuView(const QPoint & pos)
             rez_z_1 = list.value(3).toFloat();
             QAction *otch23 = new QAction(QString("Сформировать отчет"),this);
             groud_id = list.value(1).toInt();
-            connect(otch23,SIGNAL(triggered()),this,SLOT(reports_region()));
+            connect(otch23,SIGNAL(triggered()),this,SLOT(otchet_groups()));
 
             QAction *nac_sostav = new QAction(QString("Национальный состав"),this);
             connect(nac_sostav,SIGNAL(triggered()),this,SLOT(show_nations_region()));
@@ -3778,189 +3778,19 @@ void Objectmanager::otchet_groups()
             QString report = r->create_object_formular_ls(id_suka_ls);
             r->show_preview_dialog(report);
         }
+        else if((list.value(0)=="region") || (list.value(0) == "reg")){
+            Reports *r = new Reports;
+            int id_region = list.value(1).toInt();
+            QString report = r->create_object_formular_region(id_region);
+            r->show_preview_dialog(report);
+
+        }
     }
 }
 // QString str = QString("select gr.name_groups,gr.counte_groups,gr.founder_group,gr.menegement_groups,gr.officce_groups,gr.description_groups,gr.propaganda_groups,tr.name_trend_groups,sph.name_sphere_groups, form.name_form_groups, reg.name_region FROM groups gr,trend_groups tr,sphere_groups sph, form_groups form, region reg where gr.id_trend=tr.id_trend_groups AND gr.id_sphere_groups=sph.id_sphere_groups AND gr.id_form_groups=form.id_form_groups AND gr.id_region = reg.id_region AND gr.id_groups=%1").arg(group_id);
 void Objectmanager::reports_region()
 {
-
-    QSqlQuery query_;
-    QString str_ = QString("SELECT reg.name_region, tr.name_type_region, reg.description_region, reg.counte_population, reg.density_population, reg.emmigration_population, reg.immigration_population, reg.birth_population, reg.dead_population FROM region reg, type_region tr WHERE reg.id_region = %1 AND tr.id_type_region = reg.id_type_region").arg(groud_id);
-    query_.exec(str_);
-
-    QSqlRecord data_ = query_.record();
-
-    while(query_.next())
-    {
-        name_region_string = query_.value(data_.indexOf("name_region")).toString();
-        type_region_string = query_.value(data_.indexOf("name_type_region")).toString();
-        description_region_string = query_.value(data_.indexOf("description_region")).toString();
-        counte_population_string = query_.value(data_.indexOf("counte_population")).toString();
-        density_population_string = query_.value(data_.indexOf("density_population")).toString();
-        emmigration_population_string = query_.value(data_.indexOf("emmigration_population")).toString();
-        immigration_population_string = query_.value(data_.indexOf("immigration_population")).toString();
-        birth_population_string = query_.value(data_.indexOf("birth_population")).toString();
-        dead_population_string = query_.value(data_.indexOf("dead_population")).toString();
-    }
-
-
-    QDate date;
-    QString time_date;
-    int day,year,month;
-    date = date.currentDate();
-    day = date.dayOfWeek();
-    month = date.month();
-    year = date.year();
-    time_date = date.toString("dd." "MM" "yyyy.г");
-
-    QString htm = "";
-
-    htm.append("<HTML> <HEAD> </HEAD> <BODY> <H2> <CENTER> <B> Справка региона (района) </B> </CENTER> </H2>  ");
-    htm.append(" <P><BR><FONT SIZE = '4' FACE = 'Arial' > Название региона: "); htm.append(name_region_string.toLocal8Bit());
-    htm.append(" </FONT></P><P><BR><FONT SIZE = '4' FACE = 'Arial' > Тип региона: "); htm.append(type_region_string.toLocal8Bit());
-    htm.append(" </FONT></P><P><BR><FONT SIZE = '4' FACE = 'Arial' > Описание региона: "); htm.append(description_region_string.toLocal8Bit());
-
-    htm.append(" </FONT></P><P><BR><FONT SIZE = '4' FACE = 'Arial' ><CENTER><B> 1.Население </B> </CENTER> ");
-
-    htm.append("</FONT></P><P><BR><FONT SIZE = '4' FACE = 'Arial' > Население - "); htm.append(counte_population_string.toLocal8Bit());
-    htm.append(" чел.( "); htm.append(density_population_string.toLocal8Bit()); htm.append(" чел на км2 плотность населения )");
-    htm.append("</FONT></P><P><BR><FONT SIZE = '4' FACE = 'Arial' > Национальный состав: ");
-
-    QString str,str1,str2;
-    QSqlQuery query,query1,query2;
-    QSqlRecord data,data1,data2;
-
-    str=QString("SELECT name_nations,persent_nations FROM region,ls_nations,nations WHERE region.id_region = ls_nations.id_region AND ls_nations.id_nations = nations.id_nations AND region.id_region = %1").arg(groud_id);
-    query.clear();
-    query.exec(str);
-    data.clear();
-    data = query.record();
-
-    number = counte_population_string.toInt();
-    while(query.next())
-    {
-        name_nations_string = query.value(data.indexOf("name_nations")).toString();
-        persent_nations = query.value(data.indexOf("persent_nations")).toDouble();
-        number_nations = persent_nations/100*number;
-        htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > -"); htm.append(name_nations_string.toLocal8Bit()); htm.append(" (");
-        htm.append(QString("%1").arg(persent_nations).toLocal8Bit()); htm.append(" %, "); htm.append(QString("%1").arg(number_nations).toLocal8Bit()); htm.append(" чел)");
-    }
-
-
-
-    htm.append(" </FONT>  </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' >Уровень эммиграции: "); htm.append(emmigration_population_string.toLocal8Bit());
-    htm.append(" </FONT>  </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' >Уровень иммиграции: "); htm.append(immigration_population_string.toLocal8Bit());
-    htm.append(" </FONT>  </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' >Уровень рождаемости: "); htm.append(birth_population_string.toLocal8Bit());
-    htm.append(" </FONT>  </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' >Уровень смертности: "); htm.append(dead_population_string.toLocal8Bit());
-
-    number_sex_m = 0;
-    number_sex_w = 0;
-
-    number_m = 0;
-    number_w = 0;
-    QStringList list;
-
-    str=QString("SELECT persent_sex_m FROM pop_sex WHERE id_region = %1").arg(groud_id);
-    query.clear();
-    query.exec(str);
-    data.clear();
-    data = query.record();
-
-    while(query.next())
-    {
-        number = query.value(data.indexOf("persent_sex_m")).toDouble();
-        number_sex_m = number;
-    }
-
-
-
-    str=QString("SELECT persent_sex_w FROM pop_sex WHERE id_region = %1").arg(groud_id);
-    query.clear();
-    query.exec(str);
-    data.clear();
-    data = query.record();
-
-    while(query.next())
-    {
-        number = query.value(data.indexOf("persent_sex_w")).toDouble();
-        number_sex_w = number;
-    }
-    if(number_sex_m==0)
-    {
-        htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Половой состав: Данных нет");
-
-    }
-    else
-    {
-        number = counte_population_string.toInt();
-
-        number_m = number_sex_m/100*number;
-
-
-
-
-        number_w = number - number_m;
-
-        htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Половой состав: ");
-        htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Мужской пол: "); htm.append(QString("%1").arg(number_m).toLocal8Bit()); htm.append(" чел. ("); htm.append(QString("%1").arg(number_sex_m).toLocal8Bit()); htm.append(" %)");
-        htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Женский пол: "); htm.append(QString("%1").arg(number_w).toLocal8Bit()); htm.append(" чел. ("); htm.append(QString("%1").arg(number_sex_w).toLocal8Bit()); htm.append(" %)");
-    }
-
-
-
-
-
-    str=QString("SELECT name_age,persent_age FROM age,pop_age WHERE pop_age.id_age = age.id_age AND id_region = %1").arg(groud_id);
-    query.clear();
-    query.exec(str);
-    data.clear();
-    data = query.record();
-    if(query.size()==0)
-    {
-        htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Возрастной состав: Данных нет");
-    }
-
-    else
-    {
-        htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Возрастной состав: ");
-
-        while(query.next())
-        {
-            name_age_string = query.value(data.indexOf("name_age")).toString();
-            persent_age_string = query.value(data.indexOf("persent_age")).toString();
-            htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' >"); htm.append(name_age_string.toLocal8Bit()); htm.append(" - "); htm.append(persent_age_string.toLocal8Bit()); htm.append("%");
-        }
-    }
-
-
-
-
-    str=QString("SELECT name_confessions,persent_confessions FROM ls_confessions,confessions WHERE id_region = %1 AND ls_confessions.id_confessions = confessions.id_confessions").arg(groud_id);
-    query.clear();
-    query.exec(str);
-    data.clear();
-    data = query.record();
-    if(query.size()==0)
-    {
-        htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Религиозный состав: Данных нет");
-    }
-
-    else
-    {
-        htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > Религиозный состав: ");
-
-        while(query.next())
-        {
-            name_confessions = query.value(data.indexOf("name_confessions")).toString();
-            persent_confessions = query.value(data.indexOf("persent_confessions")).toString();
-
-
-            htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' >"); htm.append(name_confessions.toLocal8Bit()); htm.append(" - "); htm.append(persent_confessions.toLocal8Bit()); htm.append("%");
-        }
-    }
-
-
-    //--------------------------------------------------------------------------------------------------------------------------------
+   /*     //--------------------------------------------------------------------------------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------------------------
     //--------------------------------------------------------------------------------------------------------------------------------
     htm.append(" </FONT> </P>  <P> <BR> <FONT SIZE = '4' FACE = 'Arial' > <CENTER> <B> 2.СМИ </B> </CENTER> ");
@@ -4237,7 +4067,7 @@ void Objectmanager::reports_region()
 
 
     Reports *r = new Reports;
-    r->show_preview_dialog(htm);
+    r->show_preview_dialog(htm);*/
 
 }
 //==============================   расчеты   =============================================================

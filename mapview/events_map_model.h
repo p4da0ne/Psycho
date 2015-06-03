@@ -27,6 +27,16 @@ public:
 
 
 	QList<SignData*> getEvents(long int hMap,double x1,double y1,double x2,double y2);
+
+	QString createEventsFilterQuery();
+	bool isEventOnMap(const int idEvent,long int hMap,double x1,double y1,double x2,double y2);
+
+	QList<Coord*> getEventCoordinates(long int hMap,const int idEvent);
+	QList<Coord*> getObjectCoordinates(long int hMap,int idObject, QString tableName);
+	QString getEventSignCode(const int idTypeEvent);
+	int checkedItemsCount(const QStandardItemModel &model);
+	int getEventStatusId(int idEvent);
+	QString getObjectShortName(int idObject,QString tableName);
 private:
 	QDate *startPeriod;
 	QDate *endPeriod;

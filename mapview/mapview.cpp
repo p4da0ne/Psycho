@@ -1472,6 +1472,19 @@ void MapView::showCheckedCalcResults()
 //==========================================================================
 void MapView::showCheckedEvents()
 {
+	if(mapwin->hMap==0)
+	{
+		openMapFromSettings();
+	}
+
+	QString rscPath = settings->value("/mapSettings/rscPath","").toString();
+	QFileInfo *info = new QFileInfo(rscPath);
+	QString sitPath = info->absolutePath();
+	sitPath.append("/");
+	//-------------------------------------------------------------------------
+	
+	QString eventsSitName = sitPath + "events.sit";
+
 
 	QDate *startDate = new QDate(beginEventDate->date());
 	QDate *endDate = new QDate(endEventDate->date());
@@ -1484,8 +1497,15 @@ void MapView::showCheckedEvents()
 	//-------------------------------------------------
 	
 	
-	EventsMapModel *eventsMapModel = new EventsMapModel(startDate,endDate,selectedObjectsModel,eventStatesModel);
-	eventsMapModel->getEvents(mapwin->hMap,x1,y1,x2,y2);
+	//показать события на карте
+	closeSitByName(eventsSitName);
+	HSITE eventsSite = openMapSit(eventsSitName,rscPath);
+
+	EventsMapModel *eventsMapModel = new EventsMapModel(startDate,endDate,selectedObjectsModel,eventStatesModel,eventTypesModel);
+	QList<SignData*> eventsSigns = eventsMapModel->getEvents(mapwin->hMap,x1,y1,x2,y2);
+
+	createSitObjects(eventsSite, eventsSigns);
+
 	
 }
 
@@ -1830,20 +1850,23 @@ void MapView::slotObjectReport()
 				break;
 						
 			case SMI_MEANS:
-				report = r->create_object_formular_smi(idObj);
+                report = r->create_object_formular_mpo_pso_smi(idObj);
 				break;
 			
 			case FORMATIONS_MEANS:
-				report = r->create_object_formular_smi(idObj);
+                report = r->create_object_formular_mpo_pso_ls(idObj);
 				break;
 							
 			case GROUPS_MEANS:
-				report = r->create_object_formular(idObj);
+                report = r->create_object_formular_mpo_pso_gr(idObj);
 				break;
 
 			case REGIONS:
-				
+                report = r->create_object_formular_region(idObj);
 				break;
+            case SPECIAL_CONDITIONS:
+                report = r->create_object_formular_sc(idObj);
+                break;
 
 			case PERSONNEL:
 				report = r->create_object_formular_pers(idObj);

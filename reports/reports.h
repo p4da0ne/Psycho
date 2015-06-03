@@ -19,8 +19,13 @@ public:
 	 QString create_object_formular(int id_object = 0);
      QString create_object_formular_pers(int id_object = 0);
      QString create_object_formular_smi(int id_object = 0);
+     QString create_object_formular_mpo_pso_smi(int id_object = 0);
+     QString create_object_formular_mpo_pso_ls(int id_object = 0);
+     QString create_object_formular_mpo_pso_gr(int id_object = 0);
      QString create_object_formular_ls(int id_object = 0);
-	 void show_preview_dialog(QString html);
+     QString create_object_formular_sc(int id_object = 0);
+     QString create_object_formular_region(int id_object = 0);
+     void show_preview_dialog(QString html);
      void show_preview_dialog1(QString html);
      void show_preview_dialog2(QString html);
 	
