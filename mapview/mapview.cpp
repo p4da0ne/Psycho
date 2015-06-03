@@ -1836,6 +1836,9 @@ void MapView::slotObjectReport()
 	QAction *action = qobject_cast<QAction*>(sender());
 	QString report;
 	Reports *r = new Reports;
+	RegionsMpos * regionsModel;
+	float rez;
+
 
 	if(action)
 	{
@@ -1862,8 +1865,8 @@ void MapView::slotObjectReport()
 				break;
 
 			case REGIONS:
-				RegionsMpos * regionsModel = new RegionsMpos;
-				float rez = regionsModel->regionCalculator->get_Rez_on_id_region(idObj);
+				regionsModel = new RegionsMpos;
+				rez = regionsModel->regionCalculator->get_Rez_on_id_region(idObj);
 				report = r->create_object_formular_region(rez,idObj);
 				break;
             case SPECIAL_CONDITIONS:
