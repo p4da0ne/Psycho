@@ -174,154 +174,402 @@ QList<SignData*> EventsMapModel::getEvents(long int hMap,double x1,double y1,dou
 {
 	QList<SignData*> eventsList;
 
-	QMultiMap<QString,int> objects;
+	QStandardItemModel *eventsModel = new QStandardItemModel;
+	
+	//генерируем запрос на выборку событий в соответствии с выбранными фильтрами
+	QString queryString = createEventsFilterQuery(); 
+	QSqlQuery query;
 
-	for(int row=0;row<objectsModel->rowCount();row++)
+	if(query.exec(queryString))
 	{
-		QModelIndex index = objectsModel->index(row,0);
-		int objectType = objectsModel->data(index,Qt::UserRole+1).toInt();
-		int idObject = objectsModel->data(index,Qt::UserRole).toInt();
-		
-		switch(objectType)
+		QSqlRecord rec = query.record();
+		while (query.next())
+		{		
+			int idEvent = query.value(rec.indexOf("id_event")).toInt();	
+			int idTypeEvent = query.value(rec.indexOf("id_type_event")).toInt();
+			int idObject = query.value(rec.indexOf("id_object")).toInt();
+			bool isObjectEventSource = query.value(rec.indexOf("is_events_source")).toBool();
+			QString objectTableName = query.value(rec.indexOf("table_name")).toString(); 
+			//------ проверка, попадает ли событие на карту ------
+			bool isOnMap = isEventOnMap(idEvent,hMap,x1,y1,x2,y2);			
+			if(isOnMap) //если попадает, то формируем для него условный знак
+			{
+				QString signCode = getEventSignCode(idTypeEvent);
+
+
+				QMap<long int,QString> semantic_map;
+
+				semantic_map[17501] = QString::number(idEvent);
+				semantic_map[17502] = QString::number(EVENTS);
+				semantic_map[60030] = QString::number(getEventStatusId(idEvent));	
+				
+				if(isObjectEventSource)
+				{
+					semantic_map[19] = getObjectShortName(idObject, objectTableName);	// сокращенное наименование инициатора события (например п/д, осуществляющее ИТВ или др.)
+				}
+					
+				semantic_map[218] = QString("987"); //номер цели
+				//semantic_map[17] = ;	//дата и время события
+
+				QList<Coord*> eventMetric = getEventCoordinates(hMap,idEvent);
+				QList<Coord*> objectMetric = getObjectCoordinates(hMap,idObject, objectTableName);
+				
+				//----- Проверка равенства координат события и объекта -------
+				bool coordEqualFlag = false;
+				if(eventMetric.count() == objectMetric.count())
+				{
+					for(int i=0;i<eventMetric.count();i++)
+					{
+						if(eventMetric.at(i) == objectMetric.at(i))
+						{
+							coordEqualFlag = true;
+						}
+						else
+						{
+							coordEqualFlag = false;
+						}
+					}
+				}
+				//--------------------------------------------------------------
+				if(coordEqualFlag) //если координаты события совпадают с координатами объекта, рисуем знак рядом с объектом
+				{
+				
+				}
+				else //если координаты события не совпадают с координатами объекта, то рисуем знак в этой точке (с координатами события)
+				{
+					SignData *signData = new SignData(signCode,eventMetric,semantic_map);
+						
+					eventsList.append(signData);
+				}
+
+			}
+
+		}
+	}
+	return eventsList;
+}
+
+
+//=============================================================================================
+//==== Метод проверки попадает ли событие на текущую карту ====================================
+//=============================================================================================
+bool EventsMapModel::isEventOnMap(const int idEvent,long int hMap,double x1,double y1,double x2,double y2)
+{
+	QList<Coord*> coordList = getEventCoordinates(hMap,idEvent);
+
+	for(int i=0;i<coordList.count();i++)
+	{
+		Coord *coord = WGStoPlane(hMap,coordList.at(i));			
+		double x_coord = coord->getX();
+		double y_coord = coord->getY();	
+		if(((x_coord > x1) && (y_coord > y1) && (x_coord < x2) && (y_coord < y2)))
 		{
-			case FORMATIONS:
-				objects.insert("ls",idObject);
-				break;
-			case REGIONS:
-				objects.insert("region",idObject);
-				break;
-			case SPECIAL_CONDITIONS:
-				objects.insert("special_conditions",idObject);
-				break;
-			case PERSONNEL:
-				objects.insert("persones",idObject);
-				break;
-			case SMI_MEANS:
-				objects.insert("mpo_pso",idObject);
-				break;
-			case FORMATIONS_MEANS:
-				objects.insert("mpo_pso",idObject);
-				break;
-			case GROUPS_MEANS:
-				objects.insert("mpo_pso",idObject);
-				break;
+			return true;
+		}
+	}
+	return false;
+}
+
+//======================================================================================
+//======== Метод возвращает код знака события по идентификатору типа события ===========
+//======================================================================================
+QString EventsMapModel::getEventSignCode(const int idTypeEvent)
+{
+	QString signCode;
+	QSqlQuery query;
+	QString str=QString("SELECT s.sign_key \
+						 FROM type_event t_e, signs s \
+						 WHERE t_e.id_sign = s.id_sign \
+						 AND t_e.id_type_event = %1").arg(idTypeEvent);
+	if(query.exec(str))
+	{
+		QSqlRecord rec = query.record();
+		query.next();
+		signCode = query.value(rec.indexOf("sign_key")).toString();
+	}
+	return signCode;
+}
+
+//======================================================================================
+//======== Метод возвращает идентификатор статуса события ==============================
+//======================================================================================
+int EventsMapModel::getEventStatusId(int idEvent)
+{
+	int idStatus;
+	QSqlQuery query;
+	QString str=QString("SELECT e.id_event_status FROM events e WHERE e.id_event = %1").arg(idEvent);
+	if(query.exec(str))
+	{
+		QSqlRecord rec = query.record();
+		query.next();
+		idStatus = query.value(rec.indexOf("id_event_status")).toInt();
+	}
+	return idStatus;
+}
+
+//=============================================================================================
+//==== метод возвращает список координат события (по умолчанию в списке одна координата) ======
+//=============================================================================================
+QList<Coord*> EventsMapModel::getEventCoordinates(long int hMap,const int idEvent)
+{
+	QList<Coord*> coordList;
+	
+	QSqlQuery query;
+	QString str=QString("SELECT cc.latitude_wgs_84_g,cc.latitude_wgs_84_m,cc.latitude_wgs_84_s,cc.longitude_wgs_84_g, \
+						 cc.longitude_wgs_84_m,cc.longitude_wgs_84_s \
+						 FROM coord_events c_e, coordinates cc \
+						 WHERE c_e.id_coordinates = cc.id_coordinates \
+						 AND c_e.id_event = %1").arg(idEvent);
+	if(query.exec(str))
+	{
+		QSqlRecord rec = query.record();
+		while (query.next())
+		{		
+			int wgs_g = query.value(rec.indexOf("latitude_wgs_84_g")).toInt();
+			int wgs_m = query.value(rec.indexOf("latitude_wgs_84_m")).toInt();
+			double wgs_s = query.value(rec.indexOf("latitude_wgs_84_s")).toDouble();
+			int long_wgs_g = query.value(rec.indexOf("longitude_wgs_84_g")).toInt();
+			int long_wgs_m = query.value(rec.indexOf("longitude_wgs_84_m")).toInt();
+			double long_wgs_s = query.value(rec.indexOf("longitude_wgs_84_s")).toDouble();
+					
+			Coord *coord = new Coord(wgs_g,wgs_m,wgs_s,long_wgs_g,long_wgs_m,long_wgs_s);
+			coord = WGStoPlane(hMap,coord);
+			coordList.append(coord);
+		}
+	}
+	return coordList;
+}
+
+
+//=======================================================================
+//====== Метод возвращает список координат объекта =====================
+//=======================================================================
+QList<Coord*> EventsMapModel::getObjectCoordinates(long int hMap,int idObject, QString tableName)
+{
+	QSqlQuery query;
+	QList<Coord*> coordList;
+
+	QString queryStr = "SELECT c.latitude_wgs_84_g, c.latitude_wgs_84_m, c.latitude_wgs_84_s, \
+								c.longitude_wgs_84_g, c.longitude_wgs_84_m, c.longitude_wgs_84_s ";
+
+	QString fromStr, whereStr, andStr;
+
+	if(tableName == "persones")
+	{
+		fromStr = "FROM coordinates c, coord_persones ";
+		whereStr = "WHERE coord_persones.id_coordinates = c.id_coordinates ";
+		andStr = "AND coord_persones.id_persones = %1 ";
+	}
+	if(tableName == "ls")
+	{
+		fromStr = "FROM coordinates c, coord_ls ";
+		whereStr = "WHERE coord_ls.id_coordinates = c.id_coordinates ";
+		andStr = "AND coord_ls.id_ls = %1 ";
+	}
+	if(tableName == "mpo_pso")
+	{
+		fromStr = "FROM coordinates c, coord_mpo_pso ";
+		whereStr = "WHERE coord_mpo_pso.id_coordinates = c.id_coordinates ";
+		andStr = "AND coord_mpo_pso.id_mpo_pso = %1 ";
+	}
+	if(tableName == "region")
+	{
+		fromStr = "FROM coordinates c, coord_region ";
+		whereStr = "WHERE coord_region.id_coordinates = c.id_coordinates ";
+		andStr = "AND coord_region.id_region = %1 ";
+	}
+	if(tableName == "special_conditions")
+	{
+		fromStr = "FROM coordinates c, coord_special_conditions ";
+		whereStr = "WHERE coord_special_conditions.id_coordinates = c.id_coordinates ";
+		andStr = "AND coord_special_conditions.id_special_conditions = %1 ";
+	}
+	
+	queryStr.append(fromStr);
+	queryStr.append(whereStr);
+	queryStr.append(QString(andStr).arg(idObject));
+	queryStr.append(QString("ORDER BY c.id_coordinates"));
+
+	if(query.exec(queryStr))
+	{
+		QSqlRecord rec = query.record();
+		while (query.next())
+		{		
+			int wgs_g = query.value(rec.indexOf("latitude_wgs_84_g")).toInt();
+			int wgs_m = query.value(rec.indexOf("latitude_wgs_84_m")).toInt();
+			double wgs_s = query.value(rec.indexOf("latitude_wgs_84_s")).toDouble();
+			int long_wgs_g = query.value(rec.indexOf("longitude_wgs_84_g")).toInt();
+			int long_wgs_m = query.value(rec.indexOf("longitude_wgs_84_m")).toInt();
+			double long_wgs_s = query.value(rec.indexOf("longitude_wgs_84_s")).toDouble();
+					
+			///получить из запроса 6 параметров координат WGS
+
+			Coord *objectCoordinates = new Coord(wgs_g,wgs_m,wgs_s,long_wgs_g,long_wgs_m,long_wgs_s);
+			objectCoordinates = WGStoPlane(hMap,objectCoordinates);
+			coordList.append(objectCoordinates);			
+		}
+	}
+	return coordList;	
+}
+
+
+//=======================================================================
+//====== Метод возвращает сокращенное наименование объекта =====================
+//=======================================================================
+QString EventsMapModel::getObjectShortName(int idObject,QString tableName)
+{
+	QSqlQuery query;
+	QString objectName;
+
+	QString queryStr;
+
+	if(tableName == "persones")
+	{
+		queryStr = QString("SELECT name_persones FROM persones WHERE id_persones = %1").arg(idObject);
+	}
+	if(tableName == "ls")
+	{
+		queryStr = QString("SELECT short_name_ls FROM ls WHERE id_ls = %1").arg(idObject);
+	}
+	if(tableName == "mpo_pso")
+	{
+		queryStr = QString("SELECT name_mpo_pso FROM mpo_pso WHERE id_mpo_pso = %1").arg(idObject);
+	}
+	if(tableName == "region")
+	{
+		queryStr = QString("SELECT name_region FROM region WHERE id_region = %1").arg(idObject);
+	}
+	if(tableName == "special_conditions")
+	{
+		queryStr = QString("SELECT name_special_conditions FROM special_conditions WHERE id_special_conditions = %1").arg(idObject);
+	}
+	
+	if(query.exec(queryStr))
+	{
+		while(query.next())
+		{		
+			objectName = query.value(0).toString();	
+		}
+	}
+	return objectName;	
+}
+
+//==============================================================================================
+//== Метод формирует строку запроса в БД для поиска событий в соответствии с фильтром ==========
+//== Параметры фильтрации инициализируются в конструкторе при создании объекта модели событий ==
+//==============================================================================================
+QString EventsMapModel::createEventsFilterQuery()
+{
+	QString queryStr;
+
+	queryStr.append("SELECT e.id_event,e.id_type_event, e_o.id_object, e_o.is_events_source, t_e.table_name \
+					 FROM events e, event_objects e_o, type_event_object t_e, type_event tt	\
+					 WHERE e.id_event = e_o.id_event \
+					 AND e.id_type_event = tt.id_type_event \
+					 AND e_o.id_type_event_object=t_e.id_type_event_object ");
+
+	if(startPeriod->isValid() && endPeriod->isValid())
+	{
+		QDateTime startDateTime(*startPeriod,QTime(0,0,0));
+		QDateTime endDateTime(*endPeriod,QTime(23,59,59));
+	
+		QString startDateT = startDateTime.toString("yyyy-MM-dd hh:mm:ss");
+		QString endDateT = endDateTime.toString("yyyy-MM-dd hh:mm:ss");
+		queryStr.append(QString("AND (e.time_event_start <= '%2' AND e.time_event_end >= '%1') ").arg(startDateT).arg(endDateT));
+	}
+	else
+	{
+		return queryStr;
+	}
+	//------- статусы событий --------
+	int checkedStatusCount = checkedItemsCount(*statesModel);
+	if(checkedStatusCount > 0)
+	{
+		QString orStr;
+		bool firstOrFlag = true;
+		for(int row=0;row<statesModel->rowCount();row++)
+		{
+			if(statesModel->item(row,0)->checkState() == Qt::Checked)
+			{
+				int idStatus = statesModel->data(statesModel->index(row,0),Qt::UserRole).toInt();
+				if(firstOrFlag)
+				{
+					orStr.append(QString("e.id_event_status = %1 ").arg(idStatus));
+					firstOrFlag = false;
+				}
+				else
+				{
+					orStr.append(QString("OR e.id_event_status = %1 ").arg(idStatus));
+				}
+			}
+		}
+		queryStr.append(QString("AND (%1) ").arg(orStr));
+	}
+	//------- типы событий --------
+	int checkedTypesCount = checkedItemsCount(*eventTypesModel);
+	if(checkedTypesCount > 0)
+	{
+		QString orStr;
+		bool firstOrFlag = true;
+		for(int row=0;row<eventTypesModel->rowCount();row++)
+		{
+			if(eventTypesModel->item(row,0)->checkState() == Qt::Checked)
+			{
+				int idType = eventTypesModel->data(eventTypesModel->index(row,0),Qt::UserRole).toInt();
+				if(firstOrFlag)
+				{
+					orStr.append(QString("e.id_type_event = %1 ").arg(idType));
+					firstOrFlag = false;
+				}
+				else
+				{
+					orStr.append(QString("OR e.id_type_event = %1 ").arg(idType));
+				}
+			}
+		}
+		queryStr.append(QString("AND (%1) ").arg(orStr));
+	}
+	//------- объекты, с которыми связаны события --------
+	if(objectsModel->rowCount() > 0)
+	{
+		QString orStr;
+		bool firstOrFlag = true;
+		for(int row=0;row<objectsModel->rowCount();row++)
+		{
+			int idObject = objectsModel->data(objectsModel->index(row,0),Qt::UserRole).toInt();
+			if(firstOrFlag)
+			{
+				orStr.append(QString("e_o.id_object = %1 ").arg(idObject));
+				firstOrFlag = false;
+			}
+			else
+			{
+				orStr.append(QString("OR e_o.id_object = %1 ").arg(idObject));
+			}
+		}
+		queryStr.append(QString("AND (%1) ").arg(orStr));
+	}
+	queryStr.append(QString("ORDER BY e.id_event"));
+
+	return queryStr;
+}
+
+
+
+//==========================================================================
+//====== Метод возвращает число выбранных элементов модели =================
+//==========================================================================
+int EventsMapModel::checkedItemsCount(const QStandardItemModel &model)
+{
+	int count=0;
+
+	for(int row=0;row<model.rowCount();row++)
+	{
+		if(model.item(row)->checkState() == Qt::Checked)
+		{
+			count++;
 		}
 	}
 
-	QStandardItemModel *eventsModel = new QStandardItemModel;
-	
-	//eventsModel = getEvents(
-	
-	
-	
-	
-	///
-	//QSqlQuery query;
-	//QString str=QString("SELECT name_type_mpo_pso, coordinates.latitude_wgs_84_g,coordinates.latitude_wgs_84_m,coordinates.latitude_wgs_84_s,coordinates.longitude_wgs_84_g, \
-	//					coordinates.longitude_wgs_84_m,coordinates.longitude_wgs_84_s, \
-	//					type_mpo_pso.id_sign, mpo_pso.id_mpo_pso, mpo_pso.semantika_digit1, mpo_pso.semantika_digit2, mpo_pso.semantika_1,si.sign_key \
-	//					FROM mpo_pso, coord_mpo_pso cmp, coordinates, type_mpo_pso, signs si \
-	//					WHERE cmp.id_coordinates=coordinates.id_coordinates \
-	//					AND mpo_pso.id_type_mpo_pso=type_mpo_pso.id_type_mpo_pso \
-	//					AND mpo_pso.id_mpo_pso = cmp.id_mpo_pso \
-	//					AND type_mpo_pso.id_sign = si.id_sign \
-	//					AND type_mpo_pso.excode_type_mpo_pso <> '' \
-	//					AND mpo_pso.id_smi > 0 ");
-	//if(query.exec(str))
-	//{
-	//	QSqlRecord rec = query.record();
-	//	while (query.next())
-	//	{		
-	//		int wgs_g = query.value(rec.indexOf("latitude_wgs_84_g")).toInt();
-	//		int wgs_m = query.value(rec.indexOf("latitude_wgs_84_m")).toInt();
-	//		double wgs_s = query.value(rec.indexOf("latitude_wgs_84_s")).toDouble();
-	//		int long_wgs_g = query.value(rec.indexOf("longitude_wgs_84_g")).toInt();
-	//		int long_wgs_m = query.value(rec.indexOf("longitude_wgs_84_m")).toInt();
-	//		double long_wgs_s = query.value(rec.indexOf("longitude_wgs_84_s")).toDouble();
-	//				
-	//		///получить из запроса 6 параметров координат WGS
-
-	//		Coord c1(wgs_g,wgs_m,wgs_s,long_wgs_g,long_wgs_m,long_wgs_s);
-	//		
-	//		Coord *c2 = WGStoPlane(hMap,&c1);		
-	//		
-	//		double x_coord = c2->getX();
-	//		double y_coord = c2->getY();
-
-	//		
-	//		if(!((x_coord > x1) && (y_coord > y1) && (x_coord < x2) && (y_coord < y2))) continue;	
-	//		
-	//		QString name_type_mpo_pso = query.value(rec.indexOf("name_type_mpo_pso")).toString();
-	//		QString signCode = query.value(rec.indexOf("sign_key")).toString();
-	//		QString id_mpo_pso = query.value(rec.indexOf("id_mpo_pso")).toString();
-
-	//		// дальность (радиус) действия, километры
-	//		QString semantika_digit1_mpo_pso = query.value(rec.indexOf("semantika_digit1")).toString();
-	//		// угол (направление) относительно горизонта против часовой стрелки, градусы
-	//		QString semantika_digit2_mpo_pso = query.value(rec.indexOf("semantika_digit2")).toString();
-	//		QString semantika_1_mpo_pso = query.value(rec.indexOf("semantika_1")).toString();
-
-	//		QList<Coord*> coordList;
-	//		Coord *coord = new Coord(x_coord,y_coord);	
-	//		coordList.append(coord);
-	//		
-	//		///////////////////////////////////
-	//		double radius;
-	//		double angle;
-	//		
-	//		if(semantika_digit1_mpo_pso > 0)
-	//		{
-	//			radius = semantika_digit1_mpo_pso.toDouble()*250;
-	//		}
-	//		if(semantika_digit2_mpo_pso > 0)
-	//		{
-	//			angle = 5*3.14/2 - (semantika_digit2_mpo_pso.toDouble()*3.14/180);
-	//		}
-
-	//	 
-	//		// если зачек радио-теле центра (свой или вражеский), то добавляем вторую метрику
-	//		if ((signCode=="V0000169007")||(signCode=="V0000169029"))
-	//		{	
-	//			coord = new Coord(x_coord,y_coord+radius);
-	//			coordList.append(coord);
-	//		}
-
-
-	//		if (signCode=="L00000060504") // самолет
-	//		{	
-	//			coord = new Coord(x_coord+120000,y_coord+140000);
-	//			coordList.append(coord);
-	//			coord = new Coord(x_coord+120000+70000,y_coord+140000-80000);
-	//			coordList.append(coord);
-	//		}
-
-
-	//		// если передвижная звуковещательная станция, то добавляем вторую метрику 
-	//		// (получаем ее как угол места и длину радиус-вектора, направленного из первой точки метрики)
-	//		if (signCode=="V0000060505")
-	//		{	
-	//			double xx=4*radius*qCos(angle);
-	//			double yy=4*radius*qSin(angle);
-	//			
-	//			coord = new Coord(x_coord+xx,y_coord+yy);
-	//			coordList.append(coord);
-	//		}
-	//		
-	//		
-	//		QMap<long int,QString> semantic_map;
-
-	//		semantic_map[17501] = id_mpo_pso;
-	//		semantic_map[17502] = QString::number(SMI_MEANS);
-	//		semantic_map[18]=semantika_digit1_mpo_pso;	// иногда это наполнение значка (в тех случаях, когда не "дальность")
-	//		semantic_map[19]=semantika_1_mpo_pso;	// подпись значка
-	//		semantic_map[32811]=semantika_digit1_mpo_pso;	//дальность действия средства
-	//		semantic_map[32852]=semantika_digit2_mpo_pso;	//направление (угол) действия средства
-
-	//		SignData *signData = new SignData(signCode,coordList,semantic_map);
-	//			
-	//		smiMeansList.append(signData);
-	//	}
-	//}
-
-	return eventsList;
+	return count;
 }
