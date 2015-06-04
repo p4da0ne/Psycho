@@ -1,7 +1,8 @@
 #ifndef MAPVIEW_H
 #define MAPVIEW_H
 
-#include <QWidget>
+#include <QtGui>
+#include <QObject>
 #include <QLineEdit>
 #include <QDialog>
 #include <QPrinter>
@@ -22,7 +23,7 @@ class __EXPORT_MAPVIEW MapView : public QWidget
     Q_OBJECT
 
 public:
-    MapView(QWidget *parent=0, const char *name=0);
+    MapView(QWidget *parent=0);
     ~MapView();
 	
 protected:
@@ -155,8 +156,7 @@ private:
 
 	QStandardItemModel *rstModel;
 	QListView *rstListView;
-	// События: актуальное (1), планируемое (2), завершенное (3), несостоявшееся (4)
-	enum EventStates{ACTUAL = 1,PLANNING = 2,ENDED = 3, UNOCCURED = 4}; 
+
 };
 
-#endif
+#endif //MAPVIEW_H
