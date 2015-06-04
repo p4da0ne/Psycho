@@ -174,7 +174,7 @@ QList<SignData*> EventsMapModel::getEvents(long int hMap,double x1,double y1,dou
 {
 	QList<SignData*> eventsList;
 
-	QStandardItemModel *eventsModel = new QStandardItemModel;
+	//QList<int> objectsIdList = getEventObjectsIdList();
 	
 	QList<int> eventIdList = getIdEventsByFilter();  //возвращает список id событий в соответствии с фильтром
 
@@ -186,24 +186,35 @@ QList<SignData*> EventsMapModel::getEvents(long int hMap,double x1,double y1,dou
 
 		if(query.exec(queryString))
 		{
-			QSqlRecord rec = query.record();
-			while (query.next())
-			{		
-				int idEvent = eventIdList.at(i);
-				int idTypeEvent = query.value(rec.indexOf("id_type_event")).toInt();
-				int idObject = query.value(rec.indexOf("id_object")).toInt();
-				bool isObjectEventSource = query.value(rec.indexOf("is_events_source")).toBool();
-				QString objectTableName = query.value(rec.indexOf("table_name")).toString(); 
-				//------ проверка, попадает ли событие на карту ------
-				bool isOnMap = isEventOnMap(idEvent,hMap,x1,y1,x2,y2);			
-				if(isOnMap) //если попадает, то формируем для него условный знак
-				{
-					QMap<long int,QString> semantic_map;
+			//-----------------------
+			QString signCode;
+			QMap<long int,QString> semantic_map;
+			QList<Coord*> eventMetric;
+			bool coordEqualFlag = false;
+			int idEvent = eventIdList.at(i);
+			//------ проверка, попадает ли событие на карту ------
+			bool isOnMap = isEventOnMap(idEvent,hMap,x1,y1,x2,y2);
+			//-----------------------
+			if(isOnMap) //если попадает, то формируем для него условный знак
+			{
+				eventMetric = getEventCoordinates(hMap,idEvent); //координаты события
 
-					semantic_map[17501] = QString::number(idEvent);
-					semantic_map[17502] = QString::number(EVENTS);
-					semantic_map[60030] = QString::number(getEventStatusId(idEvent));	
-				
+				semantic_map[17501] = QString::number(idEvent);
+				semantic_map[17502] = QString::number(EVENTS);
+				semantic_map[60030] = QString::number(getEventStatusId(idEvent));
+				semantic_map[17] = getEventPeriod(idEvent);	//дата и время события
+				semantic_map[24] = "";	//тип и количество снарядов (для ударов РСЗО и др.)
+
+				QSqlRecord rec = query.record();
+				while (query.next())
+				{	
+					int idTypeEvent = query.value(rec.indexOf("id_type_event")).toInt();
+					int idObject = query.value(rec.indexOf("id_object")).toInt();
+					bool isObjectEventSource = query.value(rec.indexOf("is_events_source")).toBool();
+					QString objectTableName = query.value(rec.indexOf("table_name")).toString(); 
+			
+					signCode = getEventSignCode(idTypeEvent); //код условного знака события
+
 					if(isObjectEventSource)
 					{
 						semantic_map[19] = getObjectShortName(idObject, objectTableName);	// сокращенное наименование инициатора события (например п/д, осуществляющее ИТВ или др.)
@@ -212,54 +223,40 @@ QList<SignData*> EventsMapModel::getEvents(long int hMap,double x1,double y1,dou
 					{
 						semantic_map[218] = getObjectShortName(idObject, objectTableName); //номер (название) цели
 					}
-					//semantic_map[17] = ;	//дата и время события
-				
-						
-				
-				
-					QString signCode = getEventSignCode(idTypeEvent);
-
-
-				
-
-					QList<Coord*> eventMetric = getEventCoordinates(hMap,idEvent);
-					QList<Coord*> objectMetric = getObjectCoordinates(hMap,idObject, objectTableName);
+				}
+					
+					//QList<Coord*> objectMetric = getObjectCoordinates(hMap,idObject, objectTableName);
 				
 					//----- Проверка равенства координат события и объекта -------
-					bool coordEqualFlag = false;
-					if(eventMetric.count() == objectMetric.count())
-					{
-						for(int i=0;i<eventMetric.count();i++)
-						{
-							if(eventMetric.at(i) == objectMetric.at(i))
-							{
-								coordEqualFlag = true;
-							}
-							else
-							{
-								coordEqualFlag = false;
-							}
-						}
-					}
-					//--------------------------------------------------------------
-					if(coordEqualFlag) //если координаты события совпадают с координатами объекта, рисуем знак рядом с объектом
-					{
+					
+					//if(eventMetric.count() == objectMetric.count())
+					//{
+					//	coordEqualFlag = true;
+					//	for(int i=0;i<eventMetric.count();i++)
+					//	{
+					//		if(!(eventMetric.at(i) == objectMetric.at(i)))
+					//		{
+					//			coordEqualFlag = false;
+					//		}
+					//	}
+					//}
+					////--------------------------------------------------------------
+					//if(coordEqualFlag) //если координаты события совпадают с координатами объекта, рисуем знак рядом с объектом
+					//{
 				
-					}
-					else //если координаты события не совпадают с координатами объекта, то рисуем знак в этой точке (с координатами события)
-					{		
+					//}
+					//else //если координаты события не совпадают с координатами объекта, то рисуем знак в этой точке (с координатами события)
+					//{		
 					
 						SignData *signData = new SignData(signCode,eventMetric,semantic_map);
 						
 						eventsList.append(signData);
-					}
-
-				}
+					//}
+			}
 
 		}
 	}
 	return eventsList;
-	}
 }
 
 
@@ -318,6 +315,34 @@ int EventsMapModel::getEventStatusId(int idEvent)
 		idStatus = query.value(rec.indexOf("id_event_status")).toInt();
 	}
 	return idStatus;
+}
+
+
+
+//======================================================================================
+//======== Метод возвращает дату и время начала и окончания события в строковом виде ===
+//======================================================================================
+QString EventsMapModel::getEventPeriod(int idEvent)
+{
+	QString eventPeriod;
+	QDateTime start, end; 
+	QSqlQuery query;
+	QString str=QString("SELECT time_event_start, time_event_end \
+						 FROM events \
+						 WHERE id_event = %1").arg(idEvent);
+	if(query.exec(str))
+	{
+		QSqlRecord rec = query.record();
+		query.next();
+		start = query.value(rec.indexOf("time_event_start")).toDateTime();
+		end = query.value(rec.indexOf("time_event_end")).toDateTime();
+	}
+
+	eventPeriod.append(start.toString("yyyy-MM-dd hh:mm"));
+	eventPeriod.append("\n");
+	eventPeriod.append(end.toString("yyyy-MM-dd hh:mm"));
+
+	return eventPeriod;
 }
 
 //=============================================================================================
@@ -423,6 +448,29 @@ QList<Coord*> EventsMapModel::getObjectCoordinates(long int hMap,int idObject, Q
 		}
 	}
 	return coordList;	
+}
+
+
+
+//===========================================================================================
+//====== Метод возвращает список идентификаторов объектов, для которых есть события в БД ===
+//==========================================================================================
+QList<int> EventsMapModel::getEventObjectsIdList()
+{
+	QList<int> objectsIdList;
+	QSqlQuery query;
+
+	QString queryStr = QString("SELECT DISTINCT id_object \
+								FROM event_objects \
+								ORDER BY id_object");
+	if(query.exec(queryStr))
+	{
+		while(query.next())
+		{		
+			objectsIdList.append(query.value(0).toInt());	
+		}
+	}
+	return objectsIdList;	
 }
 
 
@@ -543,7 +591,7 @@ QString EventsMapModel::createEventsFilterQuery(int idEvent)
 		queryStr.append(QString("AND (%1) ").arg(orStr));
 	}
 	//------- объекты, с которыми связаны события --------
-	if(objectsModel->rowCount() > 0)
+	/*if(objectsModel->rowCount() > 0)
 	{
 		QString orStr;
 		bool firstOrFlag = true;
@@ -561,21 +609,21 @@ QString EventsMapModel::createEventsFilterQuery(int idEvent)
 			}
 		}
 		queryStr.append(QString("AND (%1) ").arg(orStr));
-	}
+	}*/
 	queryStr.append(QString("AND e.id_event = %1").arg(idEvent));
 
 	return queryStr;
 }
 
 //====================================================================================
-//====== Метод возвращает список идетнификаторов событий в соответствии с фильтром ===
+//====== Метод возвращает список идентификаторов событий в соответствии с фильтром ===
 //====================================================================================
 QList<int> EventsMapModel::getIdEventsByFilter()
 {
 	QString queryStr;
 	QList<int> eventIdList;
 
-	queryStr.append("SELECT e.id_event \
+	queryStr.append("SELECT DISTINCT e.id_event \
 					 FROM events e, event_objects e_o, type_event_object t_e, type_event tt	\
 					 WHERE e.id_event = e_o.id_event \
 					 AND e.id_type_event = tt.id_type_event \

@@ -1503,9 +1503,10 @@ void MapView::showCheckedEvents()
 
 	EventsMapModel *eventsMapModel = new EventsMapModel(startDate,endDate,selectedObjectsModel,eventStatesModel,eventTypesModel);
 	QList<SignData*> eventsSigns = eventsMapModel->getEvents(mapwin->hMap,x1,y1,x2,y2);
-
-	createSitObjects(eventsSite, eventsSigns);
-
+	if(eventsSigns.count() > 0)
+	{
+		createSitObjects(eventsSite, eventsSigns);
+	}
 	
 }
 

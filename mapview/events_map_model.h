@@ -39,6 +39,8 @@ public:
 	QString getEventSignCode(const int idTypeEvent);
 	int checkedItemsCount(const QStandardItemModel &model);
 	int getEventStatusId(int idEvent);
+	QString getEventPeriod(int idEvent);
+	QList<int> getEventObjectsIdList();
 	QString getObjectShortName(int idObject,QString tableName);
 private:
 	QDate *startPeriod;
