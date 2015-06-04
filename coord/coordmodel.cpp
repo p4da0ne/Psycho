@@ -1,4 +1,5 @@
 #include "coordmodel.h"
+#include <QVariant>
 
 CoordModel::CoordModel(QObject *parent) :
     QObject(parent)
