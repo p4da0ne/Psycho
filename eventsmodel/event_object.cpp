@@ -63,7 +63,7 @@ bool EventObject::insertInDB(int id_event)
         qDebug() << query.lastError().text();
         return false;
     }
-    this->id_event_objects = query.lastInsertId();
+    this->id_event_objects = query.lastInsertId().toInt();
     query.clear();
     return true;
 }

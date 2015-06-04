@@ -7,15 +7,15 @@ CoordModel::CoordModel(QObject *parent) :
 
 bool CoordModel::insertObjectCoord(Coord *coordinates, QString ObjectsTypes, int id_object)
 {
-    int id_coordinates = CoordModel::insertCoord(coordinates);
-    return CoordModel::objectCoord(id_coordinates,ObjectsTypes,id_object);
+    int id_coordinates = this->insertCoord(coordinates);
+    return this->objectCoord(id_coordinates,ObjectsTypes,id_object);
 }
 
 bool CoordModel::insertObjectCoord(QList<Coord *> coordinates, QString ObjectsTypes, int id_object)
 {
-    QList<int> id_coordinates = CoordModel::insertCoord(coordinates);
+    QList<int> id_coordinates = this->insertCoord(coordinates);
     for(int i = 0; i < id_coordinates.size(); i++)
-        CoordModel::objectCoord(id_coordinates.at(i),ObjectsTypes,id_object);
+        this->objectCoord(id_coordinates.at(i),ObjectsTypes,id_object);
     return true;
 }
 
@@ -43,7 +43,7 @@ QList<int> CoordModel::insertCoord(QList<Coord *> coordinates)
 {
     QList<int > coordinatesId;
     for(int i = 0; i< coordinates.size(); i++){
-        coordinatesId.append(CoordModel::insertCoord(coordinates.at(i)));
+        coordinatesId.append(this->insertCoord(coordinates.at(i)));
     }
     return coordinatesId;
 }

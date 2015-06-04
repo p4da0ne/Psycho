@@ -1,6 +1,7 @@
 #ifndef EVENT_H
 #define EVENT_H
 
+#include "config_eventsmodel.h"
 #include <QObject>
 #include <QString>
 #include <QDateTime>
@@ -15,7 +16,7 @@
 #include "event_object.h"
 #include <saturnSignTypes.h>
 
-class Event : public QObject
+class __EXPORT_EVENTSMODEL Event : public QObject
 {
     Q_OBJECT
 public:

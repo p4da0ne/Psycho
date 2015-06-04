@@ -115,8 +115,9 @@ bool Event::setEndDate(QDateTime * end_date)
 
 void Event::setCoordinate(Coord * coordinate)
 {
+    CoordModel *cModel;
     if(this->id_event!=0){
-        CoordModel::insertObjectCoord(coordinate , "events" , this->id_event);
+        cModel->insertObjectCoord(coordinate , QString("events") , this->id_event);
     }
     this->event_coordinate = coordinate;
 }
@@ -168,16 +169,17 @@ bool Event::addEventObject(EventObject *object)
 
 bool Event::insertEventToDB()
 {
-    if(     (this->event_name = "") ||
-            (this->id_status = 0) ||
-            (this->id_type_event = 0) ||
-            (this->event_start_date = 0) ||
-            (this->objects = 0) ||
-            (this->event_coordinate = 0) ||
+    if(     (this->event_name == "") ||
+            (this->id_status == 0) ||
+            (this->id_type_event == 0) ||
+            (this->event_start_date == 0) ||
+            (this->objects == 0) ||
+            (this->event_coordinate == 0) ||
             (this->id_event != 0)){
         return false;
     }
     QSqlQuery query;
+    CoordModel *cModel;
     QString str = QString("INSERT INTO events (id_type_event,id_event_status,name_event,description_event,resume_event,time_event_start,time_event_end) VALUES (%1,%2,'%3','%4','%5','%6','%7')")
             .arg(this->id_type_event)
             .arg(this->id_status)
@@ -190,9 +192,9 @@ bool Event::insertEventToDB()
         qDebug() << query.lastError().text();
         return false;
     }
-    this->id_event = query.lastInsertId();
+    this->id_event = query.lastInsertId().toInt();
     query.clear();
-    if(!CoordModel::insertObjectCoord(this->event_coordinate,"events",this->id_event)){
+    if(!cModel->insertObjectCoord(this->event_coordinate,"events",this->id_event)){
         qDebug() << "Coordinates don't insert. Events roll back transaction.";
         query.exec(QString("DELETE FROM events WHERE id_event = %1").arg(this->id_event));
         this->id_event = 0;
