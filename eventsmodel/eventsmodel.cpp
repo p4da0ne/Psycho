@@ -6,6 +6,7 @@ EventsModel::EventsModel(QObject *parent)
     this->UpdateModel();
 }
 
+
 /*!
 Обновление модели на основании данных в БД (таблица events)
 UpdateModel()
@@ -105,8 +106,8 @@ QList<QStandardItem *> EventsModel::appendObjectEvent(int id_type_event_object, 
 QList< QList<QStandardItem *> > EventsModel::appendMediaEvent(int id_event){
     QList<QList<QStandardItem *> > items;
     QSqlQuery query;
-    query.exec(QString("SELECT id_event_media, name_event_media, description FROM event_media where id_event = %1").arg(id_event));
-    int index_name_event_media = query.record().indexOf("name_event_media");
+    query.exec(QString("SELECT id_event_media, filename_media, description, id_media_type FROM event_media where id_event = %1").arg(id_event));
+    int index_name_event_media = query.record().indexOf("filename_media");
     int index_description = query.record().indexOf("description");
     int index_id_event_media = query.record().indexOf("id_event_media");
     while (query.next())
@@ -133,7 +134,7 @@ openMediaContent(int id_event_media)
 void EventsModel::openMediaContent(int id_event_media){
     QSqlQuery query;
     query.exec(QString("SELECT * FROM event_media where id_event_media = %1").arg(id_event_media));
-    int index_name_event_media = query.record().indexOf("name_event_media");
+    int index_name_event_media = query.record().indexOf("filename_media");
     int index_media = query.record().indexOf("media");
     while(!query.next()){
         QString file_path=QDir::tempPath() + query.value(index_name_event_media).toString();
@@ -149,4 +150,6 @@ void EventsModel::UpdateItem(QStandardItem &item){
 
 }
 
-
+void EventsModel::insertEvent(Event * event){
+event->insertEventToDB();
+}

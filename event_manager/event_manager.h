@@ -3,7 +3,10 @@
 
 #include <QtGui>
 #include <QObject>
+#include <QTableView>
+#include <QLayout>
 #include "config_event_manager.h"
+#include "../eventsmodel/eventsmodel.h"
 
 class __EXPORT_EVENT_MANAGER EventManager : public QWidget
 {
@@ -17,6 +20,9 @@ public slots:
 
 
 private:
+    QTableView * tableView;
+    EventsModel * eventsModel;
+
 
 };
 

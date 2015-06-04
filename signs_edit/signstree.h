@@ -2,14 +2,16 @@
 #define SIGNSTREE_H
 
 #include <QTreeView>
+#include <QMouseEvent>
+#include <QMenu>
 
 class SignsTree : public QTreeView
 {
     Q_OBJECT
 public:
-    explicit SignsTree(QObject *parent = 0);
+    explicit SignsTree(QWidget *parent = 0);
     
-    void mousePressEvent(QMouseEvent *event);
+    void mousePressEvent(QMouseEvent * event);
 signals:
     
 public slots:

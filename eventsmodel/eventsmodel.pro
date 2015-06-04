@@ -10,5 +10,20 @@ QT += sql
 DEFINES += __USE_DLL_EVENTSMODEL
 DEFINES += BUILD_DLL
 
+
+INCLUDEPATH += ./ \
+                ../include \
+               ../coord
+
+
+
+DEPENDPATH += 	./ \
+                ../coord
+
+LIBS   += -L../build
+
+LIBS += -lcoord
+
+
 #Include file(s)
 include(eventsmodel.pri)

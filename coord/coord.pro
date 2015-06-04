@@ -4,8 +4,12 @@ TARGET		= coord
 
 DESTDIR = ../build
 
-INCLUDEPATH += ./
+QT += sql
+
+INCLUDEPATH += ./ \
+                ../include
 
 DEFINES += __USE_DLL_COORD
 
 include(coord.pri)
+

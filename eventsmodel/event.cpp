@@ -1,53 +1,212 @@
 #include "event.h"
 
-Event::Event(QObject *parent) :
-    QObject(parent)
+Event::Event(QString name, QString description, int id_status, int id_type_event, QDateTime *start_date, QDateTime *end_date, QList<EventObject *> *objects, Coord *coordinate)
 {
-}
-
-void Event::setName(QString name)
-{
+    this->id_event = 0;
+    this->getAllEventStatus();
+    this->getAllEventTypes();
     this->event_name = name;
-}
-
-void Event::setDescription(QString description)
-{
     this->event_description = description;
-}
-
-void Event::setStatus(int id_status)
-{
-    this->status = id_status;
-}
-
-void Event::setTypeEvent(int id_type_event)
-{
-    this->type_event = id_type_event;
-}
-
-void Event::setStartDate(QDateTime start_date)
-{
+    this->id_status = id_status;
+    this->id_type_event = id_type_event;
     this->event_start_date = start_date;
-}
-
-void Event::setEndDate(QDateTime end_date)
-{
     this->event_end_date = end_date;
+    this->objects = objects;
 }
 
-void Event::setTypeObject(QString type_object)
+Event::Event(int id_event)
 {
-    this->event_type_object = type_object;
+    this->getAllEventStatus();
+    this->getAllEventTypes();
+    QSqlQuery query;
+    this->id_event = id_event;
+    if(!query.exec(QString("SELECT * FROM events where id_event = %1").arg(id_event))){
+        return;
+    }
+    int index_id_type_event = query.record().indexOf("id_type_event");
+    int index_id_event_status = query.record().indexOf("id_event_status");
+    int index_name_event = query.record().indexOf("name_event");
+    int index_description_event = query.record().indexOf("description_event");
+    int index_resume_event = query.record().indexOf("resume_event");
+    int index_time_event_start = query.record().indexOf("time_event_start");
+    int index_time_event_end = query.record().indexOf("time_event_end");
+    while(query.next()){
+
+        this->event_name = query.value(index_name_event).toString();
+        this->event_description = query.value(index_description_event).toString();
+        this->id_status = query.value(index_id_event_status).toInt();
+        this->id_type_event = query.value(index_id_type_event).toInt();
+        this->event_start_date = &query.value(index_time_event_start).toDateTime();
+        this->event_end_date = &query.value(index_time_event_end).toDateTime();
+        this->event_resume = query.value(index_resume_event).toString();
+    }
+    query.clear();
+    if(!query.exec(QString("SELECT o.id_event_objects, ty.name_type_event_object, ty.\"table_name\", o.id_object, o.is_events_source FROM event_objects o, type_event_object ty WHERE o.id_event = %1 AND ty.id_type_event_object = o.id_type_event_object").arg(id_event))){
+        return;
+    }
+    int index_id_event_objects = query.record().indexOf("id_event_objects");
+    int index_name_type_event_object = query.record().indexOf("name_type_event_object");
+    int index_table_name = query.record().indexOf("table_name");
+    int index_id_object = query.record().indexOf("id_object");
+    int index_is_events_source = query.record().indexOf("is_events_source");
+
+    while(query.next()){
+        EventObject * eventObject = new EventObject();
+        eventObject->setIdEventObjects(query.value(index_id_event_objects).toInt());
+        eventObject->setIdObject( query.value(index_id_object).toInt());
+        eventObject->setTypeObject( query.value(index_name_type_event_object).toString());
+        eventObject->setTableName( query.value(index_table_name).toString());
+        eventObject->setIsSource( query.value(index_is_events_source).toBool());
+        objects->append(eventObject);
+    }
 }
 
-void Event::setIdObject(int id_object)
+bool Event::setName(QString name){
+    if (this->updateEvent("events","name_event",name)){
+        this->event_name = name;
+        return true;
+    }
+    else return false;
+}
+
+bool Event::setDescription(QString description){
+    if (this->updateEvent("events","description_event",description)){
+        this->event_description = description;
+        return true;
+    }
+    else return false;
+}
+
+bool Event::setStatus(int id_status)
 {
-    this->object = id_object;
+    if (this->updateEvent("events","id_status",QString::number(id_status))){
+        this->id_status = id_status;
+        return true;
+    }
+    else return false;
+}
+
+bool Event::setIdTypeEvent(int id_type_event)
+{
+    if (this->updateEvent("events","id_type_event",QString::number(id_type_event))){
+        this->id_type_event = id_type_event;
+        return true;
+    }
+    else return false;
+}
+
+bool Event::setStartDate(QDateTime * start_date)
+{
+    if (this->updateEvent("events","time_event_start",start_date->toString())){
+        this->event_start_date = start_date;
+        return true;
+    }
+    else return false;
+}
+
+bool Event::setEndDate(QDateTime * end_date)
+{
+    if (this->updateEvent("events","time_event_end",end_date->toString())){
+        this->event_end_date = end_date;
+        return true;
+    }
+    else return false;
 }
 
 void Event::setCoordinate(Coord * coordinate)
 {
+    if(this->id_event!=0){
+        CoordModel::insertObjectCoord(coordinate , "events" , this->id_event);
+    }
     this->event_coordinate = coordinate;
+}
+
+bool Event::setResume(QString resume)
+{
+    if (this->updateEvent("events","resume_event",resume)){
+        this->event_resume = resume;
+        return true;
+    }
+    else return false;
+}
+
+bool Event::setEventObjects(QList<EventObject *> *objects)
+{
+    this->objects->clear();
+    for(int i=0; i< objects->size(); i++){
+        if(!this->addEventObject(objects->at(i))){
+            return false;
+        }
+    }
+    return true;
+}
+
+bool Event::addEventObjects(QList<EventObject *> *objects)
+{
+    for(int i=0; i< objects->size(); i++){
+        if(!this->addEventObject(objects->at(i))){
+            return false;
+        }
+    }
+    return true;
+}
+
+bool Event::addEventObject(EventObject *object)
+{
+    if (this->id_event == 0){
+        this->objects->append(object);
+        return true;
+    }else{
+        if(object->insertInDB(this->id_event)){
+            this->objects->append(object);
+            return true;
+        }else{
+            return false;
+        }
+    }
+}
+
+bool Event::addEventToDB()
+{
+    if(     (this->event_name = "") ||
+            (this->id_status = 0) ||
+            (this->id_type_event = 0) ||
+            (this->event_start_date = 0) ||
+            (this->objects = 0) ||
+            (this->event_coordinate = 0) ||
+            (this->id_event != 0)){
+        return false;
+    }
+    QSqlQuery query;
+    QString str = QString("INSERT INTO events (id_type_event,id_event_status,name_event,description_event,resume_event,time_event_start,time_event_end) VALUES (%1,%2,'%3','%4','%5','%6','%7')")
+            .arg(this->id_type_event)
+            .arg(this->id_status)
+            .arg(this->event_name)
+            .arg(this->event_description)
+            .arg(this->event_resume)
+            .arg(this->event_start_date->toString())
+            .arg(this->event_end_date->toString());
+    if(!query.exec(str)){
+        qDebug() << query.lastError().text();
+        return false;
+    }
+    this->id_event = query.lastInsertId();
+    query.clear();
+    if(!CoordModel::insertObjectCoord(this->event_coordinate,"events",this->id_event)){
+        qDebug() << "Coordinates don't insert. Events roll back transaction.";
+        query.exec(QString("DELETE FROM events WHERE id_event = %1").arg(this->id_event));
+        this->id_event = 0;
+        return false;
+    }
+    if(!this->setEventObjects(this->objects)){
+        qDebug() << "Event objects don't insert. Events roll back transaction.";
+        query.exec(QString("DELETE FROM event_objects WHERE id_event = %1").arg(this->id_event));
+        query.exec(QString("DELETE FROM coord_events WHERE id_event = %1").arg(this->id_event));
+        query.exec(QString("DELETE FROM events WHERE id_event = %1").arg(this->id_event));
+        this->id_event = 0;
+        return false;
+    }
+    return true;
 }
 
 QString Event::getName()
@@ -60,34 +219,39 @@ QString Event::getDescription()
     return this->event_description;
 }
 
-int Event::getStatus()
+QString Event::getStatusName()
 {
-    return this->status;
+    return events_status.value(this->id_status,"");
 }
 
-int Event::getTypeEvent()
+int Event::getIdStatus()
 {
-    return this->type_event;
+    return this->id_status;
 }
 
-QDateTime Event::getStartDate()
+QString Event::getResume()
+{
+    return this->event_resume;
+}
+
+int Event::getIdTypeEvent()
+{
+    return this->id_type_event;
+}
+
+QDateTime * Event::getStartDate()
 {
     return this->event_start_date;
 }
 
-QDateTime Event::getEndDate()
+QDateTime * Event::getEndDate()
 {
     return this->event_end_date;
 }
 
-QString Event::getTypeObject()
+QList<EventObject *> * Event::getObjects()
 {
-    return this->event_type_object;
-}
-
-int Event::getIdObject()
-{
-    return this->object;
+    return this->objects;
 }
 
 Coord *Event::getCoordinate()
@@ -98,6 +262,46 @@ Coord *Event::getCoordinate()
 QString Event::getSignCode()
 {
     return this->signCode;
+}
+
+void Event::getAllEventStatus()
+{
+    QSqlQuery query;
+    if(!query.exec("SELECT * FROM event_status")){
+        return;
+    }
+    int index_id_event_status = query.record().indexOf("id_event_status");
+    int index_name_event_status = query.record().indexOf("name_event_status");
+    while(query.next()){
+        events_status.insert(query.value(index_id_event_status).toInt(),query.value(index_name_event_status).toString());
+    }
+}
+
+void Event::getAllEventTypes()
+{
+    QSqlQuery query;
+    if(!query.exec("SELECT * FROM type_event")){
+        return;
+    }
+    int index_id_type_event = query.record().indexOf("id_type_event");
+    int index_name_type_event = query.record().indexOf("name_type_event");
+    int index_id_sign = query.record().indexOf("id_sign");
+    while(query.next()){
+        QMap<QString,int> data;
+        data.insert(query.value(index_name_type_event).toString(), query.value(index_id_sign).toInt());
+        events_types.insert(query.value(index_id_type_event).toInt(),data);
+    }
+}
+
+bool Event::updateEvent(QString table, QString field, QString set_data)
+{
+    if (this->id_event == 0)
+        return true;
+    QSqlQuery query;
+    if(!query.exec(QString("UPDATE %1 SET %2 = '%3' WHERE id_event = %4").arg(table).arg(field).arg(set_data).arg(id_event))){
+        return false;
+    }
+    return true;
 }
 
 
