@@ -1,6 +1,12 @@
 #include "mainform.h"
 #include "ui_main_form.h"
 
+#include <signs_edit.h>
+#include <event_manager.h>
+#include <mapview.h>
+#include <object_manager.h>
+
+
 #if defined Q_OS_WIN
 #define kodec QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Windows-1251"));
 #else
@@ -21,8 +27,9 @@ Mainform::Mainform(QMainWindow *parent, Qt::WFlags flags)
 	QImage img(":/Resources/saturn.png");
 	m_mdiArea = new myQMdiArea(img,this);
 	m_mdiArea->setTabShape(QTabWidget::Triangular);
-	setCentralWidget(m_mdiArea);
 	m_mdiArea->setViewMode(QMdiArea::TabbedView);
+	setCentralWidget(m_mdiArea);
+
 	db=new db_saturn();
 	connect(this,SIGNAL(reopen_login()),this,SLOT(show_login_form()));
 	connect(this,SIGNAL(valid_user(int)),this,SLOT(create_user_menu(int)));
@@ -45,7 +52,7 @@ Mainform::Mainform(QMainWindow *parent, Qt::WFlags flags)
 		tab->setExpanding(false);
 		connect(tab, SIGNAL(tabCloseRequested(int)),this, SLOT(closeTab(int)));
 	}
-//------------------------------------------------------------
+	//-------------------------------------------------------
 
 }
 
@@ -57,16 +64,14 @@ Mainform::~Mainform()
 
 void Mainform::closeTab(int i)
 {
-
-	QMdiSubWindow *sub =m_mdiArea->subWindowList()[i];
+	QMdiSubWindow *sub = m_mdiArea->subWindowList()[i];
+	
 	QWidget *win = sub->widget();
 
 	win->close();
-
-	m_mdiArea->setActiveSubWindow(sub);
-
-	m_mdiArea->closeActiveSubWindow();
+	sub->close();
 }
+
 
 //========== Создание и открытие диалогового окна настроек соединения с БД ===============
 void Mainform::show_connect_settings_dialog()
@@ -597,20 +602,32 @@ void Mainform::show_user_form()
 //============= Открытие формы работы с картой ==============
 void Mainform::show_map_form()
 {
-	QList<MapView*> lst = m_mdiArea->findChildren<MapView*>();
-	if(!lst.isEmpty())
+	QList< MapView* > list = m_mdiArea->findChildren< MapView* >();
+	if(!list.isEmpty())
 	{
-		m_mdiArea->setActiveSubWindow(mapWin);
+		m_mdiArea->setActiveSubWindow(map_window);
 		return;
 	}
-	
-	mapView = new MapView(this);
-    mapWin = m_mdiArea->addSubWindow(mapView);
-    mapWin->setAttribute (Qt::WA_DeleteOnClose);
-	mapView->setWindowTitle("Работа с картой");
-	mapWin->setWindowIcon(QIcon(":/Resources/mapwork.png"));
-    mapView->showMaximized();
-	m_mdiArea->setActiveSubWindow(mapWin);   
+
+		MapView *map_view = new MapView;
+		
+
+		map_view->setWindowTitle("Работа с картой");
+		
+		map_window = new QMdiSubWindow;
+		map_window = m_mdiArea->addSubWindow(map_view);
+		map_window->setAttribute(Qt::WA_DeleteOnClose);
+		map_window->setWindowIcon(QIcon(":/Resources/mapwork.png"));
+		map_view->showMaximized();
+		m_mdiArea->setActiveSubWindow(map_window);
+		QList< MapView* > list1 = m_mdiArea->findChildren< MapView* >();
+		if(!list1.isEmpty())
+		{
+			m_mdiArea->setActiveSubWindow(map_window);
+			return;
+		}
+
+		return;
 }
 
 //============= Открытие формы работы с событиями ==============
@@ -623,14 +640,16 @@ void Mainform::slotOpenEventManagerForm()
 		return;
 	}
 	
-	eventManager = new EventManager(this);
-    events_window = m_mdiArea->addSubWindow(eventManager);
-    events_window->setAttribute (Qt::WA_DeleteOnClose);
+	EventManager *eventManager = new EventManager;
+	
+	events_window = m_mdiArea->addSubWindow(eventManager,Qt::SubWindow);
+    events_window->setAttribute(Qt::WA_DeleteOnClose);
+	events_window->setWindowIcon(QIcon(":/Resources/01.ico"));
+   	 
 	eventManager->setWindowTitle("Управление событиями");
-	events_window->setWindowIcon(QIcon(":/Resources/mapwork.png"));
-    eventManager->showMaximized();
-	m_mdiArea->setActiveSubWindow(events_window);   
-
+	eventManager->showMaximized();
+	m_mdiArea->setActiveSubWindow(events_window); 
+	return;
 }
 
 
@@ -651,8 +670,8 @@ void Mainform::show_object_manager_form(){
 		return;
 	}
 	
-	obman = new Objectmanager();
-	obmanager = m_mdiArea->addSubWindow (obman);
+	Objectmanager *obman = new Objectmanager();
+	obmanager = m_mdiArea->addSubWindow (obman,Qt::SubWindow);
 	obmanager->setAttribute (Qt::WA_DeleteOnClose);
 	obman->setWindowTitle("Управление объектами");
 	obmanager->setWindowIcon(QIcon(":/Resources/change_user.png"));
@@ -674,13 +693,13 @@ void Mainform::show_signs_edit(){
 		return;
 	}
 	
-	signs = new SignsEdit();
-    signs_window = m_mdiArea->addSubWindow (signs);
+	SignsEdit *signs = new SignsEdit();
+	signs_window = m_mdiArea->addSubWindow (signs,Qt::SubWindow);
     signs_window->setAttribute (Qt::WA_DeleteOnClose);
     signs->setWindowTitle("Управление знаками типов объектов");
 	signs_window->setWindowIcon(QIcon(":/Resources/user_config.png"));
     signs->showMaximized();
-    m_mdiArea->setActiveSubWindow (signs_window);
+    m_mdiArea->setActiveSubWindow(signs_window);
 }
 
 

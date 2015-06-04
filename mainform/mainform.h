@@ -5,21 +5,21 @@
 #include <QMap>
 #include <QStringList>
 #include <QFile>
+#include <QMdiSubWindow>
 
-#include "manage_users.h"
-#include "output.h"
 #include "mymdiarea.h"
-#include "mapview.h"
-#include "reports.h"
-#include "supporting_tables.h"
-#include "object_manager.h"
 #include "settings.h"
-#include "db_saturn.h"
-#include "dataaccess.h"
 #include "mapsettingsdialog.h"
 #include "dbbackup.h"
-#include "signs_edit.h"
-#include "event_manager.h"
+
+#include <manage_users.h>
+#include <output.h>
+#include <reports.h>
+#include <supporting_tables.h>
+#include <db_saturn.h>
+#include <dataaccess.h>
+
+
 
 
 namespace Ui
@@ -42,7 +42,14 @@ public:
 	int id_user;
 	bool login_flag;
 	QString str_to_md5(QString str);
-	QMdiArea * m_mdiArea;
+	myQMdiArea * m_mdiArea;
+
+	QMdiSubWindow * map_window;
+	QMdiSubWindow * obmanager;
+	QMdiSubWindow * signs_window;
+	QMdiSubWindow * events_window;
+
+
     
 private slots:
 
@@ -60,7 +67,7 @@ private slots:
 	void slotOpenBackupDbDialog();
 	void slotOpenEventManagerForm();
 	void closeTab(int i);
-	//void show_dialog_add_new_region(int id_parent,bool is_parent_ko);
+
 
 private:
 	QMenu * menu;
@@ -97,15 +104,6 @@ private:
 
 
 
-	Objectmanager *obman;
-	MapView *mapView;
-	SignsEdit *signs;
-	EventManager *eventManager;
-
-	QMdiSubWindow * mapWin;
-	QMdiSubWindow * obmanager;
-	QMdiSubWindow * signs_window;
-	QMdiSubWindow * events_window;
 
 
     bool create_connection(QString,QString,QString,QString,QString);
@@ -127,7 +125,6 @@ private:
 	void add_menu_event_manager(QMenu *oper_menu);
 	bool connection_flag;
 	db_saturn *db;
-	//add_object *reg;
 
 	Ui::main_form *UI;
 };

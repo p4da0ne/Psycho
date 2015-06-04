@@ -132,7 +132,7 @@ QList<SignData*> ViewManage::getSmiMeans(long int hMap,double x1,double y1,doubl
 
 		 
 			// если зачек радио-теле центра (свой или вражеский), то добавляем вторую метрику
-			if ((signCode=="V0000169007")||(signCode=="V0000169029"))
+			if ((signCode=="V0000169007")||(signCode=="V0000169029")||(signCode == "V0000060503"))
 			{	
 				coord = new Coord(x_coord,y_coord+radius);
 				coordList.append(coord);

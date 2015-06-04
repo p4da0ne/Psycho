@@ -2,6 +2,8 @@ TEMPLATE	= lib
 
 TARGET		= mapview
 
+CONFIG		+= qt warn_on
+
 DESTDIR = ../build
 
 QT += sql

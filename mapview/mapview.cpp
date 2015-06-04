@@ -23,7 +23,7 @@
 #include <cmath>
 #include <QFileInfo>
 #include "mapview.h"
-#include "view_manage.h"
+
 #include "signdata.h"
 #include "calculating_mps.h"
 #include "Calculate_K_omkrf.h"
@@ -37,7 +37,7 @@
 #include "events_map_model.h"
 
 
-MapView::MapView(QWidget *parent, const char *name)
+MapView::MapView(QWidget *parent)
     : QWidget(parent)
 {
 	MainCodec = QTextCodec::codecForName("CP1251");
