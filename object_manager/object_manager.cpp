@@ -4976,7 +4976,22 @@ void Objectmanager::PLANE_to_other()
     MyMapAccess *map = new MyMapAccess();
     hmap = 0;
     hmap = map->mapOpen(mapPath.toStdString().c_str(),0);
-    if(hmap == 0) return;
+    if(hmap == 0)
+	{
+		 //================MessageBox===============================
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Сообщение");
+        msgBox.setText("hmap == 0");
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setButtonText(QMessageBox::Yes, "Да");
+
+        switch (msgBox.exec()) {
+        case QMessageBox::Yes:
+            break;
+        }
+        //==============================================================
+		return;
+	}
 
     if(map->mapIsGeoSupported(hmap))
     {
@@ -5001,6 +5016,21 @@ void Objectmanager::PLANE_to_other()
         e6->setText(QString::number(E.Second,'f',2));
 
     }
+	else
+	{
+				 //================MessageBox===============================
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Сообщение");
+        msgBox.setText("Map is not geosupported");
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setButtonText(QMessageBox::Yes, "Да");
+
+        switch (msgBox.exec()) {
+        case QMessageBox::Yes:
+            break;
+        }
+        //==============================================================
+	}
 
     if(hmap)
     {
