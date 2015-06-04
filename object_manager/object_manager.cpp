@@ -2260,12 +2260,13 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
         }
         else if(list.value(0)=="ppers"){
 
-//            PersonesData *persona = new PersonesData(this);
-//            persona->setModal(true);
-//            int result = persona->exec();
-            Add_elements_dialog *add_element= new Add_elements_dialog(23,list.value(1).toInt());
-            add_element->setModal(true);
-            int result=add_element->exec();
+            PersonesData *persona = new PersonesData(this);
+            persona->setModal(true);
+            persona->showMaximized();
+            int result = persona->exec();
+//            Add_elements_dialog *add_element= new Add_elements_dialog(23,list.value(1).toInt());
+//            add_element->setModal(true);
+//            int result=add_element->exec();
             //вернул id
             if (result==0)return;
 

@@ -2,6 +2,7 @@
 #define PERSONESDATA_H
 
 #include <QDialog>
+#include <QComboBox>
 
 namespace Ui {
 class PersonesData;
@@ -16,6 +17,9 @@ public:
     ~PersonesData();
     
 private:
+
+    void fill_combobox_persones(QComboBox *box);
+
     Ui::PersonesData *ui;
 };
 
