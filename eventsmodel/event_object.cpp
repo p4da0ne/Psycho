@@ -3,6 +3,7 @@
 EventObject::EventObject(int id_object, QString table, bool is_source, QObject *parent) :
     QObject(parent)
 {
+    this->id_event_objects = 0;
     this->id_object = id_object;
     this->table = table;
     this->is_source = is_source;

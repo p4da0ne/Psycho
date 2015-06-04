@@ -35,7 +35,7 @@ protected:
     int id_object;
     QString table;
     QString typeObject;
-    int id_event_objects = 0;
+    int id_event_objects;
     int id_type_event_object;
 };
 

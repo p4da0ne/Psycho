@@ -166,7 +166,7 @@ bool Event::addEventObject(EventObject *object)
     }
 }
 
-bool Event::addEventToDB()
+bool Event::insertEventToDB()
 {
     if(     (this->event_name = "") ||
             (this->id_status = 0) ||

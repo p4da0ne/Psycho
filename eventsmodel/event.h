@@ -39,7 +39,7 @@ public:
     bool setEventObjects(QList<EventObject *> * objects);
     bool addEventObject(EventObject * object);
     bool addEventObjects(QList<EventObject *> *objects);
-    bool addEventToDB();
+    bool insertEventToDB();
 
     QString getName();
     QString getDescription();
