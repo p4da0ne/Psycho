@@ -10,4 +10,6 @@ SOURCES += ./eventsmodel.cpp \
             event.cpp \
     event_object.cpp
 
+RESOURCES += \
+    icons.qrc
 

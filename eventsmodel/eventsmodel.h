@@ -12,6 +12,8 @@
 #include <QDesktopServices>
 #include <QUrl>
 #include <QMessageBox>
+#include <QBrush>
+#include <QColor>
 #include "event.h"
 
 class __EXPORT_EVENTSMODEL EventsModel : public QStandardItemModel
@@ -23,9 +25,11 @@ public:
 
 
     void insertEvent(Event *event);
+    Event *getEvent(int id_event);
 public slots:
     void UpdateModel();
     void UpdateItem(QStandardItem &item);
+    void rowClicked(const QModelIndex & index );
 
 protected:
     void openMediaContent(int id_event_media);
@@ -35,6 +39,10 @@ protected:
 
 signals:
     void eventInserted();
+    void currentEventChenge(Event * event);
+
+private:
+    int id_current_event;
 };
 
 #endif // EVENTSMODEL_H

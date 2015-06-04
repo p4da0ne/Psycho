@@ -4,3 +4,6 @@ HEADERS +=  config_event_manager.h \
 
 #Source files
 SOURCES += ./event_manager.cpp
+
+RESOURCES += \
+    icons.qrc

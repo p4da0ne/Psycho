@@ -15,36 +15,73 @@ void EventsModel::UpdateModel(){
     this->clear();
     QStandardItem * rootItem = this->invisibleRootItem();
     QSqlQuery query;
-    query.exec("SELECT e.id_event, e.description_event, e.name_event,e.id_type_event_object,e.id_object,e.resume_event,e.time_event_start,e.time_event_end, s.name_event_status,ty.name_type_event, si.sign_key FROM events e, event_status s, type_event ty, signs si WHERE e.id_event_status = s.id_event_status AND e.id_type_event = ty.id_type_event AND ty.id_sign = si.id_sign ORDER BY time_event_start");
+    query.exec("SELECT e.id_event, e.description_event, e.name_event,e.resume_event,e.time_event_start,e.time_event_end, s.id_event_status, s.name_event_status,ty.name_type_event, si.sign_key FROM events e, event_status s, type_event ty, signs si WHERE e.id_event_status = s.id_event_status AND e.id_type_event = ty.id_type_event AND ty.id_sign = si.id_sign ORDER BY time_event_start");
     int name_event = query.record().indexOf("name_event");
     int time_event_start = query.record().indexOf("time_event_start");
     int time_event_end = query.record().indexOf("time_event_end");
     int description_event = query.record().indexOf("description_event");
-    int id_type_event_object = query.record().indexOf("id_type_event_object");
-    int id_object = query.record().indexOf("id_object");
     int resume_event = query.record().indexOf("resume_event");
     int id_event = query.record().indexOf("id_event");
     int name_event_status = query.record().indexOf("name_event_status");
     int name_type_event = query.record().indexOf("name_type_event");
     int sign_key = query.record().indexOf("sign_key");
+    int id_event_status_index = query.record().indexOf("id_event_status");
     while (query.next())
     {
+        QBrush *brush;
+        QPixmap ico;
+        int id_event_status = query.value(id_event_status_index).toInt();
+        switch (id_event_status){
+            case 1:
+                brush =new QBrush(Qt::red);
+                ico.load(":/icons/red.ico");
+                break;
+            case 2:
+                brush =new QBrush(Qt::gray);
+                ico.load(":/icons/grey.ico");
+                break;
+            case 3:
+                brush =new QBrush(QColor("magenta"));
+                ico.load(":/icons/magenta.ico");
+                break;
+            case 4:
+                brush =new QBrush(Qt::yellow);
+                ico.load(":/icons/yellow.ico");
+                break;
+        }
 
         QList<QStandardItem *> items;
         QStandardItem * item = new QStandardItem(query.value(name_event).toString());
+        item->setData("name_event",33);
+        //item->setBackground(brush);
         items.append(item);
-        QStandardItem * name_event_item = new QStandardItem(query.value(name_event).toString());
-        items.append(name_event_item);
+        QStandardItem * name_event_status_item = new QStandardItem(query.value(name_event_status).toString());
+        name_event_status_item->setData(ico,Qt::DecorationRole);
+        name_event_status_item->setEditable(false);
+        items.append(name_event_status_item);
+        QStandardItem * name_type_event_item = new QStandardItem(query.value(name_type_event).toString());
+        name_type_event_item->setEditable(false);
+        items.append(name_type_event_item);
+        QStandardItem * description_event_item = new QStandardItem(query.value(description_event).toString());
+        description_event_item->setData("description_event",33);
+        items.append(description_event_item);
+        QStandardItem * resume_event_item = new QStandardItem(query.value(resume_event).toString());
+        resume_event_item->setData("resume_event",33);
+        items.append(resume_event_item);
         QStandardItem * time_event_start_item = new QStandardItem(query.value(time_event_start).toString());
+        time_event_start_item->setData("time_event_start",33);
         items.append(time_event_start_item);
         QStandardItem * time_event_end_item = new QStandardItem(query.value(time_event_end).toString());
+        resume_event_item->setData("time_event_end",33);
         items.append(time_event_end_item);
-        QStandardItem * description_event_item = new QStandardItem(query.value(description_event).toString());
-        items.append(description_event_item);
-        items.append(this->appendObjectEvent(query.value(id_type_event_object).toInt(),query.value(id_object).toInt()));
+        for(int i=0; i< items.size(); i++){
+           items.at(i)->setData(id_event,32);
+           items.at(i)->setBackground(*brush);
+        }
         rootItem->appendRow(items);
     }
     query.clear();
+    this->id_current_event = 0;
 }
 
 int EventsModel::InsertMediaItems(QString path, int id_event, QString name_event_media,QString description){
@@ -150,6 +187,18 @@ void EventsModel::UpdateItem(QStandardItem &item){
 
 }
 
+void EventsModel::rowClicked(const QModelIndex &index){
+    int id_event = index.data(32).toInt();
+    if(id_event == this->id_current_event){
+        return;
+    }
+    this->id_current_event = id_event;
+}
+
 void EventsModel::insertEvent(Event * event){
 event->insertEventToDB();
+}
+
+Event * EventsModel::getEvent(int id_event){
+    return new Event(id_event);
 }

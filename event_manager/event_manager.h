@@ -22,7 +22,7 @@ public slots:
 private:
     QTableView * tableView;
     EventsModel * eventsModel;
-
+    Event * current_event;
 
 };
 
