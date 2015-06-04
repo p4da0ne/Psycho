@@ -12,7 +12,6 @@ Event::Event(QString name, QString description, int id_status, int id_type_event
     this->event_start_date = start_date;
     this->event_end_date = end_date;
     this->objects = objects;
-
 }
 
 Event::Event(int id_event)
@@ -116,6 +115,9 @@ bool Event::setEndDate(QDateTime * end_date)
 
 void Event::setCoordinate(Coord * coordinate)
 {
+    if(this->id_event!=0){
+        CoordModel::insertObjectCoord(coordinate , "events" , this->id_event);
+    }
     this->event_coordinate = coordinate;
 }
 
@@ -126,6 +128,85 @@ bool Event::setResume(QString resume)
         return true;
     }
     else return false;
+}
+
+bool Event::setEventObjects(QList<EventObject *> *objects)
+{
+    this->objects->clear();
+    for(int i=0; i< objects->size(); i++){
+        if(!this->addEventObject(objects->at(i))){
+            return false;
+        }
+    }
+    return true;
+}
+
+bool Event::addEventObjects(QList<EventObject *> *objects)
+{
+    for(int i=0; i< objects->size(); i++){
+        if(!this->addEventObject(objects->at(i))){
+            return false;
+        }
+    }
+    return true;
+}
+
+bool Event::addEventObject(EventObject *object)
+{
+    if (this->id_event == 0){
+        this->objects->append(object);
+        return true;
+    }else{
+        if(object->insertInDB(this->id_event)){
+            this->objects->append(object);
+            return true;
+        }else{
+            return false;
+        }
+    }
+}
+
+bool Event::addEventToDB()
+{
+    if(     (this->event_name = "") ||
+            (this->id_status = 0) ||
+            (this->id_type_event = 0) ||
+            (this->event_start_date = 0) ||
+            (this->objects = 0) ||
+            (this->event_coordinate = 0) ||
+            (this->id_event != 0)){
+        return false;
+    }
+    QSqlQuery query;
+    QString str = QString("INSERT INTO events (id_type_event,id_event_status,name_event,description_event,resume_event,time_event_start,time_event_end) VALUES (%1,%2,'%3','%4','%5','%6','%7')")
+            .arg(this->id_type_event)
+            .arg(this->id_status)
+            .arg(this->event_name)
+            .arg(this->event_description)
+            .arg(this->event_resume)
+            .arg(this->event_start_date->toString())
+            .arg(this->event_end_date->toString());
+    if(!query.exec(str)){
+        qDebug() << query.lastError().text();
+        return false;
+    }
+    this->id_event = query.lastInsertId();
+    query.clear();
+    if(!CoordModel::insertObjectCoord(this->event_coordinate,"events",this->id_event)){
+        qDebug() << "Coordinates don't insert. Events roll back transaction.";
+        query.exec(QString("DELETE FROM events WHERE id_event = %1").arg(this->id_event));
+        this->id_event = 0;
+        return false;
+    }
+    if(!this->setEventObjects(this->objects)){
+        qDebug() << "Event objects don't insert. Events roll back transaction.";
+        query.exec(QString("DELETE FROM event_objects WHERE id_event = %1").arg(this->id_event));
+        query.exec(QString("DELETE FROM coord_events WHERE id_event = %1").arg(this->id_event));
+        query.exec(QString("DELETE FROM events WHERE id_event = %1").arg(this->id_event));
+        this->id_event = 0;
+        return false;
+    }
+    return true;
 }
 
 QString Event::getName()

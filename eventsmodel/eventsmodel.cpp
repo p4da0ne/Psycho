@@ -151,12 +151,5 @@ void EventsModel::UpdateItem(QStandardItem &item){
 }
 
 void EventsModel::insertEvent(Event * event){
-    QString str = QString("INSERT INTO events \n"
-    "(id_type_event, id_event_status, name_event, description_event, resume_event, time_event_start, time_event_end) \n"
-    "VALUES ('%1','%2','%3','%4',%5,%6,%7,%8)")
-            .arg(event->getIdTypeEvent())
-            .arg(event->getName())
-            .arg(event->getDescription())
-            .arg(event->getStartDate()->toString())
-            .arg(event->getEndDate()->toString());
+event->insertEventToDB();
 }

@@ -11,6 +11,7 @@
 #include <QtSql/QSqlRecord>
 #include <QtSql/QSqlError>
 #include "../coord/coord.h"
+#include "../coord/coordmodel.h"
 #include "event_object.h"
 #include <saturnSignTypes.h>
 
@@ -35,6 +36,10 @@ public:
     bool setEndDate(QDateTime *end_date);
     void setCoordinate(Coord * coordinate);
     bool setResume(QString resume);
+    bool setEventObjects(QList<EventObject *> * objects);
+    bool addEventObject(EventObject * object);
+    bool addEventObjects(QList<EventObject *> *objects);
+    bool addEventToDB();
 
     QString getName();
     QString getDescription();
@@ -48,6 +53,7 @@ public:
     QString getSignCode();
     int getIdStatus();
     QString getResume();
+
 signals:
     
 public slots:

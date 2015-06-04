@@ -21,7 +21,8 @@
 		GROUPS_MEANS = 5, 			// средства организаций
 		REGIONS = 6,				// регионы
 		PERSONNEL = 7,				// персоналии
-		EVENTS = 8					// события
+		EVENTS = 8,					// события
+		GROUPS = 9					// организации
 	} 
 	SignObjectsTypes;
 #endif  //  SATURNSIGNTYPES_H
