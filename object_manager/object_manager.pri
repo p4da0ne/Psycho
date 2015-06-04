@@ -11,7 +11,8 @@ HEADERS += \
          textprinter.h \
          People_Losses.h \
          mylabel.h \
-        mysqlrelationaldelegate.h
+         mysqlrelationaldelegate.h \
+         personesdata.h
 
 #Source files
 SOURCES +=  object_manager.cpp \
@@ -23,9 +24,11 @@ SOURCES +=  object_manager.cpp \
         textprinter.cpp \
         People_Losses.cpp \
         mylabel.cpp \
-        mysqlrelationaldelegate.cpp
+        mysqlrelationaldelegate.cpp \
+        personesdata.cpp
 
 		
 #Forms
 FORMS += object_manager_form.ui\
-         add_object.ui
+         add_object.ui \
+    personesdata_form.ui

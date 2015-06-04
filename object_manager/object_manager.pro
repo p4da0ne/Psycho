@@ -27,3 +27,9 @@ DEFINES += BUILD_DLL
 
 include(object_manager.pri)
 
+HEADERS +=
+
+SOURCES +=
+
+FORMS +=
+
