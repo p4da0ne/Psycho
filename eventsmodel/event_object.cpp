@@ -1,4 +1,5 @@
 #include "event_object.h"
+#include <QVariant>
 
 EventObject::EventObject(int id_object, QString table, bool is_source, QObject *parent) :
     QObject(parent)
