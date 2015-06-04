@@ -5503,40 +5503,46 @@ void Add_elements_dialog::add_mpo_pso()
 		int id_mpo_pso=insert_in_table("mpo_pso",map,"id_mpo_pso");
 
  //======================= для картинки ===================================
+       QFile file(lineEdit_name_f->text());
+       if(!file.open(QIODevice::ReadOnly))
+       {
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("Внимание");
+            msgBox.setText("Изображение отсутствует.Нажмите ДА, чтобы продолжить");
+            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            msgBox.setButtonText(QMessageBox::Yes, "Да");
+            msgBox.setButtonText(QMessageBox::No, "Нет");
+            if (msgBox.exec()== QMessageBox::Yes){
+
+                if(id_mpo_pso>0){
+                    this->done(id_mpo_pso);
+                }else{
+                    this->done(0);
+                }
+
+            }
+           else{
+                return;
+            }
+       }
+
         QSqlQuery query;
 
         query.prepare("UPDATE mpo_pso SET image_mpo_pso = ? WHERE id_mpo_pso = ?");
 
-        QFile file(lineEdit_name_f->text());
-        if(!file.open(QIODevice::ReadOnly))
-        {
-            QMessageBox msgBox;
-            msgBox.setWindowTitle(tr("Внимание"));
-            msgBox.setText(tr("Необходимо выбрать изображение"));
-            msgBox.setStandardButtons(QMessageBox::Yes);
-            switch (msgBox.exec()) {
-            case QMessageBox::Yes:
-                return;
-                break;
-            }
-        }
         QByteArray image_mpo_pso = file.readAll();
         query.addBindValue(image_mpo_pso);
         query.addBindValue(id_mpo_pso);
-
         if(!query.exec())
         {
             QString s = query.lastError().text();
         }
 
-//===============================================================================
-		if(id_mpo_pso>0){
-			this->done(id_mpo_pso);
-			}else{
-				this->done(0);
-			}
-		
-		
+        if(id_mpo_pso>0){
+            this->done(id_mpo_pso);
+        }else{
+            this->done(0);
+        }
 }
 void Add_elements_dialog::add_mpo_pso_groups()
 {
@@ -5557,38 +5563,47 @@ void Add_elements_dialog::add_mpo_pso_groups()
 	
 		int id_mpo_pso=insert_in_table("mpo_pso",map,"id_mpo_pso");
  //======================= для картинки ===================================
+        QFile file(lineEdit_name_f->text());
+        if(!file.open(QIODevice::ReadOnly))
+       {
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("Внимание");
+            msgBox.setText("Изображение отсутствует.Нажмите ДА, чтобы продолжить");
+            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            msgBox.setButtonText(QMessageBox::Yes, "Да");
+            msgBox.setButtonText(QMessageBox::No, "Нет");
+            if (msgBox.exec()== QMessageBox::Yes){
+
+                if(id_mpo_pso>0){
+                    this->done(id_mpo_pso);
+                }else{
+                    this->done(0);
+                }
+
+            }
+           else{
+                return;
+            }
+       }
+
         QSqlQuery query;
 
         query.prepare("UPDATE mpo_pso SET image_mpo_pso = ? WHERE id_mpo_pso = ?");
 
-        QFile file(lineEdit_name_f->text());
-        if(!file.open(QIODevice::ReadOnly))
-        {
-            QMessageBox msgBox;
-            msgBox.setWindowTitle(tr("Внимание"));
-            msgBox.setText(tr("Необходимо выбрать изображение"));
-            msgBox.setStandardButtons(QMessageBox::Yes);
-            switch (msgBox.exec()) {
-            case QMessageBox::Yes:
-                return;
-                break;
-            }
-        }
         QByteArray image_mpo_pso = file.readAll();
         query.addBindValue(image_mpo_pso);
         query.addBindValue(id_mpo_pso);
-
         if(!query.exec())
         {
             QString s = query.lastError().text();
         }
 
-//===============================================================================
-		if(id_mpo_pso>0){
-			this->done(id_mpo_pso);
-			}else{
-				this->done(0);
-			}
+        if(id_mpo_pso>0){
+            this->done(id_mpo_pso);
+        }else{
+            this->done(0);
+        }
+
 }
 void Add_elements_dialog::add_mpo_pso_smi()
 {
@@ -5623,39 +5638,48 @@ void Add_elements_dialog::add_mpo_pso_smi()
         int id_mpo_pso=insert_in_table("mpo_pso",map,"id_mpo_pso");
 
         //======================= для картинки ===================================
+
+         QFile file(lineEdit_name_f->text());
+         if(!file.open(QIODevice::ReadOnly))
+        {
+             QMessageBox msgBox;
+             msgBox.setWindowTitle("Внимание");
+             msgBox.setText("Изображение отсутствует.Нажмите ДА, чтобы продолжить");
+             msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+             msgBox.setButtonText(QMessageBox::Yes, "Да");
+             msgBox.setButtonText(QMessageBox::No, "Нет");
+             if (msgBox.exec()== QMessageBox::Yes){
+
+                 if(id_mpo_pso>0){
+                     this->done(id_mpo_pso);
+                 }else{
+                     this->done(0);
+                 }
+
+             }
+            else{
+                 return;
+             }
+        }
+
          QSqlQuery query;
 
          query.prepare("UPDATE mpo_pso SET image_mpo_pso = ? WHERE id_mpo_pso = ?");
 
-         QFile file(lineEdit_name_f->text());
-         if(!file.open(QIODevice::ReadOnly))
-         {
-             QMessageBox msgBox;
-             msgBox.setWindowTitle(tr("Внимание"));
-             msgBox.setText(tr("Необходимо выбрать изображение"));
-             msgBox.setStandardButtons(QMessageBox::Yes);
-             switch (msgBox.exec()) {
-             case QMessageBox::Yes:
-                 return;
-                 break;
-             }
-         }
          QByteArray image_mpo_pso = file.readAll();
          query.addBindValue(image_mpo_pso);
          query.addBindValue(id_mpo_pso);
-
          if(!query.exec())
          {
              QString s = query.lastError().text();
          }
 
-        //===============================================================================
+         if(id_mpo_pso>0){
+             this->done(id_mpo_pso);
+         }else{
+             this->done(0);
+         }
 
-		if(id_mpo_pso>0){
-			this->done(id_mpo_pso);
-			}else{
-				this->done(0);
-			}
 }
 
 //================================ добавление условия ================================================
@@ -5690,40 +5714,47 @@ void Add_elements_dialog::add_special_cond(){
 		int id_sc=insert_in_table("special_conditions",map,"id_special_conditions");
 		
 //======================= для картинки ===================================
+        QFile file(lineEdit_name_f->text());
+        if(!file.open(QIODevice::ReadOnly))
+       {
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("Внимание");
+            msgBox.setText("Изображение отсутствует.Нажмите ДА, чтобы продолжить");
+            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            msgBox.setButtonText(QMessageBox::Yes, "Да");
+            msgBox.setButtonText(QMessageBox::No, "Нет");
+            if (msgBox.exec()== QMessageBox::Yes){
+
+                if(id_sc>0){
+                    this->done(id_sc);
+                }else{
+                    this->done(0);
+                }
+
+            }
+           else{
+                return;
+            }
+       }
+
         QSqlQuery query;
 
         query.prepare("UPDATE special_conditions SET image_special_conditions = ? WHERE id_special_conditions = ?");
 
-            QFile file(lineEdit_name_f->text());
-            if(!file.open(QIODevice::ReadOnly))
-                 {
-            QMessageBox msgBox;
-            msgBox.setWindowTitle(tr("Внимание"));
-            msgBox.setText(tr("Необходимо выбрать изображение"));
-            msgBox.setStandardButtons(QMessageBox::Yes);
-            switch (msgBox.exec()) {
-            case QMessageBox::Yes:
-                return;
-                break;
-                }
-             }
-            QByteArray image_sc = file.readAll();
-            query.addBindValue(image_sc);
-            query.addBindValue(id_sc);
+        QByteArray image_special_conditions = file.readAll();
+        query.addBindValue(image_special_conditions);
+        query.addBindValue(id_sc);
+        if(!query.exec())
+        {
+            QString s = query.lastError().text();
+        }
 
-            if(!query.exec())
-             {
-             QString s = query.lastError().text();
-             }
-
-//===============================================================================
-        
         if(id_sc>0){
-				this->done(id_sc);
-			}else{
-				this->done(0);
-			}
-	   
+            this->done(id_sc);
+        }else{
+            this->done(0);
+        }
+
 }
 
 void Add_elements_dialog::open_file()

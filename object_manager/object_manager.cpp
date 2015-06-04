@@ -23,6 +23,7 @@
 #include "ui_object_manager_form.h"
 #include <QProxyModel>
 #include "mysqlrelationaldelegate.h"
+#include "personesdata.h"
 
 
 Objectmanager::Objectmanager(QWidget *parent) //int in_id_object
@@ -427,18 +428,54 @@ void Objectmanager::customMenuView(const QPoint & pos)
             QPushButton *popupButton = new QPushButton;
             QMenu *menu = new QMenu(this);
             QAction *act=new QAction("”далить особое условие",this);
+            QAction *otch_sc = new QAction (QString("—формировать отчет"),this);
+            connect(otch_sc,SIGNAL(triggered()),this,SLOT(otchet_groups()));
             act->setIcon(QIcon(":/Resources/close.png"));
             connect(act,SIGNAL(triggered()),this,SLOT(delete_sc()));
+            menu->addAction(otch_sc);
+            menu->addSeparator();
             menu->addAction(act);
             popupButton->setMenu(menu);
             menu->exec(QCursor::pos());
         }
-        else if(list.value(0)=="dmpo" || list.value(0)=="dmpos" || list.value(0)=="dmposmi" ){
+        else if(list.value(0)=="dmpo"){
             QPushButton *popupButton = new QPushButton;
             QMenu *menu = new QMenu(this);
             QAction *act=new QAction("”далить средство",this);
+            QAction *otch_mpo_ls = new QAction (QString("—формировать отчет"),this);
+            connect(otch_mpo_ls,SIGNAL(triggered()),this,SLOT(otchet_groups()));
             act->setIcon(QIcon(":/Resources/close.png"));
             connect(act,SIGNAL(triggered()),this,SLOT(delete_mpo()));
+            menu->addAction(otch_mpo_ls);
+            menu->addSeparator();
+            menu->addAction(act);
+            popupButton->setMenu(menu);
+            menu->exec(QCursor::pos());
+        }
+        else if(list.value(0)=="dmpos"){
+            QPushButton *popupButton = new QPushButton;
+            QMenu *menu = new QMenu(this);
+            QAction *act=new QAction("”далить средство",this);
+            QAction *otch_mpo_gr = new QAction (QString("—формировать отчет"),this);
+            connect(otch_mpo_gr,SIGNAL(triggered()),this,SLOT(otchet_groups()));
+            act->setIcon(QIcon(":/Resources/close.png"));
+            connect(act,SIGNAL(triggered()),this,SLOT(delete_mpo()));
+            menu->addAction(otch_mpo_gr);
+            menu->addSeparator();
+            menu->addAction(act);
+            popupButton->setMenu(menu);
+            menu->exec(QCursor::pos());
+        }
+        else if(list.value(0)=="dmposmi"){
+            QPushButton *popupButton = new QPushButton;
+            QMenu *menu = new QMenu(this);
+            QAction *act=new QAction("”далить средство",this);
+            QAction *otch_mpo_smi = new QAction (QString("—формировать отчет"),this);
+            connect(otch_mpo_smi,SIGNAL(triggered()),this,SLOT(otchet_groups()));
+            act->setIcon(QIcon(":/Resources/close.png"));
+            connect(act,SIGNAL(triggered()),this,SLOT(delete_mpo()));
+            menu->addAction(otch_mpo_smi);
+            menu->addSeparator();
             menu->addAction(act);
             popupButton->setMenu(menu);
             menu->exec(QCursor::pos());
@@ -2223,9 +2260,12 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
         }
         else if(list.value(0)=="ppers"){
 
-            Add_elements_dialog *add_element= new Add_elements_dialog(23,list.value(1).toInt());
-            add_element->setModal(true);
-            int result=add_element->exec();
+            PersonesData *persona = new PersonesData(this);
+            persona->setModal(true);
+            int result = persona->exec();
+          //  Add_elements_dialog *add_element= new Add_elements_dialog(23,list.value(1).toInt());
+          //  add_element->setModal(true);
+          //  int result=add_element->exec();
             //вернул id
             if (result==0)return;
 
@@ -3784,8 +3824,32 @@ void Objectmanager::otchet_groups()
             float rez_ = list.value(3).toFloat();
             QString report = r->create_object_formular_region(rez_,id_region);
             r->show_preview_dialog(report);
-
         }
+        else if(list.value(0)=="dsc"){
+            Reports *r = new Reports;
+            int id_suka_sc = list.value(1).toInt();
+            QString report = r->create_object_formular_sc(id_suka_sc);
+            r->show_preview_dialog(report);
+        }
+        else if(list.value(0)=="dmpo"){
+            Reports *r = new Reports;
+            int id_suka_ls_mpo = list.value(1).toInt();
+            QString report = r->create_object_formular_mpo_pso_ls(id_suka_ls_mpo);
+            r->show_preview_dialog(report);
+        }
+        else if(list.value(0)=="dmpos"){
+            Reports *r = new Reports;
+            int id_suka_gr_mpo = list.value(1).toInt();
+            QString report = r->create_object_formular_mpo_pso_gr(id_suka_gr_mpo);
+            r->show_preview_dialog(report);
+        }
+        else if(list.value(0)=="dmposmi"){
+            Reports *r = new Reports;
+            int id_suka_smi_mpo = list.value(1).toInt();
+            QString report = r->create_object_formular_mpo_pso_smi(id_suka_smi_mpo);
+            r->show_preview_dialog(report);
+        }
+
     }
 }
 // QString str = QString("select gr.name_groups,gr.counte_groups,gr.founder_group,gr.menegement_groups,gr.officce_groups,gr.description_groups,gr.propaganda_groups,tr.name_trend_groups,sph.name_sphere_groups, form.name_form_groups, reg.name_region FROM groups gr,trend_groups tr,sphere_groups sph, form_groups form, region reg where gr.id_trend=tr.id_trend_groups AND gr.id_sphere_groups=sph.id_sphere_groups AND gr.id_form_groups=form.id_form_groups AND gr.id_region = reg.id_region AND gr.id_groups=%1").arg(group_id);
