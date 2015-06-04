@@ -1503,9 +1503,10 @@ void MapView::showCheckedEvents()
 
 	EventsMapModel *eventsMapModel = new EventsMapModel(startDate,endDate,selectedObjectsModel,eventStatesModel,eventTypesModel);
 	QList<SignData*> eventsSigns = eventsMapModel->getEvents(mapwin->hMap,x1,y1,x2,y2);
-
-	createSitObjects(eventsSite, eventsSigns);
-
+	if(eventsSigns.count() > 0)
+	{
+		createSitObjects(eventsSite, eventsSigns);
+	}
 	
 }
 
@@ -1868,6 +1869,7 @@ void MapView::slotObjectReport()
 				regionsModel = new RegionsMpos;
 				rez = regionsModel->regionCalculator->get_Rez_on_id_region(idObj);
 				report = r->create_object_formular_region(rez,idObj);
+
 				break;
             case SPECIAL_CONDITIONS:
                 report = r->create_object_formular_sc(idObj);
