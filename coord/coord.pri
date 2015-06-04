@@ -1,4 +1,10 @@
 HEADERS		= config_coord.h \
-			  coord.h
+                          coord.h \
+    coordmodel.h
 			  
-SOURCES		= coord.cpp
+SOURCES		= coord.cpp \
+    coordmodel.cpp
+
+
+
+

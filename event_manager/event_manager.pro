@@ -6,7 +6,7 @@ DESTDIR = ../build
 
 INCLUDEPATH += . \
                 ../include \
-				../eventsmodel
+                ../eventsmodel
 
 
 DEPENDPATH += ../eventsmodel

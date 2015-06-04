@@ -1,6 +1,6 @@
 #include "signstree.h"
 
-SignsTree::SignsTree(QObject *parent) :
+SignsTree::SignsTree(QWidget *parent) :
     QTreeView(parent)
 {
 }
