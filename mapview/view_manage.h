@@ -42,6 +42,9 @@ public:
 	QString get_srec_cond_foto_from_DB(int);
 	QString get_info_personel(int);
 	QString get_pers_foto_from_DB(int);
+	QString get_event_info(int);
+	QString get_event_common_info(int);
+	QString get_event_objects_info(int idEvent);
 
 };
 
