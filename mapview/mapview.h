@@ -59,6 +59,7 @@ private:
 	QMenu*			createGroupsMeansMenu(QStringList objInfo);
 	QMenu*			createRegionsMenu(QStringList objInfo);
 	QMenu*			createPersonnelMenu(QStringList objInfo);
+	QMenu*			createEventMenu(QStringList objInfo);
 	//----------------------------------------------------------------------
 	void			showMessageToUser(const QString);
 private slots:
@@ -144,6 +145,8 @@ private:
 
 	QStandardItemModel *eventTypesModel;
 	QListView *eventTypesView;
+	QDateTime *startDateTime;
+	QDateTime *endDateTime;
 	//---------------------------------------
 	ChangeCoordDialog *dlg;
 	QSettings *settings;

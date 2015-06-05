@@ -28,6 +28,8 @@ public:
 	bool updatePersonesCoordinates(int idPersone, Coord *coord);
 	bool updateMeansCoordinates(int idMeans, Coord *coord);
 	bool updateSpecialConditionsCoordinates(int idSpecCond, Coord *coord);
+	bool updateEventsCoordinates(int idSpecCond, Coord *coord);
+	
 
 
 	bool updateCoordinates(int idCoordinates, Coord *coord);

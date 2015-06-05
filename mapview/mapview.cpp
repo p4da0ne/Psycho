@@ -1498,8 +1498,8 @@ void MapView::showCheckedEvents()
 	QString eventsSitName = sitPath + "events.sit";
 
 
-	QDateTime *startDateTime = new QDateTime(beginEventDateTime->dateTime());
-	QDateTime *endDateTime = new QDateTime(endEventDateTime->dateTime());
+	startDateTime = new QDateTime(beginEventDateTime->dateTime());
+	endDateTime = new QDateTime(endEventDateTime->dateTime());
 
 	//------ Получение координат углов карты ---------
 	double x1 = mapwin->getMapX1(mapwin->hMap);
@@ -1617,6 +1617,10 @@ QMenu* MapView::createObjectsListComplexMenu(QList<QStringList> objectsList)
 
 			case PERSONNEL:
 				mouse_menu->addMenu(createPersonnelMenu(objectsList.at(i)));
+				break;
+						
+			case EVENTS:
+				mouse_menu->addMenu(createEventMenu(objectsList.at(i)));
 				break;
 		}	
 	}
@@ -1796,8 +1800,10 @@ void MapView::updateSite(int objectType)
 	QString formationsSitName = sitPath + "formations.sit";
 	QString conditionsSitName = sitPath +"conditions.sit";
 	QString personesSitName = sitPath +"persones.sit";
+	QString eventsSitName = sitPath + "events.sit";
 	//-------------------------------------------------------------------------
 
+	EventsMapModel *eventsMapModel = new EventsMapModel(startDateTime,endDateTime,selectedObjectsModel,eventStatesModel,eventTypesModel);
 	QList<SignData*> signs;
 	HSITE site;
 
@@ -1837,6 +1843,12 @@ void MapView::updateSite(int objectType)
 				closeSitByName(personesSitName);
 				site = openMapSit(personesSitName,rscPath);
 				signs = model->getPersones(mapwin->hMap,x1,y1,x2,y2);
+				break;
+			
+			case EVENTS:
+				closeSitByName(eventsSitName);
+				site = openMapSit(eventsSitName,rscPath);
+				signs = eventsMapModel->getEvents(mapwin->hMap,x1,y1,x2,y2);
 				break;
 		}
 	createSitObjects(site, signs);
@@ -2085,6 +2097,33 @@ QMenu* MapView::createPersonnelMenu(QStringList objInfo)
 	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));
 	
 	QAction *move_act = new QAction("Переместить объект",this);
+	move_act->setData(idAndType);
+	mouse_menu->addAction(move_act); 
+	connect(move_act, SIGNAL(triggered()), this, SLOT(slotMoveObject()));
+
+	return mouse_menu;
+
+}
+
+
+//===================================================================================
+//===== Метод создания и отображения контекстного меню для событий =================
+//===================================================================================
+QMenu* MapView::createEventMenu(QStringList objInfo)
+{
+	QString text = model->getObjectTypeAndName(objInfo.at(0).toInt(), objInfo.at(1).toInt());
+	QString idAndType = objInfo.at(0) + "_" + objInfo.at(1);
+
+	QMenu *mouse_menu = new QMenu(text); 
+
+	//--- Добавление в меню специфичных действий для событий ---------
+
+	QAction *report_act = new QAction("Отчет",this);
+	report_act->setData(idAndType);
+	mouse_menu->addAction(report_act); 
+	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));  //пока не работает
+	
+	QAction *move_act = new QAction("Переместить событие",this);
 	move_act->setData(idAndType);
 	mouse_menu->addAction(move_act); 
 	connect(move_act, SIGNAL(triggered()), this, SLOT(slotMoveObject()));
