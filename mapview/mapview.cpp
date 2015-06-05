@@ -1507,6 +1507,10 @@ void MapView::showCheckedEvents()
 	{
 		createSitObjects(eventsSite, eventsSigns);
 	}
+	else
+	{
+		showMessageToUser("По Вашему запросу событий не найдено.");
+	}
 	
 }
 
@@ -2149,3 +2153,13 @@ void	 MapView::PrintScreenSlot()
     }
 }
 
+
+//===========================================================================
+//=== Сообщение пользователю в виде диалогового окна ========================
+//===========================================================================
+void MapView::showMessageToUser(const QString message) 
+{
+    QMessageBox::information(this, "Сообщение",
+                          message,
+                          QMessageBox::Ok, 0);
+}

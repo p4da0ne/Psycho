@@ -174,8 +174,6 @@ QList<SignData*> EventsMapModel::getEvents(long int hMap,double x1,double y1,dou
 {
 	QList<SignData*> eventsList;
 
-	//QList<int> objectsIdList = getEventObjectsIdList();
-	
 	QList<int> eventIdList = getIdEventsByFilter();  //возвращает список id событий в соответствии с фильтром
 
 	for(int i=0;i<eventIdList.count();i++)
@@ -666,6 +664,10 @@ QList<int> EventsMapModel::getIdEventsByFilter()
 		}
 		queryStr.append(QString("AND (%1) ").arg(orStr));
 	}
+	else
+	{
+		return eventIdList;
+	}
 	//------- типы событий --------
 	int checkedTypesCount = checkedItemsCount(*eventTypesModel);
 	if(checkedTypesCount > 0)
@@ -689,6 +691,10 @@ QList<int> EventsMapModel::getIdEventsByFilter()
 			}
 		}
 		queryStr.append(QString("AND (%1) ").arg(orStr));
+	}
+	else
+	{
+		return eventIdList;
 	}
 	//------- объекты, с которыми связаны события --------
 	if(objectsModel->rowCount() > 0)

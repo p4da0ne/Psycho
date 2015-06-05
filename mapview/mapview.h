@@ -60,7 +60,7 @@ private:
 	QMenu*			createRegionsMenu(QStringList objInfo);
 	QMenu*			createPersonnelMenu(QStringList objInfo);
 	//----------------------------------------------------------------------
-
+	void			showMessageToUser(const QString);
 private slots:
 	void			openNewMap();
 	void			openMapFromSettings();
