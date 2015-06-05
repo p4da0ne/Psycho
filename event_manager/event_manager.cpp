@@ -3,7 +3,7 @@
 EventManager::EventManager(QWidget *parent, Coord *coord)
     : QWidget(parent)
 {
-    if(coord = 0){
+    if(coord == 0){
         this->coord = new Coord();
         this->whithCoord = false;
     }else{
