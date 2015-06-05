@@ -8,7 +8,7 @@
 #include "mapview.h"
 #include <eventsmodel.h>
 
-EventsMapModel::EventsMapModel(QDate *startPeriod,QDate *endPeriod,
+EventsMapModel::EventsMapModel(QDateTime *startPeriod,QDateTime *endPeriod,
 				  QStandardItemModel *objectsModel,QStandardItemModel *statesModel,
 				  QStandardItemModel *eventTypesModel,QObject *parent)
     : QObject(parent),objectsModel(objectsModel),statesModel(statesModel),
@@ -174,8 +174,6 @@ QList<SignData*> EventsMapModel::getEvents(long int hMap,double x1,double y1,dou
 {
 	QList<SignData*> eventsList;
 
-	//QList<int> objectsIdList = getEventObjectsIdList();
-	
 	QList<int> eventIdList = getIdEventsByFilter();  //возвращает список id событий в соответствии с фильтром
 
 	for(int i=0;i<eventIdList.count();i++)
@@ -531,8 +529,8 @@ QString EventsMapModel::createEventsFilterQuery(int idEvent)
 
 	if(startPeriod->isValid() && endPeriod->isValid())
 	{
-		QDateTime startDateTime(*startPeriod,QTime(0,0,0));
-		QDateTime endDateTime(*endPeriod,QTime(23,59,59));
+		QDateTime startDateTime(*startPeriod);
+		QDateTime endDateTime(*endPeriod);
 	
 		QString startDateT = startDateTime.toString("yyyy-MM-dd hh:mm:ss");
 		QString endDateT = endDateTime.toString("yyyy-MM-dd hh:mm:ss");
@@ -631,8 +629,8 @@ QList<int> EventsMapModel::getIdEventsByFilter()
 
 	if(startPeriod->isValid() && endPeriod->isValid())
 	{
-		QDateTime startDateTime(*startPeriod,QTime(0,0,0));
-		QDateTime endDateTime(*endPeriod,QTime(23,59,59));
+		QDateTime startDateTime(*startPeriod);
+		QDateTime endDateTime(*endPeriod);
 	
 		QString startDateT = startDateTime.toString("yyyy-MM-dd hh:mm:ss");
 		QString endDateT = endDateTime.toString("yyyy-MM-dd hh:mm:ss");
@@ -666,6 +664,10 @@ QList<int> EventsMapModel::getIdEventsByFilter()
 		}
 		queryStr.append(QString("AND (%1) ").arg(orStr));
 	}
+	else
+	{
+		return eventIdList;
+	}
 	//------- типы событий --------
 	int checkedTypesCount = checkedItemsCount(*eventTypesModel);
 	if(checkedTypesCount > 0)
@@ -689,6 +691,10 @@ QList<int> EventsMapModel::getIdEventsByFilter()
 			}
 		}
 		queryStr.append(QString("AND (%1) ").arg(orStr));
+	}
+	else
+	{
+		return eventIdList;
 	}
 	//------- объекты, с которыми связаны события --------
 	if(objectsModel->rowCount() > 0)

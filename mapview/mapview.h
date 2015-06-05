@@ -45,7 +45,8 @@ private:
 	//------ ћетод дл€ отрисовки условных знаков на пользовательской карте -------------
 	void			createSitObjects(HSITE hSite,QList<SignData*> signsList);					
 	//------------------------------------------------------------------------
-	QMenu*			createGreateLessScaleMenu();															
+	QMenu*			createGreateLessScaleMenu();	
+	QAction*		createAddEventAction();                                  
 	QMenu*			createObjectsListMenu(QList<QStringList> objectsList);							    
 	QMenu*			createObjectsListComplexMenu(QList<QStringList> objectsList);											
 	void			showInformationDialog(QString information);
@@ -59,8 +60,9 @@ private:
 	QMenu*			createGroupsMeansMenu(QStringList objInfo);
 	QMenu*			createRegionsMenu(QStringList objInfo);
 	QMenu*			createPersonnelMenu(QStringList objInfo);
+	QMenu*			createEventMenu(QStringList objInfo);
 	//----------------------------------------------------------------------
-
+	void			showMessageToUser(const QString);
 private slots:
 	void			openNewMap();
 	void			openMapFromSettings();
@@ -87,6 +89,9 @@ private slots:
 	void			slotMouseLeftButtonClicked(QPoint pe, QList<QStringList> objectsList);
 	void			slotMouseRightButtonClicked(QPoint pe, QList<QStringList> objectsList);
 	void			mouseRightSimpleMenu(QPoint pe);
+	void			addEvent();
+	void			slotEditEvent();
+	void			slotDeleteEvent();
 	//======================================================
 	void			showCheckedObjects();
 	void			showCheckedCalcResults();
@@ -130,8 +135,8 @@ private:
 	//--------------------------------------
 
 	//--- Ёлементы фильтра событий -------
-	QDateEdit *beginEventDate;
-	QDateEdit *endEventDate;
+	QDateTimeEdit *beginEventDateTime;
+	QDateTimeEdit *endEventDateTime;
 	QRadioButton *allObjectsButton;
 	QRadioButton *selectObjectsButton;
 	QListView *selectedObjectsListView;
@@ -144,6 +149,8 @@ private:
 
 	QStandardItemModel *eventTypesModel;
 	QListView *eventTypesView;
+	QDateTime *startDateTime;
+	QDateTime *endDateTime;
 	//---------------------------------------
 	ChangeCoordDialog *dlg;
 	QSettings *settings;

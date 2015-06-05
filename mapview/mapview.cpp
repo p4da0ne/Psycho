@@ -294,7 +294,7 @@ void MapView::initSaturnLeftMenu()
 	left_panel_layout->addWidget(mapWorkToolBox);
 
 	fr->setLayout(left_panel_layout);
-	fr->setMaximumWidth(215);
+	fr->setMaximumWidth(225);
 	centralLayout->addWidget(fr);
 }
 
@@ -432,29 +432,41 @@ QWidget* MapView::createEventPanel()
 	currDate = QDate::currentDate();
 	QDate yesterday = currDate.addDays(-1);
 	
-	beginEventDate = new QDateEdit(yesterday);
-	endEventDate = new QDateEdit(currDate);
+	QDateTime currDateTime(currDate,QTime::currentTime());
+	QDateTime yesterdayDateTime(yesterday,QTime(0,0));
+
+	beginEventDateTime = new QDateTimeEdit(yesterdayDateTime);
+	beginEventDateTime->setDisplayFormat("yyyy-MM-dd  |  hh:mm");
+	endEventDateTime = new QDateTimeEdit(currDateTime);
+	endEventDateTime->setDisplayFormat("yyyy-MM-dd  |  hh:mm");
 	
 	QCalendarWidget* cw = new QCalendarWidget();
 	cw->setFirstDayOfWeek(Qt::Monday);
-	beginEventDate->setCalendarWidget(cw);
-	beginEventDate->setCalendarPopup(true);
+	beginEventDateTime->setCalendarWidget(cw);
+	beginEventDateTime->setCalendarPopup(true);
 
 	cw = new QCalendarWidget();
 	cw->setFirstDayOfWeek(Qt::Monday);
-	endEventDate->setCalendarWidget(cw);
-	endEventDate->setCalendarPopup(true);
+	endEventDateTime->setCalendarWidget(cw);
+	endEventDateTime->setCalendarPopup(true);
 	
-	QLabel *defLabel = new QLabel("-");
-	
-	QHBoxLayout *periodLay = new QHBoxLayout;
-	periodLay->addWidget(beginEventDate);
-	periodLay->addWidget(defLabel);
-	periodLay->addWidget(endEventDate);
+	QLabel *fromLabel = new QLabel("С:");
+	fromLabel->setMaximumWidth(20);
+	QLabel *toLabel = new QLabel("По:");
+	toLabel->setMaximumWidth(20);
+
+	QHBoxLayout *fromLay = new QHBoxLayout;
+	fromLay->addWidget(fromLabel);
+	fromLay->addWidget(beginEventDateTime);
+
+	QHBoxLayout *toLay = new QHBoxLayout;
+	toLay->addWidget(toLabel);
+	toLay->addWidget(endEventDateTime);
 
 	QVBoxLayout *dateLay = new QVBoxLayout;
 	dateLay->addWidget(periodLabel);
-	dateLay->addLayout(periodLay);
+	dateLay->addLayout(fromLay);
+	dateLay->addLayout(toLay);
 
 	//------------------------------------------------------------
 
@@ -1068,7 +1080,7 @@ void MapView::showViewScale()
 }
 
 //======================================================================
-//======= Метод обработки нажатия клавиш вверх-вниз ====================
+//======= Метод обработки нажатия клавиш клавиатуры ====================
 //======================================================================
 void MapView::keyPressEvent(QKeyEvent *e)
 {
@@ -1201,12 +1213,30 @@ QMenu* MapView::createGreateLessScaleMenu()
 }
 
 
+
+
+//======================================================================================
+//====== Метод формирует меню добавления события в точке нажатия мыши на карте =========
+//======================================================================================
+QAction* MapView::createAddEventAction()
+{
+	QAction *add_event_act = new QAction("Добавить событие", this);
+	add_event_act->setIcon(QIcon(":/Resources/01.ico"));
+	connect(add_event_act, SIGNAL(triggered()), this, SLOT(addEvent()));
+	return add_event_act;
+}
+
+
+
 //=================================================================================================
 //========= Меню по клику правой клавишей мыши в любом месте карты ================================
 //=================================================================================================
 void MapView::mouseRightSimpleMenu(QPoint pe)
 {
-	mouse_menu = createGreateLessScaleMenu(); 
+	mouse_menu = createGreateLessScaleMenu();
+	mouse_menu->addAction(createAddEventAction());
+	mouse_menu->addSeparator();
+
 	mouse_menu->exec(pe);
 }
 
@@ -1486,8 +1516,8 @@ void MapView::showCheckedEvents()
 	QString eventsSitName = sitPath + "events.sit";
 
 
-	QDate *startDate = new QDate(beginEventDate->date());
-	QDate *endDate = new QDate(endEventDate->date());
+	startDateTime = new QDateTime(beginEventDateTime->dateTime());
+	endDateTime = new QDateTime(endEventDateTime->dateTime());
 
 	//------ Получение координат углов карты ---------
 	double x1 = mapwin->getMapX1(mapwin->hMap);
@@ -1501,11 +1531,15 @@ void MapView::showCheckedEvents()
 	closeSitByName(eventsSitName);
 	HSITE eventsSite = openMapSit(eventsSitName,rscPath);
 
-	EventsMapModel *eventsMapModel = new EventsMapModel(startDate,endDate,selectedObjectsModel,eventStatesModel,eventTypesModel);
+	EventsMapModel *eventsMapModel = new EventsMapModel(startDateTime,endDateTime,selectedObjectsModel,eventStatesModel,eventTypesModel);
 	QList<SignData*> eventsSigns = eventsMapModel->getEvents(mapwin->hMap,x1,y1,x2,y2);
 	if(eventsSigns.count() > 0)
 	{
 		createSitObjects(eventsSite, eventsSigns);
+	}
+	else
+	{
+		showMessageToUser("По Вашему запросу событий не найдено.");
 	}
 	
 }
@@ -1569,6 +1603,8 @@ QMenu* MapView::createObjectsListMenu(QList<QStringList> objectsList)
 QMenu* MapView::createObjectsListComplexMenu(QList<QStringList> objectsList)
 {
 	QMenu *mouse_menu = createGreateLessScaleMenu();//new QMenu; 
+	mouse_menu->addAction(createAddEventAction());
+	mouse_menu->addSeparator();
 	
 	for(int i=0;i<objectsList.count();i++)
 	{
@@ -1602,6 +1638,10 @@ QMenu* MapView::createObjectsListComplexMenu(QList<QStringList> objectsList)
 			case PERSONNEL:
 				mouse_menu->addMenu(createPersonnelMenu(objectsList.at(i)));
 				break;
+						
+			case EVENTS:
+				mouse_menu->addMenu(createEventMenu(objectsList.at(i)));
+				break;
 		}	
 	}
 	return mouse_menu;
@@ -1631,7 +1671,7 @@ void MapView::slotObjectInfo()
 
 
 //===========================================================================================
-//===== Слот расчета психогенных потерь формирования (для конткстного меню) =================
+//===== Слот расчета психогенных потерь формирования (для контекстного меню) =================
 //===========================================================================================
 void MapView::slotFormationPsiLooses() 
 {
@@ -1702,6 +1742,39 @@ void MapView::slotMoveObject()
 		}
 
 
+	}
+
+}
+
+
+//===============================================================================
+//====== Слот редактирования события ============================================
+//===============================================================================
+void MapView::slotEditEvent()
+{
+	QAction *action = qobject_cast<QAction*>(sender());
+	QString str;
+	if(action)
+	{
+		QStringList objInfo = action->data().toString().split("_");
+
+		////////////////////////////////////////////////////////////
+	}
+
+}
+
+//===============================================================================
+//====== Слот удаления события ==================================================
+//===============================================================================
+void MapView::slotDeleteEvent()
+{
+	QAction *action = qobject_cast<QAction*>(sender());
+	QString str;
+	if(action)
+	{
+		QStringList objInfo = action->data().toString().split("_");
+
+		//////////////////////////////////////////////////////////		
 	}
 
 }
@@ -1780,8 +1853,10 @@ void MapView::updateSite(int objectType)
 	QString formationsSitName = sitPath + "formations.sit";
 	QString conditionsSitName = sitPath +"conditions.sit";
 	QString personesSitName = sitPath +"persones.sit";
+	QString eventsSitName = sitPath + "events.sit";
 	//-------------------------------------------------------------------------
 
+	EventsMapModel *eventsMapModel = new EventsMapModel(startDateTime,endDateTime,selectedObjectsModel,eventStatesModel,eventTypesModel);
 	QList<SignData*> signs;
 	HSITE site;
 
@@ -1821,6 +1896,12 @@ void MapView::updateSite(int objectType)
 				closeSitByName(personesSitName);
 				site = openMapSit(personesSitName,rscPath);
 				signs = model->getPersones(mapwin->hMap,x1,y1,x2,y2);
+				break;
+			
+			case EVENTS:
+				closeSitByName(eventsSitName);
+				site = openMapSit(eventsSitName,rscPath);
+				signs = eventsMapModel->getEvents(mapwin->hMap,x1,y1,x2,y2);
 				break;
 		}
 	createSitObjects(site, signs);
@@ -2077,6 +2158,43 @@ QMenu* MapView::createPersonnelMenu(QStringList objInfo)
 
 }
 
+
+//===================================================================================
+//===== Метод создания и отображения контекстного меню для событий =================
+//===================================================================================
+QMenu* MapView::createEventMenu(QStringList objInfo)
+{
+	QString text = model->getObjectTypeAndName(objInfo.at(0).toInt(), objInfo.at(1).toInt());
+	QString idAndType = objInfo.at(0) + "_" + objInfo.at(1);
+
+	QMenu *mouse_menu = new QMenu(text); 
+
+	//--- Добавление в меню специфичных действий для событий ---------
+
+	QAction *report_act = new QAction("Отчет",this);
+	report_act->setData(idAndType);
+	mouse_menu->addAction(report_act); 
+	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));  //пока не работает
+	
+	QAction *edit_act = new QAction("Редактировать событие",this);
+	edit_act->setData(idAndType);
+	mouse_menu->addAction(edit_act); 
+	connect(edit_act, SIGNAL(triggered()), this, SLOT(slotEditEvent()));  //пока не работает
+
+	QAction *move_act = new QAction("Переместить событие",this);
+	move_act->setData(idAndType);
+	mouse_menu->addAction(move_act); 
+	connect(move_act, SIGNAL(triggered()), this, SLOT(slotMoveObject()));
+
+	QAction *del_act = new QAction("Удалить событие",this);
+	del_act->setData(idAndType);
+	mouse_menu->addAction(del_act); 
+	connect(del_act, SIGNAL(triggered()), this, SLOT(slotDeleteEvent()));  //пока не работает
+
+	return mouse_menu;
+
+}
+
 //===============================================================================
 //============== Диалоговое окно с информацией об объекте =======================
 //===============================================================================
@@ -2094,8 +2212,21 @@ void MapView::showInformationDialog(QString information)
 	info_dialog->exec();
 }
 
+//==========================================================================
+//========= Слот добавления нового события в точке нажатия мыши ============
+//==========================================================================
+void MapView::addEvent()
+{
+	double x,y;
+	x = mapwin->screenX;
+	y = mapwin->screenY;
 
+	Coord *eventCoord = new Coord(x,y);
 
+	eventCoord = planeToWGS(mapwin->hMap,eventCoord);
+
+	showMessageToUser("B = " + eventCoord->latitudeToString() + "  L = " + eventCoord->longitudeToString());
+}
 
 
 
@@ -2149,3 +2280,13 @@ void	 MapView::PrintScreenSlot()
     }
 }
 
+
+//===========================================================================
+//=== Сообщение пользователю в виде диалогового окна ========================
+//===========================================================================
+void MapView::showMessageToUser(const QString message) 
+{
+    QMessageBox::information(this, "Сообщение",
+                          message,
+                          QMessageBox::Ok, 0);
+}

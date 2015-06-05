@@ -172,6 +172,15 @@ QList<Coord *> MoveModel::getObjectCoordinates(long int hMap, int idObject, int 
 							   AND c_p.id_coordinates=cs.id_coordinates \
 							   AND ps.id_persones = %1").arg(idObject);
 			break;
+			
+			case EVENTS:
+				str = QString("SELECT cs.latitude_wgs_84_g,cs.latitude_wgs_84_m,cs.latitude_wgs_84_s,cs.longitude_wgs_84_g, \
+							   cs.longitude_wgs_84_m,cs.longitude_wgs_84_s \
+							   FROM events e, coord_events c_e, coordinates cs \
+							   WHERE e.id_event = c_e.id_event \
+							   AND c_e.id_coordinates=cs.id_coordinates \
+							   AND e.id_event = %1").arg(idObject);
+				break;
 		}
 	
 	
@@ -231,7 +240,11 @@ void MoveModel::updateObjectCoordinates(int idObject, int objectType, Coord *coo
 			
 			case PERSONNEL:
 				updatePersonesCoordinates(idObject, coord);
-			break;
+				break;
+
+			case EVENTS:
+				updateEventsCoordinates(idObject, coord);
+				break;
 		}
 	
 	
@@ -350,6 +363,32 @@ bool MoveModel::updateSpecialConditionsCoordinates(int idSpecCond, Coord *coord)
 	return false;
 }
 
+//============================================================================
+//======= Метод обновления координат событий ===========
+//============================================================================
+bool MoveModel::updateEventsCoordinates(int idEvent, Coord *coord)
+{
+	QSqlQuery query;
+	QString str;
+
+	str = QString("SELECT cs.id_coordinates \
+					FROM coordinates cs, events e, coord_events c_e \
+					WHERE e.id_event=c_e.id_event \
+					AND c_e.id_coordinates = cs.id_coordinates \
+					AND e.id_event = %1").arg(idEvent);
+	
+	if(query.exec(str))
+	{
+		query.next();
+		int idCoordinates = query.value(0).toInt();
+
+		if(updateCoordinates(idCoordinates,coord))
+		{
+			return true;
+		}
+	}
+	return false;
+}
 
 //==============================================================================
 //==== Метод обновления координат в таблице по idCoordinates ===================

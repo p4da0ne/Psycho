@@ -77,7 +77,6 @@ QList<SignData*> ViewManage::getSmiMeans(long int hMap,double x1,double y1,doubl
 						AND mpo_pso.id_type_mpo_pso=type_mpo_pso.id_type_mpo_pso \
 						AND mpo_pso.id_mpo_pso = cmp.id_mpo_pso \
 						AND type_mpo_pso.id_sign = si.id_sign \
-						AND type_mpo_pso.excode_type_mpo_pso <> '' \
 						AND mpo_pso.id_smi > 0 ");
 	if(query.exec(str))
 	{
@@ -195,7 +194,6 @@ QList<SignData*> ViewManage::getFormationsMeans(long int hMap,double x1,double y
 						AND mpo_pso.id_type_mpo_pso=type_mpo_pso.id_type_mpo_pso \
 						AND mpo_pso.id_mpo_pso = cmp.id_mpo_pso \
 						AND type_mpo_pso.id_sign = si.id_sign \
-						AND type_mpo_pso.excode_type_mpo_pso <> '' \
 						AND mpo_pso.id_ls > 0");
 	if(query.exec(str))
 	{
@@ -270,7 +268,6 @@ QList<SignData*> ViewManage::getGroupsMeans(long int hMap,double x1,double y1,do
 						AND mpo_pso.id_type_mpo_pso=type_mpo_pso.id_type_mpo_pso \
 						AND mpo_pso.id_mpo_pso = cmp.id_mpo_pso \
 						AND type_mpo_pso.id_sign = si.id_sign \
-						AND type_mpo_pso.excode_type_mpo_pso <> '' \
 						AND mpo_pso.id_groups > 0");
 	if(query.exec(str))
 	{
@@ -651,6 +648,13 @@ QString ViewManage::getObjectTypeAndName(int idObject, int objectType)
 			case PERSONNEL:
 			str = QString("SELECT name_persones,rank_persones FROM persones WHERE persones.id_persones = %1").arg(idObject);
 			break;
+
+			case EVENTS:
+			str = QString("SELECT t_e.name_type_event, e.name_event \
+						   FROM events e, type_event t_e \
+						   WHERE e.id_type_event = t_e.id_type_event \
+						   AND e.id_event = %1").arg(idObject);
+			break;
 		}
 	
 	
@@ -700,6 +704,10 @@ QString ViewManage::getObjectInfo(int idObject, int objectType)
 		    
 			case PERSONNEL:
 				str = get_info_personel(idObject);
+				break;
+
+			case EVENTS:
+				str = get_event_info(idObject);
 				break;
 		}
 	
@@ -1116,6 +1124,119 @@ QString ViewManage::get_info_personel(int idObject){
 
 	return html_info_pers;
 }
+
+
+//=====================================================================================
+//====== Метод возвращает информацию о событии =========
+//=====================================================================================
+QString ViewManage::get_event_info(int idEvent)
+{
+	QString eventInfo;
+	
+	eventInfo.append(get_event_common_info(idEvent));
+	eventInfo.append("<p></p>");
+	eventInfo.append(get_event_objects_info(idEvent));
+
+	return eventInfo;
+
+}
+
+//==============================================================================
+//======= Метод возвращает первую часть информации о событии (характеристику) ==
+//==============================================================================
+QString ViewManage::get_event_common_info(int idEvent)
+{
+	QString event_info;
+	QString name_event,desc_event,resume_event,time_event_start,time_event_end,event_status,event_type;
+	QSqlQuery query;
+	QString str;
+
+	str = QString("SELECT e.name_event, e.description_event, e.resume_event, e.time_event_start, e.time_event_end, e_s.name_event_status, \
+					t_e.name_type_event \
+					FROM events e, event_status e_s, type_event t_e \
+					WHERE e.id_event_status = e_s.id_event_status \
+					AND e.id_type_event = t_e.id_type_event \
+					AND e.id_event = %1").arg(idEvent);
+	
+	if(query.exec(str))
+	{
+		QSqlRecord rec = query.record();
+		while (query.next())
+		{
+			name_event = query.value(rec.indexOf("name_event")).toString();
+			desc_event = query.value(rec.indexOf("description_event")).toString();
+			resume_event = query.value(rec.indexOf("resume_event")).toString();
+			time_event_start = query.value(rec.indexOf("time_event_start")).toDateTime().toString("yyyy-MM-dd hh:mm");
+			time_event_end = query.value(rec.indexOf("time_event_end")).toDateTime().toString("yyyy-MM-dd hh:mm");
+			event_status = query.value(rec.indexOf("name_event_status")).toString();
+			event_type = query.value(rec.indexOf("name_type_event")).toString();
+		}
+	}
+
+		event_info = "<style>table {border-color: #D3D3D3; border-style: solid;}</style><table border='1' cellpadding='4' cellspacing='0'>"
+								"<tr align='center'><td colspan='2'><H3><CENTER><font color = 'black'>Характеристика события</font></CENTER></H3></td></tr>"
+								"<tr><td> Тип события:</td><td>" + event_type + "</td></tr>"
+								"<tr><td> Статус:</td><td>" + event_status + "</td></tr>"
+								"<tr><td> Наименование:</td><td>" + name_event + "</td></tr>"
+								"<tr><td> Начало:</td><td>" + time_event_start + "</td></tr>"
+								"<tr><td> Окончание:</td><td>" + time_event_end + "</td></tr>"
+								"<tr><td> Описание:</td><td>" + desc_event + "</td></tr>"
+								"<tr><td> Заключение:</td><td>" + resume_event + "</td></tr></table>";
+		return event_info;
+}
+
+
+//==============================================================================
+//======= Метод возвращает информацию об объектах, связанных с событием ========
+//==============================================================================
+QString ViewManage::get_event_objects_info(int idEvent)
+{
+	QString event_info;
+	QString table_name;
+	int idObject;
+	bool isEventSource;
+
+	QSqlQuery query;
+	QString str;
+
+	str = QString("SELECT e_o.id_object, e_o.is_events_source, t_e.table_name \
+					FROM event_objects e_o, type_event_object t_e \
+					WHERE e_o.id_type_event_object = t_e.id_type_event_object \
+					AND e_o.id_event = %1 \
+					ORDER BY e_o.is_events_source DESC").arg(idEvent);
+	
+	if(query.exec(str))
+	{
+		event_info = "<style>table {border-color: #D3D3D3; border-style: solid;}</style><table border='1' cellpadding='4' cellspacing='0'>"
+								"<tr align='center'><td colspan='2'><H3><CENTER><font color = 'black'>Участники события</font></CENTER></H3></td></tr>";
+
+		QSqlRecord rec = query.record();
+		while(query.next())
+		{
+			idObject = query.value(rec.indexOf("id_object")).toInt();
+			isEventSource = query.value(rec.indexOf("is_events_source")).toBool();
+			table_name = query.value(rec.indexOf("table_name")).toString();
+			
+			QString eventSource;
+			if(isEventSource) eventSource = "инициатор события";
+
+
+			QString objectTypeAndName;
+			int objectType;
+			
+			if(table_name == "ls") objectType = FORMATIONS;
+			if(table_name == "mpo_pso") objectType = SMI_MEANS;
+			if(table_name == "persones") objectType = PERSONNEL;
+			if(table_name == "region") objectType = REGIONS;
+			if(table_name == "special_conditions") objectType = SPECIAL_CONDITIONS;
+				
+			event_info += "<tr><td>" + getObjectTypeAndName(idObject,objectType) + "</td><td>" + eventSource + "</td></tr>";
+		}
+	}
+	return event_info;
+}
+
+
 
 //=====================================================================================================
 //=========================== МЕТОДЫ работают с картинками из БД =======================================
