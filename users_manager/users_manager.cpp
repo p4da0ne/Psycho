@@ -7,7 +7,10 @@
 UsersManager::UsersManager(QDialog *parent)
     : QDialog(parent)
 {
-    usersView = new QTableView;
+    addUserButton = new QToolButton;
+	
+	
+	usersView = new QTableView;
 	usersModel = new QStandardItemModel;
 	usersView->setModel(usersModel);
 	
