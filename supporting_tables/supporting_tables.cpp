@@ -70,10 +70,8 @@ void SupportingTables::init_supporting_tree()
 //	root_item = add_root("Подразделения","-");
 		
 
-	root_item = add_root("МПО","-");
-		add_child(root_item,"Типы МПО(ПсО)","type_mpo_pso");
-		//add_child(root_item,"Национальности","nations");
-		//add_child(root_item,"Религии","confessions");
+	root_item = add_root("Средства","-");
+		add_child(root_item,"Типы средств","type_mpo_pso");
 	root_item = add_root("Воинские формирования","-");
 		add_child(root_item,"Виды воинских формирований ","type_ls");
 
@@ -85,11 +83,6 @@ void SupportingTables::init_supporting_tree()
 		add_child(root_item,"Типы персоналий","type_persones");
 		
     root_item = add_root("События","type_event");
-		//root_item = add_root("Организации","-");
-
-    //	root_item = add_root("Страны","country");
-		
-    //	root_item = add_root("Блоки стран","blok");
 		
 		root_item = add_root("Воинские звания","military_rank");
 
