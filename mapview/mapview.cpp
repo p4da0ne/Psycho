@@ -1080,7 +1080,7 @@ void MapView::showViewScale()
 }
 
 //======================================================================
-//======= Метод обработки нажатия клавиш вверх-вниз ====================
+//======= Метод обработки нажатия клавиш клавиатуры ====================
 //======================================================================
 void MapView::keyPressEvent(QKeyEvent *e)
 {
@@ -1218,7 +1218,13 @@ QMenu* MapView::createGreateLessScaleMenu()
 //=================================================================================================
 void MapView::mouseRightSimpleMenu(QPoint pe)
 {
-	mouse_menu = createGreateLessScaleMenu(); 
+	mouse_menu = createGreateLessScaleMenu();
+
+	QAction *add_event_act = new QAction("Добавить событие", this);
+	add_event_act->setIcon(QIcon(":/Resources/01.ico"));
+	connect(add_event_act, SIGNAL(triggered()), this, SLOT(addEvent(pe)));
+	mouse_menu->addAction(add_event_act);
+
 	mouse_menu->exec(pe);
 }
 

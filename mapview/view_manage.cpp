@@ -77,7 +77,6 @@ QList<SignData*> ViewManage::getSmiMeans(long int hMap,double x1,double y1,doubl
 						AND mpo_pso.id_type_mpo_pso=type_mpo_pso.id_type_mpo_pso \
 						AND mpo_pso.id_mpo_pso = cmp.id_mpo_pso \
 						AND type_mpo_pso.id_sign = si.id_sign \
-						AND type_mpo_pso.excode_type_mpo_pso <> '' \
 						AND mpo_pso.id_smi > 0 ");
 	if(query.exec(str))
 	{
@@ -195,7 +194,6 @@ QList<SignData*> ViewManage::getFormationsMeans(long int hMap,double x1,double y
 						AND mpo_pso.id_type_mpo_pso=type_mpo_pso.id_type_mpo_pso \
 						AND mpo_pso.id_mpo_pso = cmp.id_mpo_pso \
 						AND type_mpo_pso.id_sign = si.id_sign \
-						AND type_mpo_pso.excode_type_mpo_pso <> '' \
 						AND mpo_pso.id_ls > 0");
 	if(query.exec(str))
 	{
@@ -270,7 +268,6 @@ QList<SignData*> ViewManage::getGroupsMeans(long int hMap,double x1,double y1,do
 						AND mpo_pso.id_type_mpo_pso=type_mpo_pso.id_type_mpo_pso \
 						AND mpo_pso.id_mpo_pso = cmp.id_mpo_pso \
 						AND type_mpo_pso.id_sign = si.id_sign \
-						AND type_mpo_pso.excode_type_mpo_pso <> '' \
 						AND mpo_pso.id_groups > 0");
 	if(query.exec(str))
 	{
