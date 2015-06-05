@@ -24,6 +24,7 @@
 #include <QProxyModel>
 #include "mysqlrelationaldelegate.h"
 #include "personesdata.h"
+#include "persones_info.h"
 
 
 Objectmanager::Objectmanager(QWidget *parent) //int in_id_object
@@ -2259,14 +2260,15 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
             }
         }
         else if(list.value(0)=="ppers"){
-
-            PersonesData *persona = new PersonesData(this);
+            QString type_elem = "group";
+            PersonesData *persona = new PersonesData(type_elem,list.value(1).toInt(),this);
             persona->setModal(true);
             persona->showMaximized();
             int result = persona->exec();
-//            Add_elements_dialog *add_element= new Add_elements_dialog(23,list.value(1).toInt());
-//            add_element->setModal(true);
-//            int result=add_element->exec();
+
+//          Add_elements_dialog *add_element= new Add_elements_dialog(23,list.value(1).toInt());
+//          add_element->setModal(true);
+//          int result=add_element->exec();
             //вернул id
             if (result==0)return;
 
@@ -2289,9 +2291,15 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
         }
         else if(list.value(0)=="pperssmi"){
 
-            Add_elements_dialog *add_element= new Add_elements_dialog(26,list.value(1).toInt());
-            add_element->setModal(true);
-            int result=add_element->exec();
+            QString type_elem = "smi";
+            PersonesData *persona = new PersonesData(type_elem,list.value(1).toInt(),this);
+            persona->setModal(true);
+            persona->showMaximized();
+            int result = persona->exec();
+
+//            Add_elements_dialog *add_element= new Add_elements_dialog(26,list.value(1).toInt());
+//            add_element->setModal(true);
+//            int result=add_element->exec();
             //вернул id
             if (result==0)return;
 
@@ -2316,9 +2324,15 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
         // ======================= для ВФ персоналии ===============================================================
         else if(list.value(0)=="ppersls"){
 
-            Add_elements_dialog *add_element= new Add_elements_dialog(25,list.value(1).toInt());
-            add_element->setModal(true);
-            int result=add_element->exec();
+            QString type_elem = "ls";
+            PersonesData *persona = new PersonesData(type_elem,list.value(1).toInt(),this);
+
+            persona->setModal(true);
+            persona->showMaximized();
+            int result = persona->exec();
+//            Add_elements_dialog *add_element= new Add_elements_dialog(25,list.value(1).toInt());
+//            add_element->setModal(true);
+//            int result=add_element->exec();
             //вернул id
             if (result==0)return;
 
@@ -2341,30 +2355,33 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
         }
         //================== работа с координатами ***** АПГРЕЙД САТУРНА *****
         else if(list.value(0)=="dpers"){
+            QString type_elem = "group";
             show_coordinates(list.value(0),list.value(1).toInt(),"coord_persones","id_persones");
-            Add_elements_dialog *add_element= new Add_elements_dialog(24,list.value(1).toInt());
-            add_element->setModal(true);
-            connect(add_element->deleteButton,SIGNAL(clicked()),this,SLOT(delete_pers()));
-            connect(add_element->addButton,SIGNAL(clicked()),this,SLOT(edit_persones()));
-            add_element->exec();
+            persInfo = new Persones_info(type_elem,list.value(1).toInt(),this);
+            persInfo->setModal(true);
+            connect(persInfo->del_but,SIGNAL(clicked()),this,SLOT(delete_pers()));
+            connect(persInfo->edit_but,SIGNAL(clicked()),this,SLOT(edit_persones()));
+            persInfo->exec();
 
         }// =============== для формирований по персоналу ================================
         else if(list.value(0)=="dpersls"){
+            QString type_elem = "ls";
             show_coordinates(list.value(0),list.value(1).toInt(),"coord_persones","id_persones");
-            Add_elements_dialog *add_element= new Add_elements_dialog(24,list.value(1).toInt());
-            add_element->setModal(true);
-            connect(add_element->deleteButton,SIGNAL(clicked()),this,SLOT(delete_pers()));
-            connect(add_element->addButton,SIGNAL(clicked()),this,SLOT(edit_persones()));
-            add_element->exec();
+            persInfo = new Persones_info(type_elem,list.value(1).toInt(),this);
+            persInfo->setModal(true);
+            connect(persInfo->del_but,SIGNAL(clicked()),this,SLOT(delete_pers()));
+            connect(persInfo->edit_but,SIGNAL(clicked()),this,SLOT(edit_persones()));
+            persInfo->exec();
         }
         // =============== для smi по персоналу ================================
         else if(list.value(0)=="dperssmi"){
+            QString type_elem = "smi";
             show_coordinates(list.value(0),list.value(1).toInt(),"coord_persones","id_persones");
-            Add_elements_dialog *add_element= new Add_elements_dialog(24,list.value(1).toInt());
-            add_element->setModal(true);
-            connect(add_element->deleteButton,SIGNAL(clicked()),this,SLOT(delete_pers()));
-            connect(add_element->addButton,SIGNAL(clicked()),this,SLOT(edit_persones()));
-            add_element->exec();
+            persInfo = new Persones_info(type_elem,list.value(1).toInt(),this);
+            persInfo->setModal(true);
+            connect(persInfo->del_but,SIGNAL(clicked()),this,SLOT(delete_pers()));
+            connect(persInfo->edit_but,SIGNAL(clicked()),this,SLOT(edit_persones()));
+            persInfo->exec();
         }
         //============== выбор для заполнения таблицы ====================================
         else if(list.value(0)=="region"){
@@ -2386,7 +2403,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
         } // ================= в таблицу данные о Организациях =======================
         else if(list.value(0)=="dgr"){
             gr_click(list.value(1).toInt());
-            show_coordinates(list.value(0),list.value(1).toInt(),"coord_groups","id_groups");
+//            show_coordinates(list.value(0),list.value(1).toInt(),"coord_groups","id_groups");
 
         }	// ================= в таблицу данные о Условиях =======================
         else if(list.value(0)=="dsc"){
@@ -2863,7 +2880,7 @@ void Objectmanager::region_click(int id_region){
         model_region->setHeaderData(34, Qt::Horizontal, "Pспф11");model_region->setHeaderData(35, Qt::Horizontal, "Демография(спф12)");
         model_region->setHeaderData(36, Qt::Horizontal, "Pспф12");model_region->setHeaderData(37, Qt::Horizontal, "Уровень информатизации(спф13)");
         model_region->setHeaderData(38, Qt::Horizontal, "Pспф13");model_region->setHeaderData(39, Qt::Horizontal, "Направленность информации(спф14)");
-        model_region->setHeaderData(40, Qt::Horizontal, "Pспф14");model_region->setHeaderData(41, Qt::Horizontal, "Защищенность инфроструктуры(спф15)");
+        model_region->setHeaderData(40, Qt::Horizontal, "Pспф14");model_region->setHeaderData(41, Qt::Horizontal, "Защищенность инфраструктуры(спф15)");
         model_region->setHeaderData(42, Qt::Horizontal, "Pспф15");model_region->setHeaderData(43, Qt::Horizontal, "Неправительственные организации(спф16)");
         model_region->setHeaderData(44, Qt::Horizontal, "Pспф16");model_region->setHeaderData(45, Qt::Horizontal, "Уровень патриотизма(спф17)");
         model_region->setHeaderData(46, Qt::Horizontal, "Pспф17");model_region->setHeaderData(47, Qt::Horizontal, "Уровень преступности(кф1)");
@@ -3461,254 +3478,254 @@ void Objectmanager::delete_sc(){
 }
 void Objectmanager::edit_persones(){
 
-    edit_dlg_pers = new QDialog;
-    edit_dlg_pers->setWindowTitle("Редактирование  персоналии");
-    //edit_dlg->setMinimumSize(QSize(600,400));
-    QLabel *label_foto_name = new QLabel("Фото:");
-    label_foto = new MyLabel();
-    label_foto_name->setBuddy(label_foto);
-    label_foto_hide = new QLabel();
-    label_foto_hide->setVisible(false);
+//    edit_dlg_pers = new QDialog;
+//    edit_dlg_pers->setWindowTitle("Редактирование  персоналии");
+//    //edit_dlg->setMinimumSize(QSize(600,400));
+//    QLabel *label_foto_name = new QLabel("Фото:");
+//    label_foto = new MyLabel();
+//    label_foto_name->setBuddy(label_foto);
+//    label_foto_hide = new QLabel();
+//    label_foto_hide->setVisible(false);
 
-    QLabel *label = new QLabel("ФИО:");
-    QLineEdit *lineEdit_name = new QLineEdit;
-    lineEdit_name->setStyleSheet("font:bold; color: black");
-    label->setBuddy(lineEdit_name);
+//    QLabel *label = new QLabel("ФИО:");
+//    QLineEdit *lineEdit_name = new QLineEdit;
+//    lineEdit_name->setStyleSheet("font:bold; color: black");
+//    label->setBuddy(lineEdit_name);
 
-    QLabel *label_8 = new QLabel("Тип персоналии:");
-    QComboBox *Box = new QComboBox();
-    label_8->setBuddy(Box);
+//    QLabel *label_8 = new QLabel("Тип персоналии:");
+//    QComboBox *Box = new QComboBox();
+//    label_8->setBuddy(Box);
 
-    QLabel *label_2 = new QLabel("Возраст:");
-    QLineEdit *lineEdit_counte_ls = new QLineEdit;
-    label_2->setBuddy(lineEdit_counte_ls);
-    lineEdit_counte_ls->setStyleSheet("font:bold; color: black");
-    QLabel *label_3 = new QLabel("Контакты:");
-    QLineEdit *lineEdit_counte_ls_bd = new QLineEdit;
-    label_3->setBuddy(lineEdit_counte_ls_bd);
-    lineEdit_counte_ls_bd->setStyleSheet("font:bold; color: black");
-    QLabel *label_4 = new QLabel("Оппозиция:");
-    checkbox_enemy = new QCheckBox(" [-V- оппозиция]", this);
-    label_4->setBuddy(checkbox_enemy);
-    checkbox_enemy->setStyleSheet("color: black");
-    QLabel *label_5 = new QLabel("Должность:");
-    QLineEdit *lineEdit_rank = new QLineEdit;
-    label_5->setBuddy(lineEdit_rank);
-    lineEdit_rank->setStyleSheet("font:bold; color: black");
-    QLabel *label_6 = new QLabel("Авторитет:");
-    QLineEdit *lineEdit_aut = new QLineEdit;
-    label_6->setBuddy(lineEdit_aut);
-    lineEdit_aut->setStyleSheet("font:bold; color: black");
-    QLabel *label_7 = new QLabel("Характеристика:");
-    QTextEdit *textEdit_propa = new QTextEdit;
-    label_7->setBuddy(textEdit_propa);
-    textEdit_propa->setStyleSheet("font:bold; color: black");
-    textEdit_propa->setFixedHeight(100);
+//    QLabel *label_2 = new QLabel("Возраст:");
+//    QLineEdit *lineEdit_counte_ls = new QLineEdit;
+//    label_2->setBuddy(lineEdit_counte_ls);
+//    lineEdit_counte_ls->setStyleSheet("font:bold; color: black");
+//    QLabel *label_3 = new QLabel("Контакты:");
+//    QLineEdit *lineEdit_counte_ls_bd = new QLineEdit;
+//    label_3->setBuddy(lineEdit_counte_ls_bd);
+//    lineEdit_counte_ls_bd->setStyleSheet("font:bold; color: black");
+//    QLabel *label_4 = new QLabel("Оппозиция:");
+//    checkbox_enemy = new QCheckBox(" [-V- оппозиция]", this);
+//    label_4->setBuddy(checkbox_enemy);
+//    checkbox_enemy->setStyleSheet("color: black");
+//    QLabel *label_5 = new QLabel("Должность:");
+//    QLineEdit *lineEdit_rank = new QLineEdit;
+//    label_5->setBuddy(lineEdit_rank);
+//    lineEdit_rank->setStyleSheet("font:bold; color: black");
+//    QLabel *label_6 = new QLabel("Авторитет:");
+//    QLineEdit *lineEdit_aut = new QLineEdit;
+//    label_6->setBuddy(lineEdit_aut);
+//    lineEdit_aut->setStyleSheet("font:bold; color: black");
+//    QLabel *label_7 = new QLabel("Характеристика:");
+//    QTextEdit *textEdit_propa = new QTextEdit;
+//    label_7->setBuddy(textEdit_propa);
+//    textEdit_propa->setStyleSheet("font:bold; color: black");
+//    textEdit_propa->setFixedHeight(100);
 
-    QModelIndex index = UI->columnView->currentIndex();
-    if(!index.data(Qt::UserRole).toBool()) return;
-    QString id_sc=index.data(Qt::UserRole).toString();
-    QStringList list=id_sc.split("_");
-    int in_id_object = list.value(1).toInt();
+//    QModelIndex index = UI->columnView->currentIndex();
+//    if(!index.data(Qt::UserRole).toBool()) return;
+//    QString id_sc=index.data(Qt::UserRole).toString();
+//    QStringList list=id_sc.split("_");
+//    int in_id_object = list.value(1).toInt();
 
-    QSqlQuery query;
-    QString str = QString("SELECT id_persones, name_persones, age_persones, contact_persones, rank_persones, authority_persones, \
-                          opposition_persones, description_persones, image_persones, \
-                          persones.id_type_persones,type_persones.name_type_persones \
-                          FROM persones, type_persones \
-                          WHERE id_persones = %1 \
-            AND persones.id_type_persones = type_persones.id_type_persones").arg(in_id_object);
-            if(!query.exec(str)){
-            return;
-}
+//    QSqlQuery query;
+//    QString str = QString("SELECT id_persones, name_persones, age_persones, contact_persones, rank_persones, authority_persones, \
+//                          opposition_persones, description_persones, image_persones, \
+//                          persones.id_type_persones,type_persones.name_type_persones \
+//                          FROM persones, type_persones \
+//                          WHERE id_persones = %1 \
+//            AND persones.id_type_persones = type_persones.id_type_persones").arg(in_id_object);
+//            if(!query.exec(str)){
+//            return;
+//}
 
-id_persers = in_id_object;
-QSqlRecord rec = query.record();
-QString name_pers,contact,rank_pers,desc_pers,foto_name,path_foto;
-float autor;
-int age_pers,id_type_persones;
-bool oppos;
-while(query.next()){
-    id_persers=query.value(rec.indexOf("id_persones")).toInt();
-    name_pers=query.value(rec.indexOf("name_persones")).toString();
-    autor=query.value(rec.indexOf("authority_persones")).toString().toFloat();
-    age_pers=query.value(rec.indexOf("age_persones")).toInt();
-    contact=query.value(rec.indexOf("contact_persones")).toString();
-    rank_pers=query.value(rec.indexOf("rank_persones")).toString();
-    desc_pers=query.value(rec.indexOf("description_persones")).toString();
-    oppos=query.value(rec.indexOf("opposition_persones")).toBool();
-    id_type_persones = query.value(rec.indexOf("id_type_persones")).toInt();
+//id_persers = in_id_object;
+//QSqlRecord rec = query.record();
+//QString name_pers,contact,rank_pers,desc_pers,foto_name,path_foto;
+//float autor;
+//int age_pers,id_type_persones;
+//bool oppos;
+//while(query.next()){
+//    id_persers=query.value(rec.indexOf("id_persones")).toInt();
+//    name_pers=query.value(rec.indexOf("name_persones")).toString();
+//    autor=query.value(rec.indexOf("authority_persones")).toString().toFloat();
+//    age_pers=query.value(rec.indexOf("age_persones")).toInt();
+//    contact=query.value(rec.indexOf("contact_persones")).toString();
+//    rank_pers=query.value(rec.indexOf("rank_persones")).toString();
+//    desc_pers=query.value(rec.indexOf("description_persones")).toString();
+//    oppos=query.value(rec.indexOf("opposition_persones")).toBool();
+//    id_type_persones = query.value(rec.indexOf("id_type_persones")).toInt();
 
-    QPixmap pixmap;
-    QSize size_pic(200,200);
-    pixmap.loadFromData(query.value(rec.indexOf("image_persones")).toByteArray() );
-    pixmap = pixmap.scaled(size_pic,Qt::KeepAspectRatio);
+//    QPixmap pixmap;
+//    QSize size_pic(200,200);
+//    pixmap.loadFromData(query.value(rec.indexOf("image_persones")).toByteArray() );
+//    pixmap = pixmap.scaled(size_pic,Qt::KeepAspectRatio);
 
-    lineEdit_name->setText(name_pers);
-    lineEdit_counte_ls->setText(QString::number(age_pers));
-    lineEdit_counte_ls_bd->setText(contact);
-    checkbox_enemy->setChecked(oppos);
-    lineEdit_rank->setText(rank_pers);
-    lineEdit_aut->setText(QString::number(autor));
-    textEdit_propa->setText(desc_pers);
-    fill_combobox_persones_(Box,id_type_persones);
+//    lineEdit_name->setText(name_pers);
+//    lineEdit_counte_ls->setText(QString::number(age_pers));
+//    lineEdit_counte_ls_bd->setText(contact);
+//    checkbox_enemy->setChecked(oppos);
+//    lineEdit_rank->setText(rank_pers);
+//    lineEdit_aut->setText(QString::number(autor));
+//    textEdit_propa->setText(desc_pers);
+//    fill_combobox_persones_(Box,id_type_persones);
 
-    label_foto->setPixmap(pixmap);
-    label_foto->setAlignment(Qt::AlignCenter);
-}
+//    label_foto->setPixmap(pixmap);
+//    label_foto->setAlignment(Qt::AlignCenter);
+//}
 
-QPushButton *cancelButton = new QPushButton("Выход");
-connect(cancelButton,SIGNAL(clicked()),edit_dlg_pers,SLOT(close()));
-QPushButton *saveButton = new QPushButton("Сохранить");
-connect(saveButton,SIGNAL(clicked()),edit_dlg_pers,SLOT(accept()));
+//QPushButton *cancelButton = new QPushButton("Выход");
+//connect(cancelButton,SIGNAL(clicked()),edit_dlg_pers,SLOT(close()));
+//QPushButton *saveButton = new QPushButton("Сохранить");
+//connect(saveButton,SIGNAL(clicked()),edit_dlg_pers,SLOT(accept()));
 
-connect(label_foto,SIGNAL(label_clicked()),this,SLOT(clicked_open_file()));
+//connect(label_foto,SIGNAL(label_clicked()),this,SLOT(clicked_open_file()));
 
-QHBoxLayout *buttonsLayout = new QHBoxLayout;
-buttonsLayout->addStretch();
-buttonsLayout->addWidget(saveButton);
-buttonsLayout->addWidget(cancelButton);
+//QHBoxLayout *buttonsLayout = new QHBoxLayout;
+//buttonsLayout->addStretch();
+//buttonsLayout->addWidget(saveButton);
+//buttonsLayout->addWidget(cancelButton);
 
-QHBoxLayout *topLeftLayout_15 = new QHBoxLayout;
-topLeftLayout_15->addWidget(label_foto_name);
-QHBoxLayout *topLeftLayout_16 = new QHBoxLayout;
-topLeftLayout_16->addWidget(label_foto);
-QHBoxLayout *topLeftLayout = new QHBoxLayout;
-topLeftLayout->addWidget(label);
-QHBoxLayout *topLeftLayout_2 = new QHBoxLayout;
-topLeftLayout_2->addWidget(lineEdit_name);
-QHBoxLayout *topLeftLayout_17 = new QHBoxLayout;
-topLeftLayout_17->addWidget(label_8);
-QHBoxLayout *topLeftLayout_18  = new QHBoxLayout;
-topLeftLayout_18->addWidget(Box);
+//QHBoxLayout *topLeftLayout_15 = new QHBoxLayout;
+//topLeftLayout_15->addWidget(label_foto_name);
+//QHBoxLayout *topLeftLayout_16 = new QHBoxLayout;
+//topLeftLayout_16->addWidget(label_foto);
+//QHBoxLayout *topLeftLayout = new QHBoxLayout;
+//topLeftLayout->addWidget(label);
+//QHBoxLayout *topLeftLayout_2 = new QHBoxLayout;
+//topLeftLayout_2->addWidget(lineEdit_name);
+//QHBoxLayout *topLeftLayout_17 = new QHBoxLayout;
+//topLeftLayout_17->addWidget(label_8);
+//QHBoxLayout *topLeftLayout_18  = new QHBoxLayout;
+//topLeftLayout_18->addWidget(Box);
 
-QHBoxLayout *topLeftLayout_3 = new QHBoxLayout;
-topLeftLayout_3->addWidget(label_2);
-QHBoxLayout *topLeftLayout_4 = new QHBoxLayout;
-topLeftLayout_4->addWidget(lineEdit_counte_ls);
-QHBoxLayout *topLeftLayout_5 = new QHBoxLayout;
-topLeftLayout_5->addWidget(label_3);
-QHBoxLayout *topLeftLayout_6 = new QHBoxLayout;
-topLeftLayout_6->addWidget(lineEdit_counte_ls_bd);
-QHBoxLayout *topLeftLayout_7 = new QHBoxLayout;
-topLeftLayout_7->addWidget(label_4);
-QHBoxLayout *topLeftLayout_8 = new QHBoxLayout;
-topLeftLayout_8->addWidget(checkbox_enemy);
-QHBoxLayout *topLeftLayout_9 = new QHBoxLayout;
-topLeftLayout_9->addWidget(label_5);
-QHBoxLayout *topLeftLayout_10 = new QHBoxLayout;
-topLeftLayout_10->addWidget(lineEdit_rank);
-QHBoxLayout *topLeftLayout_11 = new QHBoxLayout;
-topLeftLayout_11->addWidget(label_6);
-QHBoxLayout *topLeftLayout_12 = new QHBoxLayout;
-topLeftLayout_12->addWidget(lineEdit_aut);
-QHBoxLayout *topLeftLayout_13 = new QHBoxLayout;
-topLeftLayout_13->addWidget(label_7);
-QHBoxLayout *topLeftLayout_14 = new QHBoxLayout;
-topLeftLayout_14->addWidget(textEdit_propa);
-
-
-QVBoxLayout *leftLayout_15 = new QVBoxLayout;
-leftLayout_15->addLayout(topLeftLayout_15);
-QVBoxLayout *leftLayout_16 = new QVBoxLayout;
-leftLayout_16->addLayout(topLeftLayout_16);
-QVBoxLayout *leftLayout = new QVBoxLayout;
-leftLayout->addLayout(topLeftLayout);
-QVBoxLayout *leftLayout_2 = new QVBoxLayout;
-leftLayout_2->addLayout(topLeftLayout_2);
-QVBoxLayout *leftLayout_17 = new QVBoxLayout;
-leftLayout_17->addLayout(topLeftLayout_17);
-QVBoxLayout *leftLayout_18 = new QVBoxLayout;
-leftLayout_18->addLayout(topLeftLayout_18);
-QVBoxLayout *leftLayout_3 = new QVBoxLayout;
-leftLayout_3->addLayout(topLeftLayout_3);
-QVBoxLayout *leftLayout_4 = new QVBoxLayout;
-leftLayout_4->addLayout(topLeftLayout_4);
-QVBoxLayout *leftLayout_5 = new QVBoxLayout;
-leftLayout_5->addLayout(topLeftLayout_5);
-QVBoxLayout *leftLayout_6 = new QVBoxLayout;
-leftLayout_6->addLayout(topLeftLayout_6);
-QVBoxLayout *leftLayout_7 = new QVBoxLayout;
-leftLayout_7->addLayout(topLeftLayout_7);
-QVBoxLayout *leftLayout_8 = new QVBoxLayout;
-leftLayout_8->addLayout(topLeftLayout_8);
-QVBoxLayout *leftLayout_9 = new QVBoxLayout;
-leftLayout_9->addLayout(topLeftLayout_9);
-QVBoxLayout *leftLayout_10 = new QVBoxLayout;
-leftLayout_10->addLayout(topLeftLayout_10);
-QVBoxLayout *leftLayout_11 = new QVBoxLayout;
-leftLayout_11->addLayout(topLeftLayout_11);
-QVBoxLayout *leftLayout_12 = new QVBoxLayout;
-leftLayout_12->addLayout(topLeftLayout_12);
-QVBoxLayout *leftLayout_13 = new QVBoxLayout;
-leftLayout_13->addLayout(topLeftLayout_13);
-QVBoxLayout *leftLayout_14 = new QVBoxLayout;
-leftLayout_14->addLayout(topLeftLayout_14);
-leftLayout->addStretch(1);
-
-QGridLayout *mainLayout = new QGridLayout;
-mainLayout->setSizeConstraint(QLayout::SetFixedSize);
-mainLayout->addLayout(leftLayout_15, 0, 0);
-mainLayout->addLayout(leftLayout_16, 0, 1);
-mainLayout->addLayout(leftLayout, 1, 0);
-mainLayout->addLayout(leftLayout_2, 1, 1);
-mainLayout->addLayout(leftLayout_17, 2, 0);
-mainLayout->addLayout(leftLayout_18, 2, 1);
-mainLayout->addLayout(leftLayout_3, 3, 0);
-mainLayout->addLayout(leftLayout_4, 3, 1);
-mainLayout->addLayout(leftLayout_5, 4, 0);
-mainLayout->addLayout(leftLayout_6, 4, 1);
-mainLayout->addLayout(leftLayout_7, 5, 0);
-mainLayout->addLayout(leftLayout_8, 5, 1);
-mainLayout->addLayout(leftLayout_9, 6, 0);
-mainLayout->addLayout(leftLayout_10, 6, 1);
-mainLayout->addLayout(leftLayout_11, 7, 0);
-mainLayout->addLayout(leftLayout_12, 7, 1);
-mainLayout->addLayout(leftLayout_13, 8, 0);
-mainLayout->addLayout(leftLayout_14, 8, 1);
-
-mainLayout->addLayout(buttonsLayout, 9, 0, 1, 2);
-mainLayout->addWidget(label_foto_hide, 10, 0);
-
-setLayout(mainLayout);
-edit_dlg_pers->setLayout(mainLayout);
-
-if(edit_dlg_pers->exec() == QDialog::Accepted){
-
-    int id_type_pers_=Box->itemData(Box->currentIndex()).toInt();
-    QString name_persones = lineEdit_name->text();
-    QString desc_pers=textEdit_propa->toPlainText();
-    int counte_age = lineEdit_counte_ls->text().toInt();
-    QString contact = lineEdit_counte_ls_bd->text();
-    QString rank_pers = lineEdit_rank->text();
-    float aut = lineEdit_aut->text().toFloat();
-    bool opossition = checkbox_enemy->isChecked();
-
-    //            QFile file(label_foto->text());
-    //            if(!file.open(QIODevice::ReadOnly))
-    //            {
-    //                QMessageBox msgBox;
-    //                msgBox.setWindowTitle(tr("Внимание"));
-    //                msgBox.setText(tr("Необходимо выбрать изображение"));
-    //                msgBox.setStandardButtons(QMessageBox::Yes);
-    //                switch (msgBox.exec()) {
-    //                case QMessageBox::Yes:
-    //                    return;
-    //                    break;
-    //                }
-    //            }
-    //            QByteArray image_pers = file.readAll();
+//QHBoxLayout *topLeftLayout_3 = new QHBoxLayout;
+//topLeftLayout_3->addWidget(label_2);
+//QHBoxLayout *topLeftLayout_4 = new QHBoxLayout;
+//topLeftLayout_4->addWidget(lineEdit_counte_ls);
+//QHBoxLayout *topLeftLayout_5 = new QHBoxLayout;
+//topLeftLayout_5->addWidget(label_3);
+//QHBoxLayout *topLeftLayout_6 = new QHBoxLayout;
+//topLeftLayout_6->addWidget(lineEdit_counte_ls_bd);
+//QHBoxLayout *topLeftLayout_7 = new QHBoxLayout;
+//topLeftLayout_7->addWidget(label_4);
+//QHBoxLayout *topLeftLayout_8 = new QHBoxLayout;
+//topLeftLayout_8->addWidget(checkbox_enemy);
+//QHBoxLayout *topLeftLayout_9 = new QHBoxLayout;
+//topLeftLayout_9->addWidget(label_5);
+//QHBoxLayout *topLeftLayout_10 = new QHBoxLayout;
+//topLeftLayout_10->addWidget(lineEdit_rank);
+//QHBoxLayout *topLeftLayout_11 = new QHBoxLayout;
+//topLeftLayout_11->addWidget(label_6);
+//QHBoxLayout *topLeftLayout_12 = new QHBoxLayout;
+//topLeftLayout_12->addWidget(lineEdit_aut);
+//QHBoxLayout *topLeftLayout_13 = new QHBoxLayout;
+//topLeftLayout_13->addWidget(label_7);
+//QHBoxLayout *topLeftLayout_14 = new QHBoxLayout;
+//topLeftLayout_14->addWidget(textEdit_propa);
 
 
-    QSqlQuery query;
-    QString str = QString("UPDATE persones SET name_persones='%1', age_persones='%2',contact_persones='%3',rank_persones='%4', opposition_persones='%5',description_persones='%6',authority_persones='%7', id_type_persones = '%8' WHERE id_persones=%9").arg(name_persones).arg(counte_age).arg(contact).arg(rank_pers).arg(opossition).arg(desc_pers).arg(aut).arg(id_type_pers_).arg(id_persers);
+//QVBoxLayout *leftLayout_15 = new QVBoxLayout;
+//leftLayout_15->addLayout(topLeftLayout_15);
+//QVBoxLayout *leftLayout_16 = new QVBoxLayout;
+//leftLayout_16->addLayout(topLeftLayout_16);
+//QVBoxLayout *leftLayout = new QVBoxLayout;
+//leftLayout->addLayout(topLeftLayout);
+//QVBoxLayout *leftLayout_2 = new QVBoxLayout;
+//leftLayout_2->addLayout(topLeftLayout_2);
+//QVBoxLayout *leftLayout_17 = new QVBoxLayout;
+//leftLayout_17->addLayout(topLeftLayout_17);
+//QVBoxLayout *leftLayout_18 = new QVBoxLayout;
+//leftLayout_18->addLayout(topLeftLayout_18);
+//QVBoxLayout *leftLayout_3 = new QVBoxLayout;
+//leftLayout_3->addLayout(topLeftLayout_3);
+//QVBoxLayout *leftLayout_4 = new QVBoxLayout;
+//leftLayout_4->addLayout(topLeftLayout_4);
+//QVBoxLayout *leftLayout_5 = new QVBoxLayout;
+//leftLayout_5->addLayout(topLeftLayout_5);
+//QVBoxLayout *leftLayout_6 = new QVBoxLayout;
+//leftLayout_6->addLayout(topLeftLayout_6);
+//QVBoxLayout *leftLayout_7 = new QVBoxLayout;
+//leftLayout_7->addLayout(topLeftLayout_7);
+//QVBoxLayout *leftLayout_8 = new QVBoxLayout;
+//leftLayout_8->addLayout(topLeftLayout_8);
+//QVBoxLayout *leftLayout_9 = new QVBoxLayout;
+//leftLayout_9->addLayout(topLeftLayout_9);
+//QVBoxLayout *leftLayout_10 = new QVBoxLayout;
+//leftLayout_10->addLayout(topLeftLayout_10);
+//QVBoxLayout *leftLayout_11 = new QVBoxLayout;
+//leftLayout_11->addLayout(topLeftLayout_11);
+//QVBoxLayout *leftLayout_12 = new QVBoxLayout;
+//leftLayout_12->addLayout(topLeftLayout_12);
+//QVBoxLayout *leftLayout_13 = new QVBoxLayout;
+//leftLayout_13->addLayout(topLeftLayout_13);
+//QVBoxLayout *leftLayout_14 = new QVBoxLayout;
+//leftLayout_14->addLayout(topLeftLayout_14);
+//leftLayout->addStretch(1);
 
-    if(!query.exec(str)){
-        return;
-    }
+//QGridLayout *mainLayout = new QGridLayout;
+//mainLayout->setSizeConstraint(QLayout::SetFixedSize);
+//mainLayout->addLayout(leftLayout_15, 0, 0);
+//mainLayout->addLayout(leftLayout_16, 0, 1);
+//mainLayout->addLayout(leftLayout, 1, 0);
+//mainLayout->addLayout(leftLayout_2, 1, 1);
+//mainLayout->addLayout(leftLayout_17, 2, 0);
+//mainLayout->addLayout(leftLayout_18, 2, 1);
+//mainLayout->addLayout(leftLayout_3, 3, 0);
+//mainLayout->addLayout(leftLayout_4, 3, 1);
+//mainLayout->addLayout(leftLayout_5, 4, 0);
+//mainLayout->addLayout(leftLayout_6, 4, 1);
+//mainLayout->addLayout(leftLayout_7, 5, 0);
+//mainLayout->addLayout(leftLayout_8, 5, 1);
+//mainLayout->addLayout(leftLayout_9, 6, 0);
+//mainLayout->addLayout(leftLayout_10, 6, 1);
+//mainLayout->addLayout(leftLayout_11, 7, 0);
+//mainLayout->addLayout(leftLayout_12, 7, 1);
+//mainLayout->addLayout(leftLayout_13, 8, 0);
+//mainLayout->addLayout(leftLayout_14, 8, 1);
 
-}
-return;
+//mainLayout->addLayout(buttonsLayout, 9, 0, 1, 2);
+//mainLayout->addWidget(label_foto_hide, 10, 0);
+
+//setLayout(mainLayout);
+//edit_dlg_pers->setLayout(mainLayout);
+
+//if(edit_dlg_pers->exec() == QDialog::Accepted){
+
+//    int id_type_pers_=Box->itemData(Box->currentIndex()).toInt();
+//    QString name_persones = lineEdit_name->text();
+//    QString desc_pers=textEdit_propa->toPlainText();
+//    int counte_age = lineEdit_counte_ls->text().toInt();
+//    QString contact = lineEdit_counte_ls_bd->text();
+//    QString rank_pers = lineEdit_rank->text();
+//    float aut = lineEdit_aut->text().toFloat();
+//    bool opossition = checkbox_enemy->isChecked();
+
+//    //            QFile file(label_foto->text());
+//    //            if(!file.open(QIODevice::ReadOnly))
+//    //            {
+//    //                QMessageBox msgBox;
+//    //                msgBox.setWindowTitle(tr("Внимание"));
+//    //                msgBox.setText(tr("Необходимо выбрать изображение"));
+//    //                msgBox.setStandardButtons(QMessageBox::Yes);
+//    //                switch (msgBox.exec()) {
+//    //                case QMessageBox::Yes:
+//    //                    return;
+//    //                    break;
+//    //                }
+//    //            }
+//    //            QByteArray image_pers = file.readAll();
+
+
+//    QSqlQuery query;
+//    QString str = QString("UPDATE persones SET name_persones='%1', age_persones='%2',contact_persones='%3',rank_persones='%4', opposition_persones='%5',description_persones='%6',authority_persones='%7', id_type_persones = '%8' WHERE id_persones=%9").arg(name_persones).arg(counte_age).arg(contact).arg(rank_pers).arg(opossition).arg(desc_pers).arg(aut).arg(id_type_pers_).arg(id_persers);
+
+//    if(!query.exec(str)){
+//        return;
+//    }
+
+//}
+//return;
 
 }
 void Objectmanager::clicked_open_file()
@@ -3791,6 +3808,7 @@ void Objectmanager::delete_pers(){
     QMessageBox::StandardButton ret; ret = QMessageBox::information(this,"Предупреждение",("Удаление данных по персоналу выполнено"),QMessageBox::Ok );
     UI->property_object->setModel(0);
     clear_tableWidget(UI->coord_table);
+    persInfo->close();
 }
 //============================      отчеты    ================================================================
 void Objectmanager::otchet_groups()
@@ -3975,7 +3993,7 @@ void Objectmanager::add_new_coordinates()
     if(list.value(0)=="nations" || list.value(0)=="nationss" || list.value(0)=="nat" || list.value(0)=="dsmi" || list.value(0)=="ran" || list.value(0)=="rankss"
             || list.value(0)=="sexss" || list.value(0)=="sex" || list.value(0)=="se" || list.value(0)=="ag" || list.value(0)=="agess" || list.value(0)=="prof"
             || list.value(0)=="profess" || list.value(0)=="confess" || list.value(0)=="confesss" || list.value(0)=="conf" || list.value(0)=="psmi"
-            || list.value(0)=="smi" || list.value(0)=="ls" || list.value(0)=="gr"){
+            || list.value(0)=="smi" || list.value(0)=="ls" || list.value(0)=="gr" || list.value(0)=="dgr"){
 
         QMessageBox::StandardButton ret;
         ret = QMessageBox::critical (this,"Ошибка",("Нет возможности ввести координаты "),QMessageBox::Ok );

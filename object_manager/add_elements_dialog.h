@@ -156,11 +156,7 @@ private slots:
 	void add_mpo_pso_groups();
 	void add_mpo_pso_smi();
 	void add_groups();
-    void add_persones_groups();
-	void add_persones_ls();
-    void add_persones_smi();
 	void add_special_cond();
-//	void add_coord_special_cond_dlg();
 	void add_ls();
 	void add_ls_parent();
 	void show_redaktor(int,int);
@@ -169,7 +165,6 @@ private slots:
 	void show_redaktor_age(int,int);
 	void show_redaktor_sex(int,int);
 	void show_redaktor_rank(int,int);
-//	void show_redaktor_coord(int,int);
 	void pravka_nations(int);
 	void pravka_conf(int);
 	void pravka_prof(int);
@@ -208,7 +203,6 @@ private slots:
 	void add_sex_gr();
 	void add_rank();
 	void add_rank_gr();
-//	void add_coord();
 	void table_confess();
 	void table_confess_conf();
 	void table_confess_gr();
@@ -220,12 +214,8 @@ private slots:
 	void table_sex_gr();
 	void table_rank();
 	void table_rank_gr();
-//	void table_coord(int id_coord);
     void open_file();
     void otchet_pers();
-
-	//void add_hardware_object();
-	//void add_sstk_object();
 	
 };
 
