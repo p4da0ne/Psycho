@@ -402,6 +402,12 @@ void Mainform::add_menu_manage_users(QMenu *settings_menu){
 	sett_act4->setIcon(QIcon(":/Resources/user_config.png"));
 	settings_menu->addAction(sett_act4);
 	connect(sett_act4, SIGNAL(triggered()),this, SLOT(show_user_form()));
+
+
+	users_action = new QAction("”правление пользовател€ми NEW",this);
+	users_action->setIcon(QIcon(":/Resources/user_config.png"));
+	settings_menu->addAction(users_action);
+	connect(users_action, SIGNAL(triggered()),this, SLOT(slotOpenUserManageForm()));
 }
 
 void Mainform::add_menu_supporting_tables(QMenu *oper_menu){
@@ -725,5 +731,22 @@ void Mainform::slotOpenBackupDbDialog()
        
 
     }
+
+}
+
+
+
+
+void Mainform::slotOpenUserManageForm()
+{
+	UsersManager *usersDlg = new UsersManager;
+
+    if(usersDlg->exec() == QDialog::Accepted)
+    {
+       
+
+    }
+
+
 
 }

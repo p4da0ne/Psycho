@@ -9,6 +9,7 @@ RESOURCES       += saturn.qrc
 DEPENDPATH += ../my_mapaccess \
               ../dataaccess \
               ../db_saturn \
+			  ../users_manager \
               ../supporting_tables \
               ../object_manager \
               ../mapview \
@@ -25,6 +26,7 @@ LIBS += -L../build -lmy_mapaccess \
 					-ldb_saturn \
 					-lsupporting_tables \
 					-lmanage_users \
+					-lusers_manager \
 					-lmapview \
 					-loutput \
 					-lreports \
@@ -41,6 +43,7 @@ INCLUDEPATH += . \
         ../dataaccess \
 	../db_saturn \
         ../manage_users \
+		../users_manager \
 	../supporting_tables \
 	../object_manager \
         ../mapview \

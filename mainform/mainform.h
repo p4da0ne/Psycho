@@ -13,6 +13,7 @@
 #include "dbbackup.h"
 
 #include <manage_users.h>
+#include <users_manager.h>
 #include <output.h>
 #include <reports.h>
 #include <supporting_tables.h>
@@ -68,6 +69,9 @@ private slots:
 	void slotOpenEventManagerForm();
 	void closeTab(int i);
 
+	////////////////////////////////////
+	void slotOpenUserManageForm();
+	///////////////////////////////////
 
 private:
 	QMenu * menu;
@@ -87,7 +91,9 @@ private:
 	QAction * map_act;
 	QAction * open_map_sett_action;
 	QAction * backup_db_action;
-
+///////////////////////////////////////////////////
+	QAction * users_action;
+	/////////////////////////////
 
 	QLabel *message_label;
 	void init_menu(int id_user_group);
