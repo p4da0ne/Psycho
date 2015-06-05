@@ -1213,17 +1213,29 @@ QMenu* MapView::createGreateLessScaleMenu()
 }
 
 
+
+
+//======================================================================================
+//====== ћетод формирует меню добавлени€ событи€ в точке нажати€ мыши на карте =========
+//======================================================================================
+QAction* MapView::createAddEventAction()
+{
+	QAction *add_event_act = new QAction("ƒобавить событие", this);
+	add_event_act->setIcon(QIcon(":/Resources/01.ico"));
+	connect(add_event_act, SIGNAL(triggered()), this, SLOT(addEvent()));
+	return add_event_act;
+}
+
+
+
 //=================================================================================================
 //========= ћеню по клику правой клавишей мыши в любом месте карты ================================
 //=================================================================================================
 void MapView::mouseRightSimpleMenu(QPoint pe)
 {
 	mouse_menu = createGreateLessScaleMenu();
-
-	QAction *add_event_act = new QAction("ƒобавить событие", this);
-	add_event_act->setIcon(QIcon(":/Resources/01.ico"));
-	connect(add_event_act, SIGNAL(triggered()), this, SLOT(addEvent(pe)));
-	mouse_menu->addAction(add_event_act);
+	mouse_menu->addAction(createAddEventAction());
+	mouse_menu->addSeparator();
 
 	mouse_menu->exec(pe);
 }
@@ -1591,6 +1603,8 @@ QMenu* MapView::createObjectsListMenu(QList<QStringList> objectsList)
 QMenu* MapView::createObjectsListComplexMenu(QList<QStringList> objectsList)
 {
 	QMenu *mouse_menu = createGreateLessScaleMenu();//new QMenu; 
+	mouse_menu->addAction(createAddEventAction());
+	mouse_menu->addSeparator();
 	
 	for(int i=0;i<objectsList.count();i++)
 	{
@@ -2155,8 +2169,21 @@ void MapView::showInformationDialog(QString information)
 	info_dialog->exec();
 }
 
+//==========================================================================
+//========= —лот добавлени€ нового событи€ в точке нажати€ мыши ============
+//==========================================================================
+void MapView::addEvent()
+{
+	double x,y;
+	x = mapwin->screenX;
+	y = mapwin->screenY;
 
+	Coord *eventCoord = new Coord(x,y);
 
+	eventCoord = planeToWGS(mapwin->hMap,eventCoord);
+
+	showMessageToUser("B = " + eventCoord->latitudeToString() + "  L = " + eventCoord->longitudeToString());
+}
 
 
 

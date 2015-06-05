@@ -46,7 +46,7 @@ private:
 	void			createSitObjects(HSITE hSite,QList<SignData*> signsList);					
 	//------------------------------------------------------------------------
 	QMenu*			createGreateLessScaleMenu();	
-	//QMenu*			createGreateAddEventMenu(QPoint pe);
+	QAction*		createAddEventAction();                                  
 	QMenu*			createObjectsListMenu(QList<QStringList> objectsList);							    
 	QMenu*			createObjectsListComplexMenu(QList<QStringList> objectsList);											
 	void			showInformationDialog(QString information);
@@ -89,6 +89,7 @@ private slots:
 	void			slotMouseLeftButtonClicked(QPoint pe, QList<QStringList> objectsList);
 	void			slotMouseRightButtonClicked(QPoint pe, QList<QStringList> objectsList);
 	void			mouseRightSimpleMenu(QPoint pe);
+	void			addEvent();
 	//======================================================
 	void			showCheckedObjects();
 	void			showCheckedCalcResults();
