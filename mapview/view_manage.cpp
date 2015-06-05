@@ -1137,6 +1137,7 @@ QString ViewManage::get_event_info(int idEvent)
 	QString eventInfo;
 	
 	eventInfo.append(get_event_common_info(idEvent));
+	eventInfo.append("<p></p>");
 	eventInfo.append(get_event_objects_info(idEvent));
 
 	return eventInfo;
@@ -1180,7 +1181,7 @@ QString ViewManage::get_event_common_info(int idEvent)
 								"<tr><td> Тип события:</td><td>" + event_type + "</td></tr>"
 								"<tr><td> Статус:</td><td>" + event_status + "</td></tr>"
 								"<tr><td> Наименование:</td><td>" + name_event + "</td></tr>"
-								"<tr><td> Начало:</td><td>" + time_event_end + "</td></tr>"
+								"<tr><td> Начало:</td><td>" + time_event_start + "</td></tr>"
 								"<tr><td> Окончание:</td><td>" + time_event_end + "</td></tr>"
 								"<tr><td> Описание:</td><td>" + desc_event + "</td></tr>"
 								"<tr><td> Заключение:</td><td>" + resume_event + "</td></tr></table>";
@@ -1233,11 +1234,8 @@ QString ViewManage::get_event_objects_info(int idEvent)
 			if(table_name == "special_conditions") objectType = SPECIAL_CONDITIONS;
 				
 			event_info += "<tr><td>" + getObjectTypeAndName(idObject,objectType) + "</td><td>" + eventSource + "</td></tr>";
-		
-			
 		}
 	}
-
 	return event_info;
 }
 
