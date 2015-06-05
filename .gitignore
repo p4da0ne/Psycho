@@ -31,4 +31,7 @@ build/supporting_tables.dll
 build/textedit.dll
 build/signs_edit.dll
 build/searchengine.dll
+build/coord.dll
+build/event_manager.dll
+build/eventsmodel.dll
 saturn.suo
