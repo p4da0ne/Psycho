@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>icons/yellow.ico</file>
+        <file>icons/grey.ico</file>
+        <file>icons/magenta.ico</file>
+        <file>icons/red.ico</file>
+        <file>icons/no_photo.png</file>
+    </qresource>
+</RCC>
