@@ -294,7 +294,7 @@ void MapView::initSaturnLeftMenu()
 	left_panel_layout->addWidget(mapWorkToolBox);
 
 	fr->setLayout(left_panel_layout);
-	fr->setMaximumWidth(215);
+	fr->setMaximumWidth(225);
 	centralLayout->addWidget(fr);
 }
 
@@ -432,29 +432,41 @@ QWidget* MapView::createEventPanel()
 	currDate = QDate::currentDate();
 	QDate yesterday = currDate.addDays(-1);
 	
-	beginEventDate = new QDateEdit(yesterday);
-	endEventDate = new QDateEdit(currDate);
+	QDateTime currDateTime(currDate,QTime::currentTime());
+	QDateTime yesterdayDateTime(yesterday,QTime(0,0));
+
+	beginEventDateTime = new QDateTimeEdit(yesterdayDateTime);
+	beginEventDateTime->setDisplayFormat("yyyy-MM-dd  |  hh:mm");
+	endEventDateTime = new QDateTimeEdit(currDateTime);
+	endEventDateTime->setDisplayFormat("yyyy-MM-dd  |  hh:mm");
 	
 	QCalendarWidget* cw = new QCalendarWidget();
 	cw->setFirstDayOfWeek(Qt::Monday);
-	beginEventDate->setCalendarWidget(cw);
-	beginEventDate->setCalendarPopup(true);
+	beginEventDateTime->setCalendarWidget(cw);
+	beginEventDateTime->setCalendarPopup(true);
 
 	cw = new QCalendarWidget();
 	cw->setFirstDayOfWeek(Qt::Monday);
-	endEventDate->setCalendarWidget(cw);
-	endEventDate->setCalendarPopup(true);
+	endEventDateTime->setCalendarWidget(cw);
+	endEventDateTime->setCalendarPopup(true);
 	
-	QLabel *defLabel = new QLabel("-");
-	
-	QHBoxLayout *periodLay = new QHBoxLayout;
-	periodLay->addWidget(beginEventDate);
-	periodLay->addWidget(defLabel);
-	periodLay->addWidget(endEventDate);
+	QLabel *fromLabel = new QLabel("С:");
+	fromLabel->setMaximumWidth(20);
+	QLabel *toLabel = new QLabel("По:");
+	toLabel->setMaximumWidth(20);
+
+	QHBoxLayout *fromLay = new QHBoxLayout;
+	fromLay->addWidget(fromLabel);
+	fromLay->addWidget(beginEventDateTime);
+
+	QHBoxLayout *toLay = new QHBoxLayout;
+	toLay->addWidget(toLabel);
+	toLay->addWidget(endEventDateTime);
 
 	QVBoxLayout *dateLay = new QVBoxLayout;
 	dateLay->addWidget(periodLabel);
-	dateLay->addLayout(periodLay);
+	dateLay->addLayout(fromLay);
+	dateLay->addLayout(toLay);
 
 	//------------------------------------------------------------
 
@@ -1486,8 +1498,8 @@ void MapView::showCheckedEvents()
 	QString eventsSitName = sitPath + "events.sit";
 
 
-	QDate *startDate = new QDate(beginEventDate->date());
-	QDate *endDate = new QDate(endEventDate->date());
+	QDateTime *startDateTime = new QDateTime(beginEventDateTime->dateTime());
+	QDateTime *endDateTime = new QDateTime(endEventDateTime->dateTime());
 
 	//------ Получение координат углов карты ---------
 	double x1 = mapwin->getMapX1(mapwin->hMap);
@@ -1501,7 +1513,7 @@ void MapView::showCheckedEvents()
 	closeSitByName(eventsSitName);
 	HSITE eventsSite = openMapSit(eventsSitName,rscPath);
 
-	EventsMapModel *eventsMapModel = new EventsMapModel(startDate,endDate,selectedObjectsModel,eventStatesModel,eventTypesModel);
+	EventsMapModel *eventsMapModel = new EventsMapModel(startDateTime,endDateTime,selectedObjectsModel,eventStatesModel,eventTypesModel);
 	QList<SignData*> eventsSigns = eventsMapModel->getEvents(mapwin->hMap,x1,y1,x2,y2);
 	if(eventsSigns.count() > 0)
 	{

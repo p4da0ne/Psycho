@@ -8,7 +8,7 @@
 #include "mapview.h"
 #include <eventsmodel.h>
 
-EventsMapModel::EventsMapModel(QDate *startPeriod,QDate *endPeriod,
+EventsMapModel::EventsMapModel(QDateTime *startPeriod,QDateTime *endPeriod,
 				  QStandardItemModel *objectsModel,QStandardItemModel *statesModel,
 				  QStandardItemModel *eventTypesModel,QObject *parent)
     : QObject(parent),objectsModel(objectsModel),statesModel(statesModel),
@@ -529,8 +529,8 @@ QString EventsMapModel::createEventsFilterQuery(int idEvent)
 
 	if(startPeriod->isValid() && endPeriod->isValid())
 	{
-		QDateTime startDateTime(*startPeriod,QTime(0,0,0));
-		QDateTime endDateTime(*endPeriod,QTime(23,59,59));
+		QDateTime startDateTime(*startPeriod);
+		QDateTime endDateTime(*endPeriod);
 	
 		QString startDateT = startDateTime.toString("yyyy-MM-dd hh:mm:ss");
 		QString endDateT = endDateTime.toString("yyyy-MM-dd hh:mm:ss");
@@ -629,8 +629,8 @@ QList<int> EventsMapModel::getIdEventsByFilter()
 
 	if(startPeriod->isValid() && endPeriod->isValid())
 	{
-		QDateTime startDateTime(*startPeriod,QTime(0,0,0));
-		QDateTime endDateTime(*endPeriod,QTime(23,59,59));
+		QDateTime startDateTime(*startPeriod);
+		QDateTime endDateTime(*endPeriod);
 	
 		QString startDateT = startDateTime.toString("yyyy-MM-dd hh:mm:ss");
 		QString endDateT = endDateTime.toString("yyyy-MM-dd hh:mm:ss");

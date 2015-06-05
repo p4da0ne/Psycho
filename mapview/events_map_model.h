@@ -11,7 +11,7 @@
 class EventsMapModel : public QObject
 {
  public:
-    EventsMapModel(QDate *startPeriod,QDate *endPeriod,
+    EventsMapModel(QDateTime *startPeriod,QDateTime *endPeriod,
 				  QStandardItemModel *objectsModel=0,QStandardItemModel *statesModel=0,
 				  QStandardItemModel *eventTypesModel=0,QObject *parent=0);
 
@@ -43,8 +43,8 @@ public:
 	QList<int> getEventObjectsIdList();
 	QString getObjectShortName(int idObject,QString tableName);
 private:
-	QDate *startPeriod;
-	QDate *endPeriod;
+	QDateTime *startPeriod;
+	QDateTime *endPeriod;
 	QStandardItemModel *objectsModel;
 	QStandardItemModel *statesModel;
 	QStandardItemModel *eventTypesModel;

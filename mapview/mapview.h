@@ -130,8 +130,8 @@ private:
 	//--------------------------------------
 
 	//--- Ёлементы фильтра событий -------
-	QDateEdit *beginEventDate;
-	QDateEdit *endEventDate;
+	QDateTimeEdit *beginEventDateTime;
+	QDateTimeEdit *endEventDateTime;
 	QRadioButton *allObjectsButton;
 	QRadioButton *selectObjectsButton;
 	QListView *selectedObjectsListView;
