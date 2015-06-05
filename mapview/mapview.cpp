@@ -35,6 +35,7 @@
 #include <reports.h>
 #include <searchengine.h>
 #include "events_map_model.h"
+#include <event_manager.h>
 
 
 MapView::MapView(QWidget *parent)
@@ -2225,7 +2226,9 @@ void MapView::addEvent()
 
 	eventCoord = planeToWGS(mapwin->hMap,eventCoord);
 
-	showMessageToUser("B = " + eventCoord->latitudeToString() + "  L = " + eventCoord->longitudeToString());
+	EventManager *eventManager = new EventManager(this,eventCoord);
+	eventManager->addNewEventDialog(this);
+	//showMessageToUser("B = " + eventCoord->latitudeToString() + "  L = " + eventCoord->longitudeToString());
 }
 
 
