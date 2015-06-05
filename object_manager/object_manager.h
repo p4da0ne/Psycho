@@ -15,6 +15,7 @@
 #include <QAxWidget>
 #include "config_object_manager.h"
 #include "add_elements_dialog.h"
+#include "personesdata.h"
 #include "add_object.h"
 #include "simledelegate.h"
 #include "Calculate_K_omkrf.h"
@@ -26,15 +27,17 @@
 #include "mylabel.h"
 #include <QMouseEvent>
 #include <QToolButton>
-//#include "transposeproxymodel.h"
+#include "persones_info.h"
 #include "mysqlrelationaldelegate.h"
 
 class simledelegate;
+
 
 namespace Ui
 {
     class object_manager_form;
 };
+
 
 class __EXPORT_OBJECT_MANAGER Objectmanager: public QWidget
 
@@ -57,9 +60,6 @@ public:
 	QLabel *label_foto_hide;
 
 
-   // TransposeProxyModel *trans;
-
-  //  QTableView *test;
 public slots:
 	void customMenuTree(const QPoint &);
 	void customMenuView(const QPoint &);
@@ -119,7 +119,7 @@ private slots:
     void PLANE_to_other();
 
 private:
-
+    Persones_info *persInfo;
     QTableWidget *blok_edit_table;
     QTableWidget *country_edit_table;
     QDialog *edit_blok;
@@ -176,27 +176,6 @@ private:
     int calc_info_for_region(QString id_region);
     int calc_mps_for_ls(float n);
     QStringList iconsList;
-
-    QString name_region_string;
-    QString type_region_string;
-    QString description_region_string;
-    QString counte_population_string;
-    QString density_population_string;
-    QString emmigration_population_string;
-    QString immigration_population_string;
-    QString birth_population_string;
-    QString dead_population_string;
-    QString name_nations_string;
-    QString name_age_string;
-    QString persent_age_string;
-    QString name_confessions;
-    QString persent_confessions;
-
-    double factori[33];
-    QStringList factor_text;
-
-
-    int factorflag;
 
     QLineEdit *name_region_edit;
     QLineEdit *type_region_edit;

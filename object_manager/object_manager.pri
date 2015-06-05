@@ -12,7 +12,8 @@ HEADERS += \
          People_Losses.h \
          mylabel.h \
          mysqlrelationaldelegate.h \
-         personesdata.h
+         personesdata.h \
+    persones_info.h
 
 #Source files
 SOURCES +=  object_manager.cpp \
@@ -25,10 +26,12 @@ SOURCES +=  object_manager.cpp \
         People_Losses.cpp \
         mylabel.cpp \
         mysqlrelationaldelegate.cpp \
-        personesdata.cpp
+        personesdata.cpp \
+    persones_info.cpp
 
 		
 #Forms
 FORMS += object_manager_form.ui\
          add_object.ui \
-    personesdata_form.ui
+    personesdata_form.ui \
+    persones_info_form.ui

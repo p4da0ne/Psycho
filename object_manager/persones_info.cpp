@@ -1,0 +1,119 @@
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QPixmap>
+#include "reports.h"
+#include "persones_info.h"
+#include "object_manager.h"
+#include "ui_persones_info_form.h"
+
+Persones_info::Persones_info(QString type_element,int id_object,QWidget *parent) :
+    QDialog(parent),
+    UI(new Ui::Persones_info)
+{
+    UI->setupUi(this);
+
+    id_object_pers = id_object;
+    show_info_pers();
+
+//============================================================================
+    del_but = new QPushButton();
+    exit_but = new QPushButton();
+    edit_but = new QPushButton();
+    report_but = new QPushButton();
+    QIcon icon_exit(QString(":/Resources/exit.png"));
+    QIcon icon_del(QString(":/Resources/close.png"));
+    QIcon icon_edit(QString(":/Resources/edit_1.png"));
+    QIcon icon_report(QString(":/Resources/book.png"));
+    report_but->setIconSize(QSize(25,25));
+    exit_but->setIconSize(QSize(25,25));
+    edit_but->setIconSize(QSize(25,25));
+    del_but->setIconSize(QSize(25,25));
+    exit_but->setIcon(icon_exit);
+    edit_but->setIcon(icon_edit);
+    report_but->setIcon(icon_report);
+    del_but->setIcon(icon_del);
+
+    UI->horizontalLayout->addWidget(del_but);
+    UI->horizontalLayout->addWidget(edit_but);
+    UI->horizontalLayout->addWidget(report_but);
+    UI->horizontalLayout->addWidget(exit_but);
+
+
+//==================== CONNECT ===========================================
+    connect(report_but,SIGNAL(clicked()),this,SLOT(otchet_person()));
+    connect(exit_but,SIGNAL(clicked()),this,SLOT(close()));
+
+}
+
+Persones_info::~Persones_info()
+{
+    delete UI;
+}
+// ====================== информация по персоналии по ID ====================================
+void Persones_info::show_info_pers()
+{
+    UI->type_comboBox->setDisabled(true);
+    UI->type_comboBox->setStyleSheet("color: black");
+    QSqlQuery query;
+    QString str = QString("SELECT id_persones, name_persones, age_persones, contact_persones, rank_persones, authority_persones, \
+                          opposition_persones, description_persones, image_persones, \
+                          persones.id_type_persones,type_persones.name_type_persones \
+                          FROM persones, type_persones \
+                          WHERE id_persones = %1 \
+                          AND persones.id_type_persones = type_persones.id_type_persones").arg(id_object_pers);
+
+    if(!query.exec(str)){
+            return;
+    }
+
+    QSqlRecord rec = query.record();
+    QString f_name,name,o_name,date,adress,rank_pers;
+    int age_pers,id_type_persones,id_person;
+    while(query.next()){
+
+        id_person=query.value(rec.indexOf("id_persones")).toInt();
+        f_name=query.value(rec.indexOf("name_persones")).toString();
+        id_type_persones = query.value(rec.indexOf("id_type_persones")).toInt();
+        rank_pers=query.value(rec.indexOf("rank_persones")).toString();
+
+
+        QPixmap pixmap;
+        pixmap.loadFromData(query.value(rec.indexOf("image_persones")).toByteArray() );
+        pixmap = pixmap.scaled(200,200,Qt::KeepAspectRatio);
+
+        UI->f_lineEdit->setText(f_name);
+        UI->rank_lineEdit->setText(rank_pers);
+   //   lineEdit_counte_ls->setText(QString::number(age_pers));
+
+        fill_combobox_persones_(UI->type_comboBox,id_type_persones);
+
+        UI->label_foto->setPixmap(pixmap);
+        UI->label_foto->setAlignment(Qt::AlignCenter);
+
+    }
+
+}
+// ============================ отчет по персоналиям ===================================
+void Persones_info::otchet_person()
+{
+    this->close();
+    Reports *r = new Reports;
+    QString report = r->create_object_formular_pers(id_object_pers);
+    r->show_preview_dialog(report);
+}
+
+//======================================================================================
+void Persones_info::fill_combobox_persones_(QComboBox *Box,int current_index){
+
+    QSqlQuery query;
+    query.exec("SELECT id_type_persones, name_type_persones FROM type_persones");
+    int ci_3=0;
+    while (query.next())
+    {
+        QString blok = query.value(1).toString();
+        int id_blok=query.value(0).toInt();
+        Box->addItem(blok,id_blok);
+        if (current_index==id_blok) ci_3=Box->count()-1;
+    }
+    Box->setCurrentIndex(ci_3);
+}
