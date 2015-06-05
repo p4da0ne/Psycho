@@ -2,16 +2,20 @@ TEMPLATE = lib
 
 TARGET = event_manager
 
-DESTDIR = ../build
+DESTDIR = ../build\
+
+QT += sql
 
 INCLUDEPATH += . \
                 ../include \
-                ../eventsmodel
+                ../eventsmodel \
+                ../coord
 
 
-DEPENDPATH += ../eventsmodel
+DEPENDPATH += ../eventsmodel \
+                ../coord
 
-LIBS += -L../build -leventsmodel
+LIBS += -L../build -leventsmodel -lcoord
 
 DEFINES += __USE_DLL_EVENT_MANAGER
 

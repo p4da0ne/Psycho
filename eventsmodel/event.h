@@ -58,8 +58,8 @@ public:
 signals:
     
 public slots:
-    void getAllEventStatus();
-    void getAllEventTypes();
+    QMap <int,QString> getEventsStatus();
+    QMap <int,QMap<QString,int> > getEventsTypes();
 
 protected:
     bool updateEvent(QString table, QString field, QString set_data);
@@ -67,6 +67,8 @@ protected:
 
 
 private:
+    void loadEventStatus();
+    void loadEventTypes();
     QString event_name;
     QString event_description;
     int id_status;

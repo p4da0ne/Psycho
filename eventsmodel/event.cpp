@@ -3,21 +3,33 @@
 Event::Event(QString name, QString description, int id_status, int id_type_event, QDateTime *start_date, QDateTime *end_date, QList<EventObject *> *objects, Coord *coordinate)
 {
     this->id_event = 0;
-    this->getAllEventStatus();
-    this->getAllEventTypes();
+    this->loadEventStatus();
+    this->loadEventTypes();
     this->event_name = name;
     this->event_description = description;
     this->id_status = id_status;
     this->id_type_event = id_type_event;
-    this->event_start_date = start_date;
-    this->event_end_date = end_date;
-    this->objects = objects;
+
+    if(start_date > 0)
+        this->event_start_date = start_date;
+    else
+        this->event_start_date = new QDateTime();
+
+    if(end_date > 0)
+        this->event_end_date = end_date;
+    else
+        this->event_end_date = new QDateTime();
+
+    if(objects > 0)
+        this->objects = objects;
+    else
+        this->objects = new QList<EventObject *>;
 }
 
 Event::Event(int id_event)
 {
-    this->getAllEventStatus();
-    this->getAllEventTypes();
+    this->loadEventStatus();
+    this->loadEventTypes();
     QSqlQuery query;
     this->id_event = id_event;
     if(!query.exec(QString("SELECT * FROM events where id_event = %1").arg(id_event))){
@@ -180,33 +192,39 @@ bool Event::insertEventToDB()
     }
     QSqlQuery query;
     CoordModel *cModel;
-    QString str = QString("INSERT INTO events (id_type_event,id_event_status,name_event,description_event,resume_event,time_event_start,time_event_end) VALUES (%1,%2,'%3','%4','%5','%6','%7')")
+    QString str = QString("INSERT INTO events (id_type_event,id_event_status,name_event,description_event,resume_event,time_event_start,time_event_end) VALUES (%1,%2,'%3','%4','%5','%6','%7')  RETURNING id_event")
             .arg(this->id_type_event)
             .arg(this->id_status)
             .arg(this->event_name)
             .arg(this->event_description)
             .arg(this->event_resume)
-            .arg(this->event_start_date->toString())
-            .arg(this->event_end_date->toString());
+            .arg(this->event_start_date->toString("yyyy-M-d h:m:s"))
+            .arg(this->event_end_date->toString("yyyy-M-d h:m:s"));
     if(!query.exec(str)){
         qDebug() << query.lastError().text();
+        qDebug() << query.lastQuery();
         return false;
     }
-    this->id_event = query.lastInsertId().toInt();
+    while(query.next()){
+        this->id_event = query.value(0).toInt();
+    }
     query.clear();
     if(!cModel->insertObjectCoord(this->event_coordinate,"events",this->id_event)){
         qDebug() << "Coordinates don't insert. Events roll back transaction.";
+
         query.exec(QString("DELETE FROM events WHERE id_event = %1").arg(this->id_event));
         this->id_event = 0;
         return false;
     }
-    if(!this->setEventObjects(this->objects)){
-        qDebug() << "Event objects don't insert. Events roll back transaction.";
-        query.exec(QString("DELETE FROM event_objects WHERE id_event = %1").arg(this->id_event));
-        query.exec(QString("DELETE FROM coord_events WHERE id_event = %1").arg(this->id_event));
-        query.exec(QString("DELETE FROM events WHERE id_event = %1").arg(this->id_event));
-        this->id_event = 0;
-        return false;
+    for(int i=0; i < this->objects->size(); i++){
+        if(!this->objects->at(i)->insertInDB(this->id_event)){
+            qDebug() << "Event objects don't insert. Events roll back transaction.";
+            query.exec(QString("DELETE FROM event_objects WHERE id_event = %1").arg(this->id_event));
+            query.exec(QString("DELETE FROM coord_events WHERE id_event = %1").arg(this->id_event));
+            query.exec(QString("DELETE FROM events WHERE id_event = %1").arg(this->id_event));
+            this->id_event = 0;
+            return false;
+        }
     }
     return true;
 }
@@ -234,6 +252,16 @@ int Event::getIdStatus()
 QString Event::getResume()
 {
     return this->event_resume;
+}
+
+QMap<int, QString> Event::getEventsStatus()
+{
+    return this->events_status;
+}
+
+QMap<int, QMap<QString, int> > Event::getEventsTypes()
+{
+    return this->events_types;
 }
 
 int Event::getIdTypeEvent()
@@ -266,7 +294,7 @@ QString Event::getSignCode()
     return this->signCode;
 }
 
-void Event::getAllEventStatus()
+void Event::loadEventStatus()
 {
     QSqlQuery query;
     if(!query.exec("SELECT * FROM event_status")){
@@ -279,7 +307,7 @@ void Event::getAllEventStatus()
     }
 }
 
-void Event::getAllEventTypes()
+void Event::loadEventTypes()
 {
     QSqlQuery query;
     if(!query.exec("SELECT * FROM type_event")){

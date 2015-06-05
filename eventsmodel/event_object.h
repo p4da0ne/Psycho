@@ -12,7 +12,7 @@ class __EXPORT_EVENTSMODEL EventObject : public QObject
 {
     Q_OBJECT
 public:
-    explicit EventObject(int id_object=0, QString table = "",bool is_source = false, QObject *parent = 0);
+    EventObject(int id_object=0, QString table = "",bool is_source = false, QObject *parent = 0);
     bool isSource();
     QString getTableName();
     int getIdObject();

@@ -55,7 +55,7 @@ bool EventObject::insertInDB(int id_event)
         return false;
     }
     QSqlQuery query;
-    QString str = QString("INSERT INTO event_objects (id_event, id_type_event_object, id_object, is_events_source) VALUES (%1,%2,%3,%4)")
+    QString str = QString("INSERT INTO event_objects (id_event, id_type_event_object, id_object, is_events_source) VALUES (%1,%2,%3,'%4')  RETURNING id_event_objects")
             .arg(id_event)
             .arg(this->getIdTypeEventObject())
             .arg(this->getIdObject())
@@ -64,7 +64,9 @@ bool EventObject::insertInDB(int id_event)
         qDebug() << query.lastError().text();
         return false;
     }
-    this->id_event_objects = query.lastInsertId().toInt();
+    while(query.next()){
+        this->id_event_objects = query.value(0).toInt();
+    }
     query.clear();
     return true;
 }
@@ -94,7 +96,7 @@ void EventObject::setIdEventObjects(int id_event_objects)
     this->id_event_objects = id_event_objects;
 }
 
-void EventObject::setIdTypeEventObject(int id_type_event_object)
+void EventObject::setIdTypeEventObject(int id_type)
 {
-    this->id_type_event_object = id_type_event_object;
+    this->id_type_event_object = id_type;
 }
