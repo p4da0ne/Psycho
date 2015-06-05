@@ -1671,7 +1671,7 @@ void MapView::slotObjectInfo()
 
 
 //===========================================================================================
-//===== Слот расчета психогенных потерь формирования (для конткстного меню) =================
+//===== Слот расчета психогенных потерь формирования (для контекстного меню) =================
 //===========================================================================================
 void MapView::slotFormationPsiLooses() 
 {
@@ -1742,6 +1742,39 @@ void MapView::slotMoveObject()
 		}
 
 
+	}
+
+}
+
+
+//===============================================================================
+//====== Слот редактирования события ============================================
+//===============================================================================
+void MapView::slotEditEvent()
+{
+	QAction *action = qobject_cast<QAction*>(sender());
+	QString str;
+	if(action)
+	{
+		QStringList objInfo = action->data().toString().split("_");
+
+		////////////////////////////////////////////////////////////
+	}
+
+}
+
+//===============================================================================
+//====== Слот удаления события ==================================================
+//===============================================================================
+void MapView::slotDeleteEvent()
+{
+	QAction *action = qobject_cast<QAction*>(sender());
+	QString str;
+	if(action)
+	{
+		QStringList objInfo = action->data().toString().split("_");
+
+		//////////////////////////////////////////////////////////		
 	}
 
 }
@@ -2143,10 +2176,20 @@ QMenu* MapView::createEventMenu(QStringList objInfo)
 	mouse_menu->addAction(report_act); 
 	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));  //пока не работает
 	
+	QAction *edit_act = new QAction("Редактировать событие",this);
+	edit_act->setData(idAndType);
+	mouse_menu->addAction(edit_act); 
+	connect(edit_act, SIGNAL(triggered()), this, SLOT(slotEditEvent()));  //пока не работает
+
 	QAction *move_act = new QAction("Переместить событие",this);
 	move_act->setData(idAndType);
 	mouse_menu->addAction(move_act); 
 	connect(move_act, SIGNAL(triggered()), this, SLOT(slotMoveObject()));
+
+	QAction *del_act = new QAction("Удалить событие",this);
+	del_act->setData(idAndType);
+	mouse_menu->addAction(del_act); 
+	connect(del_act, SIGNAL(triggered()), this, SLOT(slotDeleteEvent()));  //пока не работает
 
 	return mouse_menu;
 
