@@ -2,21 +2,18 @@
 #include <QVariant>
 
 EventObject::EventObject(int id_object, QString table, bool is_source, QObject *parent) :
-    QObject(parent)
-{
+    QObject(parent){
     this->id_event_objects = 0;
     this->id_object = id_object;
     this->table = table;
     this->is_source = is_source;
 }
 
-bool EventObject::isSource()
-{
+bool EventObject::isSource(){
     return this->is_source;
 }
 
-QString EventObject::getTableName()
-{
+QString EventObject::getTableName(){
     return this->table;
 }
 

@@ -21,25 +21,30 @@ public:
 public slots:
     void addNewEventDialog(QWidget *parent);
     void openNewEventDialog();
-    void eventClick(QModelIndex & index);
+    void eventClick(QModelIndex index);
 
 private slots:
     void sourceTypeChange(int index);
     void getTypeChange(int index);
     void saveNewEvent();
+    void filterNameTextChanged(QString text);
+
 
 private:
     void initUIX();
     QTableView * tableView;
+    QSortFilterProxyModel *proxyModel;
     EventsModel * eventsModel;
     Event * current_event;
     QPushButton * addNewEventPB;
-    void getTypeObjectCB();
+    void getTypeObjectCB(QComboBox *source, QComboBox *get);
     void getObjectsCB();
     QComboBox *suorceTypeObjectCBNE;
     QComboBox *suorceObjectCBNE;
     QComboBox *getTypeObjectCBNE;
     QComboBox *getObjectCBNE;
+    QPushButton *saveEvent;
+    QFormLayout * formLayout;
 
     QDialog * newEventDialog;
     Event * newEvent;
@@ -57,7 +62,31 @@ private:
     QLineEdit * lomLE;
     QLineEdit * losLE;
 
+    QPushButton * upDateModelButton;
+    QGroupBox * filterGroupBox;
+    QLineEdit * filterName;
+
     Coord * coord;
+
+
+    QFormLayout * formLayoutE;
+    QComboBox *suorceTypeObjectCBNEE;
+    QComboBox *suorceObjectCBNEE;
+    QComboBox *getTypeObjectCBNEE;
+    QComboBox *getObjectCBNEE;
+    QLineEdit * nameLEE;
+    QComboBox * statusCBE;
+    QComboBox * typeCBE;
+    QDateTimeEdit * DTSE;
+    QDateTimeEdit * DTEE;
+    QTextEdit * descriptionTEE;
+    QTextEdit * resumeTEE;
+    QLineEdit * lagLEE;
+    QLineEdit * lamLEE;
+    QLineEdit * lasLEE;
+    QLineEdit * logLEE;
+    QLineEdit * lomLEE;
+    QLineEdit * losLEE;
 
     bool whithCoord;
     bool isEventDialogOpen;

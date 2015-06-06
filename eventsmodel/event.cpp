@@ -30,6 +30,7 @@ Event::Event(int id_event)
 {
     this->loadEventStatus();
     this->loadEventTypes();
+    this->objects = new QList<EventObject *>;
     QSqlQuery query;
     this->id_event = id_event;
     if(!query.exec(QString("SELECT * FROM events where id_event = %1").arg(id_event))){

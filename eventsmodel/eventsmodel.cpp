@@ -21,7 +21,7 @@ void EventsModel::UpdateModel(){
     int time_event_end = query.record().indexOf("time_event_end");
     int description_event = query.record().indexOf("description_event");
     int resume_event = query.record().indexOf("resume_event");
-    int id_event = query.record().indexOf("id_event");
+    int id_event_index = query.record().indexOf("id_event");
     int name_event_status = query.record().indexOf("name_event_status");
     int name_type_event = query.record().indexOf("name_type_event");
     int sign_key = query.record().indexOf("sign_key");
@@ -52,7 +52,7 @@ void EventsModel::UpdateModel(){
                 ico.load(":/icons/icons/yellow.ico");
                 break;
         }
-
+        int id_event = query.value(id_event_index).toInt();
         QList<QStandardItem *> items;
         QStandardItem * item = new QStandardItem(query.value(name_event).toString());
         item->setData("name_event",33);
@@ -77,7 +77,7 @@ void EventsModel::UpdateModel(){
         time_event_end_item->setData("time_event_end",33);
         items.append(time_event_end_item);
         for(int i=0; i< items.size(); i++){
-           items.at(i)->setData(id_event,32);
+           items.at(i)->setData(id_event,Qt::UserRole + 3);
            items.at(i)->setBackground(*brush);
         }
         rootItem->appendRow(items);
