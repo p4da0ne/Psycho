@@ -2228,6 +2228,7 @@ void MapView::addEvent()
 
 	EventManager *eventManager = new EventManager(this,eventCoord);
 	eventManager->addNewEventDialog(this);
+	showCheckedEvents();
 	//showMessageToUser("B = " + eventCoord->latitudeToString() + "  L = " + eventCoord->longitudeToString());
 }
 
