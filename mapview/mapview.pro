@@ -17,7 +17,8 @@ INCLUDEPATH += ./ \
 			   ./calculatingClasses \
 			   ../reports \
 			   ../searchengine \
-			   ../eventsmodel
+			   ../eventsmodel \
+			   ../event_manager
 			   
 
 			   
@@ -26,11 +27,12 @@ DEPENDPATH += 	. \
 				../my_mapaccess \
 				../reports \
 				../searchengine \
-				 ../eventsmodel
+				 ../eventsmodel \
+				 ../event_manager
 
 LIBPATH   += ../build
 
-LIBS += -lcoord -lmy_mapaccess -lreports -lsearchengine -leventsmodel
+LIBS += -lcoord -lmy_mapaccess -lreports -lsearchengine -leventsmodel -levent_manager
 
 
 
