@@ -25,7 +25,6 @@ LIBS += -L../build -lmy_mapaccess \
 					-ldataaccess \
 					-ldb_saturn \
 					-lsupporting_tables \
-					-lmanage_users \
 					-lusers_manager \
 					-lmapview \
 					-loutput \
@@ -42,7 +41,6 @@ INCLUDEPATH += . \
         ../my_mapaccess \
         ../dataaccess \
 	../db_saturn \
-        ../manage_users \
 		../users_manager \
 	../supporting_tables \
 	../object_manager \

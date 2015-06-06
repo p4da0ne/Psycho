@@ -8,7 +8,6 @@ QT   += gui widgets sql
 SUBDIRS += \
         my_mapaccess \
 		coord \
-        manage_users \
 		users_manager \
         output \
 		textedit \

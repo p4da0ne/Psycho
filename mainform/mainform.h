@@ -12,7 +12,6 @@
 #include "mapsettingsdialog.h"
 #include "dbbackup.h"
 
-#include <manage_users.h>
 #include <users_manager.h>
 #include <output.h>
 #include <reports.h>
