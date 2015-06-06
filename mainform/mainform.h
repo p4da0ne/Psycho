@@ -126,6 +126,7 @@ private:
 	void add_menu_supporting_tables(QMenu *oper_menu);
 	void add_menu_object_manager(QMenu *oper_menu);
 	void add_menu_event_manager(QMenu *oper_menu);
+	QString getCurrentUserInfo();
 	bool connection_flag;
 	db_saturn *db;
 

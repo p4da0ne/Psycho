@@ -247,6 +247,7 @@ bool Mainform::close_connection()
 void Mainform::init_menu(int id_user_group)
 {
 	QString mess;
+	QString wTitle;
     switch(id_user_group)
 	{
 	 case 0:	  //==== Незарегистрированный пользователь (вошел без логина и пароля)или нет соединения с БД ====
@@ -294,7 +295,8 @@ void Mainform::init_menu(int id_user_group)
 			add_menu_event_manager(oper_menu);
 			UI->menuBar->addMenu(oper_menu);
 
-			Mainform::setWindowTitle("Сатурн - сессия администратора");
+			wTitle = "Сатурн - сессия администратора " + getCurrentUserInfo();
+			Mainform::setWindowTitle(wTitle);
 			break;
 
 	 case 3://==== Пользователь ====
@@ -310,7 +312,8 @@ void Mainform::init_menu(int id_user_group)
 			add_menu_event_manager(oper_menu);
 			UI->menuBar->addMenu(oper_menu);
 
-			Mainform::setWindowTitle("Сатурн - пользовательская сессия");
+			wTitle = "Сатурн - сессия оператора " + getCurrentUserInfo();
+			Mainform::setWindowTitle(wTitle);
 		 	break;
 	}
 return;
@@ -714,7 +717,37 @@ void Mainform::slotOpenUserManageForm()
        
 
     }
+}
 
+//========================================================
+//============
+//========================================================
+QString Mainform::getCurrentUserInfo()
+{
+	QString userInfo;
+	if(this->id_user == 0)
+	{
+		return userInfo;	
+	}
 
+	QSqlQuery query;
+	QString str = QString("SELECT r.rank_name,u.surname,u.name,u.patronumic \
+						   FROM users u, military_rank r \
+						   WHERE u.id_military_rank=r.id_military_rank \
+						   AND id_user = %1").arg(id_user);
+	if(query.exec(str))
+	{
+		query.next();
+		QSqlRecord rec = query.record();
 
+		userInfo.append(" - ");
+		userInfo.append(query.value(rec.indexOf("rank_name")).toString());
+		userInfo.append(" ");
+		userInfo.append(query.value(rec.indexOf("surname")).toString());
+		userInfo.append(" ");
+		userInfo.append(query.value(rec.indexOf("name")).toString());
+		userInfo.append(" ");
+		userInfo.append(query.value(rec.indexOf("patronumic")).toString());
+	}
+	return userInfo;
 }
