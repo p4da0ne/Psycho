@@ -244,12 +244,27 @@ void UserDataDialog::addUserInDB()
 {
 	QString surname, name, patronumic, login, password;
 	int idRank, idGroup;
+
+	password = str_to_md5(passwordLineEdit.text());
+
 	QSqlQuery query;
-	QString str = QString("SELECT u.surname,u.name,u.patronumic,u.login_name \
-						   FROM users u WHERE u.id_user = %1").arg(idUser);
+	QString str = QString("INSERT INTO users_passwd (id_user, passwd) VALUES (%1, '%2') RETURNING id_user_passwd").arg(idUser).arg(password);
 	if(query.exec(str))
 	{
 		QSqlRecord rec = query.record();
 		while (query.next())
+		{
+			
+		}
+}
 
+//====================================================================
+//===== Метод шифрования строки по методу MD5 ========================
+//====================================================================
+QString UserDataDialog::str_to_md5(QString str)
+{
+	QCryptographicHash hash(QCryptographicHash::Md5);
+	hash.addData(str.toAscii()); 
+	QString md5_str(hash.result().toHex());
+	return md5_str;
 }

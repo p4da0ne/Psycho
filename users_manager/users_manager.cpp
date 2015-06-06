@@ -148,7 +148,7 @@ void UsersManager::addUser()
 	if(userDlg->exec() == QDialog::Accepted)
 	{
 		//------ Вставка данных в БД ------
-
+		userDlg->deleteLater();
 	}
 }
 

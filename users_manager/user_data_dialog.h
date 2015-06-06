@@ -28,6 +28,7 @@ public:
     QFormLayout formLay;
 	QVBoxLayout dlgLay;
 	QHBoxLayout buttonLay;
+	QString str_to_md5(QString str);
 private:
 	QStandardItemModel* getRankList();
 	QStandardItemModel* getGroupList();
