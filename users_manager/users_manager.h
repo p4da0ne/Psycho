@@ -7,6 +7,7 @@
 #include <QStandardItem>
 #include <QTableView>
 #include <QToolButton>
+#include <QMessageBox>
 
 
 
@@ -27,6 +28,18 @@ private:
 	QToolButton *delUserButton;
 
 	void fillUsersModel();
+	int selectedUsersCount();
+	void showMessageToUser(const QString message);
+	void deleteSelectedUsers();
+	QStandardItemModel* getRankList();
+	QStandardItemModel* getGroupList();
+	QString getUserRank(int idUser);
+	QString getUserGroup(int idUser);
+
+private slots:
+	void addUser();
+	void editUser();
+	void deleteUser();
 };
 
 
