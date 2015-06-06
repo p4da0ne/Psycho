@@ -63,7 +63,7 @@ private:
     bool isEventDialogOpen;
 
 signals:
-    void eventInsert();
+    void eventDataChanged();
 
 };
 
