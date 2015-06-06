@@ -33,19 +33,19 @@ void EventsModel::UpdateModel(){
         int id_event_status = query.value(id_event_status_index).toInt();
         switch (id_event_status){
             case 1:
-                brush =new QBrush(Qt::red);
+                brush =new QBrush(QColor(255,0,0,50));
                 ico.load(":/icons/red.ico");
                 break;
             case 2:
-                brush =new QBrush(Qt::gray);
+                brush =new QBrush(QColor(150,150,150,30));
                 ico.load(":/icons/grey.ico");
                 break;
             case 3:
-                brush =new QBrush(QColor("magenta"));
+                brush =new QBrush(QColor(20,255,20,50));
                 ico.load(":/icons/magenta.ico");
                 break;
             case 4:
-                brush =new QBrush(Qt::yellow);
+                brush =new QBrush(QColor(218,185,0,70));
                 ico.load(":/icons/yellow.ico");
                 break;
         }
@@ -53,7 +53,6 @@ void EventsModel::UpdateModel(){
         QList<QStandardItem *> items;
         QStandardItem * item = new QStandardItem(query.value(name_event).toString());
         item->setData("name_event",33);
-        //item->setBackground(brush);
         items.append(item);
         QStandardItem * name_event_status_item = new QStandardItem(query.value(name_event_status).toString());
         name_event_status_item->setData(ico,Qt::DecorationRole);

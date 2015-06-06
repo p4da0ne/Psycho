@@ -3,6 +3,7 @@
 EventManager::EventManager(QWidget *parent, Coord *coord)
     : QWidget(parent)
 {
+
     if(coord == 0){
         this->coord = new Coord();
         this->whithCoord = false;
@@ -11,6 +12,7 @@ EventManager::EventManager(QWidget *parent, Coord *coord)
         this->whithCoord = true;
         return;
     }
+
     QGridLayout * grid = new QGridLayout(this);
     addNewEventPB = new QPushButton("Добавить новое событие");
     tableView = new QTableView(this);
@@ -142,6 +144,7 @@ void EventManager::addNewEventDialog(QWidget *parent){
     grLayout->addLayout(formLayout,0,0,0,2);
     newEventDialog->setLayout(grLayout);
     newEventDialog->show();
+    newEventDialog->setModal(true);
     isEventDialogOpen = true;
 
     connect(this->suorceTypeObjectCBNE, SIGNAL(currentIndexChanged(int)), this , SLOT(sourceTypeChange(int)));
@@ -257,12 +260,13 @@ void EventManager::getTypeObjectCB()
         qDebug() << query.lastError().text();
         return;
     }
-    int index=0;
+    int index=1;
     while(query.next()){
-        this->suorceTypeObjectCBNE->addItem(query.value(0).toString(),query.value(1).toString());
-        this->suorceTypeObjectCBNE->setItemData(index,query.value(2),Qt::UserRole + 1);
-        this->getTypeObjectCBNE->addItem(query.value(0).toString(),query.value(1).toString());
-        this->getTypeObjectCBNE->setItemData(index,query.value(2),Qt::UserRole + 1);
+        int id_type_event_object = query.value(2).toInt();
+        this->suorceTypeObjectCBNE->insertItem(index,query.value(0).toString(),query.value(1).toString());
+        this->suorceTypeObjectCBNE->setItemData(index,id_type_event_object,Qt::UserRole + 1);
+        this->getTypeObjectCBNE->insertItem(index,query.value(0).toString(),query.value(1).toString());
+        this->getTypeObjectCBNE->setItemData(index,id_type_event_object,Qt::UserRole + 1);
         index++;
     }
 }
