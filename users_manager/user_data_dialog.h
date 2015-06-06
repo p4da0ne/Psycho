@@ -14,7 +14,7 @@ class UserDataDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit UserDataDialog(QStandardItemModel *rankList = 0, QWidget *parent = 0);
+    explicit UserDataDialog(int idUser = 0, QWidget *parent = 0);
     
 signals:
 
@@ -29,8 +29,17 @@ public:
 	QVBoxLayout dlgLay;
 	QHBoxLayout buttonLay;
 private:
-
+	QStandardItemModel* getRankList();
+	QStandardItemModel* getGroupList();
+	QString getUserRank(int idUser);
+	QString getUserGroupName(int idUser);
     void messageToUser(QString message);
+	void fillUserData(int idUser);
+	void addUserInDB();
+
+	QStandardItemModel *rankModel;
+	QStandardItemModel *groupModel;
+	int idUser;
 };
 
 #endif // USER_DATA_DIALOG_H

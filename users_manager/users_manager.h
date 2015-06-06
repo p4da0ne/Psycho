@@ -31,10 +31,7 @@ private:
 	int selectedUsersCount();
 	void showMessageToUser(const QString message);
 	void deleteSelectedUsers();
-	QStandardItemModel* getRankList();
-	QStandardItemModel* getGroupList();
-	QString getUserRank(int idUser);
-	QString getUserGroup(int idUser);
+
 
 private slots:
 	void addUser();

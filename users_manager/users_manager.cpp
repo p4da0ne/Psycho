@@ -143,10 +143,8 @@ int UsersManager::selectedUsersCount()
 //==================================================================
 void UsersManager::addUser()
 {
-	QStandardItemModel *rankModel = getRankList();
-	
-	UserDataDialog *userDlg = new UserDataDialog(rankModel);
-	userDlg->setWindowTitle("Добавление нового пользователя");
+		
+	UserDataDialog *userDlg = new UserDataDialog;
 	if(userDlg->exec() == QDialog::Accepted)
 	{
 		//------ Вставка данных в БД ------
@@ -163,6 +161,21 @@ void UsersManager::editUser()
 	{
 		showMessageToUser("Для редактирования данных \nнеобходимо выбрать одного пользователя.");
 		return;
+	}
+	int idUser;
+	for(int row=0;row<usersModel->rowCount();row++)
+	{
+		if(usersModel->item(row,0)->checkState() == Qt::Checked)
+		{
+			idUser = usersModel->data(usersModel->index(row,0),Qt::UserRole).toInt();
+		}
+	}
+	UserDataDialog *userDlg = new UserDataDialog(idUser);
+	if(userDlg->exec() == QDialog::Accepted)
+	{
+		//------ Вставка данных в БД ------
+		
+		userDlg->deleteLater();
 	}
 	//
 }
@@ -240,97 +253,3 @@ void UsersManager::deleteSelectedUsers()
 
 }
 
-//==================================================================
-//======= Метод возвращает список воинских званий из БД ============
-//==================================================================
-QStandardItemModel* UsersManager::getRankList()
-{
-	QStandardItemModel *model = new QStandardItemModel;
-	int idRank;
-	QString rankName;
-
-	QSqlQuery query;
-	if(query.exec("SELECT id_military_rank,rank_name FROM military_rank ORDER BY id_military_rank"))
-	{
-		QSqlRecord rec = query.record();
-		while (query.next())
-		{		
-			idRank = query.value(rec.indexOf("id_military_rank")).toInt();
-			rankName = query.value(rec.indexOf("rank_name")).toString();
-			QStandardItem *item = new QStandardItem;
-			item->setData(idRank,Qt::UserRole);
-			item->setData(rankName,Qt::DisplayRole);
-			model->appendRow(item);
-		}
-	}
-	return model;
-}
-
-
-//==================================================================
-//======= Метод возвращает список групп пользователей из БД ============
-//==================================================================
-QStandardItemModel* UsersManager::getGroupList()
-{
-	QStandardItemModel *model = new QStandardItemModel;
-	int idGroup;
-	QString groupName;
-
-	QSqlQuery query;
-	if(query.exec("SELECT id_user_group,description FROM user_group ORDER BY group_name"))
-	{
-		QSqlRecord rec = query.record();
-		while (query.next())
-		{		
-			idGroup = query.value(rec.indexOf("id_user_group")).toInt();
-			groupName = query.value(rec.indexOf("description")).toString();
-			QStandardItem *item = new QStandardItem;
-			item->setData(idGroup,Qt::UserRole);
-			item->setData(groupName,Qt::DisplayRole);
-			model->appendRow(item);
-		}
-	}
-	return model;
-}
-
-
-//============================================================================
-//======= Метод возвращает воинское звание пользователя из БД ================
-//============================================================================
-QString UsersManager::getUserRank(int idUser)
-{
-	QString rankName;
-	QSqlQuery query;
-	QString str = QString("SELECT r.rank_name FROM users u, military_rank r \
-						   WHERE u.id_military_rank = r.id_military_rank AND u.id_user = %1").arg(idUser);
-	if(query.exec(str))
-	{
-		QSqlRecord rec = query.record();
-		while (query.next())
-		{		
-			rankName = query.value(rec.indexOf("rank_name")).toString();
-		}
-	}
-	return rankName;
-}
-
-
-//============================================================================
-//======= Метод возвращает имя группы пользователя из БД ================
-//============================================================================
-QString UsersManager::getUserGroup(int idUser)
-{
-	QString rankName;
-	QSqlQuery query;
-	QString str = QString("SELECT r.rank_name FROM users u, military_rank r \
-						   WHERE u.id_military_rank = r.id_military_rank AND u.id_user = %1").arg(idUser);
-	if(query.exec(str))
-	{
-		QSqlRecord rec = query.record();
-		while (query.next())
-		{		
-			rankName = query.value(rec.indexOf("rank_name")).toString();
-		}
-	}
-	return rankName;
-}
