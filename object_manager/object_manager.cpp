@@ -64,9 +64,9 @@ Objectmanager::Objectmanager(QWidget *parent) //int in_id_object
     connect(UI->add_many_coord_button,SIGNAL(clicked()),this,SLOT(show_dialog_add_file()));
     //==============================================================================================================
 
-    connect(UI->object_manager_tree,SIGNAL(clicked(const QModelIndex &)),this,SLOT(show_objects ( const QModelIndex & )));
+    connect(UI->object_manager_tree,SIGNAL(doubleClicked(const QModelIndex &)),this,SLOT(show_objects ( const QModelIndex & )));
     connect(UI->object_manager_tree,SIGNAL(customContextMenuRequested(const QPoint &)),this,SLOT(customMenuTree(const QPoint &)));
-    connect(UI->columnView,SIGNAL(clicked(QModelIndex)),this,SLOT(column_item_clicked ( const QModelIndex & )));
+    connect(UI->columnView,SIGNAL(doubleClicked(const QModelIndex &)),this,SLOT(column_item_clicked ( const QModelIndex & )));
     connect(UI->columnView,SIGNAL(customContextMenuRequested(const QPoint &)),this,SLOT(customMenuView(const QPoint &)));
     //================================== Блоки и Страны ============================================================
 
@@ -192,7 +192,6 @@ void Objectmanager::customMenuView(const QPoint & pos)
             popupButton->setMenu(menu);
             menu->exec(QCursor::pos());
         }
-
         else if(list.value(0)=="dsmi"){
             QPushButton *popupButton = new QPushButton;
             QMenu *menu = new QMenu(this);
@@ -222,13 +221,29 @@ void Objectmanager::customMenuView(const QPoint & pos)
             QAction *nac_sostav = new QAction(QString("Национальный состав"),this); //.arg(list.value(3)),this);
             connect(nac_sostav,SIGNAL(triggered()),this,SLOT(show_nations_ls()));
 
-
-
-
             menu->addSeparator();
             menu->addAction(nac_sostav);
-
             menu->addAction(otch_ls);
+            menu->addSeparator();
+            menu->addAction(act);
+            popupButton->setMenu(menu);
+            menu->exec(QCursor::pos());
+        }
+        else if(list.value(0)=="dpers"){
+            QPushButton *popupButton = new QPushButton;
+            QMenu *menu = new QMenu(this);
+            QAction *act=new QAction("Удалить персоналию",this);
+            act->setIcon(QIcon(":/Resources/close.png"));
+            connect(act,SIGNAL(triggered()),this,SLOT(delete_pers()));
+
+            QAction *otch_pers = new QAction (QString("Сформировать отчет"),this);
+            connect(otch_pers,SIGNAL(triggered()),this,SLOT(otchet_groups()));
+
+            QAction *edit = new QAction(QString("Редактировать информацию"),this);
+            connect(edit,SIGNAL(triggered()),this,SLOT(edit_persones()));
+
+            menu->addAction(edit);
+            menu->addAction(otch_pers);
             menu->addSeparator();
             menu->addAction(act);
             popupButton->setMenu(menu);
@@ -483,7 +498,6 @@ void Objectmanager::customMenuView(const QPoint & pos)
         }
     }
 }
-
 //============== Штатка для групп по правому клику ================================
 void Objectmanager::show_state_gr(){
 
@@ -1683,6 +1697,11 @@ void Objectmanager::updateDB(QStandardItem *item)
 void Objectmanager::show_objects(const QModelIndex &index)
 {
     UI->property_object->setModel(0);
+ //   QProgressDialog * progress = new QProgressDialog("Формирование информации о регионах", "Отмена", 0, 0,this);
+  //  QThread *thr = new QThread(this);
+  //  progress->moveToThread(thr);
+//progress->show();
+ //  progress->moveToThread(new QThread(this));
     QFont font;
     font.setBold(true);
     QVariant id=index.data(Qt::UserRole);
@@ -1691,34 +1710,23 @@ void Objectmanager::show_objects(const QModelIndex &index)
         QString user_data=id.toString();
 
         UI->add_many_coord_button->setEnabled(true);
-
+        ;
+       // progress->setValue(-1);
         QStringList list=user_data.split("_");
         QStringList listtt;
-        //progress.setValue(15);
         if(list.value(0)=="country")
         {
             int id_country = list.value(1).toInt();
             QSqlQuery query;
 
+
             query.exec(QString("SELECT id_region, name_region,parent_region FROM region WHERE id_country=%1 order by name_region").arg(id_country));
             model = new QStandardItemModel(this);
 
             QStandardItem *parentItem = model->invisibleRootItem();
-            //progress.setValue(25);
-            int counter = 0;
-            QSqlRecord rez = query.record();
-            int maxCount = rez.count();
-
-            QProgressDialog progress("Формирование информации о регионах", "Отмена", 0, maxCount);
-            progress.setWindowModality(Qt::WindowModal);
-            progress.setWindowTitle("Формирование информации о регионах");
-
 
             while (query.next())
             {
-                progress.setValue(counter);
-                if(progress.wasCanceled())	break;
-
                 QSqlQuery query_count; // подсчет ********
                 query_count.exec(QString("select count(name_region) from region where parent_region = %1").arg(query.value(0).toInt()));
 
@@ -1732,33 +1740,25 @@ void Objectmanager::show_objects(const QModelIndex &index)
                     item->setIcon(icon);
                     QString data_region="region_" + QString::number(id_region) + "_" + QString::number(id_country) + "_" + QString::number(calc.get_Rez_on_id_region(id_region));
                     item->setData(data_region,Qt::UserRole);
-                    //item->setData(QIcon(set_icon(query.value(2).toInt())),Qt::DecorationRole);
                     model->appendRow(item);
                     child_region_objects(item,id_region);
 
                 }
-                // progress.setValue(35);
-                counter++;
             }
-
-            //progress.setValue(55);
             QStandardItem *item = new QStandardItem(QIcon(":/Resources/add.png"),"Добавить регион");
             item->setFont(font);
             item->setData(QString("pregion_%1").arg(id_country),Qt::UserRole);
-            //progress.setValue(75);
             model->appendRow(item);
-
-            //	model->sort(2,Qt::AscendingOrder);
-            //	UI->columnView->setModel(model);
             model->setHeaderData(0,Qt::Horizontal,"Регионы");
             UI->columnView->setModel(model);
-            progress.setValue(100);
-            progress.close();
-        }
-    }
 
+        }
+
+    }
+    //progress->close();
     return;
 }
+
 //================= Расчеты МПО ================================================================================
 int Objectmanager::calcul(int id_region){
 
@@ -2359,8 +2359,6 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
             show_coordinates(list.value(0),list.value(1).toInt(),"coord_persones","id_persones");
             persInfo = new Persones_info(type_elem,list.value(1).toInt(),this);
             persInfo->setModal(true);
-            connect(persInfo->del_but,SIGNAL(clicked()),this,SLOT(delete_pers()));
-            connect(persInfo->edit_but,SIGNAL(clicked()),this,SLOT(edit_persones()));
             persInfo->exec();
 
         }// =============== для формирований по персоналу ================================
@@ -2369,8 +2367,6 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
             show_coordinates(list.value(0),list.value(1).toInt(),"coord_persones","id_persones");
             persInfo = new Persones_info(type_elem,list.value(1).toInt(),this);
             persInfo->setModal(true);
-            connect(persInfo->del_but,SIGNAL(clicked()),this,SLOT(delete_pers()));
-            connect(persInfo->edit_but,SIGNAL(clicked()),this,SLOT(edit_persones()));
             persInfo->exec();
         }
         // =============== для smi по персоналу ================================
@@ -2379,8 +2375,6 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
             show_coordinates(list.value(0),list.value(1).toInt(),"coord_persones","id_persones");
             persInfo = new Persones_info(type_elem,list.value(1).toInt(),this);
             persInfo->setModal(true);
-            connect(persInfo->del_but,SIGNAL(clicked()),this,SLOT(delete_pers()));
-            connect(persInfo->edit_but,SIGNAL(clicked()),this,SLOT(edit_persones()));
             persInfo->exec();
         }
         //============== выбор для заполнения таблицы ====================================
@@ -3808,7 +3802,7 @@ void Objectmanager::delete_pers(){
     QMessageBox::StandardButton ret; ret = QMessageBox::information(this,"Предупреждение",("Удаление данных по персоналу выполнено"),QMessageBox::Ok );
     UI->property_object->setModel(0);
     clear_tableWidget(UI->coord_table);
-    persInfo->close();
+
 }
 //============================      отчеты    ================================================================
 void Objectmanager::otchet_groups()
@@ -3868,7 +3862,12 @@ void Objectmanager::otchet_groups()
             QString report = r->create_object_formular_mpo_pso_smi(id_suka_smi_mpo);
             r->show_preview_dialog(report);
         }
-
+        else if (list.value(0)=="dpers"){
+            Reports *r = new Reports;
+            int id_suka_pers = list.value(1).toInt();
+            QString report = r->create_object_formular_pers(id_suka_pers);
+            r->show_preview_dialog(report);
+        }
     }
 }
 // QString str = QString("select gr.name_groups,gr.counte_groups,gr.founder_group,gr.menegement_groups,gr.officce_groups,gr.description_groups,gr.propaganda_groups,tr.name_trend_groups,sph.name_sphere_groups, form.name_form_groups, reg.name_region FROM groups gr,trend_groups tr,sphere_groups sph, form_groups form, region reg where gr.id_trend=tr.id_trend_groups AND gr.id_sphere_groups=sph.id_sphere_groups AND gr.id_form_groups=form.id_form_groups AND gr.id_region = reg.id_region AND gr.id_groups=%1").arg(group_id);

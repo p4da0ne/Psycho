@@ -13,7 +13,7 @@ HEADERS += \
          mylabel.h \
          mysqlrelationaldelegate.h \
          personesdata.h \
-    persones_info.h
+        persones_info.h
 
 #Source files
 SOURCES +=  object_manager.cpp \
