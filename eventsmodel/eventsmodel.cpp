@@ -26,6 +26,9 @@ void EventsModel::UpdateModel(){
     int name_type_event = query.record().indexOf("name_type_event");
     int sign_key = query.record().indexOf("sign_key");
     int id_event_status_index = query.record().indexOf("id_event_status");
+    QStringList headerLabels ;
+    headerLabels << "Наименование события" << "Статус события" << "Тип события" << "Дата и время начала" << "Дата и время окончания";
+    this->setHorizontalHeaderLabels(headerLabels);
     while (query.next())
     {
         QBrush *brush;
@@ -34,19 +37,19 @@ void EventsModel::UpdateModel(){
         switch (id_event_status){
             case 1:
                 brush =new QBrush(QColor(255,0,0,50));
-                ico.load(":/icons/red.ico");
+                ico.load(":/icons/icons/red.ico");
                 break;
             case 2:
                 brush =new QBrush(QColor(150,150,150,30));
-                ico.load(":/icons/grey.ico");
+                ico.load(":/icons/icons/grey.ico");
                 break;
             case 3:
                 brush =new QBrush(QColor(20,255,20,50));
-                ico.load(":/icons/magenta.ico");
+                ico.load(":/icons/icons/magenta.ico");
                 break;
             case 4:
                 brush =new QBrush(QColor(218,185,0,70));
-                ico.load(":/icons/yellow.ico");
+                ico.load(":/icons/icons/yellow.ico");
                 break;
         }
 
@@ -55,23 +58,23 @@ void EventsModel::UpdateModel(){
         item->setData("name_event",33);
         items.append(item);
         QStandardItem * name_event_status_item = new QStandardItem(query.value(name_event_status).toString());
-        name_event_status_item->setData(ico,Qt::DecorationRole);
+//        name_event_status_item->setData(ico,Qt::DecorationRole);
         name_event_status_item->setEditable(false);
         items.append(name_event_status_item);
         QStandardItem * name_type_event_item = new QStandardItem(query.value(name_type_event).toString());
         name_type_event_item->setEditable(false);
         items.append(name_type_event_item);
-        QStandardItem * description_event_item = new QStandardItem(query.value(description_event).toString());
-        description_event_item->setData("description_event",33);
-        items.append(description_event_item);
-        QStandardItem * resume_event_item = new QStandardItem(query.value(resume_event).toString());
-        resume_event_item->setData("resume_event",33);
-        items.append(resume_event_item);
+//        QStandardItem * description_event_item = new QStandardItem(query.value(description_event).toString());
+//        description_event_item->setData("description_event",33);
+//        items.append(description_event_item);
+//        QStandardItem * resume_event_item = new QStandardItem(query.value(resume_event).toString());
+//        resume_event_item->setData("resume_event",33);
+//        items.append(resume_event_item);
         QStandardItem * time_event_start_item = new QStandardItem(query.value(time_event_start).toString());
         time_event_start_item->setData("time_event_start",33);
         items.append(time_event_start_item);
         QStandardItem * time_event_end_item = new QStandardItem(query.value(time_event_end).toString());
-        resume_event_item->setData("time_event_end",33);
+        time_event_end_item->setData("time_event_end",33);
         items.append(time_event_end_item);
         for(int i=0; i< items.size(); i++){
            items.at(i)->setData(id_event,32);

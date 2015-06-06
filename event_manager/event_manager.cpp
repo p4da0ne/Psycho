@@ -12,24 +12,35 @@ EventManager::EventManager(QWidget *parent, Coord *coord)
         this->whithCoord = true;
         return;
     }
+    initUIX();
 
-    QGridLayout * grid = new QGridLayout(this);
-    addNewEventPB = new QPushButton("Добавить новое событие");
-    tableView = new QTableView(this);
-    grid->addWidget(tableView,0,0);
-    grid->addWidget(this->addNewEventPB,0,1);
-
-    eventsModel = new EventsModel();
-    tableView->setModel(eventsModel);
-
-    this->setLayout(grid);
-
-    connect(this->addNewEventPB,SIGNAL(clicked()),this,SLOT(openNewEventDialog()));
-    connect(this,SIGNAL(eventInsert()),eventsModel,SLOT(UpdateModel()));
 }
 
 EventManager::~EventManager(){
 
+}
+
+void EventManager::initUIX()
+{
+    QGridLayout * grid = new QGridLayout(this);
+    addNewEventPB = new QPushButton(QIcon(":/icons/icons/add_but.png"),"",this);
+    addNewEventPB->setToolTip("Добавить новое событие");
+    tableView = new QTableView(this);
+    grid->addWidget(tableView,1,0,10,10);
+    grid->addWidget(this->addNewEventPB,0,0);
+
+    eventsModel = new EventsModel();
+    QSortFilterProxyModel *proxyModel = new QSortFilterProxyModel(this);
+    proxyModel->setSourceModel(eventsModel);
+    proxyModel->setDynamicSortFilter(true);
+    tableView->setSortingEnabled(true);
+    tableView->setModel(proxyModel);
+    tableView->resizeColumnsToContents();
+    this->setLayout(grid);
+
+    connect(tableView,SIGNAL(clicked(QModelIndex)),this,SLOT(eventClick(QModelIndex&)));
+    connect(this->addNewEventPB,SIGNAL(clicked()),this,SLOT(openNewEventDialog()));
+    connect(this,SIGNAL(eventInsert()),eventsModel,SLOT(UpdateModel()));
 }
 
 void EventManager::addNewEventDialog(QWidget *parent){
@@ -108,10 +119,6 @@ void EventManager::addNewEventDialog(QWidget *parent){
     QLabel * line = new QLabel();
     line->setFrameStyle(QFrame::HLine | QFrame::Raised);
     line->setLineWidth(2);
-    QLabel * line2 = new QLabel();
-    line2->setFrameStyle(QFrame::HLine | QFrame::Raised);
-    line2->setLineWidth(2);
-
     this->suorceTypeObjectCBNE = new QComboBox();
     this->suorceObjectCBNE = new QComboBox();
     this->getTypeObjectCBNE = new QComboBox();
@@ -127,14 +134,12 @@ void EventManager::addNewEventDialog(QWidget *parent){
     formLayout->addRow("Время окончания события:",DTE);
     formLayout->addRow("Описание события:",descriptionTE);
     formLayout->addRow("Выводы по событию:",resumeTE);
-    formLayout->addWidget(line);
     formLayout->addRow("Широта (градусы):",lagLE);
     formLayout->addRow("Широта (минуты):",lamLE);
     formLayout->addRow("Широта (секунды):",lasLE);
     formLayout->addRow("Долгота (градусы):",logLE);
     formLayout->addRow("Долгота (минуты):",lomLE);
     formLayout->addRow("Долгота (секунды):",losLE);
-    formLayout->addWidget(line2);
     formLayout->addRow("Тип объекта инициатора:",this->suorceTypeObjectCBNE);
     formLayout->addRow("Объект инициатор события:",suorceObjectCBNE);
     formLayout->addRow("Тип объекта события:",this->getTypeObjectCBNE);
@@ -156,6 +161,11 @@ void EventManager::openNewEventDialog()
 {
 
     this->addNewEventDialog(this);
+}
+
+void EventManager::eventClick(QModelIndex &index)
+{
+    current_event = new Event(index.data(32).toInt());
 }
 
 void EventManager::sourceTypeChange(int index)
@@ -248,6 +258,8 @@ void EventManager::saveNewEvent()
         isEventDialogOpen = false;
     }
 }
+
+
 
 void EventManager::getTypeObjectCB()
 {

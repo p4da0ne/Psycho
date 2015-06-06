@@ -6,6 +6,7 @@
 #include <QTableView>
 #include <QLayout>
 #include <QList>
+#include <QSortFilterProxyModel>
 #include "config_event_manager.h"
 #include "../eventsmodel/eventsmodel.h"
 
@@ -20,6 +21,7 @@ public:
 public slots:
     void addNewEventDialog(QWidget *parent);
     void openNewEventDialog();
+    void eventClick(QModelIndex & index);
 
 private slots:
     void sourceTypeChange(int index);
@@ -27,6 +29,7 @@ private slots:
     void saveNewEvent();
 
 private:
+    void initUIX();
     QTableView * tableView;
     EventsModel * eventsModel;
     Event * current_event;
