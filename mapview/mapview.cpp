@@ -1759,7 +1759,7 @@ void MapView::slotEditEvent()
 	{
 		QStringList objInfo = action->data().toString().split("_");
 
-		////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	}
 
 }
@@ -1775,7 +1775,7 @@ void MapView::slotDeleteEvent()
 	{
 		QStringList objInfo = action->data().toString().split("_");
 
-		//////////////////////////////////////////////////////////		
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	}
 
 }
@@ -2227,9 +2227,11 @@ void MapView::addEvent()
 	eventCoord = planeToWGS(mapwin->hMap,eventCoord);
 
 	EventManager *eventManager = new EventManager(this,eventCoord);
+	
+	connect(eventManager,SIGNAL(eventDataChanged()),this,SLOT(showCheckedEvents()));
+	
 	eventManager->addNewEventDialog(this);
-	showCheckedEvents();
-	//showMessageToUser("B = " + eventCoord->latitudeToString() + "  L = " + eventCoord->longitudeToString());
+
 }
 
 
