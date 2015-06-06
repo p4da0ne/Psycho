@@ -17,7 +17,8 @@ PersonesData::PersonesData(QString type_element,int id_object,QWidget *parent) :
     id_object_pers = id_object;
     type_elem_pers = type_element;
 
-//===================== размеры полей и тд =========================================================
+
+ //===================== размеры полей и тд =========================================================
 
 //    header_list<<" "<<" "<<"¬оинские звани€ \n (специальные звани€, \n классные чины )"<<"ѕравовой акт о присвоении \n воинского звани€ \n (специального звани€, классного чина), \n его дата и номер"<<" ";
 
@@ -34,6 +35,17 @@ PersonesData::PersonesData(QString type_element,int id_object,QWidget *parent) :
     UI->hb_dateEdit->setDate(dateToday);
     UI->date_pass_dateEdit->setDate(dateToday);
     UI->date_udo_lich_dateEdit->setDate(dateToday);
+    UI->zvan_nauka_dateEdit->setDate(dateToday);
+    UI->step_nauka_dateEdit->setDate(dateToday);
+    UI->prinyl_dateEdit->setDate(dateToday);
+    UI->prizvan_dateEdit->setDate(dateToday);
+    UI->prizvan_2_dateEdit->setDate(dateToday);
+    UI->wife_b_dateEdit->setDate(dateToday);
+    UI->brak_dateEdit->setDate(dateToday);
+
+    UI->itog_dateEdit->setDate(dateToday);
+
+
 }
 
 PersonesData::~PersonesData()
