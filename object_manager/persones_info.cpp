@@ -16,16 +16,8 @@ Persones_info::Persones_info(QString type_element,int id_object,QWidget *parent)
     show_info_pers();
 
 //============================================================================
-    exit_but = new QPushButton();
-    QIcon icon_exit(QString(":/Resources/exit.png"));
-    exit_but->setIconSize(QSize(25,25));
-    exit_but->setIcon(icon_exit);
-
-    UI->horizontalLayout->addWidget(exit_but);
-
 
 //==================== CONNECT ===========================================
-    connect(exit_but,SIGNAL(clicked()),this,SLOT(close()));
 
 }
 

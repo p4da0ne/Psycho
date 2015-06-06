@@ -17,8 +17,6 @@ public:
     explicit Persones_info(QString type_element, int id_object, QWidget *parent);
     ~Persones_info();
 
-    QPushButton *exit_but;
-
 public slots:
 
 
