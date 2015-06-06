@@ -337,8 +337,8 @@ QString EventsMapModel::getEventPeriod(int idEvent)
 	}
 
 	eventPeriod.append(start.toString("yyyy-MM-dd hh:mm"));
-	eventPeriod.append("\n");
-	eventPeriod.append(end.toString("yyyy-MM-dd hh:mm"));
+	//eventPeriod.append("\n");
+	//eventPeriod.append(end.toString("yyyy-MM-dd hh:mm"));
 
 	return eventPeriod;
 }

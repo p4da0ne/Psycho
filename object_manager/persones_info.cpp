@@ -16,32 +16,8 @@ Persones_info::Persones_info(QString type_element,int id_object,QWidget *parent)
     show_info_pers();
 
 //============================================================================
-    del_but = new QPushButton();
-    exit_but = new QPushButton();
-    edit_but = new QPushButton();
-    report_but = new QPushButton();
-    QIcon icon_exit(QString(":/Resources/exit.png"));
-    QIcon icon_del(QString(":/Resources/close.png"));
-    QIcon icon_edit(QString(":/Resources/edit_1.png"));
-    QIcon icon_report(QString(":/Resources/book.png"));
-    report_but->setIconSize(QSize(25,25));
-    exit_but->setIconSize(QSize(25,25));
-    edit_but->setIconSize(QSize(25,25));
-    del_but->setIconSize(QSize(25,25));
-    exit_but->setIcon(icon_exit);
-    edit_but->setIcon(icon_edit);
-    report_but->setIcon(icon_report);
-    del_but->setIcon(icon_del);
-
-    UI->horizontalLayout->addWidget(del_but);
-    UI->horizontalLayout->addWidget(edit_but);
-    UI->horizontalLayout->addWidget(report_but);
-    UI->horizontalLayout->addWidget(exit_but);
-
 
 //==================== CONNECT ===========================================
-    connect(report_but,SIGNAL(clicked()),this,SLOT(otchet_person()));
-    connect(exit_but,SIGNAL(clicked()),this,SLOT(close()));
 
 }
 
@@ -81,8 +57,8 @@ void Persones_info::show_info_pers()
         pixmap.loadFromData(query.value(rec.indexOf("image_persones")).toByteArray() );
         pixmap = pixmap.scaled(200,200,Qt::KeepAspectRatio);
 
-        UI->f_lineEdit->setText(f_name);
-        UI->rank_lineEdit->setText(rank_pers);
+        UI->f_LineEdit->setText(f_name);
+        UI->rankLineEdit->setText(rank_pers);
    //   lineEdit_counte_ls->setText(QString::number(age_pers));
 
         fill_combobox_persones_(UI->type_comboBox,id_type_persones);
@@ -92,14 +68,6 @@ void Persones_info::show_info_pers()
 
     }
 
-}
-// ============================ отчет по персоналиям ===================================
-void Persones_info::otchet_person()
-{
-    this->close();
-    Reports *r = new Reports;
-    QString report = r->create_object_formular_pers(id_object_pers);
-    r->show_preview_dialog(report);
 }
 
 //======================================================================================

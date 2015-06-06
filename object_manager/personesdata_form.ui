@@ -390,7 +390,14 @@
           </widget>
          </item>
          <item row="0" column="7">
-          <widget class="QComboBox" name="type_person_comboBox"/>
+          <widget class="QComboBox" name="type_person_comboBox">
+           <property name="font">
+            <font>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>

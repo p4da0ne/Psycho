@@ -59,7 +59,6 @@ public:
 	MyLabel *label_foto; 
 	QLabel *label_foto_hide;
 
-
 public slots:
 	void customMenuTree(const QPoint &);
 	void customMenuView(const QPoint &);

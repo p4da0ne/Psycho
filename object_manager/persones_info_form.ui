@@ -6,16 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>342</width>
-    <height>293</height>
+    <width>336</width>
+    <height>280</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Данные по персоналии</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2">
+  <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <layout class="QGridLayout" name="gridLayout">
+    <layout class="QFormLayout" name="formLayout_2">
+     <property name="fieldGrowthPolicy">
+      <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+     </property>
      <item row="0" column="0">
       <widget class="QLabel" name="label_5">
        <property name="font">
@@ -36,7 +39,7 @@
       </widget>
      </item>
      <item row="1" column="0">
-      <widget class="QLabel" name="label_3">
+      <widget class="QLabel" name="Label">
        <property name="font">
         <font>
          <pointsize>9</pointsize>
@@ -48,14 +51,11 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QLineEdit" name="f_lineEdit">
+      <widget class="QLineEdit" name="f_LineEdit">
        <property name="font">
         <font>
          <pointsize>9</pointsize>
         </font>
-       </property>
-       <property name="dragEnabled">
-        <bool>false</bool>
        </property>
        <property name="readOnly">
         <bool>true</bool>
@@ -63,7 +63,7 @@
       </widget>
      </item>
      <item row="2" column="0">
-      <widget class="QLabel" name="label_4">
+      <widget class="QLabel" name="Label_2">
        <property name="font">
         <font>
          <pointsize>9</pointsize>
@@ -75,7 +75,7 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QLineEdit" name="n_lineEdit">
+      <widget class="QLineEdit" name="name_LineEdit">
        <property name="font">
         <font>
          <pointsize>9</pointsize>
@@ -87,7 +87,7 @@
       </widget>
      </item>
      <item row="3" column="0">
-      <widget class="QLabel" name="label_7">
+      <widget class="QLabel" name="Label_3">
        <property name="font">
         <font>
          <pointsize>9</pointsize>
@@ -99,7 +99,7 @@
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QLineEdit" name="o_lineEdit">
+      <widget class="QLineEdit" name="o_LineEdit">
        <property name="font">
         <font>
          <pointsize>9</pointsize>
@@ -111,26 +111,19 @@
       </widget>
      </item>
      <item row="4" column="0">
-      <widget class="QLabel" name="label_6">
+      <widget class="QLabel" name="Label_4">
        <property name="font">
         <font>
          <pointsize>9</pointsize>
-         <weight>50</weight>
-         <bold>false</bold>
         </font>
        </property>
        <property name="text">
-        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Число, месяц,&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;год рождения:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>Дата рождения:</string>
        </property>
       </widget>
      </item>
      <item row="4" column="1">
-      <widget class="QLineEdit" name="date_lineEdit">
+      <widget class="QLineEdit" name="date_LineEdit">
        <property name="font">
         <font>
          <pointsize>9</pointsize>
@@ -142,7 +135,7 @@ p, li { white-space: pre-wrap; }
       </widget>
      </item>
      <item row="5" column="0">
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="Label_5">
        <property name="font">
         <font>
          <pointsize>9</pointsize>
@@ -154,21 +147,22 @@ p, li { white-space: pre-wrap; }
       </widget>
      </item>
      <item row="5" column="1">
-      <widget class="QLineEdit" name="nation_lineEdit">
+      <widget class="QLineEdit" name="nation_LineEdit">
        <property name="font">
         <font>
          <pointsize>9</pointsize>
         </font>
        </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
      <item row="6" column="0">
-      <widget class="QLabel" name="label_8">
+      <widget class="QLabel" name="Label_6">
        <property name="font">
         <font>
          <pointsize>9</pointsize>
-         <weight>50</weight>
-         <bold>false</bold>
         </font>
        </property>
        <property name="text">
@@ -177,7 +171,7 @@ p, li { white-space: pre-wrap; }
       </widget>
      </item>
      <item row="6" column="1">
-      <widget class="QLineEdit" name="home_lineEdit">
+      <widget class="QLineEdit" name="home_LineEdit">
        <property name="font">
         <font>
          <pointsize>9</pointsize>
@@ -189,7 +183,7 @@ p, li { white-space: pre-wrap; }
       </widget>
      </item>
      <item row="7" column="0">
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="Label_7">
        <property name="font">
         <font>
          <pointsize>9</pointsize>
@@ -201,7 +195,7 @@ p, li { white-space: pre-wrap; }
       </widget>
      </item>
      <item row="7" column="1">
-      <widget class="QLineEdit" name="rank_lineEdit">
+      <widget class="QLineEdit" name="rankLineEdit">
        <property name="font">
         <font>
          <pointsize>9</pointsize>
@@ -213,12 +207,10 @@ p, li { white-space: pre-wrap; }
       </widget>
      </item>
      <item row="8" column="0">
-      <widget class="QLabel" name="label_17">
+      <widget class="QLabel" name="Label_8">
        <property name="font">
         <font>
          <pointsize>9</pointsize>
-         <weight>50</weight>
-         <bold>false</bold>
         </font>
        </property>
        <property name="text">
@@ -227,30 +219,53 @@ p, li { white-space: pre-wrap; }
       </widget>
      </item>
      <item row="8" column="1">
-      <widget class="QComboBox" name="type_comboBox">
-       <property name="font">
-        <font>
-         <pointsize>9</pointsize>
-        </font>
+      <widget class="QComboBox" name="type_comboBox"/>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
-       <property name="editable">
-        <bool>false</bool>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
        </property>
-       <property name="insertPolicy">
-        <enum>QComboBox::NoInsert</enum>
-       </property>
-       <property name="frame">
-        <bool>true</bool>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton">
+       <property name="text">
+        <string>Выход</string>
        </property>
       </widget>
      </item>
     </layout>
    </item>
-   <item row="1" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout"/>
-   </item>
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Persones_info</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>288</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>167</x>
+     <y>139</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
