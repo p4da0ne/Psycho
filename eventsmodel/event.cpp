@@ -198,8 +198,8 @@ bool Event::insertEventToDB()
             .arg(this->event_name)
             .arg(this->event_description)
             .arg(this->event_resume)
-            .arg(this->event_start_date->toString("yyyy-M-d h:m:s"))
-            .arg(this->event_end_date->toString("yyyy-M-d h:m:s"));
+            .arg(this->event_start_date->toString("yyyy-MM-dd hh:mm:ss"))
+            .arg(this->event_end_date->toString("yyyy-MM-dd hh:mm:ss"));
     if(!query.exec(str)){
         qDebug() << query.lastError().text();
         qDebug() << query.lastQuery();

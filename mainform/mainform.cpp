@@ -25,7 +25,7 @@ Mainform::Mainform(QMainWindow *parent, Qt::WFlags flags)
 	connection_flag = false;
 	login_flag = false;
 	QImage img(":/Resources/saturn.png");
-	m_mdiArea = new myQMdiArea(img,this);
+    m_mdiArea = new myQMdiArea(img,this);
 	m_mdiArea->setTabShape(QTabWidget::Triangular);
 	m_mdiArea->setViewMode(QMdiArea::TabbedView);
 	setCentralWidget(m_mdiArea);
@@ -64,12 +64,15 @@ Mainform::~Mainform()
 
 void Mainform::closeTab(int i)
 {
-	QMdiSubWindow *sub = m_mdiArea->subWindowList()[i];
-	
-	QWidget *win = sub->widget();
+    QList<QMdiSubWindow *> subList = m_mdiArea->subWindowList();
 
-	win->close();
-	sub->close();
+    int a=8;
+//	QMdiSubWindow *sub = m_mdiArea->subWindowList()[i];
+	
+//	QWidget *win = sub->widget();
+
+//	win->close();
+//	sub->close();
 }
 
 
@@ -614,13 +617,17 @@ void Mainform::show_map_form()
 
 		map_view->setWindowTitle("Работа с картой");
 		
-		map_window = new QMdiSubWindow;
-		map_window = m_mdiArea->addSubWindow(map_view);
+        //map_window = new QMdiSubWindow;
+        map_window = m_mdiArea->addSubWindow(map_view);
 		map_window->setAttribute(Qt::WA_DeleteOnClose);
 		map_window->setWindowIcon(QIcon(":/Resources/mapwork.png"));
 		map_view->showMaximized();
+
 		m_mdiArea->setActiveSubWindow(map_window);
-		QList< MapView* > list1 = m_mdiArea->findChildren< MapView* >();
+
+        QList<QMdiSubWindow *> subList = m_mdiArea->subWindowList();
+
+        QList< MapView* > list1 = m_mdiArea->findChildren< MapView* >();
 		if(!list1.isEmpty())
 		{
 			m_mdiArea->setActiveSubWindow(map_window);
@@ -642,13 +649,15 @@ void Mainform::slotOpenEventManagerForm()
 	
 	EventManager *eventManager = new EventManager;
 	
-	events_window = m_mdiArea->addSubWindow(eventManager,Qt::SubWindow);
+    //events_window = new QMdiSubWindow;
+    events_window = m_mdiArea->addSubWindow(eventManager);
     events_window->setAttribute(Qt::WA_DeleteOnClose);
 	events_window->setWindowIcon(QIcon(":/Resources/01.ico"));
    	 
 	eventManager->setWindowTitle("Управление событиями");
 	eventManager->showMaximized();
-	m_mdiArea->setActiveSubWindow(events_window); 
+
+    m_mdiArea->setActiveSubWindow(events_window);
 	return;
 }
 

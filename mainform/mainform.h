@@ -42,7 +42,7 @@ public:
 	int id_user;
 	bool login_flag;
 	QString str_to_md5(QString str);
-	myQMdiArea * m_mdiArea;
+    myQMdiArea * m_mdiArea;
 
 	QMdiSubWindow * map_window;
 	QMdiSubWindow * obmanager;

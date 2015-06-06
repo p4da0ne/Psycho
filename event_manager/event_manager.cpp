@@ -40,7 +40,7 @@ void EventManager::initUIX()
 
     connect(tableView,SIGNAL(clicked(QModelIndex)),this,SLOT(eventClick(QModelIndex&)));
     connect(this->addNewEventPB,SIGNAL(clicked()),this,SLOT(openNewEventDialog()));
-    connect(this,SIGNAL(eventInsert()),eventsModel,SLOT(UpdateModel()));
+    connect(this,SIGNAL(eventDataChanged()),eventsModel,SLOT(UpdateModel()));
 }
 
 void EventManager::addNewEventDialog(QWidget *parent){
@@ -254,7 +254,7 @@ void EventManager::saveNewEvent()
     }
     if(newEvent->insertEventToDB()){
         newEventDialog->close();
-        emit eventInsert();
+        emit eventDataChanged();
         isEventDialogOpen = false;
     }
 }
