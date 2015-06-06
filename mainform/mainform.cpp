@@ -249,7 +249,7 @@ void Mainform::init_menu(int id_user_group)
 	QString mess;
     switch(id_user_group)
 	{
-	 case 0:	   		//==== Незарегистрированный пользователь (вошел без логина и пароля)или нет соединения с БД ====
+	 case 0:	  //==== Незарегистрированный пользователь (вошел без логина и пароля)или нет соединения с БД ====
 		    UI->menuBar->clear();
 			menu = new QMenu("Файл");
             if(connection_flag == false)
@@ -272,31 +272,7 @@ void Mainform::init_menu(int id_user_group)
 
 		 	break;
 
-	 case 1:	   		//==== Разработчик (права админа) ====
-			UI->menuBar->clear();
-			menu = new QMenu("Файл");
-			add_menu_change_user(menu);
-			add_menu_exit(menu);
-			UI->menuBar->addMenu(menu);
-			
-			settings_menu = new QMenu("Настройки");
-			add_menu_db_connection(settings_menu);
-			add_menu_manage_users(settings_menu);
-			add_menu_map_settings(settings_menu);
-			add_menu_backup_db(settings_menu);
-            add_menu_signs_edit(settings_menu);
-			UI->menuBar->addMenu(settings_menu);
-
-			oper_menu = new QMenu("Оперативная работа");
-			add_menu_supporting_tables(oper_menu);
-			add_menu_object_manager(oper_menu);
-			add_mapwork(oper_menu);
-			add_menu_event_manager(oper_menu);
-			UI->menuBar->addMenu(oper_menu);
-			Mainform::setWindowTitle("Сатурн - сессия разработчика");
-			break;
-	 
-	 case 2:     		//==== Администратор ====
+	 case 2:    //==== Администратор ====
 			UI->menuBar->clear();
 			menu = new QMenu("Файл");
 			add_menu_change_user(menu);
@@ -398,10 +374,10 @@ void Mainform::add_menu_signs_edit(QMenu *settings_menu)
 
 
 void Mainform::add_menu_manage_users(QMenu *settings_menu){
-	sett_act4 = new QAction("Управление пользователями",this);
-	sett_act4->setIcon(QIcon(":/Resources/user_config.png"));
-	settings_menu->addAction(sett_act4);
-	connect(sett_act4, SIGNAL(triggered()),this, SLOT(show_user_form()));
+	users_action = new QAction("Управление пользователями",this);
+	users_action->setIcon(QIcon(":/Resources/user_config.png"));
+	settings_menu->addAction(users_action);
+	connect(users_action, SIGNAL(triggered()),this, SLOT(slotOpenUserManageForm()));
 }
 
 void Mainform::add_menu_supporting_tables(QMenu *oper_menu){
@@ -589,14 +565,6 @@ void Mainform::create_user_menu(int id_user)
 
 
 
-//===================================================
-void Mainform::show_user_form()
-{
-	  ManageUsers *u = new ManageUsers();
-      u->show();
-	  
-}
-
 //================ Форма ввода и редактирования информации ========
 
 //============= Открытие формы работы с картой ==============
@@ -731,5 +699,22 @@ void Mainform::slotOpenBackupDbDialog()
        
 
     }
+
+}
+
+
+
+
+void Mainform::slotOpenUserManageForm()
+{
+	UsersManager *usersDlg = new UsersManager;
+
+    if(usersDlg->exec() == QDialog::Accepted)
+    {
+       
+
+    }
+
+
 
 }
