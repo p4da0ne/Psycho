@@ -2,6 +2,7 @@
 #include <QSqlQuery>
 #include <QSqlRecord>
 
+
 UserDataDialog::UserDataDialog(int idUser, QWidget *parent) :
    QDialog(parent),idUser(idUser)
 {
@@ -81,6 +82,12 @@ void UserDataDialog::slotAccepted()
     {
 		mess.append("Вы не ввели пароль пользователя.\n");
     }
+
+	if(!isUniqueLogin(loginLineEdit.text()) && (this->idUser == 0))
+	{
+		mess = "Пользователь таким логином уже зарегистрирован.";
+		loginLineEdit.setFocus();
+	}
 
 	if(mess != "")
 	{
@@ -237,34 +244,26 @@ void UserDataDialog::fillUserData(int idUser)
 }
 
 
-//============================================================================
-//======= Метод добавления нового пользователя в БД ============
-//============================================================================
-void UserDataDialog::addUserInDB()
+//===================================================================
+//====== Метод проверки уникальности логина в БД ====================
+//===================================================================
+bool UserDataDialog::isUniqueLogin(QString login)
 {
-	QString surname, name, patronumic, login, password;
-	int idRank, idGroup;
-
-	password = str_to_md5(passwordLineEdit.text());
-
+	QString loginName;
+	int count = 0;
 	QSqlQuery query;
-	QString str = QString("INSERT INTO users_passwd (id_user, passwd) VALUES (%1, '%2') RETURNING id_user_passwd").arg(idUser).arg(password);
+	QString str = QString("SELECT COUNT(id_user) FROM users WHERE login_name = '%1'").arg(login);
 	if(query.exec(str))
 	{
-		QSqlRecord rec = query.record();
-		while (query.next())
-		{
-			
-		}
-}
-
-//====================================================================
-//===== Метод шифрования строки по методу MD5 ========================
-//====================================================================
-QString UserDataDialog::str_to_md5(QString str)
-{
-	QCryptographicHash hash(QCryptographicHash::Md5);
-	hash.addData(str.toAscii()); 
-	QString md5_str(hash.result().toHex());
-	return md5_str;
+		query.next();
+		count = query.value(0).toInt();
+	}
+	if(count > 0)
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
 }

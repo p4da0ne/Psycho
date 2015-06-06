@@ -54,7 +54,6 @@ public:
     
 private slots:
 
-	void show_user_form();
 	void show_connect_settings_dialog();
 	void test_connection();
 	void save_connection_settings();
@@ -82,7 +81,6 @@ private:
 	QAction * sett_act1;
 	QAction * sett_act2;
 	QAction * sett_act3;
-	QAction * sett_act4;
     QAction * sett_act5;
 	QAction * event_act;
 

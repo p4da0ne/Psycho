@@ -3,7 +3,7 @@
 #include <QSqlQuery>
 #include <QSqlRecord>
 #include <QHeaderView>
-#include "user_data_dialog.h"
+#include <QCryptographicHash>
 
 UsersManager::UsersManager(QDialog *parent)
     : QDialog(parent)
@@ -18,6 +18,10 @@ UsersManager::UsersManager(QDialog *parent)
 	editUserButton->setIcon(QIcon(":/Resources/edit_but.png"));
 	editUserButton->setToolTip("Редактировать данные выбранного пользователя");
 
+	passwordButton = new QToolButton;
+	passwordButton->setIcon(QIcon(":/Resources/stock_lock.png"));
+	passwordButton->setToolTip("Изменить пароль выбранного пользователя");
+
 	delUserButton = new QToolButton;
 	delUserButton->setIcon(QIcon(":/Resources/delete_but.png"));
 	delUserButton->setToolTip("Удалить выбранных пользователей");
@@ -25,16 +29,19 @@ UsersManager::UsersManager(QDialog *parent)
 	connect(addUserButton,SIGNAL(clicked()),this,SLOT(addUser()));
 	connect(editUserButton,SIGNAL(clicked()),this,SLOT(editUser()));
 	connect(delUserButton,SIGNAL(clicked()),this,SLOT(deleteUser()));
+	connect(passwordButton,SIGNAL(clicked()),this,SLOT(changeUserPassword()));
 
 	QHBoxLayout *toolLay = new QHBoxLayout;
 	toolLay->addWidget(addUserButton);
 	toolLay->addWidget(editUserButton);
+	toolLay->addWidget(passwordButton);
 	toolLay->addWidget(delUserButton);
 	toolLay->addStretch();
 
 	usersView = new QTableView;
 	usersModel = new QStandardItemModel;
 	usersView->setModel(usersModel);
+
 	usersView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	
 
@@ -45,17 +52,11 @@ UsersManager::UsersManager(QDialog *parent)
 	setLayout(v_lay);
 	
 	fillUsersModel();
-	resize(800,500);
+	usersView->resizeColumnsToContents();
+	resize(700,400);
 
 }
 
-//QString ManageUsers::str_to_md5(QString str)
-//{
-//	QCryptographicHash hash(QCryptographicHash::Md5);
-//	hash.addData(str.toAscii()); 
-//	QString md5_str(hash.result().toHex());
-//	return md5_str;
-//}
 
 UsersManager::~UsersManager()
 {
@@ -117,6 +118,9 @@ void UsersManager::fillUsersModel()
 
 			usersModel->appendRow(rowList);
 		}
+		QStringList hList;
+		hList<<"Воинское звание"<<"Фамилия"<<"Имя"<<"Отчество"<<"Логин"<<"Статус";
+		usersModel->setHorizontalHeaderLabels(hList);
 	}
 	return;
 }
@@ -144,11 +148,11 @@ int UsersManager::selectedUsersCount()
 void UsersManager::addUser()
 {
 		
-	UserDataDialog *userDlg = new UserDataDialog;
+	userDlg = new UserDataDialog;
 	if(userDlg->exec() == QDialog::Accepted)
 	{
 		//------ Вставка данных в БД ------
-		userDlg->deleteLater();
+		addUserInDB();
 	}
 }
 
@@ -170,12 +174,11 @@ void UsersManager::editUser()
 			idUser = usersModel->data(usersModel->index(row,0),Qt::UserRole).toInt();
 		}
 	}
-	UserDataDialog *userDlg = new UserDataDialog(idUser);
+	userDlg = new UserDataDialog(idUser);
 	if(userDlg->exec() == QDialog::Accepted)
 	{
-		//------ Вставка данных в БД ------
-		
-		userDlg->deleteLater();
+		//------ Обновление данных в БД ------
+		updateUserDataInDB();
 	}
 	//
 }
@@ -242,14 +245,147 @@ void UsersManager::deleteSelectedUsers()
 				str = QString("DELETE FROM users WHERE id_user = %1").arg(idUser);
 				if(query.exec(str))
 				{
-					fillUsersModel();
+					
 				}
 			}
 		}
 	}
+	fillUsersModel();
+}
 
-		
 
+
+//============================================================================
+//======= Метод добавления нового пользователя в БД ============
+//============================================================================
+void UsersManager::addUserInDB()
+{
+	QString surname, name, patronumic, login, password;
+	int idRank, idGroup;
+
+	password = str_to_md5(userDlg->passwordLineEdit.text());
+	surname = userDlg->surnameLineEdit.text();
+	name = userDlg->nameLineEdit.text();
+	patronumic = userDlg->patronLineEdit.text();
+	login = userDlg->loginLineEdit.text();
+	idRank = userDlg->rankCombo.itemData(userDlg->rankCombo.currentIndex(),Qt::UserRole).toInt();
+	idGroup = userDlg->groupCombo.itemData(userDlg->groupCombo.currentIndex(),Qt::UserRole).toInt();
+
+	QSqlQuery query;
+	QString str = QString("INSERT INTO users (id_user,id_group,id_military_rank,surname,name,patronumic,login_name) \
+						  VALUES (DEFAULT,%1,%2,'%3','%4','%5','%6') RETURNING id_user").arg(idGroup).arg(idRank).arg(surname).arg(name).arg(patronumic).arg(login);
+	
+	int id_user;
+
+	if(query.exec(str))
+	{
+		QSqlRecord rec = query.record();
+		query.next();
+		id_user = query.value(rec.indexOf("id_user")).toInt();
+	}
+	else
+	{
+		return;
+	}
+
+	QSqlQuery queryPass;
+	if(queryPass.exec(QString("INSERT INTO users_passwd (id_user, passwd) VALUES (%1, '%2')").arg(id_user).arg(password)))
+	{
+		fillUsersModel();
+		return;
+	}
+	return;
+}
+
+
+//============================================================================
+//======= Метод обновления данных пользователя в БД ============
+//============================================================================
+void UsersManager::updateUserDataInDB()
+{
+	QString surname, name, patronumic, login;
+	int idRank, idGroup, id_user;
+
+	surname = userDlg->surnameLineEdit.text();
+	name = userDlg->nameLineEdit.text();
+	patronumic = userDlg->patronLineEdit.text();
+	login = userDlg->loginLineEdit.text();
+	idRank = userDlg->rankCombo.itemData(userDlg->rankCombo.currentIndex(),Qt::UserRole).toInt();
+	idGroup = userDlg->groupCombo.itemData(userDlg->groupCombo.currentIndex(),Qt::UserRole).toInt();
+	id_user = userDlg->idUser;
+
+	QSqlQuery query;
+	QString str = QString("UPDATE users SET id_group=%1,id_military_rank=%2,surname='%3',name='%4',patronumic='%5',login_name='%6' \
+						  WHERE id_user=%7").arg(idGroup).arg(idRank).arg(surname).arg(name).arg(patronumic).arg(login).arg(id_user);
+	
+	if(query.exec(str))
+	{
+		fillUsersModel();
+	}
+	else
+	{
+		return;
+	}
+}
+
+
+//====================================================================
+//===== Метод шифрования строки по методу MD5 ========================
+//====================================================================
+QString UsersManager::str_to_md5(QString str)
+{
+	QCryptographicHash hash(QCryptographicHash::Md5);
+	hash.addData(str.toAscii()); 
+	QString md5_str(hash.result().toHex());
+	return md5_str;
+}
+
+//====================================================================
+//====== Слот изменения пароля пользователя ==========================
+//====================================================================
+void UsersManager::changeUserPassword()
+{
+	if(selectedUsersCount() != 1)
+	{
+		showMessageToUser("Для изменения пароля выберите одного пользователя.");
+		return;
+	}
+	int idUser;
+	for(int row=0;row<usersModel->rowCount();row++)
+	{
+		if(usersModel->item(row,0)->checkState() == Qt::Checked)
+		{
+			idUser = usersModel->data(usersModel->index(row,0),Qt::UserRole).toInt();
+		}
+	}
+
+	passwordDlg = new PasswordDialog(idUser);
+	if(passwordDlg->exec() == QDialog::Accepted)
+	{
+		QString newPassword = passwordDlg->newPasswordLineEdit.text();
+		updateUserPasswordInDB(idUser, str_to_md5(newPassword));
+	}
 
 }
 
+
+//====================================================================================
+//====== Метод изменения пароля пользователя в БД ====================================
+//====================================================================================
+void UsersManager::updateUserPasswordInDB(int idUser,QString newPassword)
+{
+	QSqlQuery query;
+	QString str = QString("UPDATE users_passwd SET passwd = '%1' WHERE id_user = %2").arg(newPassword).arg(idUser);
+	
+	QString mess;
+	if(query.exec(str))
+	{
+		mess = "Пароль изменен успешно.";
+	}
+	else
+	{
+		mess = "При изменении пароля произошла ошибка.";
+	}
+	showMessageToUser(mess);
+	return;
+}

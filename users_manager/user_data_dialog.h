@@ -28,6 +28,7 @@ public:
     QFormLayout formLay;
 	QVBoxLayout dlgLay;
 	QHBoxLayout buttonLay;
+	int idUser;
 	QString str_to_md5(QString str);
 private:
 	QStandardItemModel* getRankList();
@@ -36,11 +37,11 @@ private:
 	QString getUserGroupName(int idUser);
     void messageToUser(QString message);
 	void fillUserData(int idUser);
-	void addUserInDB();
+	bool isUniqueLogin(QString login);
 
 	QStandardItemModel *rankModel;
 	QStandardItemModel *groupModel;
-	int idUser;
+
 };
 
 #endif // USER_DATA_DIALOG_H
