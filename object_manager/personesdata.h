@@ -16,6 +16,7 @@ public:
     explicit PersonesData(QString type_element, int id_object, QWidget *parent);
     ~PersonesData();
 private slots:
+
     void    save_persones();
     void    open_file();
     
