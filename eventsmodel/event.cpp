@@ -9,7 +9,7 @@ Event::Event(QString name, QString description, int id_status, int id_type_event
     this->event_description = description;
     this->id_status = id_status;
     this->id_type_event = id_type_event;
-
+	
     if(start_date > 0)
         this->event_start_date = start_date;
     else
@@ -109,20 +109,30 @@ bool Event::setIdTypeEvent(int id_type_event)
 
 bool Event::setStartDate(QDateTime * start_date)
 {
-    if (this->updateEvent("events","time_event_start",start_date->toString())){
-        this->event_start_date = start_date;
+	if (this->updateEvent("events","time_event_start",start_date->toString("yyyy-MM-dd hh:mm:ss"))){
+        qDebug() << start_date->toString("yyyy-MM-dd hh:mm:ss");
+		*this->event_start_date = *start_date;
+		qDebug() << "fack time" << this->event_start_date->toString("yyyy-MM-dd hh:mm:ss");
         return true;
     }
-    else return false;
+	else {
+		qDebug() << "fack time";
+		return false;
+	}
 }
 
 bool Event::setEndDate(QDateTime * end_date)
 {
-    if (this->updateEvent("events","time_event_end",end_date->toString())){
-        this->event_end_date = end_date;
+    if (this->updateEvent("events","time_event_end",end_date->toString("yyyy-MM-dd hh:mm:ss"))){
+		qDebug() << end_date->toString("yyyy-MM-dd hh:mm:ss");
+        *this->event_end_date = *end_date;
+		qDebug() << "fack time" << this->event_end_date->toString("yyyy-MM-dd hh:mm:ss");
         return true;
     }
-    else return false;
+	else {
+		qDebug() << "fack time";
+		return false;
+	}
 }
 
 void Event::setCoordinate(Coord * coordinate)
@@ -198,8 +208,8 @@ bool Event::insertEventToDB()
             .arg(this->event_name)
             .arg(this->event_description)
             .arg(this->event_resume)
-            .arg(this->event_start_date->toString("yyyy-M-d h:m:s"))
-            .arg(this->event_end_date->toString("yyyy-M-d h:m:s"));
+            .arg(this->event_start_date->toString("yyyy-MM-dd hh:mm:ss"))
+            .arg(this->event_end_date->toString("yyyy-MM-dd hh:mm:ss"));
     if(!query.exec(str)){
         qDebug() << query.lastError().text();
         qDebug() << query.lastQuery();
@@ -325,12 +335,16 @@ void Event::loadEventTypes()
 
 bool Event::updateEvent(QString table, QString field, QString set_data)
 {
-    if (this->id_event == 0)
+	if (this->id_event == 0){
+		qDebug() << "true" << table << field << set_data;
         return true;
+	}
     QSqlQuery query;
     if(!query.exec(QString("UPDATE %1 SET %2 = '%3' WHERE id_event = %4").arg(table).arg(field).arg(set_data).arg(id_event))){
-        return false;
+        qDebug() << "false update" << table << field << set_data;
+		return false;
     }
+	qDebug() << "true update" << table << field << set_data;
     return true;
 }
 

@@ -145,7 +145,7 @@ void EventManager::addNewEventDialog(QWidget *parent){
     formLayout->addRow("Тип объекта события:",this->getTypeObjectCBNE);
     formLayout->addRow("Объект события:",getObjectCBNE);
     formLayout->addWidget(saveEvent);
-
+	qDebug()<<"Otkrita forma";
     grLayout->addLayout(formLayout,0,0,0,2);
     newEventDialog->setLayout(grLayout);
     newEventDialog->show();
@@ -211,17 +211,22 @@ void EventManager::saveNewEvent()
     }else{
         newEvent->setName(nameLE->text());
     }
+	qDebug()<<"Nachalo sohraneniy";
     newEvent->setStatus(statusCB->itemData(statusCB->currentIndex()).toInt());
     newEvent->setIdTypeEvent(typeCB->itemData(typeCB->currentIndex()).toInt());
+	qDebug()<< DTS->dateTime().toString();
+	qDebug()<< DTE->dateTime().toString();
     newEvent->setStartDate(&DTS->dateTime());
     newEvent->setEndDate(&DTE->dateTime());
     newEvent->setDescription(descriptionTE->toPlainText());
     newEvent->setResume(resumeTE->toPlainText());
+		qDebug()<<"Nachinaem coordinati";
     if((lagLE->text().isEmpty()) || (lamLE->text().isEmpty()) ||(lasLE->text().isEmpty()) ||(logLE->text().isEmpty()) ||(lomLE->text().isEmpty()) ||(losLE->text().isEmpty())){
         return;
     }
     Coord * coordinate = new Coord(lagLE->text().toInt(),lamLE->text().toInt(),lasLE->text().toDouble(),logLE->text().toInt(),lomLE->text().toInt(),losLE->text().toDouble());
     newEvent->setCoordinate(coordinate);
+	qDebug()<<"Coordinates saved, start saved objects.";
     QList<EventObject *> eventObjects;
     EventObject * SEO = new EventObject();
     int id_object;
@@ -235,7 +240,7 @@ void EventManager::saveNewEvent()
             eventObjects.append(SEO);
         }
     }
-
+		qDebug()<<"istochnik ";
     EventObject * GEO = new EventObject();;
     id_type_object = getTypeObjectCBNE->itemData(getTypeObjectCBNE->currentIndex(),Qt::UserRole + 1).toInt();
     if(id_type_object > 0){
@@ -247,6 +252,7 @@ void EventManager::saveNewEvent()
             eventObjects.append(GEO);
         }
     }
+		qDebug()<<"priemnik";
     if(eventObjects.size() > 0){
         newEvent->setEventObjects(&eventObjects);
     }else{
