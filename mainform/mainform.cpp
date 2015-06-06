@@ -64,15 +64,12 @@ Mainform::~Mainform()
 
 void Mainform::closeTab(int i)
 {
-    QList<QMdiSubWindow *> subList = m_mdiArea->subWindowList();
-
-    int a=8;
-//	QMdiSubWindow *sub = m_mdiArea->subWindowList()[i];
+	QMdiSubWindow *sub = m_mdiArea->subWindowList()[i];
 	
-//	QWidget *win = sub->widget();
+	QWidget *win = sub->widget();
 
-//	win->close();
-//	sub->close();
+	win->close();
+	sub->close();
 }
 
 
