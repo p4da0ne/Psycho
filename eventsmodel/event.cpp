@@ -113,11 +113,11 @@ bool Event::setIdTypeEvent(int id_type_event)
     else return false;
 }
 
-bool Event::setStartDate(QDateTime * start_date)
+bool Event::setStartDate(QDateTime start_date)
 {
-    if (this->updateEvent("events","time_event_start",start_date->toString("yyyy-MM-dd hh:mm:ss"))){
-        qDebug() << start_date->toString("yyyy-MM-dd hh:mm:ss");
-        this->event_start_date = *start_date;
+    if (this->updateEvent("events","time_event_start",start_date.toString("yyyy-MM-dd hh:mm:ss"))){
+        qDebug() << start_date.toString("yyyy-MM-dd hh:mm:ss");
+        this->event_start_date = start_date;
         qDebug() << "fack time" << this->event_start_date.toString("yyyy-MM-dd hh:mm:ss");
         return true;
     }
@@ -127,11 +127,11 @@ bool Event::setStartDate(QDateTime * start_date)
 	}
 }
 
-bool Event::setEndDate(QDateTime * end_date)
+bool Event::setEndDate(QDateTime end_date)
 {
-    if (this->updateEvent("events","time_event_end",end_date->toString("yyyy-MM-dd hh:mm:ss"))){
-		qDebug() << end_date->toString("yyyy-MM-dd hh:mm:ss");
-        this->event_end_date = *end_date;
+    if (this->updateEvent("events","time_event_end",end_date.toString("yyyy-MM-dd hh:mm:ss"))){
+        qDebug() << end_date.toString("yyyy-MM-dd hh:mm:ss");
+        this->event_end_date = end_date;
         qDebug() << "fack time" << this->event_end_date.toString("yyyy-MM-dd hh:mm:ss");
         return true;
     }
@@ -187,6 +187,11 @@ bool Event::addEventObject(EventObject *object)
         return true;
     }else{
         if(object->insertInDB(this->id_event)){
+            for(int i=0;i < objects->size(); i++){
+                if(objects->at(i)->getIdEventObjects() == object->getIdEventObjects()){
+                    objects->removeAt(i);
+                }
+            }
             this->objects->append(object);
             return true;
         }else{
@@ -249,6 +254,16 @@ bool Event::DeleteEvent(int id_event)
 {
     QSqlQuery query;
     if(!query.exec(QString("DELETE FROM events WHERE id_event = %1").arg(id_event))){
+        qDebug() << query.lastError().text();
+        return false;
+    }
+    return true;
+}
+
+bool Event::DeleteEventMedia(int id_event_media)
+{
+    QSqlQuery query;
+    if(!query.exec(QString("DELETE FROM event_media WHERE id_event_media = %1").arg(id_event_media))){
         qDebug() << query.lastError().text();
         return false;
     }
@@ -330,41 +345,15 @@ int Event::InsertMediaItems(QString path,int idMediaType, QString name_event_med
     if(this->id_event == 0){
         return 0;
     }
-    QSqlQuery query;
-    query.prepare("INSERT INTO event_media (id_event,id_media_type,filename_media,description, media) VALUES (?,?,?,?,?) RETURNING id_event_media");
-    query.addBindValue(this->id_event);
-    query.addBindValue(idMediaType);
-    query.addBindValue(name_event_media);
-    query.addBindValue(description);
-    QFile file(path);
-    if(!file.open(QIODevice::ReadOnly))
-    {
-        //================MessageBox===============================
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("Предупреждение");
-        msgBox.setText("Не получается открыть файл. Проверте праильность пути к файлу.");
-        msgBox.setStandardButtons(QMessageBox::Ok);
-        switch (msgBox.exec()) {
-        case QMessageBox::Ok:
-            return 0;
-            break;
-        }
-    }
-
-    QByteArray ba = file.readAll();
-    query.addBindValue(ba);
-
-    if(!query.exec())
-    {
-        qDebug() << query.lastError().text();
-        qDebug() << query.lastQuery();
-        return 0;
-    }
-
-    query.next();
-    int id_event_media = query.value(0).toInt();
-    query.clear();
-    return id_event_media;
+    MediaInsertThread * MT = new MediaInsertThread();
+    MT->id_event = this->id_event;
+    MT->path = path;
+    MT->idMediaType = idMediaType;
+    MT->name_event_media = name_event_media;
+    MT->description = description;
+    MT->start();
+    connect(MT,SIGNAL(MediaInserted(int)),this,SIGNAL(MediaContentInserted(int)));
+    connect(MT,SIGNAL(ErrorMediaInsert(QString)),this,SIGNAL(ErrorMediaContentInsert(QString)));
 }
 
 QString Event::getName()
@@ -469,7 +458,7 @@ void Event::loadEventTypes()
 bool Event::updateEvent(QString table, QString field, QString set_data)
 {
 	if (this->id_event == 0){
-		qDebug() << "true" << table << field << set_data;
+        qDebug() << "true not update" << table << field << set_data;
         return true;
 	}
     QSqlQuery query;
@@ -482,3 +471,42 @@ bool Event::updateEvent(QString table, QString field, QString set_data)
 }
 
 
+void MediaInsertThread::run()
+{
+    QSqlQuery query;
+    query.prepare("INSERT INTO event_media (id_event,id_media_type,filename_media,description, media) VALUES (?,?,?,?,?) RETURNING id_event_media");
+    query.addBindValue(id_event);
+    query.addBindValue(idMediaType);
+    query.addBindValue(name_event_media);
+    query.addBindValue(description);
+    QFile file(path);
+    if(!file.open(QIODevice::ReadOnly))
+    {
+        //================MessageBox===============================
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Предупреждение");
+        msgBox.setText("Не получается открыть файл. Проверте праильность пути к файлу.");
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        switch (msgBox.exec()) {
+        case QMessageBox::Ok:
+            return;
+            break;
+        }
+    }
+
+    QByteArray ba = file.readAll();
+    query.addBindValue(ba);
+
+    if(!query.exec())
+    {
+        qDebug() << query.lastError().text();
+        qDebug() << query.lastQuery();
+        emit ErrorMediaInsert(query.lastError().text());
+        return;
+    }
+
+    query.next();
+    int id_event_media = query.value(0).toInt();
+    query.clear();
+    emit MediaInserted(id_event_media);
+}

@@ -3,13 +3,16 @@
 EventManager::EventManager(QWidget *parent, Coord *coord)
     : QWidget(parent){
     if(coord == 0){
+        isDialog = true;
         this->coord = new Coord();
         this->whithCoord = false;
     }else{
+        isDialog = false;
         this->coord = coord;
         this->whithCoord = true;
         return;
     }
+
     initUIX();
 }
 
@@ -96,6 +99,7 @@ void EventManager::initUIX(){
     lomLEE->setValidator(new QIntValidator(0,60,lomLEE));
     losLEE = new QLineEdit();
     losLEE->setValidator(new QDoubleValidator(0.00,60.00,2,losLEE));
+    QPushButton * editCoordinates = new QPushButton("Изменить координаты");
 
     this->suorceTypeObjectCBNEE = new QComboBox();
     this->suorceObjectCBNEE = new QComboBox();
@@ -104,6 +108,7 @@ void EventManager::initUIX(){
     this->getTypeObjectCB(this->suorceTypeObjectCBNEE,this->getTypeObjectCBNEE);
 
     eventMedia = new QTableView(this);
+    eventMedia->setContextMenuPolicy(Qt::CustomContextMenu);
     addEventMedia = new QPushButton(QIcon(":/icons/icons/add_but.png"),"",this);
     addEventMedia->setToolTip("Добавить контент");
 
@@ -125,6 +130,17 @@ void EventManager::initUIX(){
     formLayoutE->addRow("Тип объекта события:",this->getTypeObjectCBNEE);
     formLayoutE->addRow("Объект события:",getObjectCBNEE);
 
+    connect(nameLEE,SIGNAL(textEdited(QString)),this,SLOT(nameLEEChanged(QString)));
+    connect(statusCBE,SIGNAL(currentIndexChanged(int)),this,SLOT(statusCBEChanged(int)));
+    connect(typeCBE,SIGNAL(currentIndexChanged(int)),this,SLOT(typeCBEChanged(int)));
+    connect(DTSE,SIGNAL(dateTimeChanged(QDateTime)),this,SLOT(DTSEChanged(QDateTime)));
+    connect(DTEE,SIGNAL(dateTimeChanged(QDateTime)),this,SLOT(DTSEChanged(QDateTime)));
+    connect(descriptionTEE,SIGNAL(textChanged()),this,SLOT(descriptionTEEChanged()));
+    connect(resumeTEE,SIGNAL(textChanged()),this,SLOT(resumeTEEChanged()));
+    connect(suorceObjectCBNEE,SIGNAL(activated(int)),this,SLOT(suorceObjectCBNEEChanged(int)));
+    connect(getObjectCBNEE,SIGNAL(activated(int)),this,SLOT(getObjectCBNEEChanged(int)));
+    connect(editCoordinates,SIGNAL(clicked()),this,SLOT(CoordChanged()));
+
     connect(this->suorceTypeObjectCBNEE, SIGNAL(currentIndexChanged(int)), this , SLOT(sourceTypeChangeE(int)));
     connect(this->getTypeObjectCBNEE, SIGNAL(currentIndexChanged(int)), this , SLOT(getTypeChangeE(int)));
 
@@ -136,6 +152,7 @@ void EventManager::initUIX(){
     grid->addWidget(tableView,2,0,10,10);
     grid->addLayout(formLayoutE,1,11,10,2);
     grid->addLayout(formLayoutECoord,1,13,4,2);
+    grid->addWidget(editCoordinates,4,13);
     grid->addWidget(addEventMedia,5,13);
     grid->addWidget(eventMedia,6,13,4,2);
 
@@ -144,13 +161,18 @@ void EventManager::initUIX(){
     proxyModel->setSourceModel(eventsModel);
     proxyModel->setDynamicSortFilter(true);
 
+    tableView->setContextMenuPolicy(Qt::CustomContextMenu);
     tableView->setSortingEnabled(true);
     tableView->setModel(proxyModel);
     resizeTableView();
     this->setLayout(grid);
 
+    setEventsPropertyEnabled(false);
+    connect(tableView, SIGNAL(customContextMenuRequested(const QPoint &)),this, SLOT(EventsTableCustomMenu(const QPoint &)));
+    connect(eventMedia, SIGNAL(customContextMenuRequested(const QPoint &)),this, SLOT(EventsMediaTableCustomMenu(const QPoint &)));
+
     connect(filterName,SIGNAL(textChanged(QString)),this,SLOT(filterNameTextChanged(QString)));
-    connect(upDateModelButton,SIGNAL(clicked()),eventsModel,SLOT(UpdateModel()));
+    connect(upDateModelButton,SIGNAL(clicked()),this,SLOT(updateModel()));
     connect(tableView,SIGNAL(clicked(QModelIndex)),this,SLOT(eventClick(QModelIndex)));
     connect(eventMedia,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(mediaClick(QModelIndex)));
     connect(addEventMedia,SIGNAL(clicked()),this,SLOT(newEventMediaDialog()));
@@ -175,11 +197,11 @@ void EventManager::updateModel()
 
 void EventManager::resizeTableView()
 {
-    tableView->setColumnWidth(0,100);
-    tableView->setColumnWidth(1,90);
+    tableView->setColumnWidth(0,180);
+    tableView->setColumnWidth(1,110);
     tableView->setColumnWidth(2,130);
-    tableView->setColumnWidth(3,180);
-    tableView->setColumnWidth(4,180);
+    tableView->setColumnWidth(3,110);
+    tableView->setColumnWidth(4,110);
 }
 
 void EventManager::newEventMediaDialog()
@@ -227,11 +249,38 @@ void EventManager::addNewEventMedia(){
         description="";
     else
         description=mediaDescription->toPlainText();
-    if(current_event->InsertMediaItems(filePath,type,fileName,description) > 0){
-        mediaDialog->close();
-        current_event->updateMediaEvents();
-    }
-    return;
+
+    QDialog * l = new QDialog(this,Qt::Popup);
+    l->setWindowTitle("Идет загрузка...");
+    connect(current_event,SIGNAL(MediaContentInserted(int)),l,SLOT(close()));
+    connect(current_event,SIGNAL(ErrorMediaContentInsert(QString)),l,SLOT(close()));
+    current_event->InsertMediaItems(filePath,type,fileName,description);
+    connect(current_event,SIGNAL(MediaContentInserted(int)),this,SLOT(MediaContentInserted(int)));
+    connect(current_event,SIGNAL(ErrorMediaContentInsert(QString)),this,SLOT(ErrorDialog(QString)));
+    mediaDialog->close();
+    QHBoxLayout la;
+    QLabel lab;
+    l->setBackgroundRole(QPalette::Light);
+
+    lab.setText("Подождите, идет загрузка данных в БД");
+    la.addWidget(&lab);
+    l->setModal(true);
+    l->resize(300,100);
+    l->setLayout(&la);
+    l->exec();
+
+
+}
+
+void EventManager::MediaContentInserted(int)
+{
+
+    current_event->updateMediaEvents();
+}
+
+void EventManager::ErrorDialog(QString error)
+{
+    QMessageBox::warning(this,"Ошибка",error);
 }
 
 void EventManager::openFileDialog(){
@@ -240,7 +289,7 @@ void EventManager::openFileDialog(){
 
 void EventManager::viewMediaContentDialog(int id_event, QWidget *parent)
 {
-    QTableView * tableMediaContent = new QTableView();
+    tableMediaContent = new QTableView();
     Event * dialogEvent = new Event(id_event);
     dialogEvent->updateMediaEvents();
     QSortFilterProxyModel * proxy= new QSortFilterProxyModel();
@@ -252,7 +301,11 @@ void EventManager::viewMediaContentDialog(int id_event, QWidget *parent)
     mediaContentDialog->setLayout(VBL);
     mediaContentDialog->show();
 
+    tableMediaContent->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    connect(tableMediaContent, SIGNAL(customContextMenuRequested(const QPoint &)),this, SLOT(EventsMediaTableCustomMenu(const QPoint &)));
     connect(tableMediaContent,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(mediaClick(QModelIndex)));
+
 }
 
 void EventManager::addNewEventDialog(QWidget *parent){
@@ -376,6 +429,7 @@ void EventManager::openNewEventDialog()
 
 void EventManager::eventClick(QModelIndex index)
 {
+    setEventsPropertyEnabled(true);
     current_event = new Event(index.data(Qt::UserRole + 3).toInt());
 
     nameLEE->setText(current_event->getName());
@@ -427,13 +481,14 @@ void EventManager::mediaClick(QModelIndex index)
     ProgressThread * PD = new ProgressThread();
     PD->id_event_media = index.data(34).toInt();
     PD->start();
-    QDialog * l = new QDialog(this,Qt::ToolTip);
+    QDialog * l = new QDialog(this,Qt::Popup);
     l->setWindowTitle("Идет загрузка...");
     connect(PD,SIGNAL(finished()),l,SLOT(close()));
     QHBoxLayout la;
     QLabel lab;
-    lab.setText("Подождите, идет загрузка двнных с сервера");
+    lab.setText("Подождите, идет загрузка данных с сервера");
     la.addWidget(&lab);
+    l->setBackgroundRole(QPalette::Light);
     l->setModal(true);
     l->resize(300,100);
     l->setLayout(&la);
@@ -524,8 +579,8 @@ void EventManager::saveNewEvent()
     newEvent->setIdTypeEvent(typeCB->itemData(typeCB->currentIndex()).toInt());
     qDebug()<< DTS->dateTime().toString();
     qDebug()<< DTE->dateTime().toString();
-    newEvent->setStartDate(&DTS->dateTime());
-    newEvent->setEndDate(&DTE->dateTime());
+    newEvent->setStartDate(DTS->dateTime());
+    newEvent->setEndDate(DTE->dateTime());
     newEvent->setDescription(descriptionTE->toPlainText());
     newEvent->setResume(resumeTE->toPlainText());
     if((lagLE->text().isEmpty()) || (lamLE->text().isEmpty()) ||(lasLE->text().isEmpty()) ||(logLE->text().isEmpty()) ||(lomLE->text().isEmpty()) ||(losLE->text().isEmpty())){
@@ -593,4 +648,199 @@ void EventManager::getTypeObjectCB(QComboBox * suorce,QComboBox * get){
 void EventManager::getObjectsCB()
 {
 
+}
+
+/*!
+Слот контекстного меню для списка событий
+void EventManager::EventsTableCustomMenu(const QPoint &pe)
+*/
+void EventManager::EventsTableCustomMenu(const QPoint &pe)
+{
+    if(eventsModel->rowCount() > 0)
+    {
+        QPushButton *popupButton = new QPushButton;
+        QMenu *menu = new QMenu(this);
+        QAction *removeOne = new QAction("Удалить событие",this);
+        connect(removeOne,SIGNAL(triggered()),this,SLOT(slotRemoveEvent()));
+
+        menu->addAction(removeOne);
+        popupButton->setMenu(menu);
+        menu->exec(QCursor::pos());
+    }
+}
+
+
+/*!
+Слот удаления событияы
+void EventManager::slotRemoveEvent()
+*/
+void EventManager::slotRemoveEvent()
+{
+    QModelIndex index = tableView->currentIndex();
+    if(index.isValid())
+    {
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Предупреждение");
+        msgBox.setText("Вы уверены что хотите удалить данное событие?");
+        msgBox.setStandardButtons(QMessageBox::Yes);
+        msgBox.addButton(QMessageBox::Cancel);
+        switch (msgBox.exec()) {
+        case QMessageBox::Yes:
+            Event * event;
+            event->DeleteEvent(index.data(Qt::UserRole + 3).toInt());
+            restEventsProperty();
+            setEventsPropertyEnabled(false);
+            current_event = new Event();
+            updateModel();
+            return;
+            break;
+        }
+
+    }
+}
+
+/*!
+Слот контекстного меню для списка медиа
+void EventManager::EventsMediaTableCustomMenu(const QPoint &pe)
+*/
+void EventManager::EventsMediaTableCustomMenu(const QPoint &pe)
+{
+    if(eventsModel->rowCount() > 0)
+    {
+        QPushButton *popupButton = new QPushButton;
+        QMenu *menu = new QMenu(this);
+        QAction *removeOne = new QAction("Удалить",this);
+        connect(removeOne,SIGNAL(triggered()),this,SLOT(slotRemoveEventMedia()));
+
+        menu->addAction(removeOne);
+        popupButton->setMenu(menu);
+        menu->exec(QCursor::pos());
+    }
+}
+
+
+/*!
+Слот удаления медиа данного события
+void EventManager::slotRemoveEventMedia()
+*/
+void EventManager::slotRemoveEventMedia()
+{
+    QModelIndex index;
+    isDialog? index = tableMediaContent->currentIndex(): index = eventMedia->currentIndex();
+    if(index.isValid())
+    {
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Предупреждение");
+        msgBox.setText("Вы уверены что хотите удалить данный контент?");
+        msgBox.setStandardButtons(QMessageBox::Yes);
+        msgBox.addButton(QMessageBox::Cancel);
+        switch (msgBox.exec()) {
+        case QMessageBox::Yes:
+            Event * event;
+            event->DeleteEventMedia(index.data(34).toInt());
+            MediaContentInserted(0);
+            return;
+            break;
+        }
+
+    }
+}
+
+void EventManager::statusCBEChanged(int index)
+{
+    current_event->setStatus(statusCBE->itemData(index).toInt());
+}
+
+void EventManager::typeCBEChanged(int index)
+{
+    current_event->setIdTypeEvent(typeCBE->itemData(index).toInt());
+}
+
+void EventManager::descriptionTEEChanged()
+{
+    current_event->setDescription(descriptionTEE->toPlainText());
+}
+
+void EventManager::resumeTEEChanged()
+{
+    current_event->setResume(resumeTEE->toPlainText());
+}
+
+void EventManager::CoordChanged()
+{
+    Coord * upCoord = new Coord(lagLEE->text().toInt(),lamLEE->text().toInt(),lasLEE->text().toDouble(),logLEE->text().toInt(),lomLEE->text().toInt(),losLEE->text().toDouble());
+    current_event->setCoordinate(upCoord);
+}
+
+void EventManager::suorceObjectCBNEEChanged(int index)
+{
+    int id_sr_type = suorceTypeObjectCBNEE->itemData(suorceTypeObjectCBNEE->currentIndex()).toInt();
+    EventObject * EO = new EventObject(suorceObjectCBNEE->itemData(index).toInt(),id_sr_type,true);
+    current_event->addEventObject(EO);
+}
+
+void EventManager::getObjectCBNEEChanged(int index)
+{
+    int id_sr_type = getTypeObjectCBNEE->itemData(getTypeObjectCBNEE->currentIndex()).toInt();
+    EventObject * EO = new EventObject(getObjectCBNEE->itemData(index).toInt(),id_sr_type,true);
+    current_event->addEventObject(EO);
+}
+
+void EventManager::restEventsProperty(){
+    nameLEE->clear();
+    statusCBE->setCurrentIndex(0);
+    typeCBE->setCurrentIndex(0);
+    QDateTime DT;
+    DTSE->setDateTime(DT.currentDateTime());
+    DTEE->setDateTime(DT.currentDateTime());
+    descriptionTEE->clear();
+    resumeTEE->clear();
+    lagLEE->clear();
+    lamLEE->clear();
+    lasLEE->clear();
+    logLEE->clear();
+    lomLEE->clear();
+    losLEE->clear();
+    this->suorceTypeObjectCBNEE->setCurrentIndex(0);
+    suorceObjectCBNEE->clear();
+    this->getTypeObjectCBNEE->setCurrentIndex(0);
+    getObjectCBNEE->clear();
+    eventMedia->setModel(new QStandardItemModel());
+}
+
+void EventManager::nameLEEChanged(QString text)
+{
+    current_event->setName(text);
+}
+
+void EventManager::DTSEChanged(QDateTime dateTime)
+{
+    current_event->setStartDate(dateTime);
+}
+
+void EventManager::DTEEChanged(QDateTime dateTime)
+{
+    current_event->setEndDate(dateTime);
+}
+
+void EventManager::setEventsPropertyEnabled(bool enabled){
+    nameLEE->setEnabled(enabled);
+    statusCBE->setEnabled(enabled);
+    typeCBE->setEnabled(enabled);
+    DTSE->setEnabled(enabled);
+    DTEE->setEnabled(enabled);
+    descriptionTEE->setEnabled(enabled);
+    resumeTEE->setEnabled(enabled);
+    lagLEE->setEnabled(enabled);
+    lamLEE->setEnabled(enabled);
+    lasLEE->setEnabled(enabled);
+    logLEE->setEnabled(enabled);
+    lomLEE->setEnabled(enabled);
+    losLEE->setEnabled(enabled);
+    this->suorceTypeObjectCBNEE->setEnabled(enabled);
+    suorceObjectCBNEE->setEnabled(enabled);
+    this->getTypeObjectCBNEE->setEnabled(enabled);
+    getObjectCBNEE->setEnabled(enabled);
+    addEventMedia->setEnabled(enabled);
+    eventMedia->setEnabled(enabled);
 }

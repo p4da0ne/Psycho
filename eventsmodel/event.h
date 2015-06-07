@@ -6,6 +6,7 @@
 #include <QString>
 #include <QStandardItemModel>
 #include <QDateTime>
+#include <QThread>
 #include <QList>
 #include <QMap>
 #include <QVariant>
@@ -35,14 +36,12 @@ public:
           QList<EventObject *> * objects = 0,
           Coord * coordinate = 0);
     Event(int id_event);
-    bool setName(QString name);
-    bool setDescription(QString description);
+
     bool setStatus(int id_status);
     bool setIdTypeEvent(int id_type_event);
-    bool setStartDate(QDateTime *start_date);
-    bool setEndDate(QDateTime *end_date);
+
     void setCoordinate(Coord * coordinate);
-    bool setResume(QString resume);
+
     bool setEventObjects(QList<EventObject *> * objects);
     bool addEventObject(EventObject * object);
     bool addEventObjects(QList<EventObject *> *objects);
@@ -65,17 +64,26 @@ public:
 
 
 signals:
+    void MediaContentInserted(int id_media_event);
+    void ErrorMediaContentInsert(QString error);
     
 public slots:
     int InsertMediaItems(QString path,int idMediaType, QString name_event_media, QString description = "");
     bool insertEventToDB();
     bool DeleteEvent(int id_event);
+    bool DeleteEventMedia(int id_event_media);
     bool DeleteThisEventFromDB();
     void openMediaContent(QModelIndex index);
     QStandardItemModel * getMediaEvents();
     void updateMediaEvents();
     QMap <int,QString> getEventsStatus();
     QMap <int,QMap<QString,int> > getEventsTypes();
+
+    bool setName(QString name);
+    bool setDescription(QString description);
+    bool setResume(QString resume);
+    bool setStartDate(QDateTime start_date);
+    bool setEndDate(QDateTime end_date);
 
 protected:
     bool updateEvent(QString table, QString field, QString set_data);
@@ -101,5 +109,22 @@ private:
     int id_event;
 
 };
+
+class MediaInsertThread : public QThread
+{
+    Q_OBJECT
+public:
+    void run();
+    int id_event;
+    int idMediaType;
+    QString name_event_media;
+    QString description;
+    QString path;
+
+signals:
+    void MediaInserted(int id_event_media);
+    void ErrorMediaInsert(QString id_event_media);
+};
+
 
 #endif // EVENT_H

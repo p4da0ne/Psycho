@@ -27,7 +27,7 @@ void EventsModel::UpdateModel(){
     int sign_key = query.record().indexOf("sign_key");
     int id_event_status_index = query.record().indexOf("id_event_status");
     QStringList headerLabels ;
-    headerLabels << "Наименование события" << "Статус события" << "Тип события" << "Дата и время начала" << "Дата и время окончания";
+    headerLabels << "Наименование события" << "Статус события" << "Тип события" << "Начало" << "Окончание";
     this->setHorizontalHeaderLabels(headerLabels);
     while (query.next())
     {
