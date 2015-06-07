@@ -72,16 +72,16 @@ bool CoordModel::objectCoord(int id_coordinate, QString ObjectsTypes, int id_obj
     return true;
 }
 
-QList<Coord*> CoordModel::getCoordinates(QString ObjectsTypes, int id_object)
+QList<Coord*> CoordModel::getCoordinates(QString ObjectsTypes, int id_object,QString idObjectName)
 {
     QList<Coord*> coordList;
 
     QSqlQuery query;
     QString str=QString("SELECT cc.latitude_wgs_84_g,cc.latitude_wgs_84_m,cc.latitude_wgs_84_s,cc.longitude_wgs_84_g, \
                         cc.longitude_wgs_84_m,cc.longitude_wgs_84_s \
-                        FROM %2 c_e, coordinates cc \
+                        FROM coord_%2 c_e, coordinates cc \
                         WHERE c_e.id_coordinates = cc.id_coordinates \
-            AND c_e.id_%2 = %1").arg(id_object).arg(ObjectsTypes);
+            AND c_e.%3 = %1").arg(id_object).arg(ObjectsTypes).arg(idObjectName);
             if(query.exec(str))
     {
             QSqlRecord rec = query.record();

@@ -11,14 +11,14 @@ Event::Event(QString name, QString description, int id_status, int id_type_event
     this->id_type_event = id_type_event;
 	
     if(start_date > 0)
-        this->event_start_date = start_date;
+        this->event_start_date = *start_date;
     else
-        this->event_start_date = new QDateTime();
+        this->event_start_date = *new QDateTime();
 
     if(end_date > 0)
-        this->event_end_date = end_date;
+        this->event_end_date = *end_date;
     else
-        this->event_end_date = new QDateTime();
+        this->event_end_date = *new QDateTime();
 
     if(objects > 0)
         this->objects = objects;
@@ -49,12 +49,12 @@ Event::Event(int id_event)
         this->event_description = query.value(index_description_event).toString();
         this->id_status = query.value(index_id_event_status).toInt();
         this->id_type_event = query.value(index_id_type_event).toInt();
-        this->event_start_date = &query.value(index_time_event_start).toDateTime();
-        this->event_end_date = &query.value(index_time_event_end).toDateTime();
+        this->event_start_date = query.value(index_time_event_start).toDateTime();
+        this->event_end_date = query.value(index_time_event_end).toDateTime();
         this->event_resume = query.value(index_resume_event).toString();
     }
     query.clear();
-    if(!query.exec(QString("SELECT o.id_event_objects, ty.name_type_event_object, ty.\"table_name\", o.id_object, o.is_events_source FROM event_objects o, type_event_object ty WHERE o.id_event = %1 AND ty.id_type_event_object = o.id_type_event_object").arg(id_event))){
+    if(!query.exec(QString("SELECT o.id_event_objects, ty.name_type_event_object, ty.\"table_name\", o.id_object, o.is_events_source, o.id_type_event_object FROM event_objects o, type_event_object ty WHERE o.id_event = %1 AND ty.id_type_event_object = o.id_type_event_object").arg(id_event))){
         return;
     }
     int index_id_event_objects = query.record().indexOf("id_event_objects");
@@ -62,6 +62,7 @@ Event::Event(int id_event)
     int index_table_name = query.record().indexOf("table_name");
     int index_id_object = query.record().indexOf("id_object");
     int index_is_events_source = query.record().indexOf("is_events_source");
+    int index_id_type_event_object = query.record().indexOf("id_type_event_object");
 
     while(query.next()){
         EventObject * eventObject = new EventObject();
@@ -70,8 +71,11 @@ Event::Event(int id_event)
         eventObject->setTypeObject( query.value(index_name_type_event_object).toString());
         eventObject->setTableName( query.value(index_table_name).toString());
         eventObject->setIsSource( query.value(index_is_events_source).toBool());
+        eventObject->setIdTypeEventObject(query.value(index_id_type_event_object).toInt());
         objects->append(eventObject);
     }
+    CoordModel *CM = new CoordModel();
+    this->setCoordinate(CM->getCoordinates("events",this->id_event,"id_event").at(0));
 }
 
 bool Event::setName(QString name){
@@ -110,10 +114,10 @@ bool Event::setIdTypeEvent(int id_type_event)
 
 bool Event::setStartDate(QDateTime * start_date)
 {
-	if (this->updateEvent("events","time_event_start",start_date->toString("yyyy-MM-dd hh:mm:ss"))){
+    if (this->updateEvent("events","time_event_start",start_date->toString("yyyy-MM-dd hh:mm:ss"))){
         qDebug() << start_date->toString("yyyy-MM-dd hh:mm:ss");
-		*this->event_start_date = *start_date;
-		qDebug() << "fack time" << this->event_start_date->toString("yyyy-MM-dd hh:mm:ss");
+        this->event_start_date = *start_date;
+        qDebug() << "fack time" << this->event_start_date.toString("yyyy-MM-dd hh:mm:ss");
         return true;
     }
 	else {
@@ -126,8 +130,8 @@ bool Event::setEndDate(QDateTime * end_date)
 {
     if (this->updateEvent("events","time_event_end",end_date->toString("yyyy-MM-dd hh:mm:ss"))){
 		qDebug() << end_date->toString("yyyy-MM-dd hh:mm:ss");
-        *this->event_end_date = *end_date;
-		qDebug() << "fack time" << this->event_end_date->toString("yyyy-MM-dd hh:mm:ss");
+        this->event_end_date = *end_date;
+        qDebug() << "fack time" << this->event_end_date.toString("yyyy-MM-dd hh:mm:ss");
         return true;
     }
 	else {
@@ -195,7 +199,7 @@ bool Event::insertEventToDB()
     if(     (this->event_name == "") ||
             (this->id_status == 0) ||
             (this->id_type_event == 0) ||
-            (this->event_start_date == 0) ||
+            (&this->event_start_date == 0) ||
             (this->objects == 0) ||
             (this->event_coordinate == 0) ||
             (this->id_event != 0)){
@@ -209,8 +213,8 @@ bool Event::insertEventToDB()
             .arg(this->event_name)
             .arg(this->event_description)
             .arg(this->event_resume)
-            .arg(this->event_start_date->toString("yyyy-MM-dd hh:mm:ss"))
-            .arg(this->event_end_date->toString("yyyy-MM-dd hh:mm:ss"));
+            .arg(this->event_start_date.toString("yyyy-MM-dd hh:mm:ss"))
+            .arg(this->event_end_date.toString("yyyy-MM-dd hh:mm:ss"));
     if(!query.exec(str)){
         qDebug() << query.lastError().text();
         qDebug() << query.lastQuery();
@@ -237,6 +241,27 @@ bool Event::insertEventToDB()
             return false;
         }
     }
+    return true;
+}
+
+bool Event::DeleteEvent(int id_event)
+{
+    QSqlQuery query;
+    if(!query.exec(QString("DELETE FROM events WHERE id_event = %1").arg(id_event))){
+        qDebug() << query.lastError().text();
+        return false;
+    }
+    return true;
+}
+
+bool Event::DeleteThisEventFromDB()
+{
+    QSqlQuery query;
+    if(!query.exec(QString("DELETE FROM events WHERE id_event = %1").arg(this->id_event))){
+        qDebug() << query.lastError().text();
+        return false;
+    }
+    this->id_event = 0;
     return true;
 }
 
@@ -282,12 +307,12 @@ int Event::getIdTypeEvent()
 
 QDateTime * Event::getStartDate()
 {
-    return this->event_start_date;
+    return &this->event_start_date;
 }
 
 QDateTime * Event::getEndDate()
 {
-    return this->event_end_date;
+    return &this->event_end_date;
 }
 
 QList<EventObject *> * Event::getObjects()

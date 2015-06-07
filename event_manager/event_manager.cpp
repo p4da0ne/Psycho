@@ -33,10 +33,8 @@ void EventManager::initUIX(){
     groupBoxLayout->addWidget(filterName);
     filterGroupBox->setLayout(groupBoxLayout);
 
-
-
     formLayoutE = new QFormLayout();
-
+    formLayoutECoord = new QFormLayout();
     nameLEE = new QLineEdit();
     statusCBE = new QComboBox();
     statusCBE->addItem(QIcon(":/icons/icons/red.ico"),"Актуальное",1);
@@ -112,27 +110,19 @@ void EventManager::initUIX(){
     formLayoutE->addRow("Время окончания события:",DTEE);
     formLayoutE->addRow("Описание события:",descriptionTEE);
     formLayoutE->addRow("Выводы по событию:",resumeTEE);
-    formLayoutE->addRow("Широта (градусы):",lagLEE);
-    formLayoutE->addRow("Широта (минуты):",lamLEE);
-    formLayoutE->addRow("Широта (секунды):",lasLEE);
-    formLayoutE->addRow("Долгота (градусы):",logLEE);
-    formLayoutE->addRow("Долгота (минуты):",lomLEE);
-    formLayoutE->addRow("Долгота (секунды):",losLEE);
+    formLayoutECoord->addRow("Широта (градусы):",lagLEE);
+    formLayoutECoord->addRow("Широта (минуты):",lamLEE);
+    formLayoutECoord->addRow("Широта (секунды):",lasLEE);
+    formLayoutECoord->addRow("Долгота (градусы):",logLEE);
+    formLayoutECoord->addRow("Долгота (минуты):",lomLEE);
+    formLayoutECoord->addRow("Долгота (секунды):",losLEE);
     formLayoutE->addRow("Тип объекта инициатора:",this->suorceTypeObjectCBNEE);
     formLayoutE->addRow("Объект инициатор события:",suorceObjectCBNEE);
     formLayoutE->addRow("Тип объекта события:",this->getTypeObjectCBNEE);
     formLayoutE->addRow("Объект события:",getObjectCBNEE);
 
-    connect(this->suorceTypeObjectCBNEE, SIGNAL(currentIndexChanged(int)), this , SLOT(sourceTypeChange(int)));
-    connect(this->getTypeObjectCBNEE, SIGNAL(currentIndexChanged(int)), this , SLOT(getTypeChange(int)));
-
-
-
-
-
-
-
-
+    connect(this->suorceTypeObjectCBNEE, SIGNAL(currentIndexChanged(int)), this , SLOT(sourceTypeChangeE(int)));
+    connect(this->getTypeObjectCBNEE, SIGNAL(currentIndexChanged(int)), this , SLOT(getTypeChangeE(int)));
 
     grid->addWidget(this->addNewEventPB,0,0);
     grid->addWidget(this->upDateModelButton,0,1);
@@ -141,25 +131,23 @@ void EventManager::initUIX(){
 
     grid->addWidget(tableView,2,0,10,10);
     grid->addLayout(formLayoutE,1,11,10,2);
-
+    grid->addLayout(formLayoutECoord,1,13,10,2);
 
     eventsModel = new EventsModel();
     proxyModel = new QSortFilterProxyModel(this);
     proxyModel->setSourceModel(eventsModel);
     proxyModel->setDynamicSortFilter(true);
 
-
     tableView->setSortingEnabled(true);
     tableView->setModel(proxyModel);
-    tableView->resizeColumnsToContents();
+    resizeTableView();
     this->setLayout(grid);
-
 
     connect(filterName,SIGNAL(textChanged(QString)),this,SLOT(filterNameTextChanged(QString)));
     connect(upDateModelButton,SIGNAL(clicked()),eventsModel,SLOT(UpdateModel()));
     connect(tableView,SIGNAL(clicked(QModelIndex)),this,SLOT(eventClick(QModelIndex)));
     connect(this->addNewEventPB,SIGNAL(clicked()),this,SLOT(openNewEventDialog()));
-    connect(this,SIGNAL(eventDataChanged()),eventsModel,SLOT(UpdateModel()));
+    connect(this,SIGNAL(eventDataChanged()),this,SLOT(updateModel()));
 }
 
 void EventManager::filterNameTextChanged(QString text)
@@ -169,6 +157,21 @@ void EventManager::filterNameTextChanged(QString text)
     Qt::CaseSensitivity caseSensitivity =Qt::CaseInsensitive;
     QRegExp regExp(text, caseSensitivity, syntax);
     proxyModel->setFilterRegExp(regExp);
+}
+
+void EventManager::updateModel()
+{
+    eventsModel->UpdateModel();
+    resizeTableView();
+}
+
+void EventManager::resizeTableView()
+{
+    tableView->setColumnWidth(0,70);
+    tableView->setColumnWidth(1,50);
+    tableView->setColumnWidth(2,70);
+    tableView->setColumnWidth(3,110);
+    tableView->setColumnWidth(4,110);
 }
 
 void EventManager::addNewEventDialog(QWidget *parent){
@@ -294,6 +297,17 @@ void EventManager::eventClick(QModelIndex index)
 {
     current_event = new Event(index.data(Qt::UserRole + 3).toInt());
 
+    nameLEE->setText(current_event->getName());
+
+    int statusIndex = statusCBE->findData(current_event->getIdStatus(),Qt::UserRole,Qt::MatchFixedString);
+    statusCBE->setCurrentIndex(statusIndex);
+
+    int typeIndex = typeCBE->findData(current_event->getIdTypeEvent(),Qt::UserRole,Qt::MatchFixedString);
+    typeCBE->setCurrentIndex(typeIndex);
+
+    DTSE->setDateTime(*current_event->getStartDate());
+    DTEE->setDateTime(*current_event->getEndDate());
+
     descriptionTEE->setPlainText(current_event->getDescription());
     resumeTEE->setPlainText(current_event->getResume());
 
@@ -303,6 +317,22 @@ void EventManager::eventClick(QModelIndex index)
     logLEE->setText(QString::number(current_event->getCoordinate()->getLongDegrees()));
     lomLEE->setText(QString::number(current_event->getCoordinate()->getLongMinutes()));
     losLEE->setText(QString::number(current_event->getCoordinate()->getLongSeconds()));
+
+    QList<EventObject * > eventObject = *current_event->getObjects();
+    for(int i=0; i < eventObject.size();i++){
+        EventObject * object = eventObject.at(i);
+        if(object->isSource()){
+            int index = this->suorceTypeObjectCBNEE->findData(object->getIdTypeEventObject(),Qt::UserRole + 1,Qt::MatchFixedString);
+            this->suorceTypeObjectCBNEE->setCurrentIndex(index);
+            index = this->suorceObjectCBNEE->findData(object->getIdObject(),Qt::UserRole,Qt::MatchFixedString);
+            this->suorceObjectCBNEE->setCurrentIndex(index);
+        }else{
+            int index = this->getTypeObjectCBNEE->findData(object->getIdTypeEventObject(),Qt::UserRole + 1,Qt::MatchFixedString);
+            this->getTypeObjectCBNEE->setCurrentIndex(index);
+            index = this->getObjectCBNEE->findData(object->getIdObject(),Qt::UserRole,Qt::MatchFixedString);
+            this->getObjectCBNEE->setCurrentIndex(index);
+        }
+    }
 
 }
 
@@ -324,6 +354,25 @@ void EventManager::sourceTypeChange(int index)
     }
 }
 
+void EventManager::sourceTypeChangeE(int index)
+{
+    QSqlQuery query;
+    this->suorceObjectCBNEE->clear();
+    this->suorceObjectCBNEE->addItem("Не выбран объект",0);
+    QString table_name = this->suorceTypeObjectCBNEE->itemData(index).toString();
+    if(table_name == "not"){
+        return;
+    }
+    QString str = QString("SELECT name_%1, id_%1  FROM %1").arg(table_name);
+    if(!query.exec(str)){
+        qDebug() << query.lastError().text();
+        return;
+    }
+    while(query.next()){
+        this->suorceObjectCBNEE->addItem(query.value(0).toString(),query.value(1).toInt());
+    }
+}
+
 void EventManager::getTypeChange(int index)
 {
     QSqlQuery query;
@@ -342,6 +391,24 @@ void EventManager::getTypeChange(int index)
     }
 }
 
+void EventManager::getTypeChangeE(int index)
+{
+    QSqlQuery query;
+    this->getObjectCBNEE->clear();
+    this->getObjectCBNEE->addItem("Не выбран объект",0);
+    QString table_name = this->getTypeObjectCBNEE->itemData(index).toString();
+    if(table_name == "not"){
+        return;
+    }
+    if(!query.exec(QString("SELECT name_%1, id_%1  FROM %1").arg(table_name))){
+        qDebug() << query.lastError().text();
+        return;
+    }
+    while(query.next()){
+        this->getObjectCBNEE->addItem(query.value(0).toString(),query.value(1).toInt());
+    }
+}
+
 void EventManager::saveNewEvent()
 {
     if(nameLE->text().isEmpty()){
@@ -351,8 +418,8 @@ void EventManager::saveNewEvent()
     }
     newEvent->setStatus(statusCB->itemData(statusCB->currentIndex()).toInt());
     newEvent->setIdTypeEvent(typeCB->itemData(typeCB->currentIndex()).toInt());
-	qDebug()<< DTS->dateTime().toString();
-	qDebug()<< DTE->dateTime().toString();
+    qDebug()<< DTS->dateTime().toString();
+    qDebug()<< DTE->dateTime().toString();
     newEvent->setStartDate(&DTS->dateTime());
     newEvent->setEndDate(&DTE->dateTime());
     newEvent->setDescription(descriptionTE->toPlainText());

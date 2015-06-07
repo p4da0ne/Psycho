@@ -25,9 +25,13 @@ public slots:
 
 private slots:
     void sourceTypeChange(int index);
+    void sourceTypeChangeE(int index);
     void getTypeChange(int index);
+    void getTypeChangeE(int index);
     void saveNewEvent();
     void filterNameTextChanged(QString text);
+    void updateModel();
+    void resizeTableView();
 
 
 private:
@@ -70,6 +74,7 @@ private:
 
 
     QFormLayout * formLayoutE;
+    QFormLayout * formLayoutECoord;
     QComboBox *suorceTypeObjectCBNEE;
     QComboBox *suorceObjectCBNEE;
     QComboBox *getTypeObjectCBNEE;

@@ -40,7 +40,8 @@ public:
     bool setEventObjects(QList<EventObject *> * objects);
     bool addEventObject(EventObject * object);
     bool addEventObjects(QList<EventObject *> *objects);
-    bool insertEventToDB();
+
+
 
     QString getName();
     QString getDescription();
@@ -58,6 +59,9 @@ public:
 signals:
     
 public slots:
+    bool insertEventToDB();
+    bool DeleteEvent(int id_event);
+    bool DeleteThisEventFromDB();
     QMap <int,QString> getEventsStatus();
     QMap <int,QMap<QString,int> > getEventsTypes();
 
@@ -73,8 +77,8 @@ private:
     QString event_description;
     int id_status;
     int id_type_event;
-    QDateTime * event_start_date;
-    QDateTime * event_end_date;
+    QDateTime event_start_date;
+    QDateTime event_end_date;
     QString event_resume;
     QString signCode;
     Coord * event_coordinate;

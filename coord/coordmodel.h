@@ -18,7 +18,7 @@ public:
     bool insertObjectCoord(QList<Coord * > coordinates, QString ObjectsTypes, int id_object);
     int insertCoord(Coord * coordinates);
     QList<int> insertCoord(QList<Coord *> coordinates);
-    QList<Coord *> getCoordinates(QString ObjectsTypes, int id_object);
+    QList<Coord *> getCoordinates(QString ObjectsTypes, int id_object, QString idObjectName);
 signals:
     
 public slots:
