@@ -581,26 +581,16 @@ void Mainform::show_map_form()
 	}
 
 		MapView *map_view = new MapView;
-		
 
-		map_view->setWindowTitle("Работа с картой");
 		
-        //map_window = new QMdiSubWindow;
+		map_view->setWindowTitle("Работа с картой");
         map_window = m_mdiArea->addSubWindow(map_view);
-		map_window->setAttribute(Qt::WA_DeleteOnClose);
-		map_window->setWindowIcon(QIcon(":/Resources/mapwork.png"));
 		map_view->showMaximized();
 
+		map_window->setAttribute(Qt::WA_DeleteOnClose);
+		map_window->setWindowIcon(QIcon(":/Resources/mapwork.png"));
 		m_mdiArea->setActiveSubWindow(map_window);
-
-        QList<QMdiSubWindow *> subList = m_mdiArea->subWindowList();
-
-        QList< MapView* > list1 = m_mdiArea->findChildren< MapView* >();
-		if(!list1.isEmpty())
-		{
-			m_mdiArea->setActiveSubWindow(map_window);
-			return;
-		}
+		
 
 		return;
 }
@@ -751,3 +741,6 @@ QString Mainform::getCurrentUserInfo()
 	}
 	return userInfo;
 }
+
+
+

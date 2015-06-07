@@ -36,6 +36,7 @@
 #include <searchengine.h>
 #include "events_map_model.h"
 #include <event_manager.h>
+#include <event.h>
 
 
 MapView::MapView(QWidget *parent)
@@ -433,7 +434,7 @@ QWidget* MapView::createEventPanel()
 	currDate = QDate::currentDate();
 	QDate yesterday = currDate.addDays(-1);
 	
-	QDateTime currDateTime(currDate,QTime::currentTime());
+	QDateTime currDateTime(currDate,QTime(23,59,59));
 	QDateTime yesterdayDateTime(yesterday,QTime(0,0));
 
 	beginEventDateTime = new QDateTimeEdit(yesterdayDateTime);
@@ -1775,6 +1776,15 @@ void MapView::slotDeleteEvent()
 	{
 		QStringList objInfo = action->data().toString().split("_");
 
+		Event *ev = new Event;
+		if(ev->DeleteEvent(objInfo.at(0).toInt()))
+		{
+			showCheckedEvents();
+			showMessageToUser("Событие удалено");
+		}
+		
+		
+
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	}
 
@@ -2172,15 +2182,15 @@ QMenu* MapView::createEventMenu(QStringList objInfo)
 
 	//--- Добавление в меню специфичных действий для событий ---------
 
-	QAction *report_act = new QAction("Отчет",this);
-	report_act->setData(idAndType);
-	mouse_menu->addAction(report_act); 
-	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));  //пока не работает
+	//QAction *report_act = new QAction("Отчет",this);
+	//report_act->setData(idAndType);
+	//mouse_menu->addAction(report_act); 
+	//connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));  //пока не работает
 	
-	QAction *edit_act = new QAction("Редактировать событие",this);
-	edit_act->setData(idAndType);
-	mouse_menu->addAction(edit_act); 
-	connect(edit_act, SIGNAL(triggered()), this, SLOT(slotEditEvent()));  //пока не работает
+	//QAction *edit_act = new QAction("Редактировать событие",this);
+	//edit_act->setData(idAndType);
+	//mouse_menu->addAction(edit_act); 
+	//connect(edit_act, SIGNAL(triggered()), this, SLOT(slotEditEvent()));  //пока не работает
 
 	QAction *move_act = new QAction("Переместить событие",this);
 	move_act->setData(idAndType);
@@ -2190,7 +2200,7 @@ QMenu* MapView::createEventMenu(QStringList objInfo)
 	QAction *del_act = new QAction("Удалить событие",this);
 	del_act->setData(idAndType);
 	mouse_menu->addAction(del_act); 
-	connect(del_act, SIGNAL(triggered()), this, SLOT(slotDeleteEvent()));  //пока не работает
+	connect(del_act, SIGNAL(triggered()), this, SLOT(slotDeleteEvent())); 
 
 	return mouse_menu;
 

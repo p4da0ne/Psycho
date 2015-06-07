@@ -49,6 +49,7 @@ public:
 	QMdiSubWindow * signs_window;
 	QMdiSubWindow * events_window;
 
+	QList<QMdiSubWindow *> subwindowList;
 
     
 private slots:

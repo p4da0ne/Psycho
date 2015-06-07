@@ -502,6 +502,14 @@ QString EventsMapModel::getObjectShortName(int idObject,QString tableName)
 	{
 		queryStr = QString("SELECT name_special_conditions FROM special_conditions WHERE id_special_conditions = %1").arg(idObject);
 	}
+	if(tableName == "smi")
+	{
+		queryStr = QString("SELECT name_smi FROM smi WHERE id_smi = %1").arg(idObject);
+	}
+	if(tableName == "groups")
+	{
+		queryStr = QString("SELECT name_groups FROM groups WHERE id_groups = %1").arg(idObject);
+	}
 	
 	if(query.exec(queryStr))
 	{

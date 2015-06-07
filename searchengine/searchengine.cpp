@@ -22,6 +22,8 @@ QStandardItemModel* SearchEngine::findObjects(QString objNamePart)
 	findMeans(objNamePart);
 	findRegions(objNamePart);
 	findSpecialConditions(objNamePart);
+	findSMI(objNamePart);
+	findGroups(objNamePart);
 
 	return searchResultModel;
 }
@@ -215,6 +217,86 @@ QStandardItemModel* SearchEngine::findSpecialConditions(QString objNamePart)
 		QString conditionsName = query.value(rec.indexOf("name_special_conditions")).toString() + " (" + query.value(rec.indexOf("name_type_special_conditions")).toString() + ")";
 		item->setData(conditionsName,Qt::DisplayRole);
 		item->setData(conditionsName,Qt::ToolTipRole);
+		item->setCheckable(true);
+		item->setCheckState(Qt::Unchecked);
+		searchResultModel->appendRow(item);
+	}
+
+	//---------------------------------------------------
+
+	return searchResultModel;
+}
+
+
+//========================================================================
+//======= Метод поиска СМИ ===============================================
+//========================================================================
+QStandardItemModel* SearchEngine::findSMI(QString objNamePart)
+{
+	//---------------------------------------------------
+	QSqlQuery query;
+	QString str = QString("SELECT s.id_smi, t.nametype_smi, s.name_smi \
+							FROM smi s, type_smi t \
+							WHERE s.id_type_smi = t.id_type_smi \
+							AND s.name_smi ILIKE '%%1%' \
+							ORDER BY s.name_smi").arg(objNamePart);
+	
+	if(!query.exec(str))
+	{
+		QString err = query.lastError().text();
+		return searchResultModel;
+	}
+
+	QSqlRecord rec = query.record();
+
+	while(query.next())
+	{
+		QStandardItem *item = new QStandardItem;
+		item->setData(query.value(rec.indexOf("id_smi")).toInt(),Qt::UserRole);
+		item->setData(SMI,Qt::UserRole+1);
+		QString smiName = query.value(rec.indexOf("name_smi")).toString() + " (" + query.value(rec.indexOf("nametype_smi")).toString() + ")";
+		item->setData(smiName,Qt::DisplayRole);
+		item->setData(smiName,Qt::ToolTipRole);
+		item->setCheckable(true);
+		item->setCheckState(Qt::Unchecked);
+		searchResultModel->appendRow(item);
+	}
+
+	//---------------------------------------------------
+
+	return searchResultModel;
+}
+
+
+//========================================================================
+//======= Метод поиска организаций ===============================================
+//========================================================================
+QStandardItemModel* SearchEngine::findGroups(QString objNamePart)
+{
+	//---------------------------------------------------
+	QSqlQuery query;
+	QString str = QString("SELECT gr.id_groups, gr.name_groups, r.name_region	\
+							FROM groups gr, region r \
+							WHERE gr.id_region = r.id_region \
+							AND gr.name_groups ILIKE '%%1%' \
+							ORDER BY gr.name_groups").arg(objNamePart);
+	
+	if(!query.exec(str))
+	{
+		QString err = query.lastError().text();
+		return searchResultModel;
+	}
+
+	QSqlRecord rec = query.record();
+
+	while(query.next())
+	{
+		QStandardItem *item = new QStandardItem;
+		item->setData(query.value(rec.indexOf("id_groups")).toInt(),Qt::UserRole);
+		item->setData(GROUPS,Qt::UserRole+1);
+		QString groupName = query.value(rec.indexOf("name_groups")).toString() + " (" + query.value(rec.indexOf("name_region")).toString() + ")";
+		item->setData(groupName,Qt::DisplayRole);
+		item->setData(groupName,Qt::ToolTipRole);
 		item->setCheckable(true);
 		item->setCheckState(Qt::Unchecked);
 		searchResultModel->appendRow(item);

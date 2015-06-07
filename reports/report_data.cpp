@@ -127,9 +127,36 @@ QMap<QString, QMap<QString, QString> > ReportData::obj_info_coord(int id_object)
 
             return *obj_elem_obj;
   }
-QMap<QString, QString> ReportData::pers_info(int id_object)
+QMap<QString, QString> ReportData::pers_info_foto(int id_object)
 {
-    pers_info_date = new QMap<QString, QString>;
+    pers_info_date_foto = new QMap<QString, QString>;
+    pers_info_date_foto->clear();
+    QSqlQuery query;
+    query.prepare ("SELECT pers.name_persones FROM  persones pers, type_persones WHERE pers.id_persones = ? AND pers.id_type_persones = type_persones.id_type_persones ");
+
+    query.addBindValue(id_object);
+    if(!query.exec())
+    {
+        QString sss = query.lastError().text();
+        return *pers_info_date_foto;
+    }
+    QMap<QString, QString> map;
+    QSqlRecord rec = query.record();
+
+
+    QString foto_name;
+    query.next();
+    foto_name = get_pers_foto_from_DB(id_object);
+
+       pers_info_date_foto->insert("","<CENTER><IMG BORDER=\"0\" SRC=\""+foto_name+"\" height=200> </CENTER>");
+
+       return *pers_info_date_foto;
+}
+
+//=================== инфо о персоналии ==========================================================
+QMap<int, QMap<QString, QString> > ReportData::pers_info(int id_object)
+{
+    pers_info_date = new QMap<int, QMap<QString, QString> >;
     pers_info_date->clear();
     QSqlQuery query;
     query.prepare ("SELECT pers.name_persones,pers.age_persones,pers.contact_persones, pers.description_persones, pers.authority_persones, pers.opposition_persones, pers.rank_persones, type_persones.name_type_persones FROM  persones pers, type_persones WHERE pers.id_persones = ? AND pers.id_type_persones = type_persones.id_type_persones ");
@@ -143,24 +170,71 @@ QMap<QString, QString> ReportData::pers_info(int id_object)
     QMap<QString, QString> map;
     QSqlRecord rec = query.record();
 
-
-    QString foto_name;
     query.next();
-    foto_name = get_pers_foto_from_DB(id_object);
 
-       pers_info_date->insert("1. Фотография:","<CENTER><IMG BORDER=\"0\" SRC=\""+foto_name+"\" height=200> </CENTER>");
-       pers_info_date->insert("2. Фамилия, Имя, Отчество:",query.value(rec.indexOf("name_persones")).toString());
-       pers_info_date->insert("3. Возраст:",query.value(rec.indexOf("age_persones")).toString());
-       pers_info_date->insert("4. Должность(звание):",query.value(rec.indexOf("rank_persones")).toString());
-       pers_info_date->insert("5. Контакты:",query.value(rec.indexOf("contact_persones")).toString());
-       pers_info_date->insert("6. Характеристика:",query.value(rec.indexOf("description_persones")).toString());
-       pers_info_date->insert("7. Авторитет:",query.value(rec.indexOf("authority_persones")).toString());
-       pers_info_date->insert("8. Оппозиционность:",query.value(rec.indexOf("opposition_persones")).toString());
-       pers_info_date->insert("9. Тип персоналии:",query.value(rec.indexOf("name_type_persones")).toString());
+        map.clear();
+        map.insert("1. Число, месяц, год рождения:","");
+        pers_info_date->insert(1,map);
+        map.clear();
+        map.insert("2. Место рождения:","");
+        pers_info_date->insert(2,map);
+        map.clear();
+        map.insert("3. Национальность:","");
+        pers_info_date->insert(3,map);
+        map.clear();
+        map.insert("4. Паспорт гражданина (серия, номер, кем и когда выдан) или иной документ удостоверяющий его личность:","");
+        pers_info_date->insert(4,map);
+        map.clear();
+        map.insert("5. Удостоверение личности (серия, номер, кем и когда выдано):","");
+        pers_info_date->insert(5,map);
+        map.clear();
+        map.insert("6. Дактилоскопия:","");
+        pers_info_date->insert(6,map);
+        map.clear();
+        map.insert("<table><tr><td rowspan=2> 7. Какие образовательные учреждения окончил: </td> <td> а) общеобразовательные учреждения, образовательные учреждения профессионального образования: </td> </tr><tr> <td> б) военные образовательние учреждения профессионального образования:</td></tr></table>","");
+        pers_info_date->insert(7,map);
+        map.clear();
+        map.insert("8. Какими иностранными языками и языками народов РФ владеет:","");
+        pers_info_date->insert(8,map);
+        map.clear();
+        map.insert("9. Ученая степень, ученое звание, дата присвоения:","");
+        pers_info_date->insert(9,map);
+        map.clear();
+        map.insert("10. Какие имеет научные труды и изобретения:","");
+        pers_info_date->insert(10,map);
 
        return *pers_info_date;
 }
+QMap<int, QMap<QString, QString> > ReportData::pers_info_continue(int id_object)
+{
+    pers_info_date = new QMap<int, QMap<QString, QString> >;
+    pers_info_date->clear();
+    QSqlQuery query;
+    query.prepare ("SELECT pers.name_persones,pers.age_persones,pers.contact_persones, pers.description_persones, pers.authority_persones, pers.opposition_persones, pers.rank_persones, type_persones.name_type_persones FROM  persones pers, type_persones WHERE pers.id_persones = ? AND pers.id_type_persones = type_persones.id_type_persones ");
 
+    query.addBindValue(id_object);
+    if(!query.exec())
+    {
+        QString sss = query.lastError().text();
+        return *pers_info_date;
+    }
+    QMap<QString, QString> map;
+    QSqlRecord rec = query.record();
+
+    query.next();
+
+        map.clear();
+        map.insert("17. Фамилия, имя отчество отца и матери, их место жительства:","");
+        pers_info_date->insert(1,map);
+        map.clear();
+        map.insert("18. Семейное положение: ","");
+        pers_info_date->insert(2,map);
+        map.clear();
+        map.insert("19. Домашний адрес семьи:","");
+        pers_info_date->insert(3,map);
+
+       return *pers_info_date;
+}
 QMap<QString, QMap<QString, QString> > ReportData::pers_info_coord(int id_object)
 {
            QString name_obj;

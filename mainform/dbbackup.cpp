@@ -135,6 +135,7 @@ void DbBackup::slotCreateBackup()
 	QString pathStr = currentPath + "/recovery/pg_dump.exe";
 
 	backupQuery.append(pathStr);
+	backupQuery.append(" -Fc -v");
 	backupQuery.append(" --host=");
 	backupQuery.append(host);
 	backupQuery.append(" --username=");
@@ -172,6 +173,6 @@ void DbBackup::slotCreateBackup()
 //==============================================================
 //========= Сообщение пользователю в диалоговом окне ===========
 //==============================================================
-	messageToUser(QString("Создан файл резервной копии БД с именем %1").arg("saturn"+dateTime+".backup"));
+	//messageToUser(QString("Создан файл резервной копии БД с именем %1").arg("saturn"+dateTime+".backup"));
 
 }
