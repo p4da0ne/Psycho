@@ -247,9 +247,10 @@ bool Mainform::close_connection()
 void Mainform::init_menu(int id_user_group)
 {
 	QString mess;
+	QString wTitle;
     switch(id_user_group)
 	{
-	 case 0:	   		//==== Незарегистрированный пользователь (вошел без логина и пароля)или нет соединения с БД ====
+	 case 0:	  //==== Незарегистрированный пользователь (вошел без логина и пароля)или нет соединения с БД ====
 		    UI->menuBar->clear();
 			menu = new QMenu("Файл");
             if(connection_flag == false)
@@ -272,31 +273,7 @@ void Mainform::init_menu(int id_user_group)
 
 		 	break;
 
-	 case 1:	   		//==== Разработчик (права админа) ====
-			UI->menuBar->clear();
-			menu = new QMenu("Файл");
-			add_menu_change_user(menu);
-			add_menu_exit(menu);
-			UI->menuBar->addMenu(menu);
-			
-			settings_menu = new QMenu("Настройки");
-			add_menu_db_connection(settings_menu);
-			add_menu_manage_users(settings_menu);
-			add_menu_map_settings(settings_menu);
-			add_menu_backup_db(settings_menu);
-            add_menu_signs_edit(settings_menu);
-			UI->menuBar->addMenu(settings_menu);
-
-			oper_menu = new QMenu("Оперативная работа");
-			add_menu_supporting_tables(oper_menu);
-			add_menu_object_manager(oper_menu);
-			add_mapwork(oper_menu);
-			add_menu_event_manager(oper_menu);
-			UI->menuBar->addMenu(oper_menu);
-			Mainform::setWindowTitle("Сатурн - сессия разработчика");
-			break;
-	 
-	 case 2:     		//==== Администратор ====
+	 case 2:    //==== Администратор ====
 			UI->menuBar->clear();
 			menu = new QMenu("Файл");
 			add_menu_change_user(menu);
@@ -318,7 +295,8 @@ void Mainform::init_menu(int id_user_group)
 			add_menu_event_manager(oper_menu);
 			UI->menuBar->addMenu(oper_menu);
 
-			Mainform::setWindowTitle("Сатурн - сессия администратора");
+			wTitle = "Сатурн - сессия администратора " + getCurrentUserInfo();
+			Mainform::setWindowTitle(wTitle);
 			break;
 
 	 case 3://==== Пользователь ====
@@ -334,7 +312,8 @@ void Mainform::init_menu(int id_user_group)
 			add_menu_event_manager(oper_menu);
 			UI->menuBar->addMenu(oper_menu);
 
-			Mainform::setWindowTitle("Сатурн - пользовательская сессия");
+			wTitle = "Сатурн - сессия оператора " + getCurrentUserInfo();
+			Mainform::setWindowTitle(wTitle);
 		 	break;
 	}
 return;
@@ -398,10 +377,10 @@ void Mainform::add_menu_signs_edit(QMenu *settings_menu)
 
 
 void Mainform::add_menu_manage_users(QMenu *settings_menu){
-	sett_act4 = new QAction("Управление пользователями",this);
-	sett_act4->setIcon(QIcon(":/Resources/user_config.png"));
-	settings_menu->addAction(sett_act4);
-	connect(sett_act4, SIGNAL(triggered()),this, SLOT(show_user_form()));
+	users_action = new QAction("Управление пользователями",this);
+	users_action->setIcon(QIcon(":/Resources/user_config.png"));
+	settings_menu->addAction(users_action);
+	connect(users_action, SIGNAL(triggered()),this, SLOT(slotOpenUserManageForm()));
 }
 
 void Mainform::add_menu_supporting_tables(QMenu *oper_menu){
@@ -485,7 +464,7 @@ void Mainform::show_login_form()
 	QString password =	login_password_edit->text();
 	if(!login(login_name,password))
 	{
-		login_message = "<p align = 'center'><font color='red'>" + tr("Login or password are incorrect.") + "</font></p>";
+		login_message = "<p align = 'center'><font color='red'>Неверный логин или пароль пользователя.</font></p>";
 		message_label->setText(login_message);
 		delete login_form;	 
 		reopen_login();
@@ -588,14 +567,6 @@ void Mainform::create_user_menu(int id_user)
 
 
 
-
-//===================================================
-void Mainform::show_user_form()
-{
-	  ManageUsers *u = new ManageUsers();
-      u->show();
-	  
-}
 
 //================ Форма ввода и редактирования информации ========
 
@@ -732,4 +703,51 @@ void Mainform::slotOpenBackupDbDialog()
 
     }
 
+}
+
+
+
+
+void Mainform::slotOpenUserManageForm()
+{
+	UsersManager *usersDlg = new UsersManager;
+
+    if(usersDlg->exec() == QDialog::Accepted)
+    {
+       
+
+    }
+}
+
+//========================================================
+//============
+//========================================================
+QString Mainform::getCurrentUserInfo()
+{
+	QString userInfo;
+	if(this->id_user == 0)
+	{
+		return userInfo;	
+	}
+
+	QSqlQuery query;
+	QString str = QString("SELECT r.rank_name,u.surname,u.name,u.patronumic \
+						   FROM users u, military_rank r \
+						   WHERE u.id_military_rank=r.id_military_rank \
+						   AND id_user = %1").arg(id_user);
+	if(query.exec(str))
+	{
+		query.next();
+		QSqlRecord rec = query.record();
+
+		userInfo.append(" - ");
+		userInfo.append(query.value(rec.indexOf("rank_name")).toString());
+		userInfo.append(" ");
+		userInfo.append(query.value(rec.indexOf("surname")).toString());
+		userInfo.append(" ");
+		userInfo.append(query.value(rec.indexOf("name")).toString());
+		userInfo.append(" ");
+		userInfo.append(query.value(rec.indexOf("patronumic")).toString());
+	}
+	return userInfo;
 }

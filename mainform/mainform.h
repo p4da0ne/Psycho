@@ -12,7 +12,7 @@
 #include "mapsettingsdialog.h"
 #include "dbbackup.h"
 
-#include <manage_users.h>
+#include <users_manager.h>
 #include <output.h>
 #include <reports.h>
 #include <supporting_tables.h>
@@ -53,7 +53,6 @@ public:
     
 private slots:
 
-	void show_user_form();
 	void show_connect_settings_dialog();
 	void test_connection();
 	void save_connection_settings();
@@ -68,6 +67,9 @@ private slots:
 	void slotOpenEventManagerForm();
 	void closeTab(int i);
 
+	////////////////////////////////////
+	void slotOpenUserManageForm();
+	///////////////////////////////////
 
 private:
 	QMenu * menu;
@@ -78,7 +80,6 @@ private:
 	QAction * sett_act1;
 	QAction * sett_act2;
 	QAction * sett_act3;
-	QAction * sett_act4;
     QAction * sett_act5;
 	QAction * event_act;
 
@@ -87,7 +88,9 @@ private:
 	QAction * map_act;
 	QAction * open_map_sett_action;
 	QAction * backup_db_action;
-
+///////////////////////////////////////////////////
+	QAction * users_action;
+	/////////////////////////////
 
 	QLabel *message_label;
 	void init_menu(int id_user_group);
@@ -123,6 +126,7 @@ private:
 	void add_menu_supporting_tables(QMenu *oper_menu);
 	void add_menu_object_manager(QMenu *oper_menu);
 	void add_menu_event_manager(QMenu *oper_menu);
+	QString getCurrentUserInfo();
 	bool connection_flag;
 	db_saturn *db;
 

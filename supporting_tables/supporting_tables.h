@@ -35,7 +35,7 @@ public:
 	QTreeWidgetItem *root_item;
 	QTreeWidgetItem *ch_item;
 	QTableWidget *patt_obj_table;
-	void create_patt_obj_table(int id_object_class);
+
 
 private slots:
     void fill_supp_table(QTreeWidgetItem * item, int column);
@@ -43,10 +43,7 @@ private slots:
 	void save_supp_table_data();
 	void del_supp_table_data();
 	void ok_slot();
-	void edit_pattern_obj(int row,int col);
-	void add_new_object();
-	void del_object(int row,int col);
-
+	
 private:
     Ui::supporting_tables_form *UI;
 

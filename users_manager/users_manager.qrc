@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/" >
+        <file>Resources/add_but.png</file>
+        <file>Resources/edit_but.png</file>
+        <file>Resources/delete_but.png</file>
+		<file>Resources/stock_lock.png</file>
+    </qresource>
+</RCC>

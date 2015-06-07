@@ -77,22 +77,24 @@ void SupportingTables::init_supporting_tree()
 
 	root_item = add_root("Регионы","-");
 		add_child(root_item,"Типы регионов","type_region");
-		add_child(root_item,"Особые условия","type_special_conditions");
+	
+	root_item = add_root("Особые условия","-");
+		add_child(root_item,"Типы особых условий","type_special_conditions");
 		
 	root_item = add_root("Персоналии","-");
 		add_child(root_item,"Типы персоналий","type_persones");
 		
     root_item = add_root("События","type_event");
 		
-		root_item = add_root("Воинские звания","military_rank");
+	root_item = add_root("Воинские звания","military_rank");
 
-		root_item = add_root("Должности","rank");
+	root_item = add_root("Должности","rank");
 
-		root_item = add_root("Национальности","nations");
+	root_item = add_root("Национальности","nations");
 
-		root_item = add_root("Религии","confessions");
+	root_item = add_root("Религии","confessions");
 
-		root_item = add_root("Языки","language");
+	root_item = add_root("Языки","language");
 
 
 	
@@ -359,181 +361,3 @@ void SupportingTables::ok_slot(){
 	close();
 }
 
-//================= Создание и открытие формы редактирования типовых объектов, входящих в систему объектов ============
-void SupportingTables::edit_pattern_obj(int row,int column){
-	QString ttt = UI->supp_tables_tree->currentItem()->text(1);
-	if(column!=5 ) {
-		return;
-	} else if(ttt == "weapon_type"){
-		return;
-	}
-	else {
-		int id_object_class = UI->supp_table->item(row,1)->text().toInt();
-		QDialog *edit_pattern = new QDialog();
-		edit_pattern->setMinimumSize(QSize(600,600));
-		edit_pattern->setWindowTitle(tr("Pattern objects"));
-		QLabel *header = new QLabel();
-		header->setAlignment(Qt::AlignCenter);
-		QFont *hed_font = new QFont("Arial",10,QFont::Bold);
-		header->setFont(*hed_font);
-		id = new QLabel(QString::number(id_object_class));
-		id->setVisible(false);
-		QSqlQuery query;
-		QString str = QString("SELECT class_name FROM object_class WHERE id_object_class = %1").arg(id_object_class);
-		if(!query.exec(str)){
-			return;
-		}
-		QSqlRecord rec = query.record();
-		while(query.next()){	
-			header->setText(query.value(rec.indexOf("class_name")).toString());
-		}
-		QVBoxLayout *v_lay = new QVBoxLayout();
-		v_lay->setAlignment(Qt::AlignTop);
-		v_lay->addWidget(header);
-		patt_obj_table = new QTableWidget();
-		patt_obj_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
-		connect(patt_obj_table,SIGNAL(cellClicked(int,int)),this,SLOT(del_object(int,int)));
-		create_patt_obj_table(id_object_class);
-		v_lay->addWidget(patt_obj_table);
-		//=====================================	
-		QGroupBox *new_obj = new QGroupBox(tr("Add new pattern object"));
-		QLabel *lab1 = new QLabel(tr("Object name:"));
-		QLabel *lab2 = new QLabel(tr("Short name:"));
-		QLabel *lab3 = new QLabel(tr("Classifikator code:"));
-		QLabel *lab4 = new QLabel(tr("Description:"));
-		obj_name_edit = new QLineEdit();
-		obj_short_name_edit = new QLineEdit();
-		classif_code_edit = new QLineEdit();
-		descr_obj = new QTextEdit();
-		descr_obj->resize(200,100);
-		QPushButton *add_obj_button = new QPushButton(tr("Add object"));
-		connect(add_obj_button,SIGNAL(clicked()),this,SLOT(add_new_object()));
-		QGridLayout *grid = new QGridLayout();
-		grid->setAlignment(Qt::AlignTop);
-		grid->addWidget(lab1,0,0);
-		grid->addWidget(obj_name_edit,0,1);
-		grid->addWidget(lab2,1,0);
-		grid->addWidget(obj_short_name_edit,1,1);
-		grid->addWidget(lab3,2,0);
-		grid->addWidget(classif_code_edit,2,1);
-		grid->addWidget(lab4,3,0);
-		grid->addWidget(descr_obj,3,1);
-		grid->addWidget(add_obj_button,4,1);
-		new_obj->setLayout(grid);
-		v_lay->addWidget(new_obj);
-		//===================================
-		edit_pattern->setLayout(v_lay);
-		if(edit_pattern->exec() == QDialog::Accepted){
-
-		}
-		return;
-	}
-}
-
-
-//============ Заполнение таблицы типовых объектов данными из БД =======================
-void SupportingTables::create_patt_obj_table(int id_object_class)
-{
-	clear_tableWidget(patt_obj_table);
-
-	patt_obj_table->setColumnCount(6);
-	patt_obj_table->hideColumn(0);
-	
-	QStringList header_list;
-	header_list<<""<<tr("Type_name")<<tr("Short_name")<<tr("Description")<<tr("Code")<<"";
-	patt_obj_table->setHorizontalHeaderLabels(header_list);
-
-	QSqlQuery query;
-	QString str = QString("SELECT * FROM object_type_in_class WHERE id_object_class = %1").arg(id_object_class);
-	if(!query.exec(str))
-	{
-	 return;
-	}
-	QSqlRecord rec = query.record();
-	int id_type,code;
-	int row = 0;
-	QString type_name,short_name,descr;
-	QTableWidgetItem *item;
-	while(query.next())
-	{	
-		id_type = query.value(rec.indexOf("id_type")).toInt();
-		type_name = query.value(rec.indexOf("type_name")).toString();
-		short_name = query.value(rec.indexOf("short_name")).toString();
-		descr = query.value(rec.indexOf("description")).toString();
-		code = query.value(rec.indexOf("code")).toInt();
-
-		patt_obj_table->insertRow(row);
-
-		item = new QTableWidgetItem(QString::number(id_type));
-		patt_obj_table->setItem(row,0,item);
-
-		item = new QTableWidgetItem(type_name);
-		patt_obj_table->setItem(row,1,item);
-
-		item = new QTableWidgetItem(short_name);
-		patt_obj_table->setItem(row,2,item);
-
-		item = new QTableWidgetItem(descr);
-		patt_obj_table->setItem(row,3,item);
-
-		item = new QTableWidgetItem(QString::number(code));
-		patt_obj_table->setItem(row,4,item);
-
-		QIcon icon(QString("./icons/close.png"));
-		item = new QTableWidgetItem(icon,"",0);
-		patt_obj_table->setItem(row,5,item);
-	}	
-   row++;
-   patt_obj_table->resizeColumnsToContents();
-}
-
-
-//========== Добавление нового типового (типа) объекта отностительно выбранного класса (системы объектов) ==============
-void SupportingTables::add_new_object()
-{
- QString obj_name,short_name,descr;
- int id_object_class = id->text().toInt();
-
- obj_name = obj_name_edit->text();
- short_name = obj_short_name_edit->text();
- descr = descr_obj->toPlainText();
- int code = classif_code_edit->text().toInt();
-
- if(obj_name == "") return;    //== если не введено название объекта, то выход
-
- QSqlQuery query;
- QString str = QString("INSERT INTO object_type_in_class (id_object_class,type_name,short_name,description,code) VALUES (%1,'%2','%3','%4',%5)").arg(id_object_class).arg(obj_name).arg(short_name).arg(descr).arg(code);
-	if(!query.exec(str))
-	{
-	 return;
-	}
-
- obj_name_edit->clear();
- obj_short_name_edit->clear();
- descr_obj->clear();
- 
- create_patt_obj_table(id_object_class);
-}
-
-
-//============== Удаление типового объекта ====================
-void SupportingTables::del_object(int row,int col)
-{
-	if(col!=5)
-  {
-    return;
-  }
-  else
-  {
-  int id_type = patt_obj_table->item(row,0)->text().toInt();
-
-  QSqlQuery query;
-	QString str = QString("DELETE FROM object_type_in_class WHERE id_type = %1").arg(id_type);
-	if(!query.exec(str))
-	{
-	 return;
-	}
-    
-	create_patt_obj_table(id->text().toInt());
-  }
-}
