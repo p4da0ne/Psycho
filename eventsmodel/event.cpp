@@ -9,7 +9,7 @@ Event::Event(QString name, QString description, int id_status, int id_type_event
     this->event_description = description;
     this->id_status = id_status;
     this->id_type_event = id_type_event;
-	
+    mediaModel = new QStandardItemModel();
     if(start_date > 0)
         this->event_start_date = *start_date;
     else
@@ -31,6 +31,7 @@ Event::Event(int id_event)
     this->loadEventStatus();
     this->loadEventTypes();
     this->objects = new QList<EventObject *>;
+    mediaModel = new QStandardItemModel();
     QSqlQuery query;
     this->id_event = id_event;
     if(!query.exec(QString("SELECT * FROM events where id_event = %1").arg(id_event))){
@@ -256,6 +257,10 @@ bool Event::DeleteEvent(int id_event)
 
 bool Event::DeleteThisEventFromDB()
 {
+    if(this->id_event == 0){
+        qDebug() << "Id event is 0";
+        return false;
+    }
     QSqlQuery query;
     if(!query.exec(QString("DELETE FROM events WHERE id_event = %1").arg(this->id_event))){
         qDebug() << query.lastError().text();
@@ -263,6 +268,103 @@ bool Event::DeleteThisEventFromDB()
     }
     this->id_event = 0;
     return true;
+}
+
+/*!
+Открывает медиа файлы из БД средствами ОС
+openMediaContent(int id_event_media)
+*/
+void Event::openMediaContent(QModelIndex index){
+    int id_event_media = index.data(34).toInt();
+    QSqlQuery query;
+    if(!query.exec(QString("SELECT * FROM event_media where id_event_media = %1").arg(id_event_media))){
+        qDebug() << query.lastError();
+        return;
+    }
+    int index_name_event_media = query.record().indexOf("filename_media");
+    int index_media = query.record().indexOf("media");
+    while(query.next()){
+        QString file_path=QDir::tempPath() + "/" + query.value(index_name_event_media).toString();
+        QFile file(file_path);
+        file.open(QIODevice::WriteOnly);
+        file.write(query.value(index_media).toByteArray());
+        file.close();
+        QDesktopServices::openUrl(QUrl(file_path.toUtf8()));
+    }
+}
+
+void Event::updateMediaEvents(){
+    if (this->id_event == 0){
+        return;
+    }
+    QSqlQuery query;
+    mediaModel->clear();
+    QStandardItem * rootItem = mediaModel->invisibleRootItem();
+    query.exec(QString("SELECT em.id_event_media, em.filename_media, em.description, em.id_media_type, mt.type_name FROM event_media em,media_type mt  where mt.id_media_type = em.id_media_type AND id_event = %1").arg(this->id_event));
+    int index_name_event_media = query.record().indexOf("filename_media");
+    int index_description = query.record().indexOf("description");
+    int index_id_event_media = query.record().indexOf("id_event_media");
+    int index_type_name = query.record().indexOf("type_name");
+    QStringList header;
+    header << "Тип" << "Описание";
+    mediaModel->setHorizontalHeaderLabels(header);
+    while (query.next())
+    {
+        QList<QStandardItem *> media_items;
+        int id_event_media = query.value(index_id_event_media).toInt();
+        QStandardItem * item_name = new QStandardItem(query.value(index_type_name).toString());
+        QStandardItem * item_description = new QStandardItem(query.value(index_description).toString());
+        item_name->setEditable(false);
+        item_name->setData("media",33);
+        item_name->setData(id_event_media,34);
+        item_description->setEditable(false);
+        item_description->setData("media",33);
+        item_description->setData(id_event_media,34);
+        media_items.append(item_name);
+        media_items.append(item_description);
+        rootItem->appendRow(media_items);
+    }
+}
+
+int Event::InsertMediaItems(QString path,int idMediaType, QString name_event_media,QString description){
+    if(this->id_event == 0){
+        return 0;
+    }
+    QSqlQuery query;
+    query.prepare("INSERT INTO event_media (id_event,id_media_type,filename_media,description, media) VALUES (?,?,?,?,?) RETURNING id_event_media");
+    query.addBindValue(this->id_event);
+    query.addBindValue(idMediaType);
+    query.addBindValue(name_event_media);
+    query.addBindValue(description);
+    QFile file(path);
+    if(!file.open(QIODevice::ReadOnly))
+    {
+        //================MessageBox===============================
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Предупреждение");
+        msgBox.setText("Не получается открыть файл. Проверте праильность пути к файлу.");
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        switch (msgBox.exec()) {
+        case QMessageBox::Ok:
+            return 0;
+            break;
+        }
+    }
+
+    QByteArray ba = file.readAll();
+    query.addBindValue(ba);
+
+    if(!query.exec())
+    {
+        qDebug() << query.lastError().text();
+        qDebug() << query.lastQuery();
+        return 0;
+    }
+
+    query.next();
+    int id_event_media = query.value(0).toInt();
+    query.clear();
+    return id_event_media;
 }
 
 QString Event::getName()
@@ -288,6 +390,11 @@ int Event::getIdStatus()
 QString Event::getResume()
 {
     return this->event_resume;
+}
+
+QStandardItemModel *Event::getMediaEvents()
+{
+    return mediaModel;
 }
 
 QMap<int, QString> Event::getEventsStatus()

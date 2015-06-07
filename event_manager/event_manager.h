@@ -8,6 +8,7 @@
 #include <QList>
 #include <QSortFilterProxyModel>
 #include "config_event_manager.h"
+#include "progressthread.h"
 #include "../eventsmodel/eventsmodel.h"
 
 class __EXPORT_EVENT_MANAGER EventManager : public QWidget
@@ -18,10 +19,14 @@ public:
     EventManager(QWidget *parent = 0, Coord * coord = 0 );
     ~EventManager();
 
+
 public slots:
     void addNewEventDialog(QWidget *parent);
     void openNewEventDialog();
     void eventClick(QModelIndex index);
+    void mediaClick(QModelIndex);
+    void openFileDialog();
+    void viewMediaContentDialog(int id_event, QWidget *parent = 0);
 
 private slots:
     void sourceTypeChange(int index);
@@ -32,6 +37,8 @@ private slots:
     void filterNameTextChanged(QString text);
     void updateModel();
     void resizeTableView();
+    void newEventMediaDialog();
+    void addNewEventMedia();
 
 
 private:
@@ -92,6 +99,14 @@ private:
     QLineEdit * logLEE;
     QLineEdit * lomLEE;
     QLineEdit * losLEE;
+
+    QTableView * eventMedia;
+    QPushButton *addEventMedia;
+    QLineEdit * mediaFilePath;
+    QTextEdit * mediaDescription;
+    QComboBox * mediaType;
+    QDialog * mediaDialog;
+    QSortFilterProxyModel * proxyMediaModel;
 
     bool whithCoord;
     bool isEventDialogOpen;

@@ -103,6 +103,10 @@ void EventManager::initUIX(){
     this->getObjectCBNEE = new QComboBox();
     this->getTypeObjectCB(this->suorceTypeObjectCBNEE,this->getTypeObjectCBNEE);
 
+    eventMedia = new QTableView(this);
+    addEventMedia = new QPushButton(QIcon(":/icons/icons/add_but.png"),"",this);
+    addEventMedia->setToolTip("Добавить контент");
+
     formLayoutE->addRow("Наименование:",nameLEE);
     formLayoutE->addRow("Статус события:",statusCBE);
     formLayoutE->addRow("Тип события:",typeCBE);
@@ -131,7 +135,9 @@ void EventManager::initUIX(){
 
     grid->addWidget(tableView,2,0,10,10);
     grid->addLayout(formLayoutE,1,11,10,2);
-    grid->addLayout(formLayoutECoord,1,13,10,2);
+    grid->addLayout(formLayoutECoord,1,13,4,2);
+    grid->addWidget(addEventMedia,5,13);
+    grid->addWidget(eventMedia,6,13,4,2);
 
     eventsModel = new EventsModel();
     proxyModel = new QSortFilterProxyModel(this);
@@ -146,6 +152,8 @@ void EventManager::initUIX(){
     connect(filterName,SIGNAL(textChanged(QString)),this,SLOT(filterNameTextChanged(QString)));
     connect(upDateModelButton,SIGNAL(clicked()),eventsModel,SLOT(UpdateModel()));
     connect(tableView,SIGNAL(clicked(QModelIndex)),this,SLOT(eventClick(QModelIndex)));
+    connect(eventMedia,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(mediaClick(QModelIndex)));
+    connect(addEventMedia,SIGNAL(clicked()),this,SLOT(newEventMediaDialog()));
     connect(this->addNewEventPB,SIGNAL(clicked()),this,SLOT(openNewEventDialog()));
     connect(this,SIGNAL(eventDataChanged()),this,SLOT(updateModel()));
 }
@@ -167,11 +175,84 @@ void EventManager::updateModel()
 
 void EventManager::resizeTableView()
 {
-    tableView->setColumnWidth(0,70);
-    tableView->setColumnWidth(1,50);
-    tableView->setColumnWidth(2,70);
-    tableView->setColumnWidth(3,110);
-    tableView->setColumnWidth(4,110);
+    tableView->setColumnWidth(0,100);
+    tableView->setColumnWidth(1,90);
+    tableView->setColumnWidth(2,130);
+    tableView->setColumnWidth(3,180);
+    tableView->setColumnWidth(4,180);
+}
+
+void EventManager::newEventMediaDialog()
+{
+    mediaDialog = new QDialog(this);
+    QFormLayout * FML = new QFormLayout();
+    QHBoxLayout * mediaL = new QHBoxLayout();
+    mediaFilePath = new QLineEdit();
+    QPushButton * OFD = new QPushButton("...");
+    mediaDescription = new QTextEdit();
+    mediaType = new QComboBox();
+    QSqlQuery query;
+    if(!query.exec("SELECT * FROM media_type")){
+        qDebug() << query.lastError().text();
+        return;
+    }
+    while(query.next()){
+        mediaType->addItem(query.value(1).toString(),query.value(0));
+    }
+    QPushButton * saveMedia = new QPushButton("Сохранить");
+
+    mediaL->addWidget(mediaFilePath);
+    mediaL->addWidget(OFD);
+    FML->addRow("Путь к файлу",mediaL);
+    FML->addRow("Тип медиа",mediaType);
+    FML->addRow("Описание файла",mediaDescription);
+    FML->addWidget(saveMedia);
+    mediaDialog->setLayout(FML);
+    mediaDialog->show();
+
+    connect(OFD,SIGNAL(clicked()),this,SLOT(openFileDialog()));
+    connect(saveMedia,SIGNAL(clicked()),this,SLOT(addNewEventMedia()));
+}
+
+void EventManager::addNewEventMedia(){
+    QString filePath = mediaFilePath->text();
+    if(filePath.isEmpty())
+        return;
+    QFileInfo FI(filePath);
+    QString fileName = "SaturnMediaContent" + FI.suffix() + "." + FI.suffix();
+    int i=0;
+    int type = mediaType->itemData(mediaType->currentIndex()).toInt();
+    QString description;
+    if(mediaDescription->toPlainText().isEmpty())
+        description="";
+    else
+        description=mediaDescription->toPlainText();
+    if(current_event->InsertMediaItems(filePath,type,fileName,description) > 0){
+        mediaDialog->close();
+        current_event->updateMediaEvents();
+    }
+    return;
+}
+
+void EventManager::openFileDialog(){
+    mediaFilePath->setText(QFileDialog::getOpenFileName());
+}
+
+void EventManager::viewMediaContentDialog(int id_event, QWidget *parent)
+{
+    QTableView * tableMediaContent = new QTableView();
+    Event * dialogEvent = new Event(id_event);
+    dialogEvent->updateMediaEvents();
+    QSortFilterProxyModel * proxy= new QSortFilterProxyModel();
+    proxy->setSourceModel(dialogEvent->getMediaEvents());
+    tableMediaContent->setModel(proxy);
+    QDialog * mediaContentDialog = new QDialog(parent);
+    QVBoxLayout * VBL;
+    VBL->addWidget(tableMediaContent);
+    mediaContentDialog->setLayout(VBL);
+    mediaContentDialog->show();
+
+    connect(tableMediaContent,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(mediaClick(QModelIndex)));
 }
 
 void EventManager::addNewEventDialog(QWidget *parent){
@@ -333,7 +414,30 @@ void EventManager::eventClick(QModelIndex index)
             this->getObjectCBNEE->setCurrentIndex(index);
         }
     }
+    current_event->updateMediaEvents();
+    proxyMediaModel = new QSortFilterProxyModel(this);
+    proxyMediaModel->setSourceModel(current_event->getMediaEvents());
+    proxyMediaModel->setDynamicSortFilter(true);
+    eventMedia->setSortingEnabled(true);
+    eventMedia->setModel(proxyMediaModel);
+}
 
+void EventManager::mediaClick(QModelIndex index)
+{
+    ProgressThread * PD = new ProgressThread();
+    PD->id_event_media = index.data(34).toInt();
+    PD->start();
+    QDialog * l = new QDialog(this,Qt::ToolTip);
+    l->setWindowTitle("Идет загрузка...");
+    connect(PD,SIGNAL(finished()),l,SLOT(close()));
+    QHBoxLayout la;
+    QLabel lab;
+    lab.setText("Подождите, идет загрузка двнных с сервера");
+    la.addWidget(&lab);
+    l->setModal(true);
+    l->resize(300,100);
+    l->setLayout(&la);
+    l->exec();
 }
 
 void EventManager::sourceTypeChange(int index)
@@ -465,8 +569,7 @@ void EventManager::saveNewEvent()
     }
 }
 
-void EventManager::getTypeObjectCB(QComboBox * suorce,QComboBox * get)
-{
+void EventManager::getTypeObjectCB(QComboBox * suorce,QComboBox * get){
     QSqlQuery query;
     suorce->clear();
     get->clear();
