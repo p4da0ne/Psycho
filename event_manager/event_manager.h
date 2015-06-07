@@ -33,6 +33,9 @@ public slots:
     void restEventsProperty();
 
 private slots:
+    void nameLEEChanged(QString text);
+    void DTSEChanged(QDateTime dateTime);
+    void DTEEChanged(QDateTime dateTime);
     void sourceTypeChange(int index);
     void sourceTypeChangeE(int index);
     void getTypeChange(int index);
@@ -49,6 +52,16 @@ private slots:
     void slotRemoveEvent();
     void EventsMediaTableCustomMenu(const QPoint &pe);
     void slotRemoveEventMedia();
+
+    void statusCBEChanged(int index);
+    void typeCBEChanged(int index);
+
+    void descriptionTEEChanged();
+    void resumeTEEChanged();
+    void CoordChanged();
+    void suorceObjectCBNEEChanged(int index);
+    void getObjectCBNEEChanged(int index);
+
 
 
 private:

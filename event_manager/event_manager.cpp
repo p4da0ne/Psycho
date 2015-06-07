@@ -99,6 +99,7 @@ void EventManager::initUIX(){
     lomLEE->setValidator(new QIntValidator(0,60,lomLEE));
     losLEE = new QLineEdit();
     losLEE->setValidator(new QDoubleValidator(0.00,60.00,2,losLEE));
+    QPushButton * editCoordinates = new QPushButton("Изменить координаты");
 
     this->suorceTypeObjectCBNEE = new QComboBox();
     this->suorceObjectCBNEE = new QComboBox();
@@ -129,6 +130,17 @@ void EventManager::initUIX(){
     formLayoutE->addRow("Тип объекта события:",this->getTypeObjectCBNEE);
     formLayoutE->addRow("Объект события:",getObjectCBNEE);
 
+    connect(nameLEE,SIGNAL(textEdited(QString)),this,SLOT(nameLEEChanged(QString)));
+    connect(statusCBE,SIGNAL(currentIndexChanged(int)),this,SLOT(statusCBEChanged(int)));
+    connect(typeCBE,SIGNAL(currentIndexChanged(int)),this,SLOT(typeCBEChanged(int)));
+    connect(DTSE,SIGNAL(dateTimeChanged(QDateTime)),this,SLOT(DTSEChanged(QDateTime)));
+    connect(DTEE,SIGNAL(dateTimeChanged(QDateTime)),this,SLOT(DTSEChanged(QDateTime)));
+    connect(descriptionTEE,SIGNAL(textChanged()),this,SLOT(descriptionTEEChanged()));
+    connect(resumeTEE,SIGNAL(textChanged()),this,SLOT(resumeTEEChanged()));
+    connect(suorceObjectCBNEE,SIGNAL(activated(int)),this,SLOT(suorceObjectCBNEEChanged(int)));
+    connect(getObjectCBNEE,SIGNAL(activated(int)),this,SLOT(getObjectCBNEEChanged(int)));
+    connect(editCoordinates,SIGNAL(clicked()),this,SLOT(CoordChanged()));
+
     connect(this->suorceTypeObjectCBNEE, SIGNAL(currentIndexChanged(int)), this , SLOT(sourceTypeChangeE(int)));
     connect(this->getTypeObjectCBNEE, SIGNAL(currentIndexChanged(int)), this , SLOT(getTypeChangeE(int)));
 
@@ -140,6 +152,7 @@ void EventManager::initUIX(){
     grid->addWidget(tableView,2,0,10,10);
     grid->addLayout(formLayoutE,1,11,10,2);
     grid->addLayout(formLayoutECoord,1,13,4,2);
+    grid->addWidget(editCoordinates,4,13);
     grid->addWidget(addEventMedia,5,13);
     grid->addWidget(eventMedia,6,13,4,2);
 
@@ -566,8 +579,8 @@ void EventManager::saveNewEvent()
     newEvent->setIdTypeEvent(typeCB->itemData(typeCB->currentIndex()).toInt());
     qDebug()<< DTS->dateTime().toString();
     qDebug()<< DTE->dateTime().toString();
-    newEvent->setStartDate(&DTS->dateTime());
-    newEvent->setEndDate(&DTE->dateTime());
+    newEvent->setStartDate(DTS->dateTime());
+    newEvent->setEndDate(DTE->dateTime());
     newEvent->setDescription(descriptionTE->toPlainText());
     newEvent->setResume(resumeTE->toPlainText());
     if((lagLE->text().isEmpty()) || (lamLE->text().isEmpty()) ||(lasLE->text().isEmpty()) ||(logLE->text().isEmpty()) ||(lomLE->text().isEmpty()) ||(losLE->text().isEmpty())){
@@ -677,6 +690,7 @@ void EventManager::slotRemoveEvent()
             event->DeleteEvent(index.data(Qt::UserRole + 3).toInt());
             restEventsProperty();
             setEventsPropertyEnabled(false);
+            current_event = new Event();
             updateModel();
             return;
             break;
@@ -732,6 +746,46 @@ void EventManager::slotRemoveEventMedia()
     }
 }
 
+void EventManager::statusCBEChanged(int index)
+{
+    current_event->setStatus(statusCBE->itemData(index).toInt());
+}
+
+void EventManager::typeCBEChanged(int index)
+{
+    current_event->setIdTypeEvent(typeCBE->itemData(index).toInt());
+}
+
+void EventManager::descriptionTEEChanged()
+{
+    current_event->setDescription(descriptionTEE->toPlainText());
+}
+
+void EventManager::resumeTEEChanged()
+{
+    current_event->setResume(resumeTEE->toPlainText());
+}
+
+void EventManager::CoordChanged()
+{
+    Coord * upCoord = new Coord(lagLEE->text().toInt(),lamLEE->text().toInt(),lasLEE->text().toDouble(),logLEE->text().toInt(),lomLEE->text().toInt(),losLEE->text().toDouble());
+    current_event->setCoordinate(upCoord);
+}
+
+void EventManager::suorceObjectCBNEEChanged(int index)
+{
+    int id_sr_type = suorceTypeObjectCBNEE->itemData(suorceTypeObjectCBNEE->currentIndex()).toInt();
+    EventObject * EO = new EventObject(suorceObjectCBNEE->itemData(index).toInt(),id_sr_type,true);
+    current_event->addEventObject(EO);
+}
+
+void EventManager::getObjectCBNEEChanged(int index)
+{
+    int id_sr_type = getTypeObjectCBNEE->itemData(getTypeObjectCBNEE->currentIndex()).toInt();
+    EventObject * EO = new EventObject(getObjectCBNEE->itemData(index).toInt(),id_sr_type,true);
+    current_event->addEventObject(EO);
+}
+
 void EventManager::restEventsProperty(){
     nameLEE->clear();
     statusCBE->setCurrentIndex(0);
@@ -754,6 +808,21 @@ void EventManager::restEventsProperty(){
     eventMedia->setModel(new QStandardItemModel());
 }
 
+void EventManager::nameLEEChanged(QString text)
+{
+    current_event->setName(text);
+}
+
+void EventManager::DTSEChanged(QDateTime dateTime)
+{
+    current_event->setStartDate(dateTime);
+}
+
+void EventManager::DTEEChanged(QDateTime dateTime)
+{
+    current_event->setEndDate(dateTime);
+}
+
 void EventManager::setEventsPropertyEnabled(bool enabled){
     nameLEE->setEnabled(enabled);
     statusCBE->setEnabled(enabled);
@@ -772,5 +841,6 @@ void EventManager::setEventsPropertyEnabled(bool enabled){
     suorceObjectCBNEE->setEnabled(enabled);
     this->getTypeObjectCBNEE->setEnabled(enabled);
     getObjectCBNEE->setEnabled(enabled);
+    addEventMedia->setEnabled(enabled);
     eventMedia->setEnabled(enabled);
 }

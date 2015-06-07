@@ -113,11 +113,11 @@ bool Event::setIdTypeEvent(int id_type_event)
     else return false;
 }
 
-bool Event::setStartDate(QDateTime * start_date)
+bool Event::setStartDate(QDateTime start_date)
 {
-    if (this->updateEvent("events","time_event_start",start_date->toString("yyyy-MM-dd hh:mm:ss"))){
-        qDebug() << start_date->toString("yyyy-MM-dd hh:mm:ss");
-        this->event_start_date = *start_date;
+    if (this->updateEvent("events","time_event_start",start_date.toString("yyyy-MM-dd hh:mm:ss"))){
+        qDebug() << start_date.toString("yyyy-MM-dd hh:mm:ss");
+        this->event_start_date = start_date;
         qDebug() << "fack time" << this->event_start_date.toString("yyyy-MM-dd hh:mm:ss");
         return true;
     }
@@ -127,11 +127,11 @@ bool Event::setStartDate(QDateTime * start_date)
 	}
 }
 
-bool Event::setEndDate(QDateTime * end_date)
+bool Event::setEndDate(QDateTime end_date)
 {
-    if (this->updateEvent("events","time_event_end",end_date->toString("yyyy-MM-dd hh:mm:ss"))){
-		qDebug() << end_date->toString("yyyy-MM-dd hh:mm:ss");
-        this->event_end_date = *end_date;
+    if (this->updateEvent("events","time_event_end",end_date.toString("yyyy-MM-dd hh:mm:ss"))){
+        qDebug() << end_date.toString("yyyy-MM-dd hh:mm:ss");
+        this->event_end_date = end_date;
         qDebug() << "fack time" << this->event_end_date.toString("yyyy-MM-dd hh:mm:ss");
         return true;
     }
@@ -187,6 +187,11 @@ bool Event::addEventObject(EventObject *object)
         return true;
     }else{
         if(object->insertInDB(this->id_event)){
+            for(int i=0;i < objects->size(); i++){
+                if(objects->at(i)->getIdEventObjects() == object->getIdEventObjects()){
+                    objects->removeAt(i);
+                }
+            }
             this->objects->append(object);
             return true;
         }else{
@@ -453,7 +458,7 @@ void Event::loadEventTypes()
 bool Event::updateEvent(QString table, QString field, QString set_data)
 {
 	if (this->id_event == 0){
-		qDebug() << "true" << table << field << set_data;
+        qDebug() << "true not update" << table << field << set_data;
         return true;
 	}
     QSqlQuery query;

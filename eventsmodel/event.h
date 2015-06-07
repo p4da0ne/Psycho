@@ -36,14 +36,12 @@ public:
           QList<EventObject *> * objects = 0,
           Coord * coordinate = 0);
     Event(int id_event);
-    bool setName(QString name);
-    bool setDescription(QString description);
+
     bool setStatus(int id_status);
     bool setIdTypeEvent(int id_type_event);
-    bool setStartDate(QDateTime *start_date);
-    bool setEndDate(QDateTime *end_date);
+
     void setCoordinate(Coord * coordinate);
-    bool setResume(QString resume);
+
     bool setEventObjects(QList<EventObject *> * objects);
     bool addEventObject(EventObject * object);
     bool addEventObjects(QList<EventObject *> *objects);
@@ -80,6 +78,12 @@ public slots:
     void updateMediaEvents();
     QMap <int,QString> getEventsStatus();
     QMap <int,QMap<QString,int> > getEventsTypes();
+
+    bool setName(QString name);
+    bool setDescription(QString description);
+    bool setResume(QString resume);
+    bool setStartDate(QDateTime start_date);
+    bool setEndDate(QDateTime end_date);
 
 protected:
     bool updateEvent(QString table, QString field, QString set_data);

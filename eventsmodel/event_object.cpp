@@ -9,6 +9,15 @@ EventObject::EventObject(int id_object, QString table, bool is_source, QObject *
     this->is_source = is_source;
 }
 
+EventObject::EventObject(int id_object, int IdTypeEventObject, bool is_source, QObject *parent):
+    QObject(parent)
+{
+    this->id_event_objects = 0;
+    this->id_object = id_object;
+    this->id_type_event_object = IdTypeEventObject;
+    this->is_source = is_source;
+}
+
 bool EventObject::isSource(){
     return this->is_source;
 }
@@ -52,11 +61,25 @@ bool EventObject::insertInDB(int id_event)
         return false;
     }
     QSqlQuery query;
-    QString str = QString("INSERT INTO event_objects (id_event, id_type_event_object, id_object, is_events_source) VALUES (%1,%2,%3,'%4')  RETURNING id_event_objects")
-            .arg(id_event)
-            .arg(this->getIdTypeEventObject())
-            .arg(this->getIdObject())
-            .arg(this->isSource());
+    QString str = QString("SELECT * FROM event_objects where id_event = %1 AND is_events_source = '%2'").arg(id_event).arg(this->isSource());
+    if(!query.exec(str)){
+        qDebug() << query.lastError().text();
+        return false;
+    }
+    if(query.size() > 0){
+        str = QString("UPDATE event_objects SET id_type_event_object = %1 id_type_event_object = %2 WHERE id_event = %3 AND is_events_source = '%4'")
+                .arg(this->getIdTypeEventObject())
+                .arg(this->getIdObject())
+                .arg(id_event)
+                .arg(this->isSource());
+
+    }else{
+        str = QString("INSERT INTO event_objects (id_event, id_type_event_object, id_object, is_events_source) VALUES (%1,%2,%3,'%4')  RETURNING id_event_objects")
+                .arg(id_event)
+                .arg(this->getIdTypeEventObject())
+                .arg(this->getIdObject())
+                .arg(this->isSource());
+    }
     if (!query.exec(str)){
         qDebug() << query.lastError().text();
         return false;
