@@ -20,6 +20,8 @@ public:
     ~EventManager();
 
 
+
+
 public slots:
     void addNewEventDialog(QWidget *parent);
     void openNewEventDialog();
@@ -27,6 +29,8 @@ public slots:
     void mediaClick(QModelIndex);
     void openFileDialog();
     void viewMediaContentDialog(int id_event, QWidget *parent = 0);
+    void setEventsPropertyEnabled(bool enabled);
+    void restEventsProperty();
 
 private slots:
     void sourceTypeChange(int index);
@@ -39,6 +43,12 @@ private slots:
     void resizeTableView();
     void newEventMediaDialog();
     void addNewEventMedia();
+    void MediaContentInserted(int);
+    void ErrorDialog(QString error);
+    void EventsTableCustomMenu(const QPoint &);
+    void slotRemoveEvent();
+    void EventsMediaTableCustomMenu(const QPoint &pe);
+    void slotRemoveEventMedia();
 
 
 private:
@@ -108,12 +118,16 @@ private:
     QDialog * mediaDialog;
     QSortFilterProxyModel * proxyMediaModel;
 
+    QTableView * tableMediaContent;
+
     bool whithCoord;
     bool isEventDialogOpen;
+    bool isDialog;
 
 signals:
     void eventDataChanged();
 
 };
+
 
 #endif // EVENT_MANAGER_H

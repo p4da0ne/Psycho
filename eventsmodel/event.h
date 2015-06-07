@@ -6,6 +6,7 @@
 #include <QString>
 #include <QStandardItemModel>
 #include <QDateTime>
+#include <QThread>
 #include <QList>
 #include <QMap>
 #include <QVariant>
@@ -65,11 +66,14 @@ public:
 
 
 signals:
+    void MediaContentInserted(int id_media_event);
+    void ErrorMediaContentInsert(QString error);
     
 public slots:
     int InsertMediaItems(QString path,int idMediaType, QString name_event_media, QString description = "");
     bool insertEventToDB();
     bool DeleteEvent(int id_event);
+    bool DeleteEventMedia(int id_event_media);
     bool DeleteThisEventFromDB();
     void openMediaContent(QModelIndex index);
     QStandardItemModel * getMediaEvents();
@@ -101,5 +105,22 @@ private:
     int id_event;
 
 };
+
+class MediaInsertThread : public QThread
+{
+    Q_OBJECT
+public:
+    void run();
+    int id_event;
+    int idMediaType;
+    QString name_event_media;
+    QString description;
+    QString path;
+
+signals:
+    void MediaInserted(int id_event_media);
+    void ErrorMediaInsert(QString id_event_media);
+};
+
 
 #endif // EVENT_H
