@@ -22,7 +22,8 @@
 		REGIONS = 6,				// регионы
 		PERSONNEL = 7,				// персоналии
 		EVENTS = 8,					// события
-		GROUPS = 9					// организации
+		GROUPS = 9,					// организации
+		SMI = 10					//СМИ
 	} 
 	SignObjectsTypes;
 #endif  //  SATURNSIGNTYPES_H

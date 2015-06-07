@@ -655,6 +655,20 @@ QString ViewManage::getObjectTypeAndName(int idObject, int objectType)
 						   WHERE e.id_type_event = t_e.id_type_event \
 						   AND e.id_event = %1").arg(idObject);
 			break;
+
+			case SMI:
+			str = QString("SELECT t.nametype_smi, s.name_smi \
+							FROM smi s, type_smi t \
+							WHERE s.id_type_smi = t.id_type_smi \
+							AND s.id_smi = %1").arg(idObject);
+			break;
+
+			case GROUPS:
+			str = QString("SELECT gr.name_groups, r.name_region \
+							FROM groups gr, region r \
+							WHERE gr.id_region =r.id_region \
+							AND gr.id_groups = %1").arg(idObject);
+			break;
 		}
 	
 	
@@ -1229,6 +1243,8 @@ QString ViewManage::get_event_objects_info(int idEvent)
 			if(table_name == "persones") objectType = PERSONNEL;
 			if(table_name == "region") objectType = REGIONS;
 			if(table_name == "special_conditions") objectType = SPECIAL_CONDITIONS;
+			if(table_name == "smi") objectType = SMI;
+			if(table_name == "groups") objectType = GROUPS;
 				
 			event_info += "<tr><td>" + getObjectTypeAndName(idObject,objectType) + "</td><td>" + eventSource + "</td></tr>";
 		}

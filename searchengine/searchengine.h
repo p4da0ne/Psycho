@@ -22,6 +22,8 @@ public:
 	QStandardItemModel* findMeans(QString objNamePart = "");
 	QStandardItemModel* findRegions(QString objNamePart = "");
 	QStandardItemModel* findSpecialConditions(QString objNamePart = "");
+	QStandardItemModel* findSMI(QString objNamePart ="");
+	QStandardItemModel* findGroups(QString objNamePart = "");
 
 private:
 	QStandardItemModel *searchResultModel;

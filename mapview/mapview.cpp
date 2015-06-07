@@ -433,7 +433,7 @@ QWidget* MapView::createEventPanel()
 	currDate = QDate::currentDate();
 	QDate yesterday = currDate.addDays(-1);
 	
-	QDateTime currDateTime(currDate,QTime::currentTime());
+	QDateTime currDateTime(currDate,QTime(23,59,59));
 	QDateTime yesterdayDateTime(yesterday,QTime(0,0));
 
 	beginEventDateTime = new QDateTimeEdit(yesterdayDateTime);
@@ -1774,6 +1774,11 @@ void MapView::slotDeleteEvent()
 	if(action)
 	{
 		QStringList objInfo = action->data().toString().split("_");
+
+
+		EventManager *eventManager = new EventManager;
+		connect(eventManager,SIGNAL(eventDataChanged()),this,SLOT(showCheckedEvents()));
+
 
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	}
