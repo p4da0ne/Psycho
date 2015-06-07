@@ -32,7 +32,6 @@ public slots:
     void rowClicked(const QModelIndex & index );
 
 protected:
-    void openMediaContent(int id_event_media);
     QList<QList<QStandardItem *> > appendMediaEvent(int id_event);
     int InsertMediaItems(QString path, int id_event, QString name_event_media,QString description="");
     QList<QStandardItem *> appendObjectEvent(int id_type_event_object, int id_object);

@@ -4,10 +4,16 @@
 #include "config_eventsmodel.h"
 #include <QObject>
 #include <QString>
+#include <QStandardItemModel>
 #include <QDateTime>
 #include <QList>
 #include <QMap>
 #include <QVariant>
+#include <QDir>
+#include <QMessageBox>
+#include <QFile>
+#include <QDesktopServices>
+#include <QUrl>
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlRecord>
 #include <QtSql/QSqlError>
@@ -55,13 +61,19 @@ public:
     QString getSignCode();
     int getIdStatus();
     QString getResume();
+    //QStandardItemModel * getMediaEvents();
+
 
 signals:
     
 public slots:
+    int InsertMediaItems(QString path,int idMediaType, QString name_event_media, QString description = "");
     bool insertEventToDB();
     bool DeleteEvent(int id_event);
     bool DeleteThisEventFromDB();
+    void openMediaContent(QModelIndex index);
+    QStandardItemModel * getMediaEvents();
+    void updateMediaEvents();
     QMap <int,QString> getEventsStatus();
     QMap <int,QMap<QString,int> > getEventsTypes();
 
@@ -85,6 +97,7 @@ private:
     QMap <int,QString> events_status;
     QMap <int,QMap<QString,int> > events_types;
     QList<EventObject *> * objects;
+    QStandardItemModel  * mediaModel;
     int id_event;
 
 };

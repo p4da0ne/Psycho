@@ -166,25 +166,6 @@ QList< QList<QStandardItem *> > EventsModel::appendMediaEvent(int id_event){
     return items;
 }
 
-/*!
-Открывает медиа файлы из БД средствами ОС
-openMediaContent(int id_event_media)
-*/
-void EventsModel::openMediaContent(int id_event_media){
-    QSqlQuery query;
-    query.exec(QString("SELECT * FROM event_media where id_event_media = %1").arg(id_event_media));
-    int index_name_event_media = query.record().indexOf("filename_media");
-    int index_media = query.record().indexOf("media");
-    while(!query.next()){
-        QString file_path=QDir::tempPath() + query.value(index_name_event_media).toString();
-        QFile file(file_path);
-        file.open(QIODevice::WriteOnly);
-        file.write(query.value(index_media).toByteArray());
-        file.close();
-        QDesktopServices::openUrl(QUrl(file_path));
-    }
-}
-
 void EventsModel::UpdateItem(QStandardItem &item){
 
 }
