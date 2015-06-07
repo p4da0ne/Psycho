@@ -18,7 +18,9 @@ public:
 
     QMap<int, QMap<QString, QString> > get_obj_info(int id_object = 0);
     QMap<QString, QMap<QString, QString> > obj_info_coord(int id_object=0);
-    QMap<QString,QString> pers_info(int id_object = 0);
+    QMap<int, QMap<QString, QString> >  pers_info(int id_object = 0);
+    QMap<QString,QString> pers_info_foto(int id_object = 0);
+    QMap<int, QMap<QString, QString> > pers_info_continue(int id_object);
     QMap<QString, QMap<QString,QString> > pers_info_coord (int id_object = 0);
     QMap<int, QMap<QString, QString> > smi_info(int id_object = 0);
     QMap<int, QMap<QString, QString> > ls_info(int id_object = 0);
@@ -44,7 +46,7 @@ public:
 private:
 
     QMap <int, QMap< QString,QString> > *obj_info;
-    QMap<QString, QString> *pers_info_date;
+    QMap <int, QMap<QString, QString> > *pers_info_date;
     QMap<QString,QMap<QString,QString> > *obj_elem;
     QMap<QString,QMap<QString,QString> > *obj_elem_obj;
     QMap <int, QMap< QString,QString> > *smi_info_date;
@@ -59,6 +61,7 @@ private:
     QMap <int, QMap< QString,QString> > *mpls_info_date;
     QMap <int, QMap< QString,QString> > *mpgr_info_date;
     QMap<QString,QString> *info_date;
+    QMap<QString,QString> *pers_info_date_foto;
     QString name_nations_string;
     QString name_age_string;
     QString persent_age_string;

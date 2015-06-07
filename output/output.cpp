@@ -1,6 +1,10 @@
 #include "output.h"
 #include "QMap"
 #include "QStringList"
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QSqlError>
+#include <QVariant>
 
 #if defined Q_OS_WIN
 #define kodec QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Windows-1251"));
@@ -23,7 +27,7 @@ Output::~Output()
 QString Output::createHtmlHeader()
 {
 	QString str;
-	str="<html><head> </head><body>";
+    str="<html><head> </head><body><FONT FACE = 'Times new Roman'>";
 	return str;
 }
 //===== Формирование заголовка документа ======
@@ -32,10 +36,114 @@ QString Output::createHtmlH(QString text,int size,QString align)
 	if(size <1) size = 1;
 	if(size >6) size = 6;
     QString t = "<h" + QString::number(size) + " align='"+ align+ "'>" + text + "</h" + QString::number(size) + ">";
-	return t;
+
+
+    return t;
 }
+QString Output::createHtmlH_p(QString text,int size,QString align)
+{
+    if(size <1) size = 1;
+    if(size >6) size = 6;
+    QString t = "<h" + QString::number(size) + " align='"+ align+ "'>" + text + "</h" + QString::number(size) + "><FONT FACE = 'Times new Roman'>";
 
 
+    return t;
+}
+QString Output::createHtmlH_pers_2_page(int id_object)
+{
+    QString t;
+    QSqlQuery query;
+    query.prepare ("SELECT pers.name_persones,pers.age_persones,pers.contact_persones, pers.description_persones, pers.authority_persones, pers.opposition_persones, pers.rank_persones, type_persones.name_type_persones FROM  persones pers, type_persones WHERE pers.id_persones = ? AND pers.id_type_persones = type_persones.id_type_persones ");
+
+    query.addBindValue(id_object);
+    if(!query.exec())
+    {
+        QString sss = query.lastError().text();
+        return t;
+    }
+    QSqlRecord rec = query.record();
+    QString f_name,rank;
+
+    query.next();
+
+       f_name = query.value(rec.indexOf("name_persones")).toString();
+       rank = query.value(rec.indexOf("rank_persones")).toString();
+       t = "<br><br><br>"
+
+           "<u><center><FONT size='5' FACE = 'Times new Roman'>" + f_name + "</font></u></center><br><br>"
+           "<center><p><FONT size='5' FACE = 'Times new Roman'> Личный номер <u>" + rank + "</font></u></p></center>"
+           "<br>";
+    return t;
+}
+QString Output::createHtmlH_pers(int id_object)
+{
+    QString t;
+    QSqlQuery query;
+    query.prepare ("SELECT pers.name_persones,pers.age_persones,pers.contact_persones, pers.description_persones, pers.authority_persones, pers.opposition_persones, pers.rank_persones, type_persones.name_type_persones FROM  persones pers, type_persones WHERE pers.id_persones = ? AND pers.id_type_persones = type_persones.id_type_persones ");
+
+    query.addBindValue(id_object);
+    if(!query.exec())
+    {
+        QString sss = query.lastError().text();
+        return t;
+    }
+    QSqlRecord rec = query.record();
+    QString f_name,rank;
+
+    query.next();
+
+       f_name = query.value(rec.indexOf("name_persones")).toString();
+       rank = query.value(rec.indexOf("rank_persones")).toString();
+        //     <style type='text/css'> div{border:3px solid #D3D3D3;}</style>
+       t = // "<div>" // style = margin-top:120px;margin-bottom:120px;>"
+               "<h5 align='right'> _________________ </h5>"
+           "<h5 align='right'> <FONT FACE = 'Times new Roman'> (гриф секретности)</h5>"
+           "<h5 align='right'> <FONT FACE = 'Times new Roman'> Экз. № __________ </h5> <br><br><br><br><br><br>"
+
+           "<h1 align='center'><b><FONT FACE = 'Times new Roman'> ЛИЧНОЕ ДЕЛО </b></h1><br><br>"
+
+           "<h2 align='center'> <FONT FACE = 'Times new Roman'><b> должность </b></FONT></h2>"
+           "<h2 align='center'> <FONT FACE = 'Times new Roman'>" + rank +" </FONT></h2> <br>"
+
+           "<table align='center' width=50% border='1' cellspacing=0 cellpadding=0>"
+           "<CENTER><tr align='center' ><td ><CENTER><FONT size='10' FACE = 'Times new Roman'>" + f_name + "</FONT></CENTER></td></tr></table>"
+           "<CENTER><FONT SIZE = '2' FACE = 'Times new Roman'> (фамилия) <br>"
+
+           "<table align='center' width=50%  border='1' cellspacing=0 cellpadding=0>"
+           "<tr align='center' ><td><CENTER><CENTER><FONT size='10' FACE = 'Times new Roman'> name_name + surname  </FONT></CENTER></td></tr></table>"
+
+           "<CENTER><FONT SIZE = '2' align='center' FACE = 'Times new Roman'> (имя, отчество) <br><br><br><br><br><br><br>"
+             //  "</div>";
+            "<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></center>";
+    return t;
+}
+//
+QString Output::createHtmlTable_vzv(QMap<QString,QString> table_data, QStringList header_list,int width)
+{
+    QString r;
+    r.append("<FONT size='4' FACE = 'Times new Roman'><TABLE WIDTH ='"+ QString::number(width)+ "%' BORDER='1' ><tr>");
+//	r.append
+    QList<QString>::iterator sp = header_list.begin();
+    while (sp != header_list.end())
+    {
+        r.append("<th>");
+        r.append(*sp);
+        r.append("</th>");
+        ++sp;
+    }
+    r.append("</tr>");
+    QMap<QString,QString>::iterator it=table_data.begin();
+    for (;it !=table_data.end(); ++it)
+    {
+        r.append("<TR> <TD>");
+        r.append(it.key());
+        r.append("</TD> <TD>");
+        r.append(it.value());
+        r.append("</TD></TR>");
+    }
+    r.append("</table></font>");
+return r;
+}
 
 //===== Формирование текста в документе ======
 QString Output::createHtmlP(QString text,  int weight_italic,QString align)
@@ -72,7 +180,7 @@ return r;
 QString Output::createHtmlTable_2(QMap <int, QMap< QString,QString> > table_data,int width)
 {
     QString r;
-    r.append("<TABLE WIDTH ='"+ QString::number(width)+ "%' BORDER='1'  cellpadding=4  align = center> ");
+    r.append("<FONT size='4' FACE = 'Times new Roman'><TABLE WIDTH ='"+ QString::number(width)+ "%' BORDER='1'  cellpadding=4  align = center> ");
 
     QMap<QString,QString> map;
     QMap <int, QMap< QString,QString> >::iterator it=table_data.begin();
@@ -91,13 +199,28 @@ QString Output::createHtmlTable_2(QMap <int, QMap< QString,QString> > table_data
         }
 
        }
-        r.append("</table>");
+        r.append("</table></font>");
 return r;
 }
 QString Output::createHtmlTable_row(QMap<QString,QString> table_data,int width)
 {
     QString r;
-     r.append("<TABLE style=\"border-color:#808080;\" border=\"1\" cellpadding=\"4\" cellspacing=\"1\" width='"+ QString::number(width)+ "%'>");
+     r.append("<FONT size='4' FACE = 'Times new Roman'><TABLE style=\"border-color:#808080;\" border=\"1\" cellpadding=\"4\" cellspacing=\"1\" width='"+ QString::number(width)+ "%'>");
+
+    QMap<QString,QString>::iterator it=table_data.begin();
+    for (;it !=table_data.end(); ++it)
+    {
+        r.append("<TR><TD>");
+        r.append(it.value());
+        r.append("</TR></TD>");
+    }
+    r.append("</TABLE></font>");
+return r;
+}
+QString Output::createHtmlTable_row_foto(QMap<QString,QString> table_data,int width)
+{
+    QString r;
+     r.append("<br><TABLE style=\ border=\"0\" cellpadding=\"4\" cellspacing=\"1\" width='"+ QString::number(width)+ "%'>");
 
     QMap<QString,QString>::iterator it=table_data.begin();
     for (;it !=table_data.end(); ++it)
@@ -210,11 +333,26 @@ QString Output::createHtmlTableM(QMap<QString, QMap<QString, QString> > table_da
     r.append("</table>");
 return r;
 }
+
+QString Output::createHtmlFooter_pers(int id_object)
+{
+
+    QString close;
+    close = "<br> <p><FONT size='4'> Послужной список составлен:"
+            "<u>  ДАТА </font></u></p>"
+
+            "<table align='center' width=50%  border='0' cellspacing=0 cellpadding=0>"
+            "<tr align='center' ><td><u><center><FONT size='4'> name_name + surname  </FONT></u></td></tr></table>"
+            "<CENTER><FONT SIZE = '2' align='center' FACE = 'Times new Roman'> (наименование воинской части, соединения и т.д.)</font></center>"
+            "<br>"
+            "</font></body></html>";
+    return close;
+}
 //===== Закрытие HTML-документа ======
 QString Output::createHtmlFooter()
 {
 	QString close;
-	close="</body></html>";
+    close="</font></body></html>";
 	return close;
 }
 

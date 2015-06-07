@@ -66,6 +66,7 @@ public slots:
 	void delete_country_blok();
 
 private slots:
+    void update_one_click(const QModelIndex &index);
     void updateDB(QStandardItem* item);
     void show_nations_region();
     void show_nations_ls();

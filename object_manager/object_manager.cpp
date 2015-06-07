@@ -66,6 +66,7 @@ Objectmanager::Objectmanager(QWidget *parent) //int in_id_object
 
     connect(UI->object_manager_tree,SIGNAL(doubleClicked(const QModelIndex &)),this,SLOT(show_objects ( const QModelIndex & )));
     connect(UI->object_manager_tree,SIGNAL(customContextMenuRequested(const QPoint &)),this,SLOT(customMenuTree(const QPoint &)));
+    connect(UI->columnView,SIGNAL(clicked(QModelIndex)),this,SLOT(update_one_click(const QModelIndex &)));
     connect(UI->columnView,SIGNAL(doubleClicked(const QModelIndex &)),this,SLOT(column_item_clicked ( const QModelIndex & )));
     connect(UI->columnView,SIGNAL(customContextMenuRequested(const QPoint &)),this,SLOT(customMenuView(const QPoint &)));
     //================================== Блоки и Страны ============================================================
@@ -229,7 +230,7 @@ void Objectmanager::customMenuView(const QPoint & pos)
             popupButton->setMenu(menu);
             menu->exec(QCursor::pos());
         }
-        else if(list.value(0)=="dpers"){
+        else if((list.value(0)=="dpers") || (list.value(0)=="dperssmi") || (list.value(0)=="dpersls")) {
             QPushButton *popupButton = new QPushButton;
             QMenu *menu = new QMenu(this);
             QAction *act=new QAction("Удалить персоналию",this);
@@ -1697,6 +1698,7 @@ void Objectmanager::updateDB(QStandardItem *item)
 void Objectmanager::show_objects(const QModelIndex &index)
 {
     UI->property_object->setModel(0);
+    clear_tableWidget(UI->coord_table);
  //   QProgressDialog * progress = new QProgressDialog("Формирование информации о регионах", "Отмена", 0, 0,this);
   //  QThread *thr = new QThread(this);
   //  progress->moveToThread(thr);
@@ -3862,7 +3864,7 @@ void Objectmanager::otchet_groups()
             QString report = r->create_object_formular_mpo_pso_smi(id_suka_smi_mpo);
             r->show_preview_dialog(report);
         }
-        else if (list.value(0)=="dpers"){
+        else if ((list.value(0)=="dpers") || (list.value(0)=="dperssmi") || (list.value(0)=="dpersls"))   {
             Reports *r = new Reports;
             int id_suka_pers = list.value(1).toInt();
             QString report = r->create_object_formular_pers(id_suka_pers);
@@ -5098,4 +5100,55 @@ void Objectmanager::slotSearchObject()
     }
 
     UI->columnView->setCurrentIndex( indexes.at(iCurrSearch));
+}
+void Objectmanager::update_one_click(const QModelIndex &index){
+    UI->property_object->setModel(0);
+    clear_tableWidget(UI->coord_table);
+    QVariant id=index.data(Qt::UserRole);
+    if (id.type() == QVariant::String)
+    {
+        QString user_data=id.toString();
+        QStringList list=user_data.split("_");
+        if(list.value(0)=="region"){
+        region_click(list.value(1).toInt());
+        show_coordinates(list.value(0),list.value(1).toInt(),"coord_region","id_region");
+        UI->add_many_coord_button->setEnabled(true);
+    }
+        else if(list.value(0)=="reg"){
+        region_click(list.value(1).toInt());
+        show_coordinates(list.value(0),list.value(1).toInt(),"coord_region","id_region");
+        UI->add_many_coord_button->setEnabled(true);
+    } // ================= в таблицу данные о СМИ =======================================
+        else if(list.value(0)=="dsmi"){
+        smi_click(list.value(2).toInt());
+    } // ================= в таблицу данные о ВФ =======================
+        else if(list.value(0)=="dls"){
+        ls_click(list.value(1).toInt());
+        show_coordinates(list.value(0),list.value(1).toInt(),"coord_ls","id_ls");
+    } // ================= в таблицу данные о Организациях =======================
+        else if(list.value(0)=="dgr"){
+        gr_click(list.value(1).toInt());
+//            show_coordinates(list.value(0),list.value(1).toInt(),"coord_groups","id_groups");
+
+    }	// ================= в таблицу данные о Условиях =======================
+        else if(list.value(0)=="dsc"){
+        sc_click(list.value(1).toInt());
+        show_coordinates(list.value(0),list.value(1).toInt(),"coord_spec_cond","id_special_conditions");
+    }//======================= в таблицу воинские формирования (подчиненные)======
+        else if(list.value(0)=="lss"){
+        ls_click(list.value(1).toInt());
+        show_coordinates(list.value(0),list.value(1).toInt(),"coord_ls","id_ls");
+    }
+        else if(list.value(0)=="chls"){
+        ls_click(list.value(1).toInt());
+        show_coordinates(list.value(0),list.value(1).toInt(),"coord_ls","id_ls");
+    } // ================= в таблицу данные о СРЕДСТВАХ =======================
+        else if(list.value(0)=="dmpo" || list.value(0)=="dmpos" || list.value(0)=="dmposmi" ){
+        mpo_click(list.value(1).toInt());
+        show_coordinates(list.value(0),list.value(1).toInt(),"coord_mpo_pso","id_mpo_pso");
+    }
+        else if(list.value(0)=="dpers" || list.value(0)=="dperssmi" || list.value(0)=="dpersls" ){
+        show_coordinates(list.value(0),list.value(1).toInt(),"coord_persones","id_persones");
+    }
+   }
 }
