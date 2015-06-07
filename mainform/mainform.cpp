@@ -464,7 +464,7 @@ void Mainform::show_login_form()
 	QString password =	login_password_edit->text();
 	if(!login(login_name,password))
 	{
-		login_message = "<p align = 'center'><font color='red'>" + tr("Login or password are incorrect.") + "</font></p>";
+		login_message = "<p align = 'center'><font color='red'>Ќеверный логин или пароль пользовател€.</font></p>";
 		message_label->setText(login_message);
 		delete login_form;	 
 		reopen_login();
