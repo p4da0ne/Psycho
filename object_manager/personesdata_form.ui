@@ -75,7 +75,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>3</number>
+      <number>0</number>
      </property>
      <property name="iconSize">
       <size>
@@ -106,7 +106,7 @@
       <attribute name="title">
        <string/>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_32">
+      <layout class="QGridLayout" name="gridLayout_13">
        <item row="0" column="0" colspan="2">
         <layout class="QGridLayout" name="gridLayout">
          <item row="0" column="0">
@@ -691,7 +691,7 @@
          </layout>
         </widget>
        </item>
-       <item row="4" column="0" colspan="2">
+       <item row="3" column="0" colspan="2">
         <widget class="QGroupBox" name="groupBox_3">
          <property name="title">
           <string>Воинские звания, правовые акты о присвоении воинского звания:</string>
@@ -762,7 +762,7 @@
          </layout>
         </widget>
        </item>
-       <item row="5" column="0" colspan="2">
+       <item row="4" column="0" colspan="2">
         <widget class="QGroupBox" name="groupBox_7">
          <property name="font">
           <font>
