@@ -121,10 +121,10 @@ bool Event::setStartDate(QDateTime start_date)
         qDebug() << "fack time" << this->event_start_date.toString("yyyy-MM-dd hh:mm:ss");
         return true;
     }
-	else {
-		qDebug() << "fack time";
-		return false;
-	}
+    else {
+        qDebug() << "fack time";
+        return false;
+    }
 }
 
 bool Event::setEndDate(QDateTime end_date)
@@ -135,10 +135,10 @@ bool Event::setEndDate(QDateTime end_date)
         qDebug() << "fack time" << this->event_end_date.toString("yyyy-MM-dd hh:mm:ss");
         return true;
     }
-	else {
-		qDebug() << "fack time";
-		return false;
-	}
+    else {
+        qDebug() << "fack time";
+        return false;
+    }
 }
 
 void Event::setCoordinate(Coord * coordinate)
@@ -352,6 +352,13 @@ int Event::InsertMediaItems(QString path,int idMediaType, QString name_event_med
     MT->name_event_media = name_event_media;
     MT->description = description;
     MT->start();
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Предупреждение");
+    msgBox.setText("Не получается открыть файл. Проверте праильность пути к файлу.");
+    msgBox.setStandardButtons(QMessageBox::Ok);
+
+    connect(MT,SIGNAL(BigFile(QString)),&msgBox,SLOT(show()));
+    connect(MT,SIGNAL(BigFile(QString)),this,SIGNAL(ErrorMediaContentInsert(QString)));
     connect(MT,SIGNAL(MediaInserted(int)),this,SIGNAL(MediaContentInserted(int)));
     connect(MT,SIGNAL(ErrorMediaInsert(QString)),this,SIGNAL(ErrorMediaContentInsert(QString)));
 }
@@ -457,17 +464,17 @@ void Event::loadEventTypes()
 
 bool Event::updateEvent(QString table, QString field, QString set_data)
 {
-	if (this->id_event == 0){
+    if (this->id_event == 0){
         qDebug() << "true not update" << table << field << set_data;
         return true;
-	}
+    }
     QSqlQuery query;
     if(!query.exec(QString("UPDATE %1 SET %2 = '%3' WHERE id_event = %4").arg(table).arg(field).arg(set_data).arg(id_event))){
         qDebug() << query.lastError().text();
         qDebug() << "false update" << table << field << set_data;
-		return false;
+        return false;
     }
-	qDebug() << "true update" << table << field << set_data;
+    qDebug() << "true update" << table << field << set_data;
     return true;
 }
 
@@ -483,23 +490,18 @@ void MediaInsertThread::run()
     QFile file(path);
     if(!file.open(QIODevice::ReadOnly))
     {
-        //================MessageBox===============================
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("Предупреждение");
-        msgBox.setText("Не получается открыть файл. Проверте праильность пути к файлу.");
-        msgBox.setStandardButtons(QMessageBox::Ok);
-        switch (msgBox.exec()) {
-        case QMessageBox::Ok:
-            return;
-            break;
-        }
+        return;
     }
-
+    if(file.size() > 30000000){
+        qDebug() << "big file";
+        QString s = "Файл не должен превышать 30 МБ";
+        emit BigFile(s);
+        return;
+    }
     QByteArray ba = file.readAll();
-    query.addBindValue(ba);
+    query.addBindValue(ba,QSql::Binary);
 
-    if(!query.exec())
-    {
+    if(!query.exec()){
         qDebug() << query.lastError().text();
         qDebug() << query.lastQuery();
         emit ErrorMediaInsert(query.lastError().text());

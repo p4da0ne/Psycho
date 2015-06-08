@@ -124,6 +124,7 @@ public:
 signals:
     void MediaInserted(int id_event_media);
     void ErrorMediaInsert(QString id_event_media);
+    void BigFile(QString);
 };
 
 
