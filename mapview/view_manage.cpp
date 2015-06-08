@@ -1087,27 +1087,27 @@ QString ViewManage::get_info_region(int idObject){
 //==================================== инфа по персоналиям ===================================================================
 QString ViewManage::get_info_personel(int idObject){
 	
-	QString name_pers,desc_pers,html_info_pers,age_pers,cont,rank_pers,aut_pers,opop,type_pers;
+	QString name_pers,birth_date,html_info_pers,birth_place,nationality,rank_pers,name_type_pers;
 	QSqlQuery query;
 	QString str;
 
-	str = QString("SELECT pers.name_persones,pers.age_persones,pers.contact_persones, pers.description_persones, pers.authority_persones, \
-				   pers.opposition_persones, pers.rank_persones, type_persones.name_type_persones FROM  persones pers, type_persones \
-				   WHERE pers.id_persones = %1 AND pers.id_type_persones = type_persones.id_type_persones").arg(idObject);
+	str = QString("SELECT pers.name_persones, pers.birth_date, pers.birth_place, pers.nationality, pers.rank_persones, tp.name_type_persones \
+					FROM  persones pers, type_persones tp \
+					WHERE pers.id_persones = %1 \
+					AND pers.id_type_persones = tp.id_type_persones").arg(idObject);
 	
 	if(query.exec(str))
 	{
 		QSqlRecord rec = query.record();
 		while (query.next())
 		{
-			name_pers = query.value(0).toString();
-			age_pers = query.value(1).toString();
-			rank_pers = query.value(6).toString();
-			cont = query.value(2).toString();
-			desc_pers = query.value(3).toString();
-			aut_pers = query.value(4).toString();
-			opop = query.value(5).toString();
-			type_pers = query.value(7).toString();
+			QSqlRecord rec = query.record();
+			name_pers = query.value(rec.indexOf("name_persones")).toString();
+			birth_date =  query.value(rec.indexOf("birth_date")).toString();
+			rank_pers =  query.value(rec.indexOf("rank_persones")).toString();
+			nationality =  query.value(rec.indexOf("nationality")).toString();
+			birth_place =  query.value(rec.indexOf("birth_place")).toString();
+			name_type_pers = query.value(rec.indexOf("name_type_pers")).toString();
 		}
 		query.clear();
 	}
@@ -1117,24 +1117,22 @@ QString ViewManage::get_info_personel(int idObject){
 		if (file_.size()==0){
 		html_info_pers = "<style>table {border-color: #D3D3D3; border-style: solid;}</style><table border='1' cellpadding='4' cellspacing='0'>"
 								"<tr align='center'><td colspan='2'><H3><CENTER><font color = 'black'>" + name_pers + "</font></CENTER></H3></td></tr>"
+								"<tr><td> Дата рождения:</td><td>" + birth_date + "</td></tr>"
+								"<tr><td> Национальность:</td><td>" + nationality + "</td></tr>"
+								"<tr><td> Место рождения:</td><td>" + birth_place + "</td></tr>"
 								"<tr><td> Должность(звание):</td><td>" + rank_pers + "</td></tr>"
-								"<tr><td> Возраст:</td><td>" + age_pers + "</td></tr>"
-								"<tr><td> Контакты:</td><td>" + cont + "</td></tr>"
-								"<tr><td> Характеристика:</td><td>" + desc_pers + "</td></tr>"
-								"<tr><td> Авторитет:</td><td>" + aut_pers + "</td></tr>"
-								"<tr><td> Тип персонали:</td><td>" + type_pers + "</td></tr></table>";
+								"<tr><td> Тип персоналии:</td><td>" + name_type_pers + "</td></tr></table>";
 
 		}
 		else
 		html_info_pers = "<style>table {border-color: #D3D3D3; border-style: solid;}</style><table border='1' cellpadding='4' cellspacing='0'>"
 							"<tr align='center'><td colspan='2'><CENTER><img src=\"" + foto_ + "\" height = 200></CENTER></td></tr>"		
 								"<tr align='center'><td colspan='2'><H3><CENTER><font color = 'black'>" + name_pers + "</font></CENTER></H3></td></tr>"
+								"<tr><td> Дата рождения:</td><td>" + birth_date + "</td></tr>"
+								"<tr><td> Национальность:</td><td>" + nationality + "</td></tr>"
+								"<tr><td> Место рождения:</td><td>" + birth_place + "</td></tr>"
 								"<tr><td> Должность(звание):</td><td>" + rank_pers + "</td></tr>"
-								"<tr><td> Возраст:</td><td>" + age_pers + "</td></tr>"
-								"<tr><td> Контакты:</td><td>" + cont + "</td></tr>"
-								"<tr><td> Характеристика:</td><td>" + desc_pers + "</td></tr>"
-								"<tr><td> Авторитет:</td><td>" + aut_pers + "</td></tr>"
-								"<tr><td> Тип персонали:</td><td>" + type_pers + "</td></tr>";
+								"<tr><td> Тип персоналии:</td><td>" + name_type_pers + "</td></tr></table>";
 
 	return html_info_pers;
 }

@@ -159,7 +159,8 @@ QMap<int, QMap<QString, QString> > ReportData::pers_info(int id_object)
     pers_info_date = new QMap<int, QMap<QString, QString> >;
     pers_info_date->clear();
     QSqlQuery query;
-    query.prepare ("SELECT pers.name_persones,pers.age_persones,pers.contact_persones, pers.description_persones, pers.authority_persones, pers.opposition_persones, pers.rank_persones, type_persones.name_type_persones FROM  persones pers, type_persones WHERE pers.id_persones = ? AND pers.id_type_persones = type_persones.id_type_persones ");
+    query.prepare ("SELECT birth_date, birth_place, nationality, finger_foto, languages, science_public \
+					FROM persones WHERE id_persones = ?");
 
     query.addBindValue(id_object);
     if(!query.exec())
@@ -172,45 +173,450 @@ QMap<int, QMap<QString, QString> > ReportData::pers_info(int id_object)
 
     query.next();
 
+	//---------------------------------
+	QString  birth_date, birth_place, nationality, finger_foto, languages, science_public;
+	birth_date = query.value(rec.indexOf("birth_date")).toString();
+	birth_place = query.value(rec.indexOf("birth_place")).toString();
+	nationality = query.value(rec.indexOf("nationality")).toString();
+	finger_foto = query.value(rec.indexOf("finger_foto")).toString();
+	languages = query.value(rec.indexOf("languages")).toString();
+	science_public = query.value(rec.indexOf("science_public")).toString();
+	//----------------------------------
+
         map.clear();
-        map.insert("1. Число, месяц, год рождения:","");
+        map.insert("1. Число, месяц, год рождения:",birth_date);
         pers_info_date->insert(1,map);
         map.clear();
-        map.insert("2. Место рождения:","");
+        map.insert("2. Место рождения:",birth_place);
         pers_info_date->insert(2,map);
         map.clear();
-        map.insert("3. Национальность:","");
+        map.insert("3. Национальность:",nationality);
         pers_info_date->insert(3,map);
         map.clear();
-        map.insert("4. Паспорт гражданина (серия, номер, кем и когда выдан) или иной документ удостоверяющий его личность:","");
+        map.insert("4. Паспорт гражданина (серия, номер, кем и когда выдан) или иной документ удостоверяющий его личность:",getDocumentInfo(id_object,1));
         pers_info_date->insert(4,map);
         map.clear();
-        map.insert("5. Удостоверение личности (серия, номер, кем и когда выдано):","");
+        map.insert("5. Удостоверение личности (серия, номер, кем и когда выдано):",getDocumentInfo(id_object,2));
         pers_info_date->insert(5,map);
         map.clear();
-        map.insert("6. Дактилоскопия:","");
+        map.insert("6. Дактилоскопия:",finger_foto);
         pers_info_date->insert(6,map);
         map.clear();
-        map.insert("<table><tr><td rowspan=2> 7. Какие образовательные учреждения окончил: </td> <td> а) общеобразовательные учреждения, образовательные учреждения профессионального образования: </td> </tr><tr> <td> б) военные образовательние учреждения профессионального образования:</td></tr></table>","");
+        
+		QString eiInfo = "а) " + getEducOrganizationsInfo(id_object,1) + "б) " + getEducOrganizationsInfo(id_object,2);
+
+		map.insert("<table><tr> \
+								<td rowspan=2> 7. Какие образовательные учреждения окончил: </td> \
+								<td> а) общеобразовательные учреждения, образовательные учреждения профессионального образования: </td> \
+							</tr> \
+							<tr> \
+								<td> б) военные образовательние учреждения профессионального образования:</td> \
+							</tr> \
+					</table>",eiInfo);
         pers_info_date->insert(7,map);
         map.clear();
-        map.insert("8. Какими иностранными языками и языками народов РФ владеет:","");
+        map.insert("8. Какими иностранными языками и языками народов РФ владеет:",languages);
         pers_info_date->insert(8,map);
         map.clear();
-        map.insert("9. Ученая степень, ученое звание, дата присвоения:","");
+        map.insert("9. Ученая степень, ученое звание, дата присвоения:",getScienceRankInfo(id_object));
         pers_info_date->insert(9,map);
         map.clear();
-        map.insert("10. Какие имеет научные труды и изобретения:","");
+        map.insert("10. Какие имеет научные труды и изобретения:",science_public);
         pers_info_date->insert(10,map);
 
        return *pers_info_date;
 }
+
+//===============================================================================================
+//====== Метод возвращает информацию о документе (паспорте, уд. личности, свид. о браке) ========
+//===============================================================================================
+QString ReportData::getDocumentInfo(int idPersones, int idDocType)
+{
+	QString docInfo;
+	QSqlQuery query;
+    query.prepare ("SELECT dt.type_name, dd.sequence, dd.number, dd.organ, dd.date\
+					FROM document_data dd, document_type dt \
+					WHERE dd.id_document_type = dt.id_document_type \
+					AND dd.id_persones = ? \
+					AND dt.id_document_type = ?");
+    query.addBindValue(idPersones);
+	query.addBindValue(idDocType);
+    if(!query.exec())
+    {
+        QString sss = query.lastError().text();
+        return docInfo;
+    }
+    QSqlRecord rec = query.record();
+    query.next();
+
+	docInfo.append(query.value(rec.indexOf("type_name")).toString());
+	docInfo.append(": ");
+	docInfo.append(query.value(rec.indexOf("sequence")).toString());
+	docInfo.append(" ");
+	docInfo.append(query.value(rec.indexOf("number")).toString());
+	docInfo.append(", ");
+	docInfo.append(query.value(rec.indexOf("organ")).toString());
+	docInfo.append(", ");
+	docInfo.append(query.value(rec.indexOf("date")).toString());
+	docInfo.append(".");
+
+	return docInfo;
+}
+
+//===============================================================================================
+//====== Метод возвращает информацию об образовательных учреждениях =============================
+//====== idEducType: 1 - гражданские, 2 - военные ===============================================
+//===============================================================================================
+QString ReportData::getEducOrganizationsInfo(int idPersones, int idEducType)
+{
+	QString eiInfo;
+	QSqlQuery query;
+    query.prepare ("SELECT ei.info \
+					FROM education_institute ei, institute_type it \
+					WHERE ei.id_institute_type = it.id_institute_type \
+					AND ei.id_persones = ? \
+					AND it.id_institute_type = ?");
+    query.addBindValue(idPersones);
+	query.addBindValue(idEducType);
+    if(!query.exec())
+    {
+        QString sss = query.lastError().text();
+        return eiInfo;
+    }
+    QSqlRecord rec = query.record();
+    
+	while(query.next())
+	{
+		eiInfo.append(query.value(rec.indexOf("info")).toString());
+		eiInfo.append("<br>");
+	}
+	return eiInfo;
+}
+
+
+//===============================================================================================
+//====== Метод возвращает информацию ученой степени и звании персоналии =========================
+//===============================================================================================
+QString ReportData::getScienceRankInfo(int idPersones)
+{
+	QString siInfo;
+	QSqlQuery query;
+    query.prepare ("SELECT srt.type_name, sr.rank_name, sr.date \
+					FROM science_rank sr, science_rank_type srt \
+					WHERE sr.id_science_rank_type = srt.id_science_rank_type \
+					AND sr.id_persones = ? \
+					ORDER BY srt.id_science_rank_type");
+    query.addBindValue(idPersones);
+
+    if(!query.exec())
+    {
+        QString sss = query.lastError().text();
+        return siInfo;
+    }
+    QSqlRecord rec = query.record();
+    
+	while(query.next())
+	{
+		siInfo.append(query.value(rec.indexOf("type_name")).toString());
+		siInfo.append(": ");
+		siInfo.append(query.value(rec.indexOf("rank_name")).toString());
+		siInfo.append(", ");
+		siInfo.append(query.value(rec.indexOf("date")).toString());
+		siInfo.append("<br>");
+	}
+	return siInfo;
+}
+
+
+
+QMap<QString,QString> ReportData::get_person_ranks_data(int id_persones)
+{
+	QMap<QString,QString> ranksData;
+
+	QSqlQuery query;
+    query.prepare ("SELECT rh.rank_name, rh.rank_document, rh.rank_get_date \
+					FROM rank_history rh \
+					WHERE rh.id_persones = ?");
+
+    query.addBindValue(id_persones);
+    if(!query.exec())
+    {
+        QString sss = query.lastError().text();
+        return ranksData;
+    }
+    QSqlRecord rec = query.record();
+
+    while(query.next())
+	{
+		QString rank = query.value(rec.indexOf("rank_name")).toString();
+		QString rank_info = query.value(rec.indexOf("rank_document")).toString();
+		QString rank_get_date = query.value(rec.indexOf("rank_get_date")).toString();	
+		
+		if(!rank_get_date.isEmpty())
+		{
+			rank_info.append(", ");
+			rank_info.append(rank_get_date);
+		}
+        ranksData.insert(rank,rank_info);
+	}
+	return ranksData;
+}
+
+//======================================================================
+//======= Метод формирует данные о трудовой деятельности персоналии ====
+//======================================================================
+QList<QStringList> ReportData::get_work_history(int id_persones)
+{
+	QList<QStringList> workData;
+
+	QSqlQuery query;
+    query.prepare ("SELECT wh.begin_date, wh.end_date, wh.rank_and_place, wh.comments \
+					FROM work_history wh \
+					WHERE id_persones = ? \
+					ORDER BY wh.id_work_history");
+
+    query.addBindValue(id_persones);
+    if(!query.exec())
+    {
+        QString sss = query.lastError().text();
+        return workData;
+    }
+    QSqlRecord rec = query.record();
+
+    while(query.next())
+	{
+		QString begin_date = query.value(rec.indexOf("begin_date")).toString();
+		QString end_date = query.value(rec.indexOf("end_date")).toString();
+		QString rank_and_place = query.value(rec.indexOf("rank_and_place")).toString();	
+		QString comments = query.value(rec.indexOf("comments")).toString();	
+		
+		QStringList rowList;
+		rowList<<begin_date<<end_date<<rank_and_place<<comments;
+
+		workData.append(rowList);
+	}
+	return workData;
+}
+
+
+//===================================================================================
+//======= Метод формирует данные о прохождении государственной службы персоналии ====
+//===================================================================================
+QList<QStringList> ReportData::get_service_history(int id_persones)
+{
+	QList<QStringList> serviceData;
+
+	QSqlQuery query;
+    query.prepare ("SELECT sh.begin_date, sh.end_date, sh.working_place, sh.service_info, sh.order_data \
+					FROM service_history sh \
+					WHERE id_persones = ? \
+					ORDER BY sh.id_service_history");
+
+    query.addBindValue(id_persones);
+    if(!query.exec())
+    {
+        QString sss = query.lastError().text();
+        return serviceData;
+    }
+    QSqlRecord rec = query.record();
+
+    while(query.next())
+	{
+		QString begin_date = query.value(rec.indexOf("begin_date")).toString();
+		QString end_date = query.value(rec.indexOf("end_date")).toString();
+		QString working_place = query.value(rec.indexOf("working_place")).toString();	
+		QString service_info = query.value(rec.indexOf("service_info")).toString();
+		QString order_data = query.value(rec.indexOf("order_data")).toString();
+		
+		QStringList rowList;
+		rowList<<begin_date<<end_date<<service_info<<working_place<<order_data;
+
+		serviceData.append(rowList);
+	}
+	return serviceData;
+}
+
+
+//===================================================================================
+//======= Метод формирует данные об участии в боевых действиях ======================
+//===================================================================================
+QList<QStringList> ReportData::get_war_history(int id_persones)
+{
+	QList<QStringList> warData;
+
+	QSqlQuery query;
+    query.prepare ("SELECT name, begin_date, end_date \
+					FROM war_actions \
+					WHERE id_persones = ? \
+					ORDER BY id_war_actions");
+
+    query.addBindValue(id_persones);
+    if(!query.exec())
+    {
+        QString sss = query.lastError().text();
+        return warData;
+    }
+    QSqlRecord rec = query.record();
+
+    while(query.next())
+	{
+		QString war_name = query.value(rec.indexOf("name")).toString();	
+		QString begin_date = query.value(rec.indexOf("begin_date")).toString();
+		QString end_date = query.value(rec.indexOf("end_date")).toString();
+
+		QStringList rowList;
+		rowList<<war_name<<begin_date<<end_date;
+
+		warData.append(rowList);
+	}
+	return warData;
+}
+
+//===================================================================================
+//======= Метод формирует данные о полученных травмах, увечьях и др. ================
+//===================================================================================
+QList<QStringList> ReportData::get_travm_history(int id_persones)
+{
+	QList<QStringList> travmData;
+
+	QSqlQuery query;
+    query.prepare ("SELECT name,comments \
+					FROM travm \
+					WHERE id_persones = ? \
+					ORDER BY id_travm");
+
+    query.addBindValue(id_persones);
+    if(!query.exec())
+    {
+        QString sss = query.lastError().text();
+        return travmData;
+    }
+    QSqlRecord rec = query.record();
+
+    while(query.next())
+	{
+		QString name = query.value(rec.indexOf("name")).toString();	
+		QString comments = query.value(rec.indexOf("comments")).toString();
+
+		QStringList rowList;
+		rowList<<name<<comments;
+
+		travmData.append(rowList);
+	}
+	return travmData;
+}
+
+//===================================================================================
+//======= Метод формирует данные о полученных наградах ==============================
+//===================================================================================
+QList<QStringList> ReportData::get_medal_history(int id_persones)
+{
+	QList<QStringList> medalData;
+
+	QSqlQuery query;
+    query.prepare ("SELECT medal_name, achievment, \"order\" \
+					FROM medal \
+					WHERE id_persones = ? \
+					ORDER BY id_medal");
+
+    query.addBindValue(id_persones);
+    if(!query.exec())
+    {
+        QString sss = query.lastError().text();
+        return medalData;
+    }
+    QSqlRecord rec = query.record();
+
+    while(query.next())
+	{
+		QString medal_name = query.value(rec.indexOf("medal_name")).toString();	
+		QString achievment = query.value(rec.indexOf("achievment")).toString();
+		QString order = query.value(rec.indexOf("order")).toString();
+
+		QStringList rowList;
+		rowList<<medal_name<<achievment<<order;
+
+		medalData.append(rowList);
+	}
+	return medalData;
+}
+
+
+//===================================================================================
+//======= Метод формирует данные о нахождении в плену ===============================
+//===================================================================================
+QList<QStringList> ReportData::get_prison_history(int id_persones)
+{
+	QList<QStringList> prisonData;
+
+	QSqlQuery query;
+    query.prepare ("SELECT comments FROM prison WHERE id_persones = ?");
+
+    query.addBindValue(id_persones);
+    if(!query.exec())
+    {
+        QString sss = query.lastError().text();
+        return prisonData;
+    }
+    QSqlRecord rec = query.record();
+
+    while(query.next())
+	{
+		QString comments = query.value(rec.indexOf("comments")).toString();	
+		
+		QStringList rowList;
+		rowList<<comments;
+
+		prisonData.append(rowList);
+	}
+	return prisonData;
+}
+
+
+//===================================================================================
+//======= Метод формирует данные о компромате ===============================
+//===================================================================================
+QList<QStringList> ReportData::get_compromat(int id_persones)
+{
+	QList<QStringList> compromatData;
+
+	QSqlQuery query;
+    query.prepare ("SELECT \"date\",comments \
+					FROM compromat_table \
+					WHERE id_persones = ? \
+					ORDER BY id_compromat_table");
+
+    query.addBindValue(id_persones);
+    if(!query.exec())
+    {
+        QString sss = query.lastError().text();
+        return compromatData;
+    }
+    QSqlRecord rec = query.record();
+
+    while(query.next())
+	{
+		QString date = query.value(rec.indexOf("date")).toString();	
+		QString comments = query.value(rec.indexOf("comments")).toString();	
+		
+		QStringList rowList;
+		rowList<<date<<comments;
+
+		compromatData.append(rowList);
+	}
+	return compromatData;
+}
+
+
 QMap<int, QMap<QString, QString> > ReportData::pers_info_continue(int id_object)
 {
     pers_info_date = new QMap<int, QMap<QString, QString> >;
     pers_info_date->clear();
     QSqlQuery query;
-    query.prepare ("SELECT pers.name_persones,pers.age_persones,pers.contact_persones, pers.description_persones, pers.authority_persones, pers.opposition_persones, pers.rank_persones, type_persones.name_type_persones FROM  persones pers, type_persones WHERE pers.id_persones = ? AND pers.id_type_persones = type_persones.id_type_persones ");
+    query.prepare ("SELECT ms.status_name \
+					FROM persones ps, mariage_status ms \
+					WHERE ps.id_mariage_status = ms.id_mariage_status \
+					AND ps.id_persones = ?");
 
     query.addBindValue(id_object);
     if(!query.exec())
@@ -224,17 +630,67 @@ QMap<int, QMap<QString, QString> > ReportData::pers_info_continue(int id_object)
     query.next();
 
         map.clear();
-        map.insert("17. Фамилия, имя отчество отца и матери, их место жительства:","");
+		map.insert("17. Фамилия, имя отчество отца и матери, их место жительства:",getMotherFatherData(id_object));
         pers_info_date->insert(1,map);
         map.clear();
-        map.insert("18. Семейное положение: ","");
+		map.insert("18. Семейное положение: ",query.value(rec.indexOf("status_name")).toString());
         pers_info_date->insert(2,map);
         map.clear();
-        map.insert("19. Домашний адрес семьи:","");
+		map.insert("19. Домашний адрес семьи:",getFamilyAddress(id_object));
         pers_info_date->insert(3,map);
 
        return *pers_info_date;
 }
+
+
+QString ReportData::getFamilyAddress(int idPersones)
+{
+	QString address;
+	QSqlQuery query;
+    query.prepare ("SELECT family_address FROM persones WHERE id_persones = ?");
+    query.addBindValue(idPersones);
+    if(!query.exec())
+    {
+        QString sss = query.lastError().text();
+        return address;
+    }
+    QSqlRecord rec = query.record();
+    
+	query.next();
+	address.append(query.value(rec.indexOf("family_address")).toString());
+	return address;
+}
+
+
+QString ReportData::getMotherFatherData(int idPersones)
+{
+	QString data;
+	QSqlQuery query;
+    query.prepare ("SELECT ft.type_name, fd.info \
+					FROM family_data fd, family_types ft \
+					WHERE fd.id_family_types = ft.id_family_types \
+					AND fd.id_persones = ? \
+					AND ft.id_family_types <= 2");
+    query.addBindValue(idPersones);
+    if(!query.exec())
+    {
+        QString sss = query.lastError().text();
+        return data;
+    }
+    QSqlRecord rec = query.record();
+    
+	while(query.next())
+	{
+		data.append(query.value(rec.indexOf("type_name")).toString());
+		data.append(": ");
+		data.append(query.value(rec.indexOf("info")).toString());
+	}
+	return data;
+}
+
+
+
+
 QMap<QString, QMap<QString, QString> > ReportData::pers_info_coord(int id_object)
 {
            QString name_obj;

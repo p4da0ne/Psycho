@@ -1750,16 +1750,17 @@ void MapView::slotMoveObject()
 
 
 //===============================================================================
-//====== Слот редактирования события ============================================
+//====== Слот просмотра медиаконтента события ===================================
 //===============================================================================
-void MapView::slotEditEvent()
+void MapView::slotEventMedia()
 {
 	QAction *action = qobject_cast<QAction*>(sender());
 	QString str;
 	if(action)
 	{
 		QStringList objInfo = action->data().toString().split("_");
-
+		EventManager *eventManager = new EventManager(this);
+		eventManager->viewMediaContentDialog(objInfo.at(0).toInt(),this);
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	}
 
@@ -2187,10 +2188,10 @@ QMenu* MapView::createEventMenu(QStringList objInfo)
 	//mouse_menu->addAction(report_act); 
 	//connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));  //пока не работает
 	
-	//QAction *edit_act = new QAction("Редактировать событие",this);
-	//edit_act->setData(idAndType);
-	//mouse_menu->addAction(edit_act); 
-	//connect(edit_act, SIGNAL(triggered()), this, SLOT(slotEditEvent()));  //пока не работает
+	QAction *media_act = new QAction("Медиаконтент события",this);
+	media_act->setData(idAndType);
+	mouse_menu->addAction(media_act); 
+	connect(media_act, SIGNAL(triggered()), this, SLOT(slotEventMedia())); 
 
 	QAction *move_act = new QAction("Переместить событие",this);
 	move_act->setData(idAndType);

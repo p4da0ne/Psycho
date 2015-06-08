@@ -38,9 +38,24 @@ public:
     QMap<int, QMap<QString, QString> > mpo_pso_ls_info(int id_object=0);
     QMap<int, QMap<QString, QString> > mpo_pso_gr_info(int id_object=0);
 
+	 QMap<QString,QString> get_person_ranks_data(int id_persones);
+	 QList<QStringList> get_work_history(int id_persones);
+	 QList<QStringList> get_service_history(int id_persones);
+	 QList<QStringList> get_war_history(int id_persones);
+	 QList<QStringList> get_travm_history(int id_persones);
+	 QList<QStringList> get_medal_history(int id_persones);
+	 QList<QStringList> get_prison_history(int id_persones);
+	 QList<QStringList> get_compromat(int id_persones);
+
     QString get_pers_foto_from_DB(int);
     QString get_mpo_pso_foto_from_DB(int id_mpo);
     QString get_sc_foto_from_DB(int);
+	QString getDocumentInfo(int idPersones, int idDocType);
+	QString getEducOrganizationsInfo(int idPersones, int idEducType);
+	QString getScienceRankInfo(int idPersones);
+	QString getFamilyAddress(int idPersones);
+	QString getMotherFatherData(int idPersones);
+
 //	QMultiMap<QString,QString> get_obj_v(int id_object = 0);
    
 private:
