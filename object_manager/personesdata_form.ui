@@ -14,6 +14,51 @@
    <string>Ввод данных по персоналии</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_45">
+   <item row="1" column="0">
+    <layout class="QGridLayout" name="gridLayout_29">
+     <item row="0" column="0">
+      <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="0" column="1">
+      <widget class="QPushButton" name="save_all_button">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Сохранить</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QPushButton" name="cancel_button">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Отмена</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="font">
@@ -139,7 +184,7 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="6">
+         <item row="0" column="7">
           <widget class="QLabel" name="label_5">
            <property name="font">
             <font>
@@ -153,7 +198,7 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="7">
+         <item row="0" column="8">
           <widget class="QLineEdit" name="pers_numb_lineEdit">
            <property name="font">
             <font>
@@ -164,7 +209,7 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="10">
+         <item row="0" column="11">
           <widget class="QLabel" name="label_4">
            <property name="font">
             <font>
@@ -178,7 +223,7 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="11">
+         <item row="0" column="12">
           <widget class="QLineEdit" name="path_foto_lineEdit">
            <property name="font">
             <font>
@@ -189,14 +234,14 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="12">
+         <item row="0" column="13">
           <widget class="QToolButton" name="path_foto_toolButton">
            <property name="text">
             <string>...</string>
            </property>
           </widget>
          </item>
-         <item row="0" column="8">
+         <item row="0" column="9">
           <widget class="QLabel" name="label_24">
            <property name="font">
             <font>
@@ -209,7 +254,7 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="9">
+         <item row="0" column="10">
           <widget class="QLineEdit" name="nation_lineEdit">
            <property name="font">
             <font>
@@ -220,11 +265,24 @@
            </property>
           </widget>
          </item>
+         <item row="0" column="6">
+          <widget class="QLabel" name="name_persones">
+           <property name="font">
+            <font>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
        <item row="1" column="0" colspan="2">
         <layout class="QGridLayout" name="gridLayout_4">
-         <item row="0" column="0">
+         <item row="0" column="2">
           <widget class="QLabel" name="label_6">
            <property name="font">
             <font>
@@ -238,7 +296,7 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
+         <item row="0" column="3">
           <widget class="QDateEdit" name="hb_dateEdit">
            <property name="font">
             <font>
@@ -273,7 +331,7 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="2">
+         <item row="0" column="4">
           <widget class="QLabel" name="label_7">
            <property name="font">
             <font>
@@ -287,7 +345,7 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="3">
+         <item row="0" column="5">
           <widget class="QLineEdit" name="birth_plane_lineEdit">
            <property name="font">
             <font>
@@ -298,7 +356,7 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="8">
+         <item row="0" column="10">
           <widget class="QLabel" name="label_16">
            <property name="font">
             <font>
@@ -312,10 +370,17 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="11">
-          <widget class="QLineEdit" name="dakti_lineEdit"/>
+         <item row="0" column="13">
+          <widget class="QLineEdit" name="dakti_lineEdit">
+           <property name="font">
+            <font>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+          </widget>
          </item>
-         <item row="0" column="4">
+         <item row="0" column="6">
           <widget class="QLabel" name="label_25">
            <property name="font">
             <font>
@@ -328,10 +393,17 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="5">
-          <widget class="QLineEdit" name="lineEdit"/>
+         <item row="0" column="7">
+          <widget class="QLineEdit" name="rank_lineEdit">
+           <property name="font">
+            <font>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+          </widget>
          </item>
-         <item row="0" column="6">
+         <item row="0" column="8">
           <widget class="QLabel" name="label_17">
            <property name="font">
             <font>
@@ -344,7 +416,7 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="7">
+         <item row="0" column="9">
           <widget class="QComboBox" name="type_person_comboBox">
            <property name="font">
             <font>
@@ -776,8 +848,8 @@
       <attribute name="title">
        <string/>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_28">
-       <item row="1" column="0" colspan="2">
+      <layout class="QGridLayout" name="gridLayout_11">
+       <item row="1" column="0">
         <widget class="QGroupBox" name="groupBox_5">
          <property name="title">
           <string>Военные образовательные учреждения профессионального образования:</string>
@@ -848,7 +920,7 @@
          </layout>
         </widget>
        </item>
-       <item row="2" column="0" colspan="2">
+       <item row="3" column="0">
         <widget class="QGroupBox" name="groupBox_11">
          <property name="title">
           <string>Самостоятельная трудовая деятельность до государственной службы:</string>
@@ -919,174 +991,280 @@
          </layout>
         </widget>
        </item>
-       <item row="4" column="0" colspan="2">
-        <layout class="QGridLayout" name="gridLayout_25">
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_19">
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
+       <item row="4" column="0">
+        <spacer name="verticalSpacer_15">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="5" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QGroupBox" name="groupBox_15">
+           <property name="title">
+            <string>Ученая степень:</string>
            </property>
-           <property name="text">
-            <string>Ученая степень: </string>
-           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_20">
+            <item>
+             <layout class="QGridLayout" name="gridLayout_42">
+              <item row="1" column="1">
+               <layout class="QGridLayout" name="gridLayout_48"/>
+              </item>
+              <item row="0" column="2">
+               <layout class="QVBoxLayout" name="verticalLayout_21">
+                <item>
+                 <widget class="QPushButton" name="sc_add_pushButton">
+                  <property name="font">
+                   <font>
+                    <pointsize>10</pointsize>
+                    <weight>50</weight>
+                    <bold>false</bold>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="icon">
+                   <iconset resource="object_manager.qrc">
+                    <normaloff>:/Resources/add_but.png</normaloff>:/Resources/add_but.png</iconset>
+                  </property>
+                  <property name="iconSize">
+                   <size>
+                    <width>32</width>
+                    <height>32</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="sc_del_pushButton">
+                  <property name="font">
+                   <font>
+                    <pointsize>10</pointsize>
+                    <weight>50</weight>
+                    <bold>false</bold>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="icon">
+                   <iconset resource="object_manager.qrc">
+                    <normaloff>:/Resources/close.png</normaloff>:/Resources/close.png</iconset>
+                  </property>
+                  <property name="iconSize">
+                   <size>
+                    <width>32</width>
+                    <height>32</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="0" column="0">
+               <widget class="QTableView" name="science_tableView"/>
+              </item>
+             </layout>
+            </item>
+           </layout>
           </widget>
          </item>
-         <item row="0" column="1">
-          <widget class="QLineEdit" name="step_nauka_lineEdit">
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
+         <item>
+          <widget class="QGroupBox" name="groupBox_16">
+           <property name="title">
+            <string>Ученое звание:</string>
            </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QLabel" name="label_20">
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Дата присвоения:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="3">
-          <widget class="QDateEdit" name="step_nauka_dateEdit">
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="calendarPopup">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="4">
-          <widget class="QLabel" name="label_21">
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Ученое звание: </string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="5">
-          <widget class="QLineEdit" name="zvan_nauka_lineEdit">
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="7">
-          <widget class="QLabel" name="label_22">
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Дата присвоения:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="8">
-          <widget class="QDateEdit" name="zvan_nauka_dateEdit">
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="calendarPopup">
-            <bool>true</bool>
-           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_22">
+            <item>
+             <layout class="QGridLayout" name="gridLayout_54">
+              <item row="1" column="1">
+               <layout class="QGridLayout" name="gridLayout_60"/>
+              </item>
+              <item row="0" column="2">
+               <layout class="QVBoxLayout" name="verticalLayout_23">
+                <item>
+                 <widget class="QPushButton" name="sc_2_add_pushButton">
+                  <property name="font">
+                   <font>
+                    <pointsize>10</pointsize>
+                    <weight>50</weight>
+                    <bold>false</bold>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="icon">
+                   <iconset resource="object_manager.qrc">
+                    <normaloff>:/Resources/add_but.png</normaloff>:/Resources/add_but.png</iconset>
+                  </property>
+                  <property name="iconSize">
+                   <size>
+                    <width>32</width>
+                    <height>32</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="sc_2_del_pushButton">
+                  <property name="font">
+                   <font>
+                    <pointsize>10</pointsize>
+                    <weight>50</weight>
+                    <bold>false</bold>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="icon">
+                   <iconset resource="object_manager.qrc">
+                    <normaloff>:/Resources/close.png</normaloff>:/Resources/close.png</iconset>
+                  </property>
+                  <property name="iconSize">
+                   <size>
+                    <width>32</width>
+                    <height>32</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="0" column="0">
+               <widget class="QTableView" name="science_2_tableView"/>
+              </item>
+             </layout>
+            </item>
+           </layout>
           </widget>
          </item>
         </layout>
        </item>
        <item row="6" column="0">
-        <layout class="QGridLayout" name="gridLayout_27">
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_18">
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+        <spacer name="verticalSpacer_16">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="7" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <item>
+          <layout class="QGridLayout" name="gridLayout_41">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_21">
+             <property name="font">
+              <font>
+               <weight>50</weight>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Какими иностранными языками &lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;и языками народов РФ владеет:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-          </widget>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QTextEdit" name="lang_textEdit">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>100</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>100</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <weight>50</weight>
+               <bold>false</bold>
+              </font>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
-         <item row="0" column="1">
-          <widget class="QTextEdit" name="lang_textEdit"/>
+         <item>
+          <layout class="QGridLayout" name="gridLayout_65">
+           <item row="0" column="1">
+            <widget class="QTextEdit" name="nauka_develop_textEdit">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>100</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777214</width>
+               <height>100</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <weight>50</weight>
+               <bold>false</bold>
+              </font>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_28">
+             <property name="font">
+              <font>
+               <weight>50</weight>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Научные труды и изобретения:</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
        </item>
-       <item row="6" column="1">
-        <layout class="QGridLayout" name="gridLayout_26">
-         <item row="0" column="1">
-          <widget class="QTextEdit" name="nauka_develop_textEdit">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777214</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_23">
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Научные труды и изобретения:</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+       <item row="8" column="0">
+        <spacer name="verticalSpacer_17">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
        </item>
-       <item row="3" column="0" colspan="2">
-        <spacer name="verticalSpacer_7">
+       <item row="2" column="0">
+        <spacer name="verticalSpacer_14">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -1099,7 +1277,7 @@ p, li { white-space: pre-wrap; }
         </spacer>
        </item>
        <item row="0" column="0">
-        <spacer name="verticalSpacer_8">
+        <spacer name="verticalSpacer_18">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -1121,7 +1299,7 @@ p, li { white-space: pre-wrap; }
       <attribute name="title">
        <string/>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_41">
+      <layout class="QGridLayout" name="gridLayout_12">
        <item row="0" column="0">
         <widget class="QGroupBox" name="groupBox_12">
          <property name="title">
@@ -1136,7 +1314,7 @@ p, li { white-space: pre-wrap; }
             <item row="0" column="2">
              <layout class="QVBoxLayout" name="verticalLayout_15">
               <item>
-               <widget class="QPushButton" name="vid_gos_sl_add_pushButton">
+               <widget class="QPushButton" name="serv_add_pushButton">
                 <property name="font">
                  <font>
                   <pointsize>10</pointsize>
@@ -1160,7 +1338,7 @@ p, li { white-space: pre-wrap; }
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="vid_gos_sl_del_pushButton">
+               <widget class="QPushButton" name="serv_del_pushButton">
                 <property name="font">
                  <font>
                   <pointsize>10</pointsize>
@@ -1186,7 +1364,7 @@ p, li { white-space: pre-wrap; }
              </layout>
             </item>
             <item row="0" column="0">
-             <widget class="QTableView" name="vid_gos_sl_tableView"/>
+             <widget class="QTableView" name="service_tableView"/>
             </item>
            </layout>
           </item>
@@ -1194,111 +1372,6 @@ p, li { white-space: pre-wrap; }
         </widget>
        </item>
        <item row="1" column="0">
-        <layout class="QGridLayout" name="gridLayout_36">
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_47">
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>На военную службу призван (поступил):</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QDateEdit" name="prizvan_dateEdit">
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="calendarPopup">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QLabel" name="label_48">
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Военную присягу принял:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="3">
-          <widget class="QDateEdit" name="prinyl_dateEdit">
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="calendarPopup">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="4">
-          <widget class="QLabel" name="label_49">
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>На военную службу поступил:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="5">
-          <widget class="QDateEdit" name="prizvan_2_dateEdit">
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="calendarPopup">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="6">
-          <widget class="QLabel" name="label_50">
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>через:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="7">
-          <widget class="QLineEdit" name="voenkom_lineEdit">
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="2" column="0">
         <widget class="QGroupBox" name="groupBox_13">
          <property name="title">
           <string>Участие в войнах и других боевых действиях:</string>
@@ -1369,7 +1442,7 @@ p, li { white-space: pre-wrap; }
          </layout>
         </widget>
        </item>
-       <item row="3" column="0">
+       <item row="2" column="0">
         <widget class="QGroupBox" name="groupBox_14">
          <property name="title">
           <string>Увечья (ранения, травмы. контузии) и другие боевые поражения и их характер:</string>
@@ -1452,248 +1525,6 @@ p, li { white-space: pre-wrap; }
       </attribute>
       <layout class="QGridLayout" name="gridLayout_10">
        <item row="0" column="0">
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="1" column="0">
-        <widget class="QGroupBox" name="groupBox_17">
-         <property name="title">
-          <string>Родители:</string>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout_24">
-            <item>
-             <layout class="QGridLayout" name="gridLayout_46">
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_51">
-                <property name="text">
-                 <string>Отец: </string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QLabel" name="label_52">
-                <property name="font">
-                 <font>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>Фамилия:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="2">
-               <widget class="QLineEdit" name="parent_f_lineEdit">
-                <property name="font">
-                 <font>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="3">
-               <widget class="QLabel" name="label_53">
-                <property name="font">
-                 <font>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>Имя:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="4">
-               <widget class="QLineEdit" name="parent_n_lineEdit">
-                <property name="font">
-                 <font>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="5">
-               <widget class="QLabel" name="label_54">
-                <property name="font">
-                 <font>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>Отчество:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="6">
-               <widget class="QLineEdit" name="parent_o_lineEdit">
-                <property name="font">
-                 <font>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QGridLayout" name="gridLayout_47">
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_56">
-                <property name="text">
-                 <string>Мать: </string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QLabel" name="label_57">
-                <property name="font">
-                 <font>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>Фамилия:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="2">
-               <widget class="QLineEdit" name="parent_f_m_lineEdit">
-                <property name="font">
-                 <font>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="3">
-               <widget class="QLabel" name="label_58">
-                <property name="font">
-                 <font>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>Имя:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="4">
-               <widget class="QLineEdit" name="parent_n_m_lineEdit">
-                <property name="font">
-                 <font>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="5">
-               <widget class="QLabel" name="label_59">
-                <property name="font">
-                 <font>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>Отчество:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="6">
-               <widget class="QLineEdit" name="parent_o_m_lineEdit">
-                <property name="font">
-                 <font>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QGridLayout" name="gridLayout_51">
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_55">
-              <property name="font">
-               <font>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Место жительства отца:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLineEdit" name="parent_adress_lineEdit">
-              <property name="font">
-               <font>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_60">
-              <property name="font">
-               <font>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Место жительства матери:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QLineEdit" name="parent_adress_m_lineEdit">
-              <property name="font">
-               <font>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="3" column="0">
         <widget class="QGroupBox" name="groupBox_18">
          <property name="title">
           <string>Семейное положение:</string>
@@ -1716,11 +1547,12 @@ p, li { white-space: pre-wrap; }
             </item>
             <item>
              <widget class="QComboBox" name="fam_comboBox">
-              <item>
-               <property name="text">
-                <string>-</string>
-               </property>
-              </item>
+              <property name="font">
+               <font>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
               <item>
                <property name="text">
                 <string>холост</string>
@@ -1733,7 +1565,7 @@ p, li { white-space: pre-wrap; }
               </item>
               <item>
                <property name="text">
-                <string>вдов</string>
+                <string>вдовец(вдова)</string>
                </property>
               </item>
               <item>
@@ -1744,263 +1576,125 @@ p, li { white-space: pre-wrap; }
              </widget>
             </item>
             <item>
-             <spacer name="horizontalSpacer">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
+             <layout class="QGridLayout" name="gridLayout_53">
+              <item row="0" column="4">
+               <widget class="QLineEdit" name="brak_numb_lineEdit">
+                <property name="font">
+                 <font>
+                  <pointsize>9</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="8">
+               <widget class="QLineEdit" name="brak_kem_lineEdit">
+                <property name="font">
+                 <font>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="7">
+               <widget class="QLabel" name="label_69">
+                <property name="font">
+                 <font>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Кем выдано:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="6">
+               <widget class="QDateEdit" name="brak_dateEdit">
+                <property name="font">
+                 <font>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="calendarPopup">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="5">
+               <widget class="QLabel" name="label_65">
+                <property name="font">
+                 <font>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>выдано:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_67">
+                <property name="font">
+                 <font>
+                  <pointsize>9</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Свидетельство о браке:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLabel" name="label_18">
+                <property name="font">
+                 <font>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>серия:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="3">
+               <widget class="QLabel" name="label_19">
+                <property name="font">
+                 <font>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>номер:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QLineEdit" name="brak_seq_lineEdit">
+                <property name="font">
+                 <font>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </item>
           <item row="2" column="0">
-           <layout class="QGridLayout" name="gridLayout_52">
-            <item row="0" column="1">
-             <widget class="QLabel" name="label_61">
-              <property name="font">
-               <font>
-                <pointsize>9</pointsize>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Фамилия:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_64">
-              <property name="text">
-               <string>Жена:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="7">
-             <widget class="QLabel" name="label_66">
-              <property name="font">
-               <font>
-                <pointsize>9</pointsize>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Число, месяц, год рождения:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="8">
-             <widget class="QDateEdit" name="wife_b_dateEdit">
-              <property name="font">
-               <font>
-                <pointsize>9</pointsize>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="calendarPopup">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QLineEdit" name="wife_f_lineEdit">
-              <property name="font">
-               <font>
-                <pointsize>9</pointsize>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="6">
-             <widget class="QLineEdit" name="wife_o_lineEdit">
-              <property name="font">
-               <font>
-                <pointsize>9</pointsize>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="5">
-             <widget class="QLabel" name="label_63">
-              <property name="font">
-               <font>
-                <pointsize>9</pointsize>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Отчество:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="4">
-             <widget class="QLineEdit" name="wife_n_lineEdit">
-              <property name="font">
-               <font>
-                <pointsize>9</pointsize>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="3">
-             <widget class="QLabel" name="label_62">
-              <property name="font">
-               <font>
-                <pointsize>9</pointsize>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Имя:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="9">
-             <spacer name="horizontalSpacer_12">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </item>
-          <item row="4" column="0">
-           <layout class="QGridLayout" name="gridLayout_53">
-            <item row="0" column="1">
-             <widget class="QLineEdit" name="brak_numb_lineEdit">
-              <property name="font">
-               <font>
-                <pointsize>9</pointsize>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="5">
-             <widget class="QLineEdit" name="brak_kem_lineEdit"/>
-            </item>
-            <item row="0" column="4">
-             <widget class="QLabel" name="label_69">
-              <property name="font">
-               <font>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Кем выдано:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="3">
-             <widget class="QDateEdit" name="brak_dateEdit">
-              <property name="font">
-               <font>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="calendarPopup">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QLabel" name="label_65">
-              <property name="font">
-               <font>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>выдано:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_67">
-              <property name="font">
-               <font>
-                <pointsize>9</pointsize>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Свидетельство о браке:</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="6" column="0">
-           <layout class="QHBoxLayout" name="horizontalLayout_5">
-            <item>
-             <widget class="QLabel" name="label_91">
-              <property name="font">
-               <font>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Домашний адрес семьи:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="adress_fam_lineEdit">
-              <property name="font">
-               <font>
-                <pointsize>9</pointsize>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_4">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </item>
-          <item row="8" column="0">
            <widget class="QGroupBox" name="groupBox_22">
             <property name="title">
-             <string>Дети</string>
+             <string>Данные о родственниках:</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_34">
              <item>
@@ -2061,177 +1755,127 @@ p, li { white-space: pre-wrap; }
                 </layout>
                </item>
                <item row="0" column="0">
-                <widget class="QTableView" name="child_tableView"/>
+                <widget class="QTableView" name="family_tableView"/>
                </item>
               </layout>
              </item>
             </layout>
            </widget>
-          </item>
-          <item row="10" column="0">
-           <widget class="QGroupBox" name="groupBox_23">
-            <property name="title">
-             <string>Другие иждивенцы</string>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout_36">
-             <item>
-              <layout class="QGridLayout" name="gridLayout_55">
-               <item row="1" column="1">
-                <layout class="QGridLayout" name="gridLayout_63"/>
-               </item>
-               <item row="0" column="2">
-                <layout class="QVBoxLayout" name="verticalLayout_37">
-                 <item>
-                  <widget class="QPushButton" name="dr_igdiv_add_pushButton">
-                   <property name="font">
-                    <font>
-                     <pointsize>10</pointsize>
-                     <weight>50</weight>
-                     <bold>false</bold>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="icon">
-                    <iconset resource="object_manager.qrc">
-                     <normaloff>:/Resources/add_but.png</normaloff>:/Resources/add_but.png</iconset>
-                   </property>
-                   <property name="iconSize">
-                    <size>
-                     <width>32</width>
-                     <height>32</height>
-                    </size>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="dr_igdiv_del_pushButton">
-                   <property name="font">
-                    <font>
-                     <pointsize>10</pointsize>
-                     <weight>50</weight>
-                     <bold>false</bold>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="icon">
-                    <iconset resource="object_manager.qrc">
-                     <normaloff>:/Resources/close.png</normaloff>:/Resources/close.png</iconset>
-                   </property>
-                   <property name="iconSize">
-                    <size>
-                     <width>32</width>
-                     <height>32</height>
-                    </size>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="0" column="0">
-                <widget class="QTableView" name="dr_igdiv_tableView"/>
-               </item>
-              </layout>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="7" column="0">
-           <spacer name="verticalSpacer_4">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="9" column="0">
-           <spacer name="verticalSpacer_5">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="5" column="0">
-           <spacer name="verticalSpacer_6">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
           </item>
           <item row="3" column="0">
-           <spacer name="verticalSpacer_9">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="1" column="0">
-           <spacer name="verticalSpacer_10">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
+           <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <item>
+             <widget class="QLabel" name="label_91">
+              <property name="font">
+               <font>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Домашний адрес семьи:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="adress_fam_lineEdit">
+              <property name="font">
+               <font>
+                <pointsize>9</pointsize>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>
        </item>
-       <item row="4" column="0">
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
+       <item row="1" column="0">
+        <widget class="QGroupBox" name="groupBox_23">
+         <property name="title">
+          <string>Какими нагрудными знаками награжден:</string>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="2" column="0">
-        <spacer name="verticalSpacer_3">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
+         <layout class="QVBoxLayout" name="verticalLayout_32">
+          <item>
+           <layout class="QGridLayout" name="gridLayout_51">
+            <item row="1" column="1">
+             <layout class="QGridLayout" name="gridLayout_52"/>
+            </item>
+            <item row="0" column="2">
+             <layout class="QVBoxLayout" name="verticalLayout_33">
+              <item>
+               <widget class="QPushButton" name="medal_add_pushButton">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="object_manager.qrc">
+                  <normaloff>:/Resources/add_but.png</normaloff>:/Resources/add_but.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>32</width>
+                  <height>32</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="medal_del_pushButton">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="object_manager.qrc">
+                  <normaloff>:/Resources/close.png</normaloff>:/Resources/close.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>32</width>
+                  <height>32</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="0">
+             <widget class="QTableView" name="medal_tableView"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -2244,149 +1888,7 @@ p, li { white-space: pre-wrap; }
        <string/>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_44">
-       <item row="0" column="0">
-        <widget class="QGroupBox" name="groupBox_19">
-         <property name="title">
-          <string>Какими нагрудными знаками награжден:</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_26">
-          <item>
-           <layout class="QGridLayout" name="gridLayout_49">
-            <item row="1" column="1">
-             <layout class="QGridLayout" name="gridLayout_50"/>
-            </item>
-            <item row="0" column="2">
-             <layout class="QVBoxLayout" name="verticalLayout_27">
-              <item>
-               <widget class="QPushButton" name="nagrada_add_pushButton">
-                <property name="font">
-                 <font>
-                  <pointsize>10</pointsize>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="icon">
-                 <iconset resource="object_manager.qrc">
-                  <normaloff>:/Resources/add_but.png</normaloff>:/Resources/add_but.png</iconset>
-                </property>
-                <property name="iconSize">
-                 <size>
-                  <width>32</width>
-                  <height>32</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="nagrada_del_pushButton">
-                <property name="font">
-                 <font>
-                  <pointsize>10</pointsize>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="icon">
-                 <iconset resource="object_manager.qrc">
-                  <normaloff>:/Resources/close.png</normaloff>:/Resources/close.png</iconset>
-                </property>
-                <property name="iconSize">
-                 <size>
-                  <width>32</width>
-                  <height>32</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item row="0" column="0">
-             <widget class="QTableView" name="nagrada_tableView"/>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
-       </item>
        <item row="1" column="0">
-        <widget class="QGroupBox" name="groupBox_20">
-         <property name="title">
-          <string>Был ли в плену:</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_28">
-          <item>
-           <layout class="QGridLayout" name="gridLayout_56">
-            <item row="1" column="1">
-             <layout class="QGridLayout" name="gridLayout_57"/>
-            </item>
-            <item row="0" column="2">
-             <layout class="QVBoxLayout" name="verticalLayout_29">
-              <item>
-               <widget class="QPushButton" name="plen_add_pushButton">
-                <property name="font">
-                 <font>
-                  <pointsize>10</pointsize>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="icon">
-                 <iconset resource="object_manager.qrc">
-                  <normaloff>:/Resources/add_but.png</normaloff>:/Resources/add_but.png</iconset>
-                </property>
-                <property name="iconSize">
-                 <size>
-                  <width>32</width>
-                  <height>32</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="plen_del_pushButton">
-                <property name="font">
-                 <font>
-                  <pointsize>10</pointsize>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="icon">
-                 <iconset resource="object_manager.qrc">
-                  <normaloff>:/Resources/close.png</normaloff>:/Resources/close.png</iconset>
-                </property>
-                <property name="iconSize">
-                 <size>
-                  <width>32</width>
-                  <height>32</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item row="0" column="0">
-             <widget class="QTableView" name="plen_tableView"/>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="2" column="0">
         <widget class="QGroupBox" name="groupBox_21">
          <property name="title">
           <string>Компроментирующие данные на военнослужащего:</string>
@@ -2457,118 +1959,80 @@ p, li { white-space: pre-wrap; }
          </layout>
         </widget>
        </item>
-       <item row="3" column="0">
-        <layout class="QGridLayout" name="gridLayout_33">
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_113">
-           <property name="text">
-            <string>Послужной список составлен:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QDateEdit" name="itog_dateEdit">
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="calendarPopup">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <spacer name="horizontalSpacer_6">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item row="4" column="0">
-        <layout class="QGridLayout" name="gridLayout_43">
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_114">
-           <property name="text">
-            <string>Наименование воинской части, соединения и тд:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLineEdit" name="name_vch_lineEdit"/>
-         </item>
-         <item row="0" column="2">
-          <spacer name="horizontalSpacer_8">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="groupBox_20">
+         <property name="title">
+          <string>Был ли в плену:</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_28">
+          <item>
+           <layout class="QGridLayout" name="gridLayout_56">
+            <item row="1" column="1">
+             <layout class="QGridLayout" name="gridLayout_57"/>
+            </item>
+            <item row="0" column="2">
+             <layout class="QVBoxLayout" name="verticalLayout_29">
+              <item>
+               <widget class="QPushButton" name="plen_add_pushButton">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="object_manager.qrc">
+                  <normaloff>:/Resources/add_but.png</normaloff>:/Resources/add_but.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>32</width>
+                  <height>32</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="plen_del_pushButton">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="object_manager.qrc">
+                  <normaloff>:/Resources/close.png</normaloff>:/Resources/close.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>32</width>
+                  <height>32</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="0">
+             <widget class="QTableView" name="plen_tableView"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
        </item>
       </layout>
      </widget>
     </widget>
-   </item>
-   <item row="1" column="0">
-    <layout class="QGridLayout" name="gridLayout_29">
-     <item row="0" column="0">
-      <spacer name="horizontalSpacer_3">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="0" column="1">
-      <widget class="QPushButton" name="save_all_button">
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Сохранить</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QPushButton" name="cancel_button">
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Отмена</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
    </item>
   </layout>
  </widget>

@@ -13,7 +13,8 @@ HEADERS += \
          mylabel.h \
          mysqlrelationaldelegate.h \
          personesdata.h \
-        persones_info.h
+        persones_info.h \
+    comboboxdelegat.h
 
 #Source files
 SOURCES +=  object_manager.cpp \
@@ -27,7 +28,8 @@ SOURCES +=  object_manager.cpp \
         mylabel.cpp \
         mysqlrelationaldelegate.cpp \
         personesdata.cpp \
-    persones_info.cpp
+    persones_info.cpp \
+    comboboxdelegat.cpp
 
 		
 #Forms

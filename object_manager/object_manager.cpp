@@ -239,7 +239,7 @@ void Objectmanager::customMenuView(const QPoint & pos)
 
             QAction *otch_pers = new QAction (QString("Сформировать отчет"),this);
             connect(otch_pers,SIGNAL(triggered()),this,SLOT(otchet_groups()));
-
+            id_persers = list.value(1).toInt();
             QAction *edit = new QAction(QString("Редактировать информацию"),this);
             connect(edit,SIGNAL(triggered()),this,SLOT(edit_persones()));
 
@@ -2550,7 +2550,7 @@ void Objectmanager::add_ls_components(QStandardItem *parent_item,int id_parent_r
     QSqlQuery query_pers;
     query_pers.exec(QString("SELECT id_ls,id_persones FROM persones WHERE id_ls=%1").arg(id_parent_region));
     int row_p=0;
-    int f;
+    int f=0;
     QSqlQuery query_count_p;
     query_count_p.exec(QString("SELECT count(id_persones) FROM persones WHERE id_ls=%1").arg(id_parent_region));
     while (query_count_p.next()){
@@ -2622,7 +2622,7 @@ void Objectmanager::add_groups_components(QStandardItem *parent_item,int id_pare
     QSqlQuery query_pers;
     query_pers.exec(QString("SELECT id_groups,id_persones FROM persones WHERE id_groups=%1").arg(id_parent_region));
     int row_p=0;
-    int f;
+    int f=0;
     QSqlQuery query_count_p;
     query_count_p.exec(QString("SELECT count(id_persones) FROM persones WHERE id_groups=%1").arg(id_parent_region));
     while (query_count_p.next()){
@@ -2695,7 +2695,7 @@ void Objectmanager::add_smi_components(QStandardItem *parent_item,int id_parent_
     QSqlQuery query_pers;
     query_pers.exec(QString("SELECT id_smi,id_persones FROM persones WHERE id_smi=%1").arg(id_parent_region));
     int row_p=0;
-    int t;
+    int t=0;
     QSqlQuery query_count_p;
     query_count_p.exec(QString("SELECT count(id_persones) FROM persones WHERE id_smi=%1").arg(id_parent_region));
     while (query_count_p.next()){
@@ -2880,7 +2880,7 @@ void Objectmanager::region_click(int id_region){
         model_region->setHeaderData(42, Qt::Horizontal, "Pспф15");model_region->setHeaderData(43, Qt::Horizontal, "Неправительственные организации(спф16)");
         model_region->setHeaderData(44, Qt::Horizontal, "Pспф16");model_region->setHeaderData(45, Qt::Horizontal, "Уровень патриотизма(спф17)");
         model_region->setHeaderData(46, Qt::Horizontal, "Pспф17");model_region->setHeaderData(47, Qt::Horizontal, "Уровень преступности(кф1)");
-        model_region->setHeaderData(48, Qt::Horizontal, "Pкф1");model_region->setHeaderData(49, Qt::Horizontal, "Корупция(кф2)");
+        model_region->setHeaderData(48, Qt::Horizontal, "Pкф1");model_region->setHeaderData(49, Qt::Horizontal, "Коррупция(кф2)");
         model_region->setHeaderData(50, Qt::Horizontal, "Pкф2");model_region->setHeaderData(51, Qt::Horizontal, "Теневой сектор(кф3)");
         model_region->setHeaderData(52, Qt::Horizontal, "Pкф3");model_region->setHeaderData(53, Qt::Horizontal, "Влияние некоренного населения(кф4)");
         model_region->setHeaderData(54, Qt::Horizontal, "Pкф4");model_region->setHeaderData(55, Qt::Horizontal, "Экстремизм,НВФ(кф5)");
@@ -3473,7 +3473,9 @@ void Objectmanager::delete_sc(){
     clear_tableWidget(UI->coord_table);
 }
 void Objectmanager::edit_persones(){
-
+    QString type_elem = "";
+    PersonesData *pers = new PersonesData(type_elem,id_persers,this);
+    pers->show();
 //    edit_dlg_pers = new QDialog;
 //    edit_dlg_pers->setWindowTitle("Редактирование  персоналии");
 //    //edit_dlg->setMinimumSize(QSize(600,400));
