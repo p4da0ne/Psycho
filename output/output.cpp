@@ -53,7 +53,9 @@ QString Output::createHtmlH_pers_2_page(int id_object)
 {
     QString t;
     QSqlQuery query;
-    query.prepare ("SELECT pers.name_persones,pers.age_persones,pers.contact_persones, pers.description_persones, pers.authority_persones, pers.opposition_persones, pers.rank_persones, type_persones.name_type_persones FROM  persones pers, type_persones WHERE pers.id_persones = ? AND pers.id_type_persones = type_persones.id_type_persones ");
+    query.prepare ("SELECT surname, name, patronumic, rank_persones, personal_number \
+					FROM persones ps \
+					WHERE ps.id_persones = ? ");
 
     query.addBindValue(id_object);
     if(!query.exec())
@@ -62,16 +64,19 @@ QString Output::createHtmlH_pers_2_page(int id_object)
         return t;
     }
     QSqlRecord rec = query.record();
-    QString f_name,rank;
+    QString surname, name, patronumic, personal_number;
 
     query.next();
 
-       f_name = query.value(rec.indexOf("name_persones")).toString();
-       rank = query.value(rec.indexOf("rank_persones")).toString();
-       t = "<br><br><br>"
+		surname = query.value(rec.indexOf("surname")).toString();
+		name = query.value(rec.indexOf("name")).toString();
+		patronumic = query.value(rec.indexOf("patronumic")).toString();
+		personal_number = query.value(rec.indexOf("personal_number")).toString();
+		QString fio = surname + " " + name + " " + patronumic;
+		t = "<br><br><br>"
 
-           "<u><center><FONT size='5' FACE = 'Times new Roman'>" + f_name + "</font></u></center><br><br>"
-           "<center><p><FONT size='5' FACE = 'Times new Roman'> Личный номер <u>" + rank + "</font></u></p></center>"
+           "<u><center><FONT size='6' FACE = 'Times new Roman'>" + fio + "</font></u></center><br><br>"
+           "<center><p><FONT size='5' FACE = 'Times new Roman'> Личный номер <u>" + personal_number + "</font></u></p></center>"
            "<br>";
     return t;
 }
@@ -79,7 +84,9 @@ QString Output::createHtmlH_pers(int id_object)
 {
     QString t;
     QSqlQuery query;
-    query.prepare ("SELECT pers.name_persones,pers.age_persones,pers.contact_persones, pers.description_persones, pers.authority_persones, pers.opposition_persones, pers.rank_persones, type_persones.name_type_persones FROM  persones pers, type_persones WHERE pers.id_persones = ? AND pers.id_type_persones = type_persones.id_type_persones ");
+    query.prepare ("SELECT surname, name, patronumic, rank_persones \
+					FROM persones ps \
+					WHERE ps.id_persones = ?");
 
     query.addBindValue(id_object);
     if(!query.exec())
@@ -88,15 +95,17 @@ QString Output::createHtmlH_pers(int id_object)
         return t;
     }
     QSqlRecord rec = query.record();
-    QString f_name,rank;
+    QString surname, name, patronumic, rank;
 
     query.next();
 
-       f_name = query.value(rec.indexOf("name_persones")).toString();
+       surname = query.value(rec.indexOf("surname")).toString();
+	   name = query.value(rec.indexOf("name")).toString();
+	   patronumic = query.value(rec.indexOf("patronumic")).toString();
        rank = query.value(rec.indexOf("rank_persones")).toString();
-        //     <style type='text/css'> div{border:3px solid #D3D3D3;}</style>
-       t = // "<div>" // style = margin-top:120px;margin-bottom:120px;>"
-               "<h5 align='right'> _________________ </h5>"
+
+       
+       t = "<h5 align='right'> _________________ </h5>"
            "<h5 align='right'> <FONT FACE = 'Times new Roman'> (гриф секретности)</h5>"
            "<h5 align='right'> <FONT FACE = 'Times new Roman'> Экз. № __________ </h5> <br><br><br><br><br><br>"
 
@@ -106,15 +115,14 @@ QString Output::createHtmlH_pers(int id_object)
            "<h2 align='center'> <FONT FACE = 'Times new Roman'>" + rank +" </FONT></h2> <br>"
 
            "<table align='center' width=50% border='1' cellspacing=0 cellpadding=0>"
-           "<CENTER><tr align='center' ><td ><CENTER><FONT size='10' FACE = 'Times new Roman'>" + f_name + "</FONT></CENTER></td></tr></table>"
+		   "<CENTER><tr align='center' ><td ><CENTER><FONT size='10' FACE = 'Times new Roman'>" + surname.toUpper() + "</FONT></CENTER></td></tr></table>"
            "<CENTER><FONT SIZE = '2' FACE = 'Times new Roman'> (фамилия) <br>"
 
            "<table align='center' width=50%  border='1' cellspacing=0 cellpadding=0>"
-           "<tr align='center' ><td><CENTER><CENTER><FONT size='10' FACE = 'Times new Roman'> name_name + surname  </FONT></CENTER></td></tr></table>"
-
+           "<tr align='center' ><td><CENTER><CENTER><FONT size='10' FACE = 'Times new Roman'>" + name + " " + patronumic + "</FONT></CENTER></td></tr></table>"
            "<CENTER><FONT SIZE = '2' align='center' FACE = 'Times new Roman'> (имя, отчество) <br><br><br><br><br><br><br>"
              //  "</div>";
-            "<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></center>";
+            "<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></center>";
     return t;
 }
 //
@@ -202,6 +210,43 @@ QString Output::createHtmlTable_2(QMap <int, QMap< QString,QString> > table_data
         r.append("</table></font>");
 return r;
 }
+
+//==================================================================================================
+//====== Метод формирует html-таблицу на основе списка строковых списков, списка заголовков ========
+//==================================================================================================
+QString Output::createHtmlTableFromList(QList <QStringList> table_data, QStringList headerList, int width)
+{
+ QString r;
+    r.append("<FONT size='4' FACE = 'Times new Roman'><TABLE WIDTH ='"+ QString::number(width)+ "%' BORDER='1' >");
+	r.append("<tr>");
+    for(int i=0;i<headerList.size();i++)
+	{
+		r.append("<th>");
+        r.append(headerList.at(i));
+        r.append("</th>");
+	}
+    r.append("</tr>");
+
+	for(int row=0;row<table_data.size();row++)
+	{
+		r.append("<tr>");
+		QStringList rowList = table_data.at(row);
+		for(int col=0;col<rowList.size();col++)
+		{
+			r.append("<td>");
+			r.append(rowList.at(col));
+			r.append("</td>");
+		}
+		r.append("</tr>");
+	}
+  
+    r.append("</table></font>");
+	return r;
+}
+
+
+//=====================================================================================
+
 QString Output::createHtmlTable_row(QMap<QString,QString> table_data,int width)
 {
     QString r;
@@ -339,13 +384,8 @@ QString Output::createHtmlFooter_pers(int id_object)
 
     QString close;
     close = "<br> <p><FONT size='4'> Послужной список составлен:"
-            "<u>  ДАТА </font></u></p>"
-
-            "<table align='center' width=50%  border='0' cellspacing=0 cellpadding=0>"
-            "<tr align='center' ><td><u><center><FONT size='4'> name_name + surname  </FONT></u></td></tr></table>"
-            "<CENTER><FONT SIZE = '2' align='center' FACE = 'Times new Roman'> (наименование воинской части, соединения и т.д.)</font></center>"
-            "<br>"
-            "</font></body></html>";
+		"<u> <___> _________________ </font></u></p>"
+        "</font></body></html>";
     return close;
 }
 //===== Закрытие HTML-документа ======

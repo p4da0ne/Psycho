@@ -3,7 +3,8 @@
 
 #include "config_output.h"
 #include <QObject>
-#include "QMap"
+#include <QMap>
+#include <QStringList>
 
 
 class __EXPORT_OUTPUT Output : public QObject
@@ -31,7 +32,7 @@ public:
     QString createHtmlLi(QStringList list, int type = 1 , int type_style = 0);
     QString createHtmlTableM(QMap<QString,QMap<QString,QString> > table_data, int width = 100);
 
- 
+	QString createHtmlTableFromList(QList <QStringList> table_data, QStringList headerList, int width = 100);
 	
 
 private:
