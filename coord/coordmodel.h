@@ -4,6 +4,7 @@
 #include <QObject>
 #include "coord.h"
 #include <QtSql/QSqlQuery>
+#include <QtSql/QSqlResult>
 #include <saturnSignTypes.h>
 #include <QDebug>
 #include <QtSql/QSqlError>
@@ -19,6 +20,7 @@ public:
     int insertCoord(Coord * coordinates);
     QList<int> insertCoord(QList<Coord *> coordinates);
     QList<Coord *> getCoordinates(QString ObjectsTypes, int id_object, QString idObjectName);
+    int updateCoord(Coord *coordinates, int id_coordinates);
 signals:
     
 public slots:

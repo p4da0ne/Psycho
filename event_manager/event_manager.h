@@ -62,8 +62,6 @@ private slots:
     void suorceObjectCBNEEChanged(int index);
     void getObjectCBNEEChanged(int index);
 
-
-
 private:
     void initUIX();
     QTableView * tableView;
@@ -99,9 +97,7 @@ private:
     QPushButton * upDateModelButton;
     QGroupBox * filterGroupBox;
     QLineEdit * filterName;
-
     Coord * coord;
-
 
     QFormLayout * formLayoutE;
     QFormLayout * formLayoutECoord;
@@ -139,7 +135,6 @@ private:
 
 signals:
     void eventDataChanged();
-
 };
 
 

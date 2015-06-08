@@ -191,6 +191,9 @@ void EventManager::filterNameTextChanged(QString text){
 void EventManager::updateModel(){
     eventsModel->UpdateModel();
     resizeTableView();
+    current_event = new Event();
+    restEventsProperty();
+    setEventsPropertyEnabled(false);
 }
 
 void EventManager::resizeTableView(){
@@ -292,11 +295,12 @@ void EventManager::viewMediaContentDialog(int id_event, QWidget *parent)
     proxy->setSourceModel(dialogEvent->getMediaEvents());
     tableMediaContent->setModel(proxy);
     QDialog * mediaContentDialog = new QDialog(parent);
+    mediaContentDialog->setWindowTitle("Просмотр медиа контента");
     QVBoxLayout * VBL = new QVBoxLayout();
     VBL->addWidget(tableMediaContent);
     mediaContentDialog->setLayout(VBL);
     mediaContentDialog->show();
-
+    tableMediaContent->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     tableMediaContent->setContextMenuPolicy(Qt::CustomContextMenu);
 
     connect(tableMediaContent, SIGNAL(customContextMenuRequested(const QPoint &)),this, SLOT(EventsMediaTableCustomMenu(const QPoint &)));
@@ -425,6 +429,8 @@ void EventManager::openNewEventDialog()
 
 void EventManager::eventClick(QModelIndex index){
     setEventsPropertyEnabled(true);
+    current_event = new Event();
+    restEventsProperty();
     Event * temp_event = new Event(index.data(Qt::UserRole + 3).toInt());
     nameLEE->setText(temp_event->getName());
 
@@ -451,9 +457,9 @@ void EventManager::eventClick(QModelIndex index){
         EventObject * object = eventObject.at(i);
         if(object->isSource()){
             int index = this->suorceTypeObjectCBNEE->findData(object->getIdTypeEventObject(),Qt::UserRole + 1,Qt::MatchFixedString);
-            this->suorceTypeObjectCBNEE->setCurrentIndex(index);
-            index = this->suorceObjectCBNEE->findData(object->getIdObject(),Qt::UserRole,Qt::MatchFixedString);
-            this->suorceObjectCBNEE->setCurrentIndex(index);
+            suorceTypeObjectCBNEE->setCurrentIndex(index);
+            index = suorceObjectCBNEE->findData(object->getIdObject(),Qt::UserRole,Qt::MatchFixedString);
+            suorceObjectCBNEE->setCurrentIndex(index);
         }else{
             int index = this->getTypeObjectCBNEE->findData(object->getIdTypeEventObject(),Qt::UserRole + 1,Qt::MatchFixedString);
             this->getTypeObjectCBNEE->setCurrentIndex(index);
@@ -654,7 +660,7 @@ void EventManager::EventsTableCustomMenu(const QPoint &pe)
     {
         QPushButton *popupButton = new QPushButton;
         QMenu *menu = new QMenu(this);
-        QAction *removeOne = new QAction("Удалить событие",this);
+        QAction *removeOne = new QAction(QIcon(":/icons/icons/close.png"),"Удалить событие",this);
         connect(removeOne,SIGNAL(triggered()),this,SLOT(slotRemoveEvent()));
 
         menu->addAction(removeOne);
@@ -662,7 +668,6 @@ void EventManager::EventsTableCustomMenu(const QPoint &pe)
         menu->exec(QCursor::pos());
     }
 }
-
 
 /*!
 Слот удаления событияы
@@ -682,9 +687,9 @@ void EventManager::slotRemoveEvent()
         case QMessageBox::Yes:
             Event * event;
             event->DeleteEvent(index.data(Qt::UserRole + 3).toInt());
+            current_event = new Event();
             restEventsProperty();
             setEventsPropertyEnabled(false);
-            current_event = new Event();
             updateModel();
             return;
             break;
@@ -703,7 +708,7 @@ void EventManager::EventsMediaTableCustomMenu(const QPoint &pe)
     {
         QPushButton *popupButton = new QPushButton;
         QMenu *menu = new QMenu(this);
-        QAction *removeOne = new QAction("Удалить",this);
+        QAction *removeOne = new QAction(QIcon(":/icons/icons/close.png"),"Удалить",this);
         connect(removeOne,SIGNAL(triggered()),this,SLOT(slotRemoveEventMedia()));
 
         menu->addAction(removeOne);
@@ -711,7 +716,6 @@ void EventManager::EventsMediaTableCustomMenu(const QPoint &pe)
         menu->exec(QCursor::pos());
     }
 }
-
 
 /*!
 Слот удаления медиа данного события
@@ -768,15 +772,15 @@ void EventManager::CoordChanged()
 
 void EventManager::suorceObjectCBNEEChanged(int index)
 {
-    int id_sr_type = suorceTypeObjectCBNEE->itemData(suorceTypeObjectCBNEE->currentIndex()).toInt();
+    int id_sr_type = suorceTypeObjectCBNEE->itemData(suorceTypeObjectCBNEE->currentIndex(),Qt::UserRole + 1).toInt();
     EventObject * EO = new EventObject(suorceObjectCBNEE->itemData(index).toInt(),id_sr_type,true);
     current_event->addEventObject(EO);
 }
 
 void EventManager::getObjectCBNEEChanged(int index)
 {
-    int id_sr_type = getTypeObjectCBNEE->itemData(getTypeObjectCBNEE->currentIndex()).toInt();
-    EventObject * EO = new EventObject(getObjectCBNEE->itemData(index).toInt(),id_sr_type,true);
+    int id_sr_type = getTypeObjectCBNEE->itemData(getTypeObjectCBNEE->currentIndex(),Qt::UserRole + 1).toInt();
+    EventObject * EO = new EventObject(getObjectCBNEE->itemData(index).toInt(),id_sr_type,false);
     current_event->addEventObject(EO);
 }
 
