@@ -630,7 +630,7 @@ QMap<int, QMap<QString, QString> > ReportData::pers_info_continue(int id_object)
     query.next();
 
         map.clear();
-		map.insert("17. Фамилия, имя отчество отца и матери, их место жительства:","");
+		map.insert("17. Фамилия, имя отчество отца и матери, их место жительства:",getMotherFatherData(id_object));
         pers_info_date->insert(1,map);
         map.clear();
 		map.insert("18. Семейное положение: ",query.value(rec.indexOf("status_name")).toString());
@@ -660,6 +660,35 @@ QString ReportData::getFamilyAddress(int idPersones)
 	address.append(query.value(rec.indexOf("family_address")).toString());
 	return address;
 }
+
+
+QString ReportData::getMotherFatherData(int idPersones)
+{
+	QString data;
+	QSqlQuery query;
+    query.prepare ("SELECT ft.type_name, fd.info \
+					FROM family_data fd, family_types ft \
+					WHERE fd.id_family_types = ft.id_family_types \
+					AND fd.id_persones = ? \
+					AND ft.id_family_types <= 2");
+    query.addBindValue(idPersones);
+    if(!query.exec())
+    {
+        QString sss = query.lastError().text();
+        return data;
+    }
+    QSqlRecord rec = query.record();
+    
+	while(query.next())
+	{
+		data.append(query.value(rec.indexOf("type_name")).toString());
+		data.append(": ");
+		data.append(query.value(rec.indexOf("info")).toString());
+	}
+	return data;
+}
+
+
 
 
 QMap<QString, QMap<QString, QString> > ReportData::pers_info_coord(int id_object)
