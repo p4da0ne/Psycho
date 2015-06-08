@@ -90,7 +90,7 @@ private slots:
 	void			slotMouseRightButtonClicked(QPoint pe, QList<QStringList> objectsList);
 	void			mouseRightSimpleMenu(QPoint pe);
 	void			addEvent();
-	void			slotEditEvent();
+	void			slotEventMedia();
 	void			slotDeleteEvent();
 	//======================================================
 	void			showCheckedObjects();

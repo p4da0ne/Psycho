@@ -42,6 +42,7 @@ UsersManager::UsersManager(QDialog *parent)
 	usersModel = new QStandardItemModel;
 	usersView->setModel(usersModel);
 
+	usersView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
 	usersView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	
 
