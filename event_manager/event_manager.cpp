@@ -180,8 +180,7 @@ void EventManager::initUIX(){
     connect(this,SIGNAL(eventDataChanged()),this,SLOT(updateModel()));
 }
 
-void EventManager::filterNameTextChanged(QString text)
-{
+void EventManager::filterNameTextChanged(QString text){
     proxyModel->setFilterKeyColumn(0);
     QRegExp::PatternSyntax syntax =QRegExp::FixedString;
     Qt::CaseSensitivity caseSensitivity =Qt::CaseInsensitive;
@@ -189,14 +188,12 @@ void EventManager::filterNameTextChanged(QString text)
     proxyModel->setFilterRegExp(regExp);
 }
 
-void EventManager::updateModel()
-{
+void EventManager::updateModel(){
     eventsModel->UpdateModel();
     resizeTableView();
 }
 
-void EventManager::resizeTableView()
-{
+void EventManager::resizeTableView(){
     tableView->setColumnWidth(0,180);
     tableView->setColumnWidth(1,110);
     tableView->setColumnWidth(2,130);
@@ -204,8 +201,7 @@ void EventManager::resizeTableView()
     tableView->setColumnWidth(4,110);
 }
 
-void EventManager::newEventMediaDialog()
-{
+void EventManager::newEventMediaDialog(){
     mediaDialog = new QDialog(this);
     QFormLayout * FML = new QFormLayout();
     QHBoxLayout * mediaL = new QHBoxLayout();
@@ -296,7 +292,7 @@ void EventManager::viewMediaContentDialog(int id_event, QWidget *parent)
     proxy->setSourceModel(dialogEvent->getMediaEvents());
     tableMediaContent->setModel(proxy);
     QDialog * mediaContentDialog = new QDialog(parent);
-    QVBoxLayout * VBL;
+    QVBoxLayout * VBL = new QVBoxLayout();
     VBL->addWidget(tableMediaContent);
     mediaContentDialog->setLayout(VBL);
     mediaContentDialog->show();
@@ -427,33 +423,30 @@ void EventManager::openNewEventDialog()
     this->addNewEventDialog(this);
 }
 
-void EventManager::eventClick(QModelIndex index)
-{
+void EventManager::eventClick(QModelIndex index){
     setEventsPropertyEnabled(true);
-    current_event = new Event(index.data(Qt::UserRole + 3).toInt());
+    Event * temp_event = new Event(index.data(Qt::UserRole + 3).toInt());
+    nameLEE->setText(temp_event->getName());
 
-    nameLEE->setText(current_event->getName());
-
-    int statusIndex = statusCBE->findData(current_event->getIdStatus(),Qt::UserRole,Qt::MatchFixedString);
+    int statusIndex = statusCBE->findData(temp_event->getIdStatus(),Qt::UserRole,Qt::MatchFixedString);
     statusCBE->setCurrentIndex(statusIndex);
 
-    int typeIndex = typeCBE->findData(current_event->getIdTypeEvent(),Qt::UserRole,Qt::MatchFixedString);
+    int typeIndex = typeCBE->findData(temp_event->getIdTypeEvent(),Qt::UserRole,Qt::MatchFixedString);
     typeCBE->setCurrentIndex(typeIndex);
 
-    DTSE->setDateTime(*current_event->getStartDate());
-    DTEE->setDateTime(*current_event->getEndDate());
+    DTSE->setDateTime(*temp_event->getStartDate());
+    DTEE->setDateTime(*temp_event->getEndDate());
 
-    descriptionTEE->setPlainText(current_event->getDescription());
-    resumeTEE->setPlainText(current_event->getResume());
+    descriptionTEE->setPlainText(temp_event->getDescription());
+    resumeTEE->setPlainText(temp_event->getResume());
 
-    lagLEE->setText(QString::number(current_event->getCoordinate()->getLatDegrees()));
-    lamLEE->setText(QString::number(current_event->getCoordinate()->getLatMinutes()));
-    lasLEE->setText(QString::number(current_event->getCoordinate()->getLatSeconds()));
-    logLEE->setText(QString::number(current_event->getCoordinate()->getLongDegrees()));
-    lomLEE->setText(QString::number(current_event->getCoordinate()->getLongMinutes()));
-    losLEE->setText(QString::number(current_event->getCoordinate()->getLongSeconds()));
-
-    QList<EventObject * > eventObject = *current_event->getObjects();
+    lagLEE->setText(QString::number(temp_event->getCoordinate()->getLatDegrees()));
+    lamLEE->setText(QString::number(temp_event->getCoordinate()->getLatMinutes()));
+    lasLEE->setText(QString::number(temp_event->getCoordinate()->getLatSeconds()));
+    logLEE->setText(QString::number(temp_event->getCoordinate()->getLongDegrees()));
+    lomLEE->setText(QString::number(temp_event->getCoordinate()->getLongMinutes()));
+    losLEE->setText(QString::number(temp_event->getCoordinate()->getLongSeconds()));
+    QList<EventObject * > eventObject = *temp_event->getObjects();
     for(int i=0; i < eventObject.size();i++){
         EventObject * object = eventObject.at(i);
         if(object->isSource()){
@@ -468,6 +461,7 @@ void EventManager::eventClick(QModelIndex index)
             this->getObjectCBNEE->setCurrentIndex(index);
         }
     }
+    current_event = new Event(index.data(Qt::UserRole + 3).toInt());
     current_event->updateMediaEvents();
     proxyMediaModel = new QSortFilterProxyModel(this);
     proxyMediaModel->setSourceModel(current_event->getMediaEvents());

@@ -75,28 +75,23 @@ bool CoordModel::objectCoord(int id_coordinate, QString ObjectsTypes, int id_obj
 QList<Coord*> CoordModel::getCoordinates(QString ObjectsTypes, int id_object,QString idObjectName)
 {
     QList<Coord*> coordList;
-
     QSqlQuery query;
-    QString str=QString("SELECT cc.latitude_wgs_84_g,cc.latitude_wgs_84_m,cc.latitude_wgs_84_s,cc.longitude_wgs_84_g, \
-                        cc.longitude_wgs_84_m,cc.longitude_wgs_84_s \
-                        FROM coord_%2 c_e, coordinates cc \
-                        WHERE c_e.id_coordinates = cc.id_coordinates \
-            AND c_e.%3 = %1").arg(id_object).arg(ObjectsTypes).arg(idObjectName);
-            if(query.exec(str))
+    QString str = QString("SELECT cc.latitude_wgs_84_g,cc.latitude_wgs_84_m,cc.latitude_wgs_84_s,cc.longitude_wgs_84_g, cc.longitude_wgs_84_m,cc.longitude_wgs_84_s FROM coord_%2 c_e, coordinates cc WHERE c_e.id_coordinates = cc.id_coordinates AND c_e.%3 = %1").arg(id_object).arg(ObjectsTypes).arg(idObjectName);
+    if(query.exec(str))
     {
-            QSqlRecord rec = query.record();
-            while (query.next())
-    {
+        QSqlRecord rec = query.record();
+        while (query.next())
+        {
             int wgs_g = query.value(rec.indexOf("latitude_wgs_84_g")).toInt();
-    int wgs_m = query.value(rec.indexOf("latitude_wgs_84_m")).toInt();
-    double wgs_s = query.value(rec.indexOf("latitude_wgs_84_s")).toDouble();
-    int long_wgs_g = query.value(rec.indexOf("longitude_wgs_84_g")).toInt();
-    int long_wgs_m = query.value(rec.indexOf("longitude_wgs_84_m")).toInt();
-    double long_wgs_s = query.value(rec.indexOf("longitude_wgs_84_s")).toDouble();
+            int wgs_m = query.value(rec.indexOf("latitude_wgs_84_m")).toInt();
+            double wgs_s = query.value(rec.indexOf("latitude_wgs_84_s")).toDouble();
+            int long_wgs_g = query.value(rec.indexOf("longitude_wgs_84_g")).toInt();
+            int long_wgs_m = query.value(rec.indexOf("longitude_wgs_84_m")).toInt();
+            double long_wgs_s = query.value(rec.indexOf("longitude_wgs_84_s")).toDouble();
 
-    Coord *coord = new Coord(wgs_g,wgs_m,wgs_s,long_wgs_g,long_wgs_m,long_wgs_s);
-    coordList.append(coord);
-}
-}
-return coordList;
+            Coord *coord = new Coord(wgs_g,wgs_m,wgs_s,long_wgs_g,long_wgs_m,long_wgs_s);
+            coordList.append(coord);
+        }
+    }
+    return coordList;
 }
