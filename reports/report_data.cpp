@@ -665,25 +665,24 @@ QString ReportData::getFamilyAddress(int idPersones)
 
 QString ReportData::getFamilyData(int idPersones, bool isParent)
 {
-	QString data;
+	QString data, isPar;
 	QSqlQuery query;
-    query.prepare ("SELECT ft.type_name, fd.info \
-					FROM family_data fd, family_types ft \
-					WHERE fd.id_family_types = ft.id_family_types \
-					AND fd.id_persones = ? \
-					AND ft.id_family_types ?");
-    query.addBindValue(idPersones);
-    
+   
 	if(isParent)
 	{
-		query.addBindValue(" <= 2");
+		isPar = " <= 2";
 	}
 	else
 	{
-		query.addBindValue(" > 2");
+		isPar = " > 2";
 	}
-	
-	if(!query.exec())
+	QString str = QString("SELECT ft.type_name, fd.info \
+					FROM family_data fd, family_types ft \
+					WHERE fd.id_family_types = ft.id_family_types \
+					AND fd.id_persones = %1 \
+					AND ft.id_family_types %2").arg(idPersones).arg(isPar);
+   
+	if(!query.exec(str))
     {
         QString sss = query.lastError().text();
         return data;
@@ -695,6 +694,7 @@ QString ReportData::getFamilyData(int idPersones, bool isParent)
 		data.append(query.value(rec.indexOf("type_name")).toString());
 		data.append(": ");
 		data.append(query.value(rec.indexOf("info")).toString());
+		data.append("<br>");
 	}
 	return data;
 }
