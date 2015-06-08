@@ -97,7 +97,7 @@ bool Event::setDescription(QString description){
 
 bool Event::setStatus(int id_status)
 {
-    if (this->updateEvent("events","id_status",QString::number(id_status))){
+    if (this->updateEvent("events","id_event_status",QString::number(id_status))){
         this->id_status = id_status;
         return true;
     }
@@ -463,6 +463,7 @@ bool Event::updateEvent(QString table, QString field, QString set_data)
 	}
     QSqlQuery query;
     if(!query.exec(QString("UPDATE %1 SET %2 = '%3' WHERE id_event = %4").arg(table).arg(field).arg(set_data).arg(id_event))){
+        qDebug() << query.lastError().text();
         qDebug() << "false update" << table << field << set_data;
 		return false;
     }
