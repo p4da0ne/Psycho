@@ -2,18 +2,23 @@
 
 EventManager::EventManager(QWidget *parent, Coord *coord)
     : QWidget(parent){
+
+
     if(coord == 0){
-        isDialog = true;
         this->coord = new Coord();
         this->whithCoord = false;
     }else{
-        isDialog = false;
         this->coord = coord;
         this->whithCoord = true;
         return;
     }
-
+    isDialog = false;
     initUIX();
+}
+
+EventManager::EventManager(QWidget *parent, bool isDialog)
+    : QWidget(parent){
+    isDialog = isDialog;
 }
 
 EventManager::~EventManager(){

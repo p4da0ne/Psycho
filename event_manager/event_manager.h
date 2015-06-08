@@ -17,6 +17,7 @@ class __EXPORT_EVENT_MANAGER EventManager : public QWidget
 
 public:
     EventManager(QWidget *parent = 0, Coord * coord = 0 );
+    EventManager(QWidget *parent, bool isDialog);
     ~EventManager();
 
 
