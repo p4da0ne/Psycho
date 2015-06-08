@@ -7,5 +7,6 @@
         <file>icons/no_photo.png</file>
         <file>icons/add_but.png</file>
         <file>icons/sync.ico</file>
+        <file>icons/close.png</file>
     </qresource>
 </RCC>

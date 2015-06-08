@@ -8,8 +8,25 @@ CoordModel::CoordModel(QObject *parent) :
 
 bool CoordModel::insertObjectCoord(Coord *coordinates, QString ObjectsTypes, int id_object)
 {
-    int id_coordinates = this->insertCoord(coordinates);
-    return this->objectCoord(id_coordinates,ObjectsTypes,id_object);
+    QString field = ObjectsTypes;
+    if(ObjectsTypes == "events")
+        field = "event";
+    QString str = QString ("SELECT * FROM coord_%1 WHERE id_%3 = %2").arg(ObjectsTypes).arg(id_object).arg(field);
+    QSqlQuery query;
+    if(!query.exec(str)){
+        qDebug() << query.lastError().text();
+        return false;
+    }
+    if(query.size() > 0){
+        while(query.next()){
+            int id_coordinates = query.value(query.record().indexOf("id_coordinates")).toInt();
+            this->updateCoord(coordinates , id_coordinates);
+            return true;
+        }
+    }else{
+        int id_coordinates = this->insertCoord(coordinates);
+        return this->objectCoord(id_coordinates,ObjectsTypes,id_object);
+    }
 }
 
 bool CoordModel::insertObjectCoord(QList<Coord *> coordinates, QString ObjectsTypes, int id_object)
@@ -39,6 +56,27 @@ int CoordModel::insertCoord(Coord *coordinates)
     int id_coordinates ;
     while(query.next()){
         id_coordinates = query.value(0).toInt();
+    }
+    query.clear();
+    return id_coordinates;
+}
+
+int CoordModel::updateCoord(Coord *coordinates, int id_coordinates)
+{
+    QSqlQuery query;
+    QString str = QString("UPDATE coordinates SET latitude_wgs_84_g = %1 , latitude_wgs_84_m = %2, latitude_wgs_84_s = %3, longitude_wgs_84_g = %4, longitude_wgs_84_m = %5, longitude_wgs_84_s = %6 WHERE id_coordinates = %7")
+            .arg(coordinates->getLatDegrees())
+            .arg(coordinates->getLatMinutes())
+            .arg(coordinates->getLatSeconds())
+            .arg(coordinates->getLongDegrees())
+            .arg(coordinates->getLongMinutes())
+            .arg(coordinates->getLongSeconds())
+            .arg(id_coordinates);
+    if(!query.exec(str)){
+        qDebug() << query.lastError().text();
+        qDebug() << query.lastQuery();
+        query.clear();
+        return 0;
     }
     query.clear();
     return id_coordinates;

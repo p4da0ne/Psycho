@@ -67,7 +67,7 @@ bool EventObject::insertInDB(int id_event)
         return false;
     }
     if(query.size() > 0){
-        str = QString("UPDATE event_objects SET id_type_event_object = %1 id_type_event_object = %2 WHERE id_event = %3 AND is_events_source = '%4'")
+        str = QString("UPDATE event_objects SET id_type_event_object = %1 , id_object = %2 WHERE id_event = %3 AND is_events_source = '%4'")
                 .arg(this->getIdTypeEventObject())
                 .arg(this->getIdObject())
                 .arg(id_event)
