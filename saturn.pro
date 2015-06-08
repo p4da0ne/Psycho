@@ -7,10 +7,10 @@ QT   += gui widgets sql
 # Directories
 SUBDIRS += \
         my_mapaccess \
-		coord \
-		users_manager \
+        coord \
+        users_manager \
         output \
-		textedit \
+        textedit \
         reports \
         dataaccess \
         db_saturn \
@@ -18,12 +18,10 @@ SUBDIRS += \
         object_manager \
         signs_edit \
         eventsmodel \
-		searchengine \
-		mapview \
-		event_manager \
-		mainform \
-
-	
+        searchengine \
+        mapview \
+        event_manager \
+        mainform \
 
 INSTALLS += transl
 TRANSLATIONS = saturn_ru.ts

@@ -2,7 +2,7 @@ TEMPLATE = lib
 
 TARGET = event_manager
 
-DESTDIR = ../build\
+DESTDIR = ../build \
 
 QT += sql
 
