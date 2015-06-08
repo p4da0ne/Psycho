@@ -226,6 +226,14 @@ QString Output::createHtmlTableFromList(QList <QStringList> table_data, QStringL
         r.append("</th>");
 	}
     r.append("</tr>");
+    if(table_data.size() < 1 ){
+        r.append("<tr>");
+        for(int col=0;col<headerList.size();col++)
+        {
+            r.append("<td><br><br><br><br></td>");
+        }
+        r.append("</tr>");
+    }
 
 	for(int row=0;row<table_data.size();row++)
 	{

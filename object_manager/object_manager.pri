@@ -28,8 +28,8 @@ SOURCES +=  object_manager.cpp \
         mylabel.cpp \
         mysqlrelationaldelegate.cpp \
         personesdata.cpp \
-    persones_info.cpp \
-    comboboxdelegat.cpp
+        persones_info.cpp \
+        comboboxdelegat.cpp
 
 		
 #Forms
