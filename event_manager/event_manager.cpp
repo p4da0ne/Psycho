@@ -18,6 +18,8 @@ EventManager::EventManager(QWidget *parent, Coord *coord)
 
 EventManager::EventManager(QWidget *parent, bool isDialog)
     : QWidget(parent){
+    this->coord = new Coord();
+    this->whithCoord = false;
     isDialog = isDialog;
 }
 
