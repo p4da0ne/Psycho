@@ -31,8 +31,8 @@ void Persones_info::show_info_pers()
     UI->type_comboBox->setDisabled(true);
     UI->type_comboBox->setStyleSheet("color: black");
     QSqlQuery query;
-    QString str = QString("SELECT id_persones, name_persones, age_persones, contact_persones, rank_persones, authority_persones, \
-                          opposition_persones, description_persones, image_persones, \
+    QString str = QString("SELECT id_persones, surname, name, patronumic, rank_persones, \
+                          image_persones, birth_date, nationality, birth_place, \
                           persones.id_type_persones,type_persones.name_type_persones \
                           FROM persones, type_persones \
                           WHERE id_persones = %1 \
@@ -43,24 +43,33 @@ void Persones_info::show_info_pers()
     }
 
     QSqlRecord rec = query.record();
-    QString f_name,name,o_name,date,adress,rank_pers;
+    QDate date_d;
+    QString f_name,name,o_name,adress,rank_pers,nations;
     int age_pers,id_type_persones,id_person;
     while(query.next()){
 
         id_person=query.value(rec.indexOf("id_persones")).toInt();
-        f_name=query.value(rec.indexOf("name_persones")).toString();
+        f_name=query.value(rec.indexOf("surname")).toString();
+        name=query.value(rec.indexOf("name")).toString();
+        date_d=query.value(rec.indexOf("birth_date")).toDate();
+        o_name=query.value(rec.indexOf("patronumic")).toString();
         id_type_persones = query.value(rec.indexOf("id_type_persones")).toInt();
         rank_pers=query.value(rec.indexOf("rank_persones")).toString();
-
+        adress = query.value(rec.indexOf("birth_place")).toString();
+        nations = query.value(rec.indexOf("nationality")).toString();
 
         QPixmap pixmap;
         pixmap.loadFromData(query.value(rec.indexOf("image_persones")).toByteArray() );
         pixmap = pixmap.scaled(200,200,Qt::KeepAspectRatio);
 
+        QString date_ = date_d.toString("dd-MM-yyyy");
         UI->f_LineEdit->setText(f_name);
+        UI->name_LineEdit->setText(name);
+        UI->o_LineEdit->setText(o_name);
         UI->rankLineEdit->setText(rank_pers);
-   //   lineEdit_counte_ls->setText(QString::number(age_pers));
-
+        UI->date_LineEdit->setText(date_);
+        UI->nation_LineEdit->setText(nations);
+        UI->home_LineEdit->setText(adress);
         fill_combobox_persones_(UI->type_comboBox,id_type_persones);
 
         UI->label_foto->setPixmap(pixmap);
