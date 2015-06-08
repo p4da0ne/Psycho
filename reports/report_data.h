@@ -54,7 +54,7 @@ public:
 	QString getEducOrganizationsInfo(int idPersones, int idEducType);
 	QString getScienceRankInfo(int idPersones);
 	QString getFamilyAddress(int idPersones);
-	QString getMotherFatherData(int idPersones);
+	QString getFamilyData(int idPersones, bool isParent);
 
 //	QMultiMap<QString,QString> get_obj_v(int id_object = 0);
    
