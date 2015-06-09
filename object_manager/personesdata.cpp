@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QSqlError>
+#include <QSqlRecord>
 #include <QMessageBox>
 #include <QStandardItemModel>
 #include "comboboxdelegat.h"
@@ -10,10 +11,11 @@
 
 
 PersonesData::PersonesData(QString type_element,int id_object,QWidget *parent) :
-    QDialog(parent),
+    QDialog(parent),id_persones(id_object),
     UI(new Ui::PersonesData)
 {
     UI->setupUi(this);
+	
 
 //============= в/звания ==================================================================
     rank_model = new QStandardItemModel();
@@ -166,6 +168,10 @@ PersonesData::PersonesData(QString type_element,int id_object,QWidget *parent) :
     UI->date_udo_lich_dateEdit->setDate(dateToday);
     UI->brak_dateEdit->setDate(dateToday);
 
+	if(id_persones != 0)
+	{
+		fillPersonesData(id_persones);
+	}
 }
 
 PersonesData::~PersonesData()
@@ -173,6 +179,173 @@ PersonesData::~PersonesData()
     delete UI;
 }
 
+
+//======================================================
+void PersonesData::fillPersonesData(int id_persones)
+{
+	fillDataFromPersonesTable(id_persones);
+	fillDocumentsData();
+
+	QString queryStr = QString("SELECT rank_name, rank_document, rank_get_date \
+							   FROM rank_history WHERE id_persones = %1 ORDER BY id_rank_history").arg(id_persones); 
+	fillModelFromDB(queryStr,rank_model);
+
+	queryStr = QString("SELECT ei.info FROM education_institute ei, institute_type it \
+						WHERE ei.id_institute_type = it.id_institute_type AND it.id_institute_type = 1 \
+						AND ei.id_persones = %1").arg(id_persones); 
+	fillModelFromDB(queryStr,educ_model);
+	
+	queryStr = QString("SELECT ei.info FROM education_institute ei, institute_type it \
+						WHERE ei.id_institute_type = it.id_institute_type AND it.id_institute_type = 2 \
+						AND ei.id_persones = %1").arg(id_persones); 
+	fillModelFromDB(queryStr,mil_educ_model);
+
+	queryStr = QString("SELECT begin_date, end_date, rank_and_place, comments \
+						FROM work_history WHERE id_persones = %1").arg(id_persones); 
+	fillModelFromDB(queryStr,work_history_model);
+
+	queryStr = QString("SELECT sr.rank_name, sr.date FROM science_rank sr, science_rank_type srt \
+						WHERE sr.id_science_rank_type = srt.id_science_rank_type \
+						AND sr.id_science_rank_type = 1 AND sr.id_persones = %1").arg(id_persones); 
+	fillModelFromDB(queryStr,science_rank_model);
+
+	queryStr = QString("SELECT sr.rank_name, sr.date FROM science_rank sr, science_rank_type srt \
+						WHERE sr.id_science_rank_type = srt.id_science_rank_type \
+						AND sr.id_science_rank_type = 2 AND sr.id_persones = %1").arg(id_persones); 
+	fillModelFromDB(queryStr,science_rank_model_2);
+
+	queryStr = QString("SELECT begin_date, end_date, service_info, working_place, order_data \
+						FROM service_history WHERE id_persones = %1").arg(id_persones); 
+	fillModelFromDB(queryStr,serv_history_model);
+
+	queryStr = QString("SELECT name, begin_date, end_date \
+						FROM war_actions WHERE id_persones = %1").arg(id_persones); 
+	fillModelFromDB(queryStr,war_act_model);
+
+	queryStr = QString("SELECT name, comments FROM travm WHERE id_persones = %1").arg(id_persones); 
+	fillModelFromDB(queryStr,travma_model);
+
+	queryStr = QString("SELECT medal_name, achievment, \"order\" FROM medal WHERE id_persones = %1").arg(id_persones); 
+	fillModelFromDB(queryStr,medal_model);
+
+	queryStr = QString("SELECT comments FROM prison WHERE id_persones = %1").arg(id_persones); 
+	fillModelFromDB(queryStr,plen_model);
+
+	queryStr = QString("SELECT date, comments FROM compromat_table WHERE id_persones = %1").arg(id_persones); 
+	fillModelFromDB(queryStr,komp_model);
+
+	queryStr = QString("SELECT ft.id_family_types, ft.type_name, fd.info \
+						FROM family_data fd, family_types ft \
+						WHERE fd.id_family_types = ft.id_family_types \
+						AND fd.id_persones = %1").arg(id_persones); 
+	fillFamModelFromDB(queryStr,fam_model);
+
+}
+
+
+//---------------------------------------------------------
+void PersonesData::fillDataFromPersonesTable(int id_persones)
+{
+	QSqlQuery query;
+	QString str = QString("SELECT surname, name, patronumic, personal_number, nationality, birth_date, birth_place, rank_persones, id_type_persones, \
+							finger_foto,languages, science_public, family_address, name_persones \
+							FROM persones WHERE id_persones = %1").arg(id_persones);
+	
+	if(query.exec(str))
+	{
+		query.next();
+		QSqlRecord rec = query.record(); 
+		
+		UI->last_name_lineEdit->setText(query.value(rec.indexOf("surname")).toString());
+		UI->name_lineEdit->setText(query.value(rec.indexOf("name")).toString());
+		UI->mid_name_lineEdit->setText(query.value(rec.indexOf("patronumic")).toString());
+		UI->pers_numb_lineEdit->setText(query.value(rec.indexOf("personal_number")).toString());
+		UI->nation_lineEdit->setText(query.value(rec.indexOf("nationality")).toString());
+		UI->hb_dateEdit->setDate(query.value(rec.indexOf("birth_date")).toDate());
+		UI->birth_plane_lineEdit->setText(query.value(rec.indexOf("birth_place")).toString());
+		UI->rank_lineEdit->setText(query.value(rec.indexOf("rank_persones")).toString());
+		UI->dakti_lineEdit->setText(query.value(rec.indexOf("rank_persones")).toString());
+		UI->lang_textEdit->setPlainText(query.value(rec.indexOf("languages")).toString());
+		UI->nauka_develop_textEdit->setPlainText(query.value(rec.indexOf("science_public")).toString());
+		UI->adress_fam_lineEdit->setText(query.value(rec.indexOf("family_address")).toString());
+		UI->name_persones->setText(query.value(rec.indexOf("name_persones")).toString());
+	}
+}
+
+
+void PersonesData::updatePersonesTable()
+{
+	QSqlQuery query;
+	query.prepare("UPDATE persones SET surname=?, name=?, patronumic=?, personal_number=?, nationality=?, \
+				  birth_date=?, birth_place=?, rank_persones=?, finger_foto=?, \
+				  science_public=?, family_address=?, id_type_persones=?, languages=?, name_persones=? \
+				  WHERE id_persones=?");
+	query.addBindValue(UI->last_name_lineEdit->text());
+	query.addBindValue(UI->name_lineEdit->text());
+	query.addBindValue(UI->mid_name_lineEdit->text());
+	query.addBindValue(UI->pers_numb_lineEdit->text());
+	query.addBindValue(UI->nation_lineEdit->text());
+	query.addBindValue(UI->hb_dateEdit->date().toString("yyyy-MM-dd"));
+	query.addBindValue(UI->birth_plane_lineEdit->text());
+	query.addBindValue(UI->rank_lineEdit->text());
+	query.addBindValue(UI->dakti_lineEdit->text());
+	query.addBindValue(UI->nauka_develop_textEdit->toPlainText());
+	query.addBindValue(UI->adress_fam_lineEdit->text());
+	int index = UI->type_person_comboBox->currentIndex();
+	int id_type = UI->type_person_comboBox->itemData(index,Qt::UserRole).toInt();
+	query.addBindValue(id_type);
+	query.addBindValue(UI->lang_textEdit->toPlainText());
+	query.addBindValue(UI->name_persones->text());
+	query.addBindValue(id_persones);
+	
+	if(!query.exec())
+	{
+		QString err = query.lastError().text();
+	}
+}
+
+void PersonesData::fillDocumentsData()
+{
+	if(!id_persones) return;
+
+	QSqlQuery query;
+	QString str = QString("SELECT dt.id_document_type, dd.sequence, dd.number, dd.organ, dd.date \
+							FROM document_data dd, document_type dt \
+							WHERE dd.id_document_type = dt.id_document_type \
+							AND dd.id_persones = %1 \
+							ORDER BY dt.id_document_type").arg(id_persones);
+	
+	if(query.exec(str))
+	{
+		while(query.next())
+		{
+			QSqlRecord rec = query.record();
+			if(query.value(rec.indexOf("id_document_type")).toInt() == 1)
+			{
+				UI->pass_ser_lineEdit->setText(query.value(rec.indexOf("sequence")).toString());
+				UI->pass_numb_lineEdit->setText(query.value(rec.indexOf("number")).toString());
+				UI->date_pass_dateEdit->setDate(query.value(rec.indexOf("date")).toDate());
+				UI->vidacha_pass_lineEdit->setText(query.value(rec.indexOf("organ")).toString());
+			}
+			if(query.value(rec.indexOf("id_document_type")).toInt() == 2)
+			{
+				UI->udolich_ser_lineEdit->setText(query.value(rec.indexOf("sequence")).toString());
+				UI->udolich_numb_lineEdit->setText(query.value(rec.indexOf("number")).toString());
+				UI->date_udo_lich_dateEdit->setDate(query.value(rec.indexOf("date")).toDate());
+				UI->vidacha_udo_lich_lineEdit->setText(query.value(rec.indexOf("organ")).toString());
+			}
+			if(query.value(rec.indexOf("id_document_type")).toInt() == 3)
+			{
+				UI->brak_seq_lineEdit->setText(query.value(rec.indexOf("sequence")).toString());
+				UI->brak_numb_lineEdit->setText(query.value(rec.indexOf("number")).toString());
+				UI->brak_dateEdit->setDate(query.value(rec.indexOf("date")).toDate());
+				UI->brak_kem_lineEdit->setText(query.value(rec.indexOf("organ")).toString());
+			}
+		}
+	}
+}
+
+//======================================================
 void PersonesData::add_rank_history_row()
 {
     QList<QStandardItem*> itemList;
@@ -671,24 +844,32 @@ void PersonesData::del_fam_row()
 
 void PersonesData::save_persones()
 {
-    int id_type_pers_=UI->type_person_comboBox->itemData(UI->type_person_comboBox->currentIndex()).toInt();
-    int id_mariage = UI->fam_comboBox->currentIndex()+1;
+	int id_rezult;
+    if(id_persones)
+	{
+		updatePersonesTable();
+	}
+	else
+	{
+	
+		int id_type_pers_=UI->type_person_comboBox->itemData(UI->type_person_comboBox->currentIndex()).toInt();
+		int id_mariage = UI->fam_comboBox->currentIndex()+1;
 
-    QString f_name = UI->last_name_lineEdit->text();
-    QString n_name = UI->name_lineEdit->text();
-    QString o_name = UI->mid_name_lineEdit->text();
-    QString pers_name = UI->name_persones->text();
-    QString pers_numb = UI->pers_numb_lineEdit->text();
-    QString nations = UI->nation_lineEdit->text();
-    QString b_date = UI->hb_dateEdit->date().toString("dd-MM-yyyy");
-    QString birth_place = UI->birth_plane_lineEdit->text();
-    QString rank_pers = UI->rank_lineEdit->text();
-    QString fing = UI->dakti_lineEdit->text();
-    QString lang = UI->lang_textEdit->toPlainText();
-    QString sc = UI->nauka_develop_textEdit->toPlainText();
-    QString fam_adress= UI->adress_fam_lineEdit->text();
+		QString f_name = UI->last_name_lineEdit->text();
+		QString n_name = UI->name_lineEdit->text();
+		QString o_name = UI->mid_name_lineEdit->text();
+		QString pers_name = UI->name_persones->text();
+		QString pers_numb = UI->pers_numb_lineEdit->text();
+		QString nations = UI->nation_lineEdit->text();
+		QString b_date = UI->hb_dateEdit->date().toString("dd-MM-yyyy");
+		QString birth_place = UI->birth_plane_lineEdit->text();
+		QString rank_pers = UI->rank_lineEdit->text();
+		QString fing = UI->dakti_lineEdit->text();
+		QString lang = UI->lang_textEdit->toPlainText();
+		QString sc = UI->nauka_develop_textEdit->toPlainText();
+		QString fam_adress= UI->adress_fam_lineEdit->text();
 
-    QMap<QString,QString> map;
+		QMap<QString,QString> map;
 
         if (id_object_pers<1) return;
         map.clear();
@@ -724,26 +905,29 @@ void PersonesData::save_persones()
         }
         map.insert("id_type_persones",QString::number(id_type_pers_));
 
-        int id_rezult=insert_in_table("persones",map,"id_persones");
+        id_rezult=insert_in_table("persones",map,"id_persones");
 
-        insert_passport_data(id_rezult);
-        insert_ulich_data(id_rezult);
-        insert_rank_history(id_rezult);
-        insert_educ_history(id_rezult);
-        insert_work_history_data(id_rezult);
-        insert_sc_rank_data(id_rezult);
-        insert_service_data(id_rezult);
-        insert_war_data(id_rezult);
-        insert_travma_data(id_rezult);
-        insert_medal_data(id_rezult);
-        insert_plen_data(id_rezult);
-        insert_komp_data(id_rezult);
-        insert_brak_data(id_rezult);
-        insert_fam_data(id_rezult);
 
+		id_persones = id_rezult;
+	}
+	    insert_passport_data(id_persones);
+        insert_ulich_data(id_persones);
+        insert_rank_history(id_persones);
+        insert_educ_history(id_persones);
+        insert_work_history_data(id_persones);
+        insert_sc_rank_data(id_persones);
+        insert_service_data(id_persones);
+        insert_war_data(id_persones);
+        insert_travma_data(id_persones);
+        insert_medal_data(id_persones);
+        insert_plen_data(id_persones);
+        insert_komp_data(id_persones);
+        insert_brak_data(id_persones);
+        insert_fam_data(id_persones);
 //======================= фото персоны ===================================
-        QFile file(UI->path_foto_lineEdit->text());
-        if(!file.open(QIODevice::ReadOnly))
+	
+		QFile file(UI->path_foto_lineEdit->text());
+        if(!file.open(QIODevice::ReadOnly) && (id_persones==0))
         {
             QMessageBox msgBox;
             msgBox.setWindowTitle("Внимание");
@@ -770,7 +954,7 @@ void PersonesData::save_persones()
 
         QByteArray image_persones = file.readAll();
         query.addBindValue(image_persones);
-        query.addBindValue(id_rezult);
+        query.addBindValue(id_persones);
         if(!query.exec())
         {
             QString s = query.lastError().text();
@@ -781,8 +965,65 @@ void PersonesData::save_persones()
         }else{
             this->done(0);
         }
-
+	
 }
+
+//=======================================================================================
+void PersonesData::fillModelFromDB(QString query_str,QStandardItemModel *model)
+{
+	QSqlQuery query;
+	if(query.exec(query_str))
+	{
+		QSqlRecord rec = query.record();
+		int colCount = rec.count();
+		while(query.next())
+		{
+			QList<QStandardItem *> rowList;
+			for(int col=0;col<colCount;col++)
+			{
+				QStandardItem *item = new QStandardItem(query.value(col).toString());
+				if(col == 0)
+				{
+					item->setCheckable(true);
+					item->setCheckState(Qt::Unchecked);
+				}
+				rowList.append(item);
+			}
+			model->appendRow(rowList);
+		}
+	}
+}
+
+
+//=======================================================================================
+void PersonesData::fillFamModelFromDB(QString query_str,QStandardItemModel *model)
+{
+	QSqlQuery query;
+	if(query.exec(query_str))
+	{
+		QSqlRecord rec = query.record();
+		int colCount = rec.count();
+		while(query.next())
+		{
+			QList<QStandardItem *> rowList;
+			QStandardItem *item = new QStandardItem;
+			item->setCheckable(true);
+			item->setCheckState(Qt::Unchecked);
+			item->setData(query.value(0).toInt(),Qt::UserRole);
+			item->setData(query.value(1).toString(),Qt::DisplayRole);
+			rowList.append(item);
+
+			item = new QStandardItem;
+			item->setData(query.value(2).toString(),Qt::DisplayRole);
+			rowList.append(item);
+					
+			model->appendRow(rowList);
+		}
+	}
+}
+
+
+
 //======================= выбор типа персоналии в комбо ========================================
 void PersonesData::fill_combobox_persones(QComboBox *box)
 {
@@ -938,10 +1179,18 @@ void PersonesData::insert_educ_history(int id_persones)
 void PersonesData::insert_passport_data(int id_persones)
 {
 
-    QString b_date = UI->date_pass_dateEdit->date().toString("dd-MM-yyyy");
-    int i = 1;
-
     QSqlQuery query;
+    query.prepare("DELETE FROM document_data WHERE id_persones = ?");
+    query.addBindValue(id_persones);
+    if(!query.exec())
+    {
+        QString str = query.lastError().databaseText();
+        return;
+    }
+	
+	QString b_date = UI->date_pass_dateEdit->date().toString("dd-MM-yyyy");
+    int i = 1;
+	query.clear();
 
     query.prepare("INSERT INTO document_data (sequence, number, date, organ, id_persones, id_document_type) VALUES (?,?,?,?,?,?)");
     query.addBindValue(UI->pass_ser_lineEdit->text());
@@ -961,7 +1210,8 @@ void PersonesData::insert_passport_data(int id_persones)
 
 void PersonesData::insert_brak_data(int id_persones)
 {
-    QString b_date = UI->brak_dateEdit->date().toString("dd-MM-yyyy");
+    
+	QString b_date = UI->brak_dateEdit->date().toString("dd-MM-yyyy");
     int i = 3;
 
     QSqlQuery query;
@@ -1181,7 +1431,7 @@ void PersonesData::insert_medal_data(int id_persones)
     for(int row=0;row<medal_model->rowCount();row++)
     {
         query.clear();
-        query.prepare("INSERT INTO medal (id_persones,medal_name,achievment,'sorder') VALUES (?,?,?,?)");
+        query.prepare("INSERT INTO medal (id_persones,medal_name,achievment,\"order\") VALUES (?,?,?,?)");
         query.addBindValue(id_persones);
         query.addBindValue(medal_model->data(medal_model->index(row,0),Qt::DisplayRole).toString());
         query.addBindValue(medal_model->data(medal_model->index(row,1),Qt::DisplayRole).toString());

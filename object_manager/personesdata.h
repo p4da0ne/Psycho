@@ -79,7 +79,16 @@ private:
     void    insert_plen_data(int id_persones);
     void    insert_komp_data(int id_persones);
     void    insert_fam_data(int id_persones);
+	void	fillPersonesData(int id_persones);
+	void	fillDataFromPersonesTable(int id_persones);
+	void	updatePersonesTable();
+	void	fillDocumentsData();
 
+	void	fillModelFromDB(QString query,QStandardItemModel *model);
+	void	fillFamModelFromDB(QString query,QStandardItemModel *model);
+	
+
+	int		id_persones;
     int     id_pers_group;
     int     id_pers_smi;
     int     id_pers_ls;
