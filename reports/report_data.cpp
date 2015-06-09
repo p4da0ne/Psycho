@@ -630,10 +630,11 @@ QMap<int, QMap<QString, QString> > ReportData::pers_info_continue(int id_object)
     query.next();
 
         map.clear();
-		map.insert("17. Фамилия, имя отчество отца и матери, их место жительства:",getMotherFatherData(id_object));
+		map.insert("17. Фамилия, имя отчество отца и матери, их место жительства:",getFamilyData(id_object,true));
         pers_info_date->insert(1,map);
         map.clear();
-		map.insert("18. Семейное положение: ",query.value(rec.indexOf("status_name")).toString());
+		QString familyData = query.value(rec.indexOf("status_name")).toString() + "<br>" + getFamilyData(id_object,false);
+		map.insert("18. Семейное положение: ",familyData);
         pers_info_date->insert(2,map);
         map.clear();
 		map.insert("19. Домашний адрес семьи:",getFamilyAddress(id_object));
@@ -662,17 +663,26 @@ QString ReportData::getFamilyAddress(int idPersones)
 }
 
 
-QString ReportData::getMotherFatherData(int idPersones)
+QString ReportData::getFamilyData(int idPersones, bool isParent)
 {
-	QString data;
+	QString data, isPar;
 	QSqlQuery query;
-    query.prepare ("SELECT ft.type_name, fd.info \
+   
+	if(isParent)
+	{
+		isPar = " <= 2";
+	}
+	else
+	{
+		isPar = " > 2";
+	}
+	QString str = QString("SELECT ft.type_name, fd.info \
 					FROM family_data fd, family_types ft \
 					WHERE fd.id_family_types = ft.id_family_types \
-					AND fd.id_persones = ? \
-					AND ft.id_family_types <= 2");
-    query.addBindValue(idPersones);
-    if(!query.exec())
+					AND fd.id_persones = %1 \
+					AND ft.id_family_types %2").arg(idPersones).arg(isPar);
+   
+	if(!query.exec(str))
     {
         QString sss = query.lastError().text();
         return data;
@@ -684,6 +694,7 @@ QString ReportData::getMotherFatherData(int idPersones)
 		data.append(query.value(rec.indexOf("type_name")).toString());
 		data.append(": ");
 		data.append(query.value(rec.indexOf("info")).toString());
+		data.append("<br>");
 	}
 	return data;
 }
