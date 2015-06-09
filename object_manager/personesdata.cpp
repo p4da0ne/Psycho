@@ -91,7 +91,7 @@ PersonesData::PersonesData(QString type_element,int id_object,QWidget *parent) :
     plen_model = new QStandardItemModel();
     UI->plen_tableView->setModel(plen_model);
     QStringList pl_list;
-    pl_list <<"Был ли в плену, при каких обстоятельствах, шде и когда пленен и освобожден из плена";
+    pl_list <<"Был ли в плену, при каких обстоятельствах, где и когда пленен и освобожден из плена";
     plen_model->setHorizontalHeaderLabels(pl_list);
     UI->plen_tableView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
 //=========================================================================================
