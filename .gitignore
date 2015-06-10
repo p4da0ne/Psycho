@@ -34,4 +34,5 @@ build/searchengine.dll
 build/coord.dll
 build/event_manager.dll
 build/eventsmodel.dll
+build/users_manager.dll
 saturn.suo
