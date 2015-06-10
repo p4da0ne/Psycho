@@ -75,7 +75,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <property name="iconSize">
       <size>
@@ -1553,6 +1553,11 @@ p, li { white-space: pre-wrap; }
                 <bold>false</bold>
                </font>
               </property>
+              <item>
+               <property name="text">
+                <string>Неизвестно</string>
+               </property>
+              </item>
               <item>
                <property name="text">
                 <string>холост</string>
