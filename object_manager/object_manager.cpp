@@ -2263,7 +2263,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
         }
         else if(list.value(0)=="ppers"){
             QString type_elem = "group";
-            PersonesData *persona = new PersonesData(type_elem,list.value(1).toInt(),this);
+            PersonesData *persona = new PersonesData(type_elem,list.value(1).toInt(),0,this);
             persona->setModal(true);
             persona->showMaximized();
             int result = persona->exec();
@@ -2294,7 +2294,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
         else if(list.value(0)=="pperssmi"){
 
             QString type_elem = "smi";
-            PersonesData *persona = new PersonesData(type_elem,list.value(1).toInt(),this);
+            PersonesData *persona = new PersonesData(type_elem,list.value(1).toInt(),0,this);
             persona->setModal(true);
             persona->showMaximized();
             int result = persona->exec();
@@ -2327,7 +2327,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
         else if(list.value(0)=="ppersls"){
 
             QString type_elem = "ls";
-            PersonesData *persona = new PersonesData(type_elem,list.value(1).toInt(),this);
+            PersonesData *persona = new PersonesData(type_elem,list.value(1).toInt(),0,this);
 
             persona->setModal(true);
             persona->showMaximized();
@@ -3474,7 +3474,7 @@ void Objectmanager::delete_sc(){
 }
 void Objectmanager::edit_persones(){
     QString type_elem = "";
-    PersonesData *pers = new PersonesData(type_elem,id_persers,this);
+    PersonesData *pers = new PersonesData(type_elem,0,id_persers,this);
 	pers->showMaximized();
 
 

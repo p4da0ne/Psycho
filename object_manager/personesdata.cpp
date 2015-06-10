@@ -10,8 +10,8 @@
 #include "ui_personesdata_form.h"
 
 
-PersonesData::PersonesData(QString type_element,int id_object,QWidget *parent) :
-    QDialog(parent),id_persones(id_object),
+PersonesData::PersonesData(QString type_element,int id_object, int id_persones,QWidget *parent) :
+    QDialog(parent),id_persones(id_persones),
     UI(new Ui::PersonesData)
 {
     UI->setupUi(this);
@@ -248,7 +248,7 @@ void PersonesData::fillDataFromPersonesTable(int id_persones)
 {
 	QSqlQuery query;
 	QString str = QString("SELECT surname, name, patronumic, personal_number, nationality, birth_date, birth_place, rank_persones, id_type_persones, \
-							finger_foto,languages, science_public, family_address, name_persones \
+							finger_foto,languages, science_public, family_address, name_persones, id_mariage_status \
 							FROM persones WHERE id_persones = %1").arg(id_persones);
 	
 	if(query.exec(str))
@@ -269,6 +269,7 @@ void PersonesData::fillDataFromPersonesTable(int id_persones)
 		UI->nauka_develop_textEdit->setPlainText(query.value(rec.indexOf("science_public")).toString());
 		UI->adress_fam_lineEdit->setText(query.value(rec.indexOf("family_address")).toString());
 		UI->name_persones->setText(query.value(rec.indexOf("name_persones")).toString());
+		UI->fam_comboBox->setCurrentIndex(query.value(rec.indexOf("id_mariage_status")).toInt() - 1);
 	}
 }
 
@@ -278,7 +279,7 @@ void PersonesData::updatePersonesTable()
 	QSqlQuery query;
 	query.prepare("UPDATE persones SET surname=?, name=?, patronumic=?, personal_number=?, nationality=?, \
 				  birth_date=?, birth_place=?, rank_persones=?, finger_foto=?, \
-				  science_public=?, family_address=?, id_type_persones=?, languages=?, name_persones=? \
+				  science_public=?, family_address=?, id_type_persones=?, languages=?, name_persones=?, id_mariage_status=? \
 				  WHERE id_persones=?");
 	query.addBindValue(UI->last_name_lineEdit->text());
 	query.addBindValue(UI->name_lineEdit->text());
@@ -296,6 +297,10 @@ void PersonesData::updatePersonesTable()
 	query.addBindValue(id_type);
 	query.addBindValue(UI->lang_textEdit->toPlainText());
 	query.addBindValue(UI->name_persones->text());
+
+	int mar_index = UI->fam_comboBox->currentIndex();
+	int id_mar_status = mar_index + 1;
+	query.addBindValue(id_mar_status);
 	query.addBindValue(id_persones);
 	
 	if(!query.exec())

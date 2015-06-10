@@ -18,7 +18,7 @@ class PersonesData : public QDialog
     Q_OBJECT
     
 public:
-    explicit PersonesData(QString type_element, int id_object=0, QWidget *parent=0);
+    explicit PersonesData(QString type_element, int id_object=0, int id_persones=0, QWidget *parent=0);
     ~PersonesData();
 private slots:
     void    add_rank_history_row();
