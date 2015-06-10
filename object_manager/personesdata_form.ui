@@ -1555,11 +1555,6 @@ p, li { white-space: pre-wrap; }
               </property>
               <item>
                <property name="text">
-                <string>Неизвестно</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
                 <string>холост</string>
                </property>
               </item>
