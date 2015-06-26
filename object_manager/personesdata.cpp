@@ -160,6 +160,7 @@ PersonesData::PersonesData(QString type_element,int id_object, int id_persones,Q
     connect(UI->path_foto_toolButton,SIGNAL(clicked()),this,SLOT(open_file()));
 //==================================================================================================
     fill_combobox_persones(UI->type_person_comboBox);
+	fillMariageCombo();
 //==================================================================================================
 
     QDate dateToday = QDate::currentDate();
@@ -177,6 +178,29 @@ PersonesData::PersonesData(QString type_element,int id_object, int id_persones,Q
 PersonesData::~PersonesData()
 {
     delete UI;
+}
+
+
+//=========================================================
+void PersonesData::fillMariageCombo()
+{
+	UI->fam_comboBox->clear();
+	QSqlQuery query;
+	QString str = QString("SELECT id_mariage_status, status_name \
+							FROM mariage_status ORDER BY id_mariage_status");
+
+	if(query.exec(str))
+	{
+		QSqlRecord rec = query.record();
+		while(query.next())
+		{
+			int id_status = query.value(rec.indexOf("id_mariage_status")).toInt();
+			QString status_name = query.value(rec.indexOf("status_name")).toString();
+			UI->fam_comboBox->addItem(status_name,id_status);
+		}
+
+	}
+
 }
 
 
@@ -264,7 +288,7 @@ void PersonesData::fillDataFromPersonesTable(int id_persones)
 		UI->hb_dateEdit->setDate(query.value(rec.indexOf("birth_date")).toDate());
 		UI->birth_plane_lineEdit->setText(query.value(rec.indexOf("birth_place")).toString());
 		UI->rank_lineEdit->setText(query.value(rec.indexOf("rank_persones")).toString());
-		UI->dakti_lineEdit->setText(query.value(rec.indexOf("rank_persones")).toString());
+		UI->dakti_lineEdit->setText(query.value(rec.indexOf("finger_foto")).toString());
 		UI->lang_textEdit->setPlainText(query.value(rec.indexOf("languages")).toString());
 		UI->nauka_develop_textEdit->setPlainText(query.value(rec.indexOf("science_public")).toString());
 		UI->adress_fam_lineEdit->setText(query.value(rec.indexOf("family_address")).toString());
@@ -299,7 +323,7 @@ void PersonesData::updatePersonesTable()
 	query.addBindValue(UI->name_persones->text());
 
 	int mar_index = UI->fam_comboBox->currentIndex();
-	int id_mar_status = mar_index + 1;
+	int id_mar_status = UI->fam_comboBox->itemData(mar_index,Qt::UserRole).toInt();
 	query.addBindValue(id_mar_status);
 	query.addBindValue(id_persones);
 	
@@ -858,8 +882,10 @@ void PersonesData::save_persones()
 	{
 	
 		int id_type_pers_=UI->type_person_comboBox->itemData(UI->type_person_comboBox->currentIndex()).toInt();
-		int id_mariage = UI->fam_comboBox->currentIndex()+1;
-
+		
+		int mar_index = UI->fam_comboBox->currentIndex();
+		int id_mariage = UI->fam_comboBox->itemData(mar_index,Qt::UserRole).toInt();
+	
 		QString f_name = UI->last_name_lineEdit->text();
 		QString n_name = UI->name_lineEdit->text();
 		QString o_name = UI->mid_name_lineEdit->text();
@@ -931,39 +957,46 @@ void PersonesData::save_persones()
         insert_fam_data(id_persones);
 //======================= фото персоны ===================================
 	
+		bool fotoFlag = isExistPhotoInDB(id_persones);
+
 		QFile file(UI->path_foto_lineEdit->text());
-        if(!file.open(QIODevice::ReadOnly) && (id_persones==0))
-        {
-            QMessageBox msgBox;
-            msgBox.setWindowTitle("Внимание");
-            msgBox.setText("Фотография отсутствует.Нажмите ДА, чтобы продолжить");
-            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-            msgBox.setButtonText(QMessageBox::Yes, "Да");
-            msgBox.setButtonText(QMessageBox::No, "Нет");
-            if (msgBox.exec()== QMessageBox::Yes){
+        if(!file.open(QIODevice::ReadOnly))
+		{
+			if(!fotoFlag)
+			{
+				QMessageBox msgBox;
+				msgBox.setWindowTitle("Внимание");
+				msgBox.setText("Фотография отсутствует.Нажмите ДА, чтобы продолжить");
+				msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+				msgBox.setButtonText(QMessageBox::Yes, "Да");
+				msgBox.setButtonText(QMessageBox::No, "Нет");
+				if (msgBox.exec()== QMessageBox::Yes){
 
-                if(id_rezult>0){
-                    this->done(id_rezult);
-                }else{
-                    this->done(0);
-                }
-              }
-            else{
-                return;
-            }
-        }
+					if(id_rezult>0){
+						this->done(id_rezult);
+					}else{
+						this->done(0);
+					}
+				  }
+				else{
+					return;
+				}		
+			}
+		}
+		else
+		{
+			QSqlQuery query;
 
-        QSqlQuery query;
+			query.prepare("UPDATE persones SET image_persones = ? WHERE id_persones = ?");
 
-        query.prepare("UPDATE persones SET image_persones = ? WHERE id_persones = ?");
-
-        QByteArray image_persones = file.readAll();
-        query.addBindValue(image_persones);
-        query.addBindValue(id_persones);
-        if(!query.exec())
-        {
-            QString s = query.lastError().text();
-        }
+			QByteArray image_persones = file.readAll();
+			query.addBindValue(image_persones);
+			query.addBindValue(id_persones);
+			if(!query.exec())
+			{
+				QString s = query.lastError().text();
+			}
+		}
 
         if(id_rezult>0){
             this->done(id_rezult);
@@ -972,6 +1005,32 @@ void PersonesData::save_persones()
         }
 	
 }
+
+//=======================================================================================
+bool PersonesData::isExistPhotoInDB(int idPersones)
+{
+	if(!id_persones) return false;
+	QString query_str;
+	
+	query_str = QString("SELECT image_persones FROM persones WHERE id_persones = %1").arg(idPersones);
+
+	QSqlQuery query;
+	if(query.exec(query_str))
+	{
+		QSqlRecord rec = query.record();
+		query.next();
+		if(query.value(rec.indexOf("image_persones")).toBool() == 0)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+}
+
+
 
 //=======================================================================================
 void PersonesData::fillModelFromDB(QString query_str,QStandardItemModel *model)

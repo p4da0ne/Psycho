@@ -83,6 +83,8 @@ private:
 	void	fillDataFromPersonesTable(int id_persones);
 	void	updatePersonesTable();
 	void	fillDocumentsData();
+	void	fillMariageCombo();
+	bool	isExistPhotoInDB(int id_persones);
 
 	void	fillModelFromDB(QString query,QStandardItemModel *model);
 	void	fillFamModelFromDB(QString query,QStandardItemModel *model);
