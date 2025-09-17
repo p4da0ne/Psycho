@@ -3,7 +3,7 @@
 
 Calculate_K_omkrf::Calculate_K_omkrf(void)
 {
-	QTextCodec::setCodecForTr(QTextCodec::codecForName("windows-1251"));
+    QTextCodec::setCodecForLocale(QTextCodec::codecForName("windows-1251"));
 }
 
 

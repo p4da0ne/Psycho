@@ -1,6 +1,7 @@
 #ifndef MYQMIDIAREA_H
 #define MYQMIDIAREA_H
- 
+
+#include <QMdiArea>
 #include <QtGui>
  
 class myQMdiArea : public QMdiArea

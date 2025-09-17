@@ -21,7 +21,7 @@
 #include "../reports/reports.h"
 #include "ui_add_object.h"
 #include "ui_object_manager_form.h"
-#include <QProxyModel>
+#include <QSortFilterProxyModel>
 #include "mysqlrelationaldelegate.h"
 #include "personesdata.h"
 #include "persones_info.h"
@@ -38,7 +38,7 @@ Objectmanager::Objectmanager(QWidget *parent) //int in_id_object
     /*
     id_object=in_id_object;
     p_menu=new QMenu(UI->columnView);
-    p_menu->addAction(MainCodec->toUnicode("Удалить объект"));
+    p_menu->addAction(MainCodec->toUnicode("РЈРґР°Р»РёС‚СЊ РѕР±СЉРµРєС‚"));
     setWindowIcon(QIcon("./img/database.png"));
     UI->delete_button->setEnabled(false);*/
     UI->object_manager_tree->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -50,7 +50,7 @@ Objectmanager::Objectmanager(QWidget *parent) //int in_id_object
     UI->searchButton->setDisabled(true);
     UI->searchLineEdit->setDisabled(true);
 
-    //==============================COMBOBOX 0 строка нафиг + работа с координатами ===============================
+    //==============================COMBOBOX 0 СЃС‚СЂРѕРєР° РЅР°С„РёРі + СЂР°Р±РѕС‚Р° СЃ РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё ===============================
 
     QListView* listView = qobject_cast<QListView*>(UI->coord_system_comboBox->view());
     Q_CHECK_PTR(listView);
@@ -69,12 +69,12 @@ Objectmanager::Objectmanager(QWidget *parent) //int in_id_object
     connect(UI->columnView,SIGNAL(clicked(QModelIndex)),this,SLOT(update_one_click(const QModelIndex &)));
     connect(UI->columnView,SIGNAL(doubleClicked(const QModelIndex &)),this,SLOT(column_item_clicked ( const QModelIndex & )));
     connect(UI->columnView,SIGNAL(customContextMenuRequested(const QPoint &)),this,SLOT(customMenuView(const QPoint &)));
-    //================================== Блоки и Страны ============================================================
+    //================================== Р‘Р»РѕРєРё Рё РЎС‚СЂР°РЅС‹ ============================================================
 
     connect(UI->add_pushButton_blok,SIGNAL(clicked()),this,SLOT(add_new_blok()));
     connect(UI->add_pushButton_country,SIGNAL(clicked()),this,SLOT(add_new_country()));
 
-    //================================== Поиск =====================================================================
+    //================================== РџРѕРёСЃРє =====================================================================
 
     connect(UI->searchButton,SIGNAL(clicked()),this,SLOT(slotSearchObject()));
     connect(UI->searchLineEdit,SIGNAL(returnPressed()),UI->searchButton,SIGNAL(clicked()));
@@ -88,7 +88,7 @@ Objectmanager::~Objectmanager()
     delete UI;
 }
 
-//======= Формирование списка таблиц управления объектами =======
+//======= Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ СЃРїРёСЃРєР° С‚Р°Р±Р»РёС† СѓРїСЂР°РІР»РµРЅРёСЏ РѕР±СЉРµРєС‚Р°РјРё =======
 void Objectmanager::init_object_tree()
 {
     QFont font;
@@ -132,7 +132,7 @@ void Objectmanager::init_object_tree()
         }
     }
 
-    model->setHeaderData(0, Qt::Horizontal,"Блоки и страны");
+    model->setHeaderData(0, Qt::Horizontal,"Р‘Р»РѕРєРё Рё СЃС‚СЂР°РЅС‹");
 
 
     UI->object_manager_tree->setModel(model);
@@ -142,7 +142,7 @@ void Objectmanager::init_object_tree()
 
 }	
 
-//================== контекстное меню =========================================
+//================== РєРѕРЅС‚РµРєСЃС‚РЅРѕРµ РјРµРЅСЋ =========================================
 void Objectmanager::customMenuView(const QPoint & pos)
 {
     QModelIndex index = UI->columnView->currentIndex();
@@ -154,28 +154,28 @@ void Objectmanager::customMenuView(const QPoint & pos)
         if(list.value(0)=="region" || list.value(0)=="reg"){
             QPushButton *popupButton = new QPushButton;
             QMenu *menu = new QMenu(this);
-            QAction *act=new QAction("Удалить регион",this);
+            QAction *act=new QAction("РЈРґР°Р»РёС‚СЊ СЂРµРіРёРѕРЅ",this);
             act->setIcon(QIcon(":/Resources/close.png"));
             connect(act,SIGNAL(triggered()),this,SLOT(delete_region()));
-            QAction *act_1 = new QAction(QString("Оценка морально-психологической обстановки: %1").arg(list.value(3)),this);
+            QAction *act_1 = new QAction(QString("РћС†РµРЅРєР° РјРѕСЂР°Р»СЊРЅРѕ-РїСЃРёС…РѕР»РѕРіРёС‡РµСЃРєРѕР№ РѕР±СЃС‚Р°РЅРѕРІРєРё: %1").arg(list.value(3)),this);
             rez_z_1 = list.value(3).toFloat();
-            QAction *otch23 = new QAction(QString("Сформировать отчет"),this);
+            QAction *otch23 = new QAction(QString("РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ РѕС‚С‡РµС‚"),this);
             groud_id = list.value(1).toInt();
             connect(otch23,SIGNAL(triggered()),this,SLOT(otchet_groups()));
 
-            QAction *nac_sostav = new QAction(QString("Национальный состав"),this);
+            QAction *nac_sostav = new QAction(QString("РќР°С†РёРѕРЅР°Р»СЊРЅС‹Р№ СЃРѕСЃС‚Р°РІ"),this);
             connect(nac_sostav,SIGNAL(triggered()),this,SLOT(show_nations_region()));
 
-            QAction *confess = new QAction(QString("Религиозный состав"),this);
+            QAction *confess = new QAction(QString("Р РµР»РёРіРёРѕР·РЅС‹Р№ СЃРѕСЃС‚Р°РІ"),this);
             connect(confess,SIGNAL(triggered()),this,SLOT(show_confess_region()));
 
-            QAction *profess = new QAction(QString("Профессиональный состав"),this);
+            QAction *profess = new QAction(QString("РџСЂРѕС„РµСЃСЃРёРѕРЅР°Р»СЊРЅС‹Р№ СЃРѕСЃС‚Р°РІ"),this);
             connect(profess,SIGNAL(triggered()),this,SLOT(show_profess_region()));
 
-            QAction *age = new QAction(QString("Возрастной состав"),this);
+            QAction *age = new QAction(QString("Р’РѕР·СЂР°СЃС‚РЅРѕР№ СЃРѕСЃС‚Р°РІ"),this);
             connect(age,SIGNAL(triggered()),this,SLOT(show_age_region()));
 
-            QAction *sekas = new QAction(QString("Половой состав"),this);
+            QAction *sekas = new QAction(QString("РџРѕР»РѕРІРѕР№ СЃРѕСЃС‚Р°РІ"),this);
             connect(sekas,SIGNAL(triggered()),this,SLOT(show_sekas_region()));
 
             menu->addAction(act_1);
@@ -196,11 +196,11 @@ void Objectmanager::customMenuView(const QPoint & pos)
         else if(list.value(0)=="dsmi"){
             QPushButton *popupButton = new QPushButton;
             QMenu *menu = new QMenu(this);
-            QAction *act=new QAction("Удалить СМИ",this);
+            QAction *act=new QAction("РЈРґР°Р»РёС‚СЊ РЎРњР",this);
             act->setIcon(QIcon(":/Resources/close.png"));
             connect(act,SIGNAL(triggered()),this,SLOT(delete_smi()));
 
-            QAction *otch_smi = new QAction (QString("Сформировать отчет"),this);
+            QAction *otch_smi = new QAction (QString("РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ РѕС‚С‡РµС‚"),this);
             smi_id = list.value(1).toInt();
             connect(otch_smi,SIGNAL(triggered()),this,SLOT(otchet_groups()));
 
@@ -213,13 +213,13 @@ void Objectmanager::customMenuView(const QPoint & pos)
         else if(list.value(0)=="dls" ){
             QPushButton *popupButton = new QPushButton;
             QMenu *menu = new QMenu(this);
-            QAction *act=new QAction("Удалить воинское формирование",this);
+            QAction *act=new QAction("РЈРґР°Р»РёС‚СЊ РІРѕРёРЅСЃРєРѕРµ С„РѕСЂРјРёСЂРѕРІР°РЅРёРµ",this);
             connect(act,SIGNAL(triggered()),this,SLOT(delete_ls()));
             act->setIcon(QIcon(":/Resources/close.png"));
-            QAction *otch_ls = new QAction (QString("Сформировать отчет"),this);
+            QAction *otch_ls = new QAction (QString("РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ РѕС‚С‡РµС‚"),this);
             ls_id = list.value(1).toInt();
             connect(otch_ls,SIGNAL(triggered()),this,SLOT(otchet_groups()));
-            QAction *nac_sostav = new QAction(QString("Национальный состав"),this); //.arg(list.value(3)),this);
+            QAction *nac_sostav = new QAction(QString("РќР°С†РёРѕРЅР°Р»СЊРЅС‹Р№ СЃРѕСЃС‚Р°РІ"),this); //.arg(list.value(3)),this);
             connect(nac_sostav,SIGNAL(triggered()),this,SLOT(show_nations_ls()));
 
             menu->addSeparator();
@@ -233,14 +233,14 @@ void Objectmanager::customMenuView(const QPoint & pos)
         else if((list.value(0)=="dpers") || (list.value(0)=="dperssmi") || (list.value(0)=="dpersls")) {
             QPushButton *popupButton = new QPushButton;
             QMenu *menu = new QMenu(this);
-            QAction *act=new QAction("Удалить персоналию",this);
+            QAction *act=new QAction("РЈРґР°Р»РёС‚СЊ РїРµСЂСЃРѕРЅР°Р»РёСЋ",this);
             act->setIcon(QIcon(":/Resources/close.png"));
             connect(act,SIGNAL(triggered()),this,SLOT(delete_pers()));
 
-            QAction *otch_pers = new QAction (QString("Сформировать отчет"),this);
+            QAction *otch_pers = new QAction (QString("РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ РѕС‚С‡РµС‚"),this);
             connect(otch_pers,SIGNAL(triggered()),this,SLOT(otchet_groups()));
             id_persers = list.value(1).toInt();
-            QAction *edit = new QAction(QString("Редактировать информацию"),this);
+            QAction *edit = new QAction(QString("Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ РёРЅС„РѕСЂРјР°С†РёСЋ"),this);
             connect(edit,SIGNAL(triggered()),this,SLOT(edit_persones()));
 
             menu->addAction(edit);
@@ -257,57 +257,57 @@ void Objectmanager::customMenuView(const QPoint & pos)
             QPushButton *popupButton = new QPushButton;
             QMenu *menu = new QMenu(this);
 
-            QAction *act=new QAction(QString("Оценка морально-психологического состояния %1: %2").arg(list.value(4)).arg(list.value(3)),this);
+            QAction *act=new QAction(QString("РћС†РµРЅРєР° РјРѕСЂР°Р»СЊРЅРѕ-РїСЃРёС…РѕР»РѕРіРёС‡РµСЃРєРѕРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ %1: %2").arg(list.value(4)).arg(list.value(3)),this);
 
-            QMenu* subMenu_1 = new QMenu("Потери л/с",menu);
+            QMenu* subMenu_1 = new QMenu("РџРѕС‚РµСЂРё Р»/СЃ",menu);
 
-            QMenu* subMenu_1_1 = new QMenu("Интенсивность БД низкая");
-            QAction *act_1_1=new QAction(QString("через 1 час: %1 - %2").arg(pl.min[0][0]).arg(pl.max[0][0]),subMenu_1);
+            QMenu* subMenu_1_1 = new QMenu("РРЅС‚РµРЅСЃРёРІРЅРѕСЃС‚СЊ Р‘Р” РЅРёР·РєР°СЏ");
+            QAction *act_1_1=new QAction(QString("С‡РµСЂРµР· 1 С‡Р°СЃ: %1 - %2").arg(pl.min[0][0]).arg(pl.max[0][0]),subMenu_1);
             subMenu_1_1->addAction(act_1_1);
-            QAction *act_1_2=new QAction(QString("втечение суток: %1 - %2").arg(pl.min[0][1]).arg(pl.max[0][1]),subMenu_1);
+            QAction *act_1_2=new QAction(QString("РІС‚РµС‡РµРЅРёРµ СЃСѓС‚РѕРє: %1 - %2").arg(pl.min[0][1]).arg(pl.max[0][1]),subMenu_1);
             subMenu_1_1->addAction(act_1_2);
-            QAction *act_1_3=new QAction(QString("через 3-5 суток: %1 - %2").arg(pl.min[0][2]).arg(pl.max[0][2]),subMenu_1);
+            QAction *act_1_3=new QAction(QString("С‡РµСЂРµР· 3-5 СЃСѓС‚РѕРє: %1 - %2").arg(pl.min[0][2]).arg(pl.max[0][2]),subMenu_1);
             subMenu_1_1->addAction(act_1_3);
-            QAction *act_1_4=new QAction(QString("более 5 суток: %1 - %2").arg(pl.min[0][3]).arg(pl.max[0][3]),subMenu_1);
+            QAction *act_1_4=new QAction(QString("Р±РѕР»РµРµ 5 СЃСѓС‚РѕРє: %1 - %2").arg(pl.min[0][3]).arg(pl.max[0][3]),subMenu_1);
             subMenu_1_1->addAction(act_1_4);
             subMenu_1->addMenu(subMenu_1_1);
 
-            QMenu* subMenu_1_2 = new QMenu("Интенсивность БД средняя");
-            QAction *act_2_1=new QAction(QString("через 1 час: %1 - %2").arg(pl.min[1][0]).arg(pl.max[1][0]),subMenu_1);
+            QMenu* subMenu_1_2 = new QMenu("РРЅС‚РµРЅСЃРёРІРЅРѕСЃС‚СЊ Р‘Р” СЃСЂРµРґРЅСЏСЏ");
+            QAction *act_2_1=new QAction(QString("С‡РµСЂРµР· 1 С‡Р°СЃ: %1 - %2").arg(pl.min[1][0]).arg(pl.max[1][0]),subMenu_1);
             subMenu_1_2->addAction(act_2_1);
-            QAction *act_2_2=new QAction(QString("втечение суток: %1 - %2").arg(pl.min[1][1]).arg(pl.max[1][1]),subMenu_1);
+            QAction *act_2_2=new QAction(QString("РІС‚РµС‡РµРЅРёРµ СЃСѓС‚РѕРє: %1 - %2").arg(pl.min[1][1]).arg(pl.max[1][1]),subMenu_1);
             subMenu_1_2->addAction(act_2_2);
-            QAction *act_2_3=new QAction(QString("через 3-5 суток: %1 - %2").arg(pl.min[1][2]).arg(pl.max[1][2]),subMenu_1);
+            QAction *act_2_3=new QAction(QString("С‡РµСЂРµР· 3-5 СЃСѓС‚РѕРє: %1 - %2").arg(pl.min[1][2]).arg(pl.max[1][2]),subMenu_1);
             subMenu_1_2->addAction(act_2_3);
-            QAction *act_2_4=new QAction(QString("более 5 суток: %1 - %2").arg(pl.min[1][3]).arg(pl.max[1][3]),subMenu_1);
+            QAction *act_2_4=new QAction(QString("Р±РѕР»РµРµ 5 СЃСѓС‚РѕРє: %1 - %2").arg(pl.min[1][3]).arg(pl.max[1][3]),subMenu_1);
             subMenu_1_2->addAction(act_2_4);
             subMenu_1->addMenu(subMenu_1_2);
 
-            QMenu* subMenu_1_3 = new QMenu("Интенсивность БД высокая");
-            QAction *act_3_1=new QAction(QString("через 1 час: %1 - %2").arg(pl.min[2][0]).arg(pl.max[2][0]),subMenu_1);
+            QMenu* subMenu_1_3 = new QMenu("РРЅС‚РµРЅСЃРёРІРЅРѕСЃС‚СЊ Р‘Р” РІС‹СЃРѕРєР°СЏ");
+            QAction *act_3_1=new QAction(QString("С‡РµСЂРµР· 1 С‡Р°СЃ: %1 - %2").arg(pl.min[2][0]).arg(pl.max[2][0]),subMenu_1);
             subMenu_1_3->addAction(act_3_1);
-            QAction *act_3_2=new QAction(QString("втечение суток: %1 - %2").arg(pl.min[2][1]).arg(pl.max[2][1]),subMenu_1);
+            QAction *act_3_2=new QAction(QString("РІС‚РµС‡РµРЅРёРµ СЃСѓС‚РѕРє: %1 - %2").arg(pl.min[2][1]).arg(pl.max[2][1]),subMenu_1);
             subMenu_1_3->addAction(act_3_2);
-            QAction *act_3_3=new QAction(QString("через 3-5 суток: %1 - %2").arg(pl.min[2][2]).arg(pl.max[2][2]),subMenu_1);
+            QAction *act_3_3=new QAction(QString("С‡РµСЂРµР· 3-5 СЃСѓС‚РѕРє: %1 - %2").arg(pl.min[2][2]).arg(pl.max[2][2]),subMenu_1);
             subMenu_1_3->addAction(act_3_3);
-            QAction *act_3_4=new QAction(QString("более 5 суток: %1 - %2").arg(pl.min[2][3]).arg(pl.max[2][3]),subMenu_1);
+            QAction *act_3_4=new QAction(QString("Р±РѕР»РµРµ 5 СЃСѓС‚РѕРє: %1 - %2").arg(pl.min[2][3]).arg(pl.max[2][3]),subMenu_1);
             subMenu_1_3->addAction(act_3_4);
             subMenu_1->addMenu(subMenu_1_3);
 
             menu->addMenu(subMenu_1);
-            QAction *act_del=new QAction("Удалить воинское формирование",this);
+            QAction *act_del=new QAction("РЈРґР°Р»РёС‚СЊ РІРѕРёРЅСЃРєРѕРµ С„РѕСЂРјРёСЂРѕРІР°РЅРёРµ",this);
             act_del->setIcon(QIcon(":/Resources/close.png"));
             connect(act_del,SIGNAL(triggered()),this,SLOT(delete_ls()));
-            QAction *otch_ls = new QAction (QString("Сформировать отчет"),this);
+            QAction *otch_ls = new QAction (QString("РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ РѕС‚С‡РµС‚"),this);
             ls_id = list.value(1).toInt();
             connect(otch_ls,SIGNAL(triggered()),this,SLOT(otchet_groups()));
 
-            QAction *nac_sostav = new QAction(QString("Национальный состав"),this); //.arg(list.value(3)),this);
+            QAction *nac_sostav = new QAction(QString("РќР°С†РёРѕРЅР°Р»СЊРЅС‹Р№ СЃРѕСЃС‚Р°РІ"),this); //.arg(list.value(3)),this);
             connect(nac_sostav,SIGNAL(triggered()),this,SLOT(show_nations_ls()));
-            QAction *confess = new QAction(QString("Религиозный состав"),this); //.arg(list.value(3)),this);
+            QAction *confess = new QAction(QString("Р РµР»РёРіРёРѕР·РЅС‹Р№ СЃРѕСЃС‚Р°РІ"),this); //.arg(list.value(3)),this);
             connect(confess,SIGNAL(triggered()),this,SLOT(show_confess_ls()));
 
-            QAction *state = new QAction(QString("Штатно-должностной состав"),this);
+            QAction *state = new QAction(QString("РЁС‚Р°С‚РЅРѕ-РґРѕР»Р¶РЅРѕСЃС‚РЅРѕР№ СЃРѕСЃС‚Р°РІ"),this);
             connect(state,SIGNAL(triggered()),this,SLOT(show_state_ls()));
 
             menu->addAction(act);
@@ -331,58 +331,58 @@ void Objectmanager::customMenuView(const QPoint & pos)
             QMenu *menu = new QMenu(this);
 
             //	calculating_mps calc;
-            QAction *act=new QAction(QString("Оценка моралогического состояния %1: %2").arg(list.value(3)).arg(list.value(2)),this);
-            QAction *act_del=new QAction("Удалить воинское формирование",this);
+            QAction *act=new QAction(QString("РћС†РµРЅРєР° РјРѕСЂР°Р»РѕРіРёС‡РµСЃРєРѕРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ %1: %2").arg(list.value(3)).arg(list.value(2)),this);
+            QAction *act_del=new QAction("РЈРґР°Р»РёС‚СЊ РІРѕРёРЅСЃРєРѕРµ С„РѕСЂРјРёСЂРѕРІР°РЅРёРµ",this);
             act_del->setIcon(QIcon(":/Resources/close.png"));
             connect(act_del,SIGNAL(triggered()),this,SLOT(delete_ls()));
-            QMenu* subMenu_1 = new QMenu("Потери л/с",menu);
+            QMenu* subMenu_1 = new QMenu("РџРѕС‚РµСЂРё Р»/СЃ",menu);
 
-            QMenu* subMenu_1_1 = new QMenu("Интенсивность БД низкая");
-            QAction *act_1_1=new QAction(QString("через 1 час: %1 - %2").arg(pl.min[0][0]).arg(pl.max[0][0]),subMenu_1);
+            QMenu* subMenu_1_1 = new QMenu("РРЅС‚РµРЅСЃРёРІРЅРѕСЃС‚СЊ Р‘Р” РЅРёР·РєР°СЏ");
+            QAction *act_1_1=new QAction(QString("С‡РµСЂРµР· 1 С‡Р°СЃ: %1 - %2").arg(pl.min[0][0]).arg(pl.max[0][0]),subMenu_1);
             subMenu_1_1->addAction(act_1_1);
-            QAction *act_1_2=new QAction(QString("втечение суток: %1 - %2").arg(pl.min[0][1]).arg(pl.max[0][1]),subMenu_1);
+            QAction *act_1_2=new QAction(QString("РІС‚РµС‡РµРЅРёРµ СЃСѓС‚РѕРє: %1 - %2").arg(pl.min[0][1]).arg(pl.max[0][1]),subMenu_1);
             subMenu_1_1->addAction(act_1_2);
-            QAction *act_1_3=new QAction(QString("через 3-5 суток: %1 - %2").arg(pl.min[0][2]).arg(pl.max[0][2]),subMenu_1);
+            QAction *act_1_3=new QAction(QString("С‡РµСЂРµР· 3-5 СЃСѓС‚РѕРє: %1 - %2").arg(pl.min[0][2]).arg(pl.max[0][2]),subMenu_1);
             subMenu_1_1->addAction(act_1_3);
-            QAction *act_1_4=new QAction(QString("более 5 суток: %1 - %2").arg(pl.min[0][3]).arg(pl.max[0][3]),subMenu_1);
+            QAction *act_1_4=new QAction(QString("Р±РѕР»РµРµ 5 СЃСѓС‚РѕРє: %1 - %2").arg(pl.min[0][3]).arg(pl.max[0][3]),subMenu_1);
             subMenu_1_1->addAction(act_1_4);
             subMenu_1->addMenu(subMenu_1_1);
 
-            QMenu* subMenu_1_2 = new QMenu("Интенсивность БД средняя");
-            QAction *act_2_1=new QAction(QString("через 1 час: %1 - %2").arg(pl.min[1][0]).arg(pl.max[1][0]),subMenu_1);
+            QMenu* subMenu_1_2 = new QMenu("РРЅС‚РµРЅСЃРёРІРЅРѕСЃС‚СЊ Р‘Р” СЃСЂРµРґРЅСЏСЏ");
+            QAction *act_2_1=new QAction(QString("С‡РµСЂРµР· 1 С‡Р°СЃ: %1 - %2").arg(pl.min[1][0]).arg(pl.max[1][0]),subMenu_1);
             subMenu_1_2->addAction(act_2_1);
-            QAction *act_2_2=new QAction(QString("втечение суток: %1 - %2").arg(pl.min[1][1]).arg(pl.max[1][1]),subMenu_1);
+            QAction *act_2_2=new QAction(QString("РІС‚РµС‡РµРЅРёРµ СЃСѓС‚РѕРє: %1 - %2").arg(pl.min[1][1]).arg(pl.max[1][1]),subMenu_1);
             subMenu_1_2->addAction(act_2_2);
-            QAction *act_2_3=new QAction(QString("через 3-5 суток: %1 - %2").arg(pl.min[1][2]).arg(pl.max[1][2]),subMenu_1);
+            QAction *act_2_3=new QAction(QString("С‡РµСЂРµР· 3-5 СЃСѓС‚РѕРє: %1 - %2").arg(pl.min[1][2]).arg(pl.max[1][2]),subMenu_1);
             subMenu_1_2->addAction(act_2_3);
-            QAction *act_2_4=new QAction(QString("более 5 суток: %1 - %2").arg(pl.min[1][3]).arg(pl.max[1][3]),subMenu_1);
+            QAction *act_2_4=new QAction(QString("Р±РѕР»РµРµ 5 СЃСѓС‚РѕРє: %1 - %2").arg(pl.min[1][3]).arg(pl.max[1][3]),subMenu_1);
             subMenu_1_2->addAction(act_2_4);
             subMenu_1->addMenu(subMenu_1_2);
 
-            QMenu* subMenu_1_3 = new QMenu("Интенсивность БД высокая");
-            QAction *act_3_1=new QAction(QString("через 1 час: %1 - %2").arg(pl.min[2][0]).arg(pl.max[2][0]),subMenu_1);
+            QMenu* subMenu_1_3 = new QMenu("РРЅС‚РµРЅСЃРёРІРЅРѕСЃС‚СЊ Р‘Р” РІС‹СЃРѕРєР°СЏ");
+            QAction *act_3_1=new QAction(QString("С‡РµСЂРµР· 1 С‡Р°СЃ: %1 - %2").arg(pl.min[2][0]).arg(pl.max[2][0]),subMenu_1);
             subMenu_1_3->addAction(act_3_1);
-            QAction *act_3_2=new QAction(QString("втечение суток: %1 - %2").arg(pl.min[2][1]).arg(pl.max[2][1]),subMenu_1);
+            QAction *act_3_2=new QAction(QString("РІС‚РµС‡РµРЅРёРµ СЃСѓС‚РѕРє: %1 - %2").arg(pl.min[2][1]).arg(pl.max[2][1]),subMenu_1);
             subMenu_1_3->addAction(act_3_2);
-            QAction *act_3_3=new QAction(QString("через 3-5 суток: %1 - %2").arg(pl.min[2][2]).arg(pl.max[2][2]),subMenu_1);
+            QAction *act_3_3=new QAction(QString("С‡РµСЂРµР· 3-5 СЃСѓС‚РѕРє: %1 - %2").arg(pl.min[2][2]).arg(pl.max[2][2]),subMenu_1);
             subMenu_1_3->addAction(act_3_3);
-            QAction *act_3_4=new QAction(QString("более 5 суток: %1 - %2").arg(pl.min[2][3]).arg(pl.max[2][3]),subMenu_1);
+            QAction *act_3_4=new QAction(QString("Р±РѕР»РµРµ 5 СЃСѓС‚РѕРє: %1 - %2").arg(pl.min[2][3]).arg(pl.max[2][3]),subMenu_1);
             subMenu_1_3->addAction(act_3_4);
             subMenu_1->addMenu(subMenu_1_3);
 
             menu->addMenu(subMenu_1);
 
-            //QAction *act=new QAction("Удалить воинское формирование",this);
+            //QAction *act=new QAction("РЈРґР°Р»РёС‚СЊ РІРѕРёРЅСЃРєРѕРµ С„РѕСЂРјРёСЂРѕРІР°РЅРёРµ",this);
             //connect(act,SIGNAL(triggered()),this,SLOT(delete_ls()));
-            QAction *otch_ls = new QAction (QString("Сформировать отчет"),this);
+            QAction *otch_ls = new QAction (QString("РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ РѕС‚С‡РµС‚"),this);
             ls_id = list.value(1).toInt();
             connect(otch_ls,SIGNAL(triggered()),this,SLOT(otchet_groups()));
-            QAction *nac_sostav = new QAction(QString("Национальный состав"),this); //.arg(list.value(3)),this);
+            QAction *nac_sostav = new QAction(QString("РќР°С†РёРѕРЅР°Р»СЊРЅС‹Р№ СЃРѕСЃС‚Р°РІ"),this); //.arg(list.value(3)),this);
             connect(nac_sostav,SIGNAL(triggered()),this,SLOT(show_nations_ls()));
-            QAction *confess = new QAction(QString("Религиозный состав"),this); //.arg(list.value(3)),this);
+            QAction *confess = new QAction(QString("Р РµР»РёРіРёРѕР·РЅС‹Р№ СЃРѕСЃС‚Р°РІ"),this); //.arg(list.value(3)),this);
             connect(confess,SIGNAL(triggered()),this,SLOT(show_confess_ls()));
 
-            QAction *state = new QAction(QString("Штатно-должностной состав"),this);
+            QAction *state = new QAction(QString("РЁС‚Р°С‚РЅРѕ-РґРѕР»Р¶РЅРѕСЃС‚РЅРѕР№ СЃРѕСЃС‚Р°РІ"),this);
             connect(state,SIGNAL(triggered()),this,SLOT(show_state_ls()));
 
             menu->addAction(act);
@@ -401,28 +401,28 @@ void Objectmanager::customMenuView(const QPoint & pos)
         else if(list.value(0)=="dgr"){
             QPushButton *popupButton = new QPushButton;
             QMenu *menu = new QMenu(this);
-            QAction *act=new QAction("Удалить организацию",this);
+            QAction *act=new QAction("РЈРґР°Р»РёС‚СЊ РѕСЂРіР°РЅРёР·Р°С†РёСЋ",this);
             act->setIcon(QIcon(":/Resources/close.png"));
             connect(act,SIGNAL(triggered()),this,SLOT(delete_groups()));
 
-            QAction *otch_groups = new QAction (QString("Сформировать отчет"),this);
+            QAction *otch_groups = new QAction (QString("РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ РѕС‚С‡РµС‚"),this);
             group_id = list.value(1).toInt();
             connect(otch_groups,SIGNAL(triggered()),this,SLOT(otchet_groups()));
-            QAction *nac_sostav = new QAction(QString("Национальный состав"),this);
+            QAction *nac_sostav = new QAction(QString("РќР°С†РёРѕРЅР°Р»СЊРЅС‹Р№ СЃРѕСЃС‚Р°РІ"),this);
             connect(nac_sostav,SIGNAL(triggered()),this,SLOT(show_nations_gr()));
-            QAction *confess = new QAction(QString("Религиозный состав"),this);
+            QAction *confess = new QAction(QString("Р РµР»РёРіРёРѕР·РЅС‹Р№ СЃРѕСЃС‚Р°РІ"),this);
             connect(confess,SIGNAL(triggered()),this,SLOT(show_confess_gr()));
 
-            QAction *profess = new QAction(QString("Профессиональный состав"),this);
+            QAction *profess = new QAction(QString("РџСЂРѕС„РµСЃСЃРёРѕРЅР°Р»СЊРЅС‹Р№ СЃРѕСЃС‚Р°РІ"),this);
             connect(profess,SIGNAL(triggered()),this,SLOT(show_profess_gr()));
 
-            QAction *age = new QAction(QString("Возрастной состав"),this);
+            QAction *age = new QAction(QString("Р’РѕР·СЂР°СЃС‚РЅРѕР№ СЃРѕСЃС‚Р°РІ"),this);
             connect(age,SIGNAL(triggered()),this,SLOT(show_age_gr()));
 
-            QAction *sekas = new QAction(QString("Половой состав"),this);
+            QAction *sekas = new QAction(QString("РџРѕР»РѕРІРѕР№ СЃРѕСЃС‚Р°РІ"),this);
             connect(sekas,SIGNAL(triggered()),this,SLOT(show_sekas_gr()));
 
-            QAction *state = new QAction(QString("Штатно-должностной состав"),this);
+            QAction *state = new QAction(QString("РЁС‚Р°С‚РЅРѕ-РґРѕР»Р¶РЅРѕСЃС‚РЅРѕР№ СЃРѕСЃС‚Р°РІ"),this);
             connect(state,SIGNAL(triggered()),this,SLOT(show_state_gr()));
 
 
@@ -444,8 +444,8 @@ void Objectmanager::customMenuView(const QPoint & pos)
         else if(list.value(0)=="dsc"){
             QPushButton *popupButton = new QPushButton;
             QMenu *menu = new QMenu(this);
-            QAction *act=new QAction("Удалить особое условие",this);
-            QAction *otch_sc = new QAction (QString("Сформировать отчет"),this);
+            QAction *act=new QAction("РЈРґР°Р»РёС‚СЊ РѕСЃРѕР±РѕРµ СѓСЃР»РѕРІРёРµ",this);
+            QAction *otch_sc = new QAction (QString("РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ РѕС‚С‡РµС‚"),this);
             connect(otch_sc,SIGNAL(triggered()),this,SLOT(otchet_groups()));
             act->setIcon(QIcon(":/Resources/close.png"));
             connect(act,SIGNAL(triggered()),this,SLOT(delete_sc()));
@@ -458,8 +458,8 @@ void Objectmanager::customMenuView(const QPoint & pos)
         else if(list.value(0)=="dmpo"){
             QPushButton *popupButton = new QPushButton;
             QMenu *menu = new QMenu(this);
-            QAction *act=new QAction("Удалить средство",this);
-            QAction *otch_mpo_ls = new QAction (QString("Сформировать отчет"),this);
+            QAction *act=new QAction("РЈРґР°Р»РёС‚СЊ СЃСЂРµРґСЃС‚РІРѕ",this);
+            QAction *otch_mpo_ls = new QAction (QString("РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ РѕС‚С‡РµС‚"),this);
             connect(otch_mpo_ls,SIGNAL(triggered()),this,SLOT(otchet_groups()));
             act->setIcon(QIcon(":/Resources/close.png"));
             connect(act,SIGNAL(triggered()),this,SLOT(delete_mpo()));
@@ -472,8 +472,8 @@ void Objectmanager::customMenuView(const QPoint & pos)
         else if(list.value(0)=="dmpos"){
             QPushButton *popupButton = new QPushButton;
             QMenu *menu = new QMenu(this);
-            QAction *act=new QAction("Удалить средство",this);
-            QAction *otch_mpo_gr = new QAction (QString("Сформировать отчет"),this);
+            QAction *act=new QAction("РЈРґР°Р»РёС‚СЊ СЃСЂРµРґСЃС‚РІРѕ",this);
+            QAction *otch_mpo_gr = new QAction (QString("РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ РѕС‚С‡РµС‚"),this);
             connect(otch_mpo_gr,SIGNAL(triggered()),this,SLOT(otchet_groups()));
             act->setIcon(QIcon(":/Resources/close.png"));
             connect(act,SIGNAL(triggered()),this,SLOT(delete_mpo()));
@@ -486,8 +486,8 @@ void Objectmanager::customMenuView(const QPoint & pos)
         else if(list.value(0)=="dmposmi"){
             QPushButton *popupButton = new QPushButton;
             QMenu *menu = new QMenu(this);
-            QAction *act=new QAction("Удалить средство",this);
-            QAction *otch_mpo_smi = new QAction (QString("Сформировать отчет"),this);
+            QAction *act=new QAction("РЈРґР°Р»РёС‚СЊ СЃСЂРµРґСЃС‚РІРѕ",this);
+            QAction *otch_mpo_smi = new QAction (QString("РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ РѕС‚С‡РµС‚"),this);
             connect(otch_mpo_smi,SIGNAL(triggered()),this,SLOT(otchet_groups()));
             act->setIcon(QIcon(":/Resources/close.png"));
             connect(act,SIGNAL(triggered()),this,SLOT(delete_mpo()));
@@ -499,7 +499,7 @@ void Objectmanager::customMenuView(const QPoint & pos)
         }
     }
 }
-//============== Штатка для групп по правому клику ================================
+//============== РЁС‚Р°С‚РєР° РґР»СЏ РіСЂСѓРїРї РїРѕ РїСЂР°РІРѕРјСѓ РєР»РёРєСѓ ================================
 void Objectmanager::show_state_gr(){
 
     Add_elements_dialog *add_element= new Add_elements_dialog(22,group_id);
@@ -508,7 +508,7 @@ void Objectmanager::show_state_gr(){
     add_element->exec();
 
 }
-//============== Штатка для регионов по правому клику ================================
+//============== РЁС‚Р°С‚РєР° РґР»СЏ СЂРµРіРёРѕРЅРѕРІ РїРѕ РїСЂР°РІРѕРјСѓ РєР»РёРєСѓ ================================
 void Objectmanager::show_state_ls(){
 
     Add_elements_dialog *add_element= new Add_elements_dialog(12,ls_id);
@@ -517,7 +517,7 @@ void Objectmanager::show_state_ls(){
     add_element->exec();
 
 }
-//============== sex для регионов по правому клику ================================
+//============== sex РґР»СЏ СЂРµРіРёРѕРЅРѕРІ РїРѕ РїСЂР°РІРѕРјСѓ РєР»РёРєСѓ ================================
 void Objectmanager::show_sekas_region(){
 
     Add_elements_dialog *add_element= new Add_elements_dialog(9,groud_id);
@@ -526,7 +526,7 @@ void Objectmanager::show_sekas_region(){
     add_element->exec();
 
 }
-//============== sex для gr по правому клику ================================
+//============== sex РґР»СЏ gr РїРѕ РїСЂР°РІРѕРјСѓ РєР»РёРєСѓ ================================
 void Objectmanager::show_sekas_gr(){
 
     Add_elements_dialog *add_element= new Add_elements_dialog(21,group_id);
@@ -535,7 +535,7 @@ void Objectmanager::show_sekas_gr(){
     add_element->exec();
 
 }
-//============== age для gr по правому клику ================================
+//============== age РґР»СЏ gr РїРѕ РїСЂР°РІРѕРјСѓ РєР»РёРєСѓ ================================
 void Objectmanager::show_age_gr(){
 
     Add_elements_dialog *add_element= new Add_elements_dialog(20,group_id);
@@ -544,7 +544,7 @@ void Objectmanager::show_age_gr(){
     add_element->exec();
 
 }
-//============== age для регионов по правому клику ================================
+//============== age РґР»СЏ СЂРµРіРёРѕРЅРѕРІ РїРѕ РїСЂР°РІРѕРјСѓ РєР»РёРєСѓ ================================
 void Objectmanager::show_age_region(){
 
     Add_elements_dialog *add_element= new Add_elements_dialog(8,groud_id);
@@ -553,7 +553,7 @@ void Objectmanager::show_age_region(){
     add_element->exec();
 
 }
-//============== проф_состав для регионов по правому клику ================================
+//============== РїСЂРѕС„_СЃРѕСЃС‚Р°РІ РґР»СЏ СЂРµРіРёРѕРЅРѕРІ РїРѕ РїСЂР°РІРѕРјСѓ РєР»РёРєСѓ ================================
 void Objectmanager::show_profess_region(){
 
     Add_elements_dialog *add_element= new Add_elements_dialog(7,groud_id);
@@ -562,7 +562,7 @@ void Objectmanager::show_profess_region(){
     add_element->exec();
 
 }
-//============== проф_состав для gr по правому клику ================================
+//============== РїСЂРѕС„_СЃРѕСЃС‚Р°РІ РґР»СЏ gr РїРѕ РїСЂР°РІРѕРјСѓ РєР»РёРєСѓ ================================
 void Objectmanager::show_profess_gr(){
 
     Add_elements_dialog *add_element= new Add_elements_dialog(19,group_id);
@@ -571,7 +571,7 @@ void Objectmanager::show_profess_gr(){
     add_element->exec();
 
 }
-//============== религия для регионов по правому клику ================================
+//============== СЂРµР»РёРіРёСЏ РґР»СЏ СЂРµРіРёРѕРЅРѕРІ РїРѕ РїСЂР°РІРѕРјСѓ РєР»РёРєСѓ ================================
 void Objectmanager::show_confess_region(){
 
     Add_elements_dialog *add_element= new Add_elements_dialog(6,groud_id);
@@ -580,7 +580,7 @@ void Objectmanager::show_confess_region(){
     add_element->exec();
 
 }
-//============== религия для ВФ по правому клику ================================
+//============== СЂРµР»РёРіРёСЏ РґР»СЏ Р’Р¤ РїРѕ РїСЂР°РІРѕРјСѓ РєР»РёРєСѓ ================================
 void Objectmanager::show_confess_ls(){
 
     Add_elements_dialog *add_element= new Add_elements_dialog(11,ls_id);
@@ -589,7 +589,7 @@ void Objectmanager::show_confess_ls(){
     add_element->exec();
 
 }
-//============== религия для ВФ по правому клику ================================
+//============== СЂРµР»РёРіРёСЏ РґР»СЏ Р’Р¤ РїРѕ РїСЂР°РІРѕРјСѓ РєР»РёРєСѓ ================================
 void Objectmanager::show_confess_gr(){
 
     Add_elements_dialog *add_element= new Add_elements_dialog(18,group_id);
@@ -598,7 +598,7 @@ void Objectmanager::show_confess_gr(){
     add_element->exec();
 
 }
-//============== нац_состав для регионов по правому клику ================================
+//============== РЅР°С†_СЃРѕСЃС‚Р°РІ РґР»СЏ СЂРµРіРёРѕРЅРѕРІ РїРѕ РїСЂР°РІРѕРјСѓ РєР»РёРєСѓ ================================
 void Objectmanager::show_nations_region(){
 
     Add_elements_dialog *add_element= new Add_elements_dialog(4,groud_id);
@@ -607,7 +607,7 @@ void Objectmanager::show_nations_region(){
     add_element->exec();
 
 }
-//============== нац_состав для ВФ по правому клику ================================
+//============== РЅР°С†_СЃРѕСЃС‚Р°РІ РґР»СЏ Р’Р¤ РїРѕ РїСЂР°РІРѕРјСѓ РєР»РёРєСѓ ================================
 void Objectmanager::show_nations_ls(){
 
     Add_elements_dialog *add_element= new Add_elements_dialog(10,ls_id);
@@ -616,7 +616,7 @@ void Objectmanager::show_nations_ls(){
     add_element->exec();
 
 }
-//============== нац_состав для организаций по правому клику ================================
+//============== РЅР°С†_СЃРѕСЃС‚Р°РІ РґР»СЏ РѕСЂРіР°РЅРёР·Р°С†РёР№ РїРѕ РїСЂР°РІРѕРјСѓ РєР»РёРєСѓ ================================
 void Objectmanager::show_nations_gr(){
 
     Add_elements_dialog *add_element= new Add_elements_dialog(17,group_id);
@@ -638,13 +638,13 @@ void Objectmanager::customMenuTree(const QPoint & pos)
             int id_type = list.value(1).toInt();
             QPushButton *popupButton = new QPushButton;
             QMenu *menu = new QMenu(this);
-            QAction *act=new QAction("Добавить страну в блок",this);
+            QAction *act=new QAction("Р”РѕР±Р°РІРёС‚СЊ СЃС‚СЂР°РЅСѓ РІ Р±Р»РѕРє",this);
             connect(act,SIGNAL(triggered()),this,SLOT(add_country_blok()));
 
-            QAction *act_edit=new QAction("Информация о блоках",this);
+            QAction *act_edit=new QAction("РРЅС„РѕСЂРјР°С†РёСЏ Рѕ Р±Р»РѕРєР°С…",this);
             connect(act_edit,SIGNAL(triggered()),this,SLOT(edit_country_blok()));
 
-            QAction *act_del=new QAction("Удалить блок",this);
+            QAction *act_del=new QAction("РЈРґР°Р»РёС‚СЊ Р±Р»РѕРє",this);
             act_del->setIcon(QIcon(":/Resources/close.png"));
             connect(act_del,SIGNAL(triggered()),this,SLOT(delete_blok()));
 
@@ -659,14 +659,14 @@ void Objectmanager::customMenuTree(const QPoint & pos)
         else if(list.value(0)=="country"){
             QPushButton *popupButton = new QPushButton;
             QMenu *menu = new QMenu(this);
-            QAction *act=new QAction("Убрать страну из блока",this);
+            QAction *act=new QAction("РЈР±СЂР°С‚СЊ СЃС‚СЂР°РЅСѓ РёР· Р±Р»РѕРєР°",this);
             connect(act,SIGNAL(triggered()),this,SLOT(delete_country_blok()));
 
-            QAction *act_del=new QAction("Удалить страну",this);
+            QAction *act_del=new QAction("РЈРґР°Р»РёС‚СЊ СЃС‚СЂР°РЅСѓ",this);
             act_del->setIcon(QIcon(":/Resources/close.png"));
             connect(act_del,SIGNAL(triggered()),this,SLOT(delete_country()));
 
-            QAction *act_edit=new QAction("Информация о странах",this);
+            QAction *act_edit=new QAction("РРЅС„РѕСЂРјР°С†РёСЏ Рѕ СЃС‚СЂР°РЅР°С…",this);
             connect(act_edit,SIGNAL(triggered()),this,SLOT(edit_country()));
 
             menu->addAction(act);
@@ -679,7 +679,7 @@ void Objectmanager::customMenuTree(const QPoint & pos)
         }
     }
 }
-//========================== комбобокс страны =============================
+//========================== РєРѕРјР±РѕР±РѕРєСЃ СЃС‚СЂР°РЅС‹ =============================
 void Objectmanager::fill_combobox_country(QComboBox *box)
 {
     box->clear();
@@ -695,7 +695,7 @@ void Objectmanager::fill_combobox_country(QComboBox *box)
     }
     query.clear();
 }
-//========================== комбобокс блоки =============================
+//========================== РєРѕРјР±РѕР±РѕРєСЃ Р±Р»РѕРєРё =============================
 void Objectmanager::fill_combobox_blok(QComboBox *box, int id_current_blok)
 {
     box->clear();
@@ -718,19 +718,19 @@ void Objectmanager::fill_combobox_blok(QComboBox *box, int id_current_blok)
 
 }
 
-//========================= добавление, редактирование и  удаление блока ======================================
+//========================= РґРѕР±Р°РІР»РµРЅРёРµ, СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ Рё  СѓРґР°Р»РµРЅРёРµ Р±Р»РѕРєР° ======================================
 void Objectmanager::add_new_blok(){
 
     add_blok = new QDialog();
     add_blok->setMinimumSize(500,200);
-    add_blok->setWindowTitle("Добавить новый блок");
+    add_blok->setWindowTitle("Р”РѕР±Р°РІРёС‚СЊ РЅРѕРІС‹Р№ Р±Р»РѕРє");
     add_blok->setWindowIcon(QIcon(":/Resources/add_but.png"));
 
-    path_lab = new QLabel("Эмблема блока:");
+    path_lab = new QLabel("Р­РјР±Р»РµРјР° Р±Р»РѕРєР°:");
     path_lab->setMinimumWidth(100);
-    blok_desc = new QLabel("Описание блока");
+    blok_desc = new QLabel("РћРїРёСЃР°РЅРёРµ Р±Р»РѕРєР°");
     blok_desc->setMinimumWidth(100);
-    blok_name = new QLabel("Наименование блока:");
+    blok_name = new QLabel("РќР°РёРјРµРЅРѕРІР°РЅРёРµ Р±Р»РѕРєР°:");
     blok_name->setMinimumWidth(100);
 
     blok_filepath_edit = new QLineEdit();
@@ -744,7 +744,7 @@ void Objectmanager::add_new_blok(){
 
     ok_button = new QPushButton("OK");
     connect(ok_button,SIGNAL(clicked()),add_blok,SLOT(accept()));
-    cancel_button = new QPushButton("Отмена");
+    cancel_button = new QPushButton("РћС‚РјРµРЅР°");
     connect(cancel_button,SIGNAL(clicked()),add_blok,SLOT(close()));
 
     QHBoxLayout *buttons_layout = new QHBoxLayout();
@@ -785,7 +785,7 @@ void Objectmanager::add_new_blok(){
 
         if((blok_desc_edit->toPlainText() == "") || (blok_name_edit->text() == "")) return;
 
-        //------ По кнопке ОК добавление в БД блока --------
+        //------ РџРѕ РєРЅРѕРїРєРµ РћРљ РґРѕР±Р°РІР»РµРЅРёРµ РІ Р‘Р” Р±Р»РѕРєР° --------
         QSqlQuery query;
         query.prepare("INSERT INTO blok (name_blok,description_blok,emblem_blok) VALUES (?,?,?)");
         query.addBindValue(blok_name_edit->text());
@@ -796,8 +796,8 @@ void Objectmanager::add_new_blok(){
         {
             /*   //================MessageBox===============================
           QMessageBox msgBox;
-          msgBox.setWindowTitle("Внимание");
-          msgBox.setText("Необходимо выбрать изображение");
+          msgBox.setWindowTitle("Р’РЅРёРјР°РЅРёРµ");
+          msgBox.setText("РќРµРѕР±С…РѕРґРёРјРѕ РІС‹Р±СЂР°С‚СЊ РёР·РѕР±СЂР°Р¶РµРЅРёРµ");
           msgBox.setStandardButtons(QMessageBox::Yes);
           switch (msgBox.exec()) {
           case QMessageBox::Yes:
@@ -811,7 +811,7 @@ void Objectmanager::add_new_blok(){
 
         if(!query.exec())
         {
-            QMessageBox::about(this,"Ошибка",query.lastError().text());
+            QMessageBox::about(this,"РћС€РёР±РєР°",query.lastError().text());
         }
         init_object_tree();
         return;
@@ -822,7 +822,7 @@ void Objectmanager::get_path()
 {
     QFileDialog *file_dlg = new QFileDialog(add_blok);
     QString filepath =  file_dlg->getOpenFileName(this,
-                                                  "Открыть изображение", "", tr("Image Files (*.png *.jpg *.bmp)"));
+                                                  "РћС‚РєСЂС‹С‚СЊ РёР·РѕР±СЂР°Р¶РµРЅРёРµ", "", tr("Image Files (*.png *.jpg *.bmp)"));
     blok_filepath_edit->setText(filepath);
     add_blok->raise();
 }
@@ -830,19 +830,19 @@ void Objectmanager::get_path_edit()
 {
     QFileDialog *file_dlg = new QFileDialog(edit_dlg);
     QString filepath =  file_dlg->getOpenFileName(this,
-                                                  "Открыть изображение", "", tr("Image Files (*.png *.jpg *.bmp)"));
+                                                  "РћС‚РєСЂС‹С‚СЊ РёР·РѕР±СЂР°Р¶РµРЅРёРµ", "", tr("Image Files (*.png *.jpg *.bmp)"));
     blok_filepath_edit->setText(filepath);
     edit_dlg->raise();
 }
 void Objectmanager::delete_blok(){
 
     QMessageBox msgBox;
-    msgBox.setWindowTitle("Предупреждение");
-    msgBox.setText("Вы действительно удалить блок?");
+    msgBox.setWindowTitle("РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ");
+    msgBox.setText("Р’С‹ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅРѕ СѓРґР°Р»РёС‚СЊ Р±Р»РѕРє?");
 
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-    msgBox.setButtonText(QMessageBox::Yes, "Да");
-    msgBox.setButtonText(QMessageBox::No, "Нет");
+    msgBox.setButtonText(QMessageBox::Yes, "Р”Р°");
+    msgBox.setButtonText(QMessageBox::No, "РќРµС‚");
     switch (msgBox.exec()) {
     case QMessageBox::Yes:
         // yes was clicked
@@ -875,14 +875,14 @@ void Objectmanager::edit_country_blok(){
 
     edit_blok = new QDialog;
     edit_blok->setMinimumSize(600,400);
-    edit_blok->setWindowTitle("Информация о блоках");
+    edit_blok->setWindowTitle("РРЅС„РѕСЂРјР°С†РёСЏ Рѕ Р±Р»РѕРєР°С…");
     edit_blok->setWindowIcon(QIcon(":/Resources/add_but.png"));
 
     blok_edit_table = new QTableWidget;
     blok_edit_table->setWordWrap(true);
     // blok_edit_table->setMinimumSize(600,300);
 
-    QPushButton *cancelButton = new QPushButton("Выход");
+    QPushButton *cancelButton = new QPushButton("Р’С‹С…РѕРґ");
     connect(cancelButton,SIGNAL(clicked()),edit_blok,SLOT(close()));
 
     QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -916,7 +916,7 @@ void Objectmanager::table_blok(){
             blok_edit_table, SLOT(resizeRowsToContents()));
 
     QStringList header_list;
-    header_list<<" "<<" "<<"Наименование блока"<<"Описание блока"<<"Эмблема";
+    header_list<<" "<<" "<<"РќР°РёРјРµРЅРѕРІР°РЅРёРµ Р±Р»РѕРєР°"<<"РћРїРёСЃР°РЅРёРµ Р±Р»РѕРєР°"<<"Р­РјР±Р»РµРјР°";
     blok_edit_table->setHorizontalHeaderLabels(header_list);
 
     QSqlQuery query;
@@ -942,7 +942,7 @@ void Objectmanager::table_blok(){
 
         QIcon icon(QString(":/Resources/edit_1.png"));
         item = new QTableWidgetItem(icon,0);
-        item->setToolTip("Редактировать блок");
+        item->setToolTip("Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ Р±Р»РѕРє");
         blok_edit_table->setItem(row,0,item);
 
         item = new QTableWidgetItem(QString::number(id_blok));
@@ -970,14 +970,14 @@ void Objectmanager::show_redaktor_blok(int row,int column){
         int id_blok = blok_edit_table->item(row,1)->text().toInt();
 
         edit_dlg = new QDialog;
-        edit_dlg->setWindowTitle("Редактирование информации о блоке");
+        edit_dlg->setWindowTitle("Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ РёРЅС„РѕСЂРјР°С†РёРё Рѕ Р±Р»РѕРєРµ");
         edit_dlg->setMinimumSize(QSize(600,400));
 
-        path_lab = new QLabel("Эмблема блока:");
+        path_lab = new QLabel("Р­РјР±Р»РµРјР° Р±Р»РѕРєР°:");
         path_lab->setMinimumWidth(100);
-        blok_desc = new QLabel("Описание блока");
+        blok_desc = new QLabel("РћРїРёСЃР°РЅРёРµ Р±Р»РѕРєР°");
         blok_desc->setMinimumWidth(100);
-        blok_name = new QLabel("Наименование блока:");
+        blok_name = new QLabel("РќР°РёРјРµРЅРѕРІР°РЅРёРµ Р±Р»РѕРєР°:");
         blok_name->setMinimumWidth(100);
 
         blok_filepath_edit = new QLineEdit();
@@ -1007,9 +1007,9 @@ void Objectmanager::show_redaktor_blok(int row,int column){
         }
 
 
-        ok_button = new QPushButton("Сохранить");
+        ok_button = new QPushButton("РЎРѕС…СЂР°РЅРёС‚СЊ");
         connect(ok_button,SIGNAL(clicked()),edit_dlg,SLOT(accept()));
-        cancel_button = new QPushButton("Отмена");
+        cancel_button = new QPushButton("РћС‚РјРµРЅР°");
         connect(cancel_button,SIGNAL(clicked()),edit_dlg,SLOT(close()));
 
         QHBoxLayout *buttons_layout = new QHBoxLayout();
@@ -1064,7 +1064,7 @@ void Objectmanager::show_redaktor_blok(int row,int column){
                 query.addBindValue(id_blok_);
                 if(!query.exec())
                 {
-                    QMessageBox::about(this,"Ошибка",query.lastError().text());
+                    QMessageBox::about(this,"РћС€РёР±РєР°",query.lastError().text());
                 }
 
                 table_blok();
@@ -1079,7 +1079,7 @@ void Objectmanager::show_redaktor_blok(int row,int column){
                 query.addBindValue(id_blok_);
                 if(!query.exec())
                 {
-                    QMessageBox::about(this,"Ошибка",query.lastError().text());
+                    QMessageBox::about(this,"РћС€РёР±РєР°",query.lastError().text());
                 }
                 table_blok();
             }
@@ -1098,7 +1098,7 @@ void Objectmanager::show_redaktor_blok(int row,int column){
                 query.addBindValue(id_blok_);
                 if(!query.exec())
                 {
-                    QMessageBox::about(this,"Ошибка",query.lastError().text());
+                    QMessageBox::about(this,"РћС€РёР±РєР°",query.lastError().text());
                 }
 
                 table_blok();
@@ -1112,18 +1112,18 @@ void Objectmanager::show_redaktor_blok(int row,int column){
 
 }
 
-//========================= добавление, редактирование и удаление страны ======================================
+//========================= РґРѕР±Р°РІР»РµРЅРёРµ, СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ Рё СѓРґР°Р»РµРЅРёРµ СЃС‚СЂР°РЅС‹ ======================================
 void Objectmanager::add_new_country(){
     add_country = new QDialog();
     add_country->setMinimumSize(500,200);
-    add_country->setWindowTitle("Добавить новую страну");
+    add_country->setWindowTitle("Р”РѕР±Р°РІРёС‚СЊ РЅРѕРІСѓСЋ СЃС‚СЂР°РЅСѓ");
     add_country->setWindowIcon(QIcon(":/Resources/add_but.png"));
 
-    path_lab = new QLabel("Флаг страны:");
+    path_lab = new QLabel("Р¤Р»Р°Рі СЃС‚СЂР°РЅС‹:");
     path_lab->setMinimumWidth(100);
-    blok_desc = new QLabel("Описание страны");
+    blok_desc = new QLabel("РћРїРёСЃР°РЅРёРµ СЃС‚СЂР°РЅС‹");
     blok_desc->setMinimumWidth(100);
-    blok_name = new QLabel("Наименование страны:");
+    blok_name = new QLabel("РќР°РёРјРµРЅРѕРІР°РЅРёРµ СЃС‚СЂР°РЅС‹:");
     blok_name->setMinimumWidth(100);
 
     blok_filepath_edit = new QLineEdit();
@@ -1131,8 +1131,8 @@ void Objectmanager::add_new_country(){
     blok_desc_edit->setFixedWidth(300);
     blok_name_edit = new QLineEdit();
 
-    QLabel *label_enemy = new QLabel("Враждебность страны:");
-    checkbox_enemy = new QCheckBox(" [-V- враждебное]", add_country);
+    QLabel *label_enemy = new QLabel("Р’СЂР°Р¶РґРµР±РЅРѕСЃС‚СЊ СЃС‚СЂР°РЅС‹:");
+    checkbox_enemy = new QCheckBox(" [-V- РІСЂР°Р¶РґРµР±РЅРѕРµ]", add_country);
     label_enemy->setBuddy(checkbox_enemy);
 
     path_button = new QToolButton();
@@ -1141,7 +1141,7 @@ void Objectmanager::add_new_country(){
 
     ok_button = new QPushButton("OK");
     connect(ok_button,SIGNAL(clicked()),add_country,SLOT(accept()));
-    cancel_button = new QPushButton("Отмена");
+    cancel_button = new QPushButton("РћС‚РјРµРЅР°");
     connect(cancel_button,SIGNAL(clicked()),add_country,SLOT(close()));
 
     QHBoxLayout *buttons_layout = new QHBoxLayout();
@@ -1188,7 +1188,7 @@ void Objectmanager::add_new_country(){
 
         if((blok_desc_edit->toPlainText() == "") || (blok_name_edit->text() == "")) return;
 
-        //------ По кнопке ОК добавление в БД блока --------
+        //------ РџРѕ РєРЅРѕРїРєРµ РћРљ РґРѕР±Р°РІР»РµРЅРёРµ РІ Р‘Р” Р±Р»РѕРєР° --------
         QSqlQuery query;
         query.prepare("INSERT INTO country (name_country,description_country,enimy_coutry,flag) VALUES (?,?,?,?)");
         query.addBindValue(blok_name_edit->text());
@@ -1200,8 +1200,8 @@ void Objectmanager::add_new_country(){
         {
             /* //================MessageBox===============================
             QMessageBox msgBox;
-            msgBox.setWindowTitle("Внимание");
-            msgBox.setText("Необходимо выбрать изображение");
+            msgBox.setWindowTitle("Р’РЅРёРјР°РЅРёРµ");
+            msgBox.setText("РќРµРѕР±С…РѕРґРёРјРѕ РІС‹Р±СЂР°С‚СЊ РёР·РѕР±СЂР°Р¶РµРЅРёРµ");
             msgBox.setStandardButtons(QMessageBox::Yes);
             switch (msgBox.exec()) {
             case QMessageBox::Yes:
@@ -1215,7 +1215,7 @@ void Objectmanager::add_new_country(){
 
         if(!query.exec())
         {
-            QMessageBox::about(this,"Ошибка",query.lastError().text());
+            QMessageBox::about(this,"РћС€РёР±РєР°",query.lastError().text());
         }
 
         return;
@@ -1226,7 +1226,7 @@ void Objectmanager::get_path_flag()
 {
     QFileDialog *file_dlg = new QFileDialog(add_country);
     QString filepath =  file_dlg->getOpenFileName(this,
-                                                  "Открыть изображение", "", tr("Image Files (*.png *.jpg *.bmp)"));
+                                                  "РћС‚РєСЂС‹С‚СЊ РёР·РѕР±СЂР°Р¶РµРЅРёРµ", "", tr("Image Files (*.png *.jpg *.bmp)"));
     blok_filepath_edit->setText(filepath);
     add_country->raise();
 }
@@ -1234,19 +1234,19 @@ void Objectmanager::get_path_flag_edit()
 {
     QFileDialog *file_dlg = new QFileDialog(edit_dlg);
     QString filepath =  file_dlg->getOpenFileName(this,
-                                                  "Открыть изображение", "", tr("Image Files (*.png *.jpg *.bmp)"));
+                                                  "РћС‚РєСЂС‹С‚СЊ РёР·РѕР±СЂР°Р¶РµРЅРёРµ", "", tr("Image Files (*.png *.jpg *.bmp)"));
     blok_filepath_edit->setText(filepath);
     edit_dlg->raise();
 }
 void Objectmanager::delete_country(){
 
     QMessageBox msgBox;
-    msgBox.setWindowTitle("Предупреждение");
-    msgBox.setText("Вы действительно удалить страну?");
+    msgBox.setWindowTitle("РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ");
+    msgBox.setText("Р’С‹ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅРѕ СѓРґР°Р»РёС‚СЊ СЃС‚СЂР°РЅСѓ?");
 
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-    msgBox.setButtonText(QMessageBox::Yes, "Да");
-    msgBox.setButtonText(QMessageBox::No, "Нет");
+    msgBox.setButtonText(QMessageBox::Yes, "Р”Р°");
+    msgBox.setButtonText(QMessageBox::No, "РќРµС‚");
     switch (msgBox.exec()) {
     case QMessageBox::Yes:
         // yes was clicked
@@ -1286,14 +1286,14 @@ void Objectmanager::edit_country(){
 
     edit_country_dlg = new QDialog;
     edit_country_dlg->setMinimumSize(600,400);
-    edit_country_dlg->setWindowTitle("Информация о странах");
+    edit_country_dlg->setWindowTitle("РРЅС„РѕСЂРјР°С†РёСЏ Рѕ СЃС‚СЂР°РЅР°С…");
     edit_country_dlg->setWindowIcon(QIcon(":/Resources/add_but.png"));
 
     country_edit_table = new QTableWidget;
     country_edit_table->setWordWrap(true);
     // blok_edit_table->setMinimumSize(600,300);
 
-    QPushButton *cancelButton = new QPushButton("Выход");
+    QPushButton *cancelButton = new QPushButton("Р’С‹С…РѕРґ");
     connect(cancelButton,SIGNAL(clicked()),edit_country_dlg,SLOT(close()));
 
     QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -1327,7 +1327,7 @@ void Objectmanager::table_country(){
             country_edit_table, SLOT(resizeRowsToContents()));
 
     QStringList header_list;
-    header_list<<" "<<" "<<"Наименование страны"<<"Описание страны"<<"Враждебность"<<"Флаг";
+    header_list<<" "<<" "<<"РќР°РёРјРµРЅРѕРІР°РЅРёРµ СЃС‚СЂР°РЅС‹"<<"РћРїРёСЃР°РЅРёРµ СЃС‚СЂР°РЅС‹"<<"Р’СЂР°Р¶РґРµР±РЅРѕСЃС‚СЊ"<<"Р¤Р»Р°Рі";
     country_edit_table->setHorizontalHeaderLabels(header_list);
 
     QSqlQuery query;
@@ -1353,16 +1353,16 @@ void Objectmanager::table_country(){
 
         if(enemy == true)
         {
-            enemy_bool = "Враждебно настроена";
+            enemy_bool = "Р’СЂР°Р¶РґРµР±РЅРѕ РЅР°СЃС‚СЂРѕРµРЅР°";
         }
         else
-            enemy_bool = "Не враждебно настроена";
+            enemy_bool = "РќРµ РІСЂР°Р¶РґРµР±РЅРѕ РЅР°СЃС‚СЂРѕРµРЅР°";
 
         country_edit_table->insertRow(row);
 
         QIcon icon(QString(":/Resources/edit_1.png"));
         item = new QTableWidgetItem(icon,0);
-        item->setToolTip("Редактировать страну");
+        item->setToolTip("Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ СЃС‚СЂР°РЅСѓ");
         country_edit_table->setItem(row,0,item);
 
         item = new QTableWidgetItem(QString::number(id_country));
@@ -1393,14 +1393,14 @@ void Objectmanager::show_redaktor_country(int row,int column){
         int id_country = country_edit_table->item(row,1)->text().toInt();
 
         edit_dlg = new QDialog;
-        edit_dlg->setWindowTitle("Редактирование информации о стране");
+        edit_dlg->setWindowTitle("Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ РёРЅС„РѕСЂРјР°С†РёРё Рѕ СЃС‚СЂР°РЅРµ");
         edit_dlg->setMinimumSize(QSize(600,400));
 
-        path_lab = new QLabel("Флаг страны:");
+        path_lab = new QLabel("Р¤Р»Р°Рі СЃС‚СЂР°РЅС‹:");
         path_lab->setMinimumWidth(100);
-        blok_desc = new QLabel("Описание страны");
+        blok_desc = new QLabel("РћРїРёСЃР°РЅРёРµ СЃС‚СЂР°РЅС‹");
         blok_desc->setMinimumWidth(100);
-        blok_name = new QLabel("Наименование страны:");
+        blok_name = new QLabel("РќР°РёРјРµРЅРѕРІР°РЅРёРµ СЃС‚СЂР°РЅС‹:");
         blok_name->setMinimumWidth(100);
 
         blok_filepath_edit = new QLineEdit();
@@ -1408,8 +1408,8 @@ void Objectmanager::show_redaktor_country(int row,int column){
         blok_desc_edit->setFixedWidth(300);
         blok_name_edit = new QLineEdit();
 
-        QLabel *label_enemy = new QLabel("Враждебность страны:");
-        checkbox_enemy = new QCheckBox(" [-V- враждебное]", edit_dlg);
+        QLabel *label_enemy = new QLabel("Р’СЂР°Р¶РґРµР±РЅРѕСЃС‚СЊ СЃС‚СЂР°РЅС‹:");
+        checkbox_enemy = new QCheckBox(" [-V- РІСЂР°Р¶РґРµР±РЅРѕРµ]", edit_dlg);
         label_enemy->setBuddy(checkbox_enemy);
 
         path_button = new QToolButton();
@@ -1436,9 +1436,9 @@ void Objectmanager::show_redaktor_country(int row,int column){
         }
 
 
-        ok_button = new QPushButton("Сохранить");
+        ok_button = new QPushButton("РЎРѕС…СЂР°РЅРёС‚СЊ");
         connect(ok_button,SIGNAL(clicked()),edit_dlg,SLOT(accept()));
-        cancel_button = new QPushButton("Отмена");
+        cancel_button = new QPushButton("РћС‚РјРµРЅР°");
         connect(cancel_button,SIGNAL(clicked()),edit_dlg,SLOT(close()));
 
         QHBoxLayout *buttons_layout = new QHBoxLayout();
@@ -1501,7 +1501,7 @@ void Objectmanager::show_redaktor_country(int row,int column){
                 query.addBindValue(id_country_);
                 if(!query.exec())
                 {
-                    QMessageBox::about(this,"Ошибка",query.lastError().text());
+                    QMessageBox::about(this,"РћС€РёР±РєР°",query.lastError().text());
                 }
 
                 table_country();
@@ -1517,7 +1517,7 @@ void Objectmanager::show_redaktor_country(int row,int column){
                 query.addBindValue(id_country_);
                 if(!query.exec())
                 {
-                    QMessageBox::about(this,"Ошибка",query.lastError().text());
+                    QMessageBox::about(this,"РћС€РёР±РєР°",query.lastError().text());
                 }
                 table_country();
             }
@@ -1537,7 +1537,7 @@ void Objectmanager::show_redaktor_country(int row,int column){
                 query.addBindValue(id_country_);
                 if(!query.exec())
                 {
-                    QMessageBox::about(this,"Ошибка",query.lastError().text());
+                    QMessageBox::about(this,"РћС€РёР±РєР°",query.lastError().text());
                 }
 
                 table_country();
@@ -1550,7 +1550,7 @@ void Objectmanager::show_redaktor_country(int row,int column){
 
 }
 
-//========================= добавление страны в блок ===========================================================
+//========================= РґРѕР±Р°РІР»РµРЅРёРµ СЃС‚СЂР°РЅС‹ РІ Р±Р»РѕРє ===========================================================
 void Objectmanager::add_country_blok(){
 
     QDialog *add_element = new QDialog();
@@ -1558,10 +1558,10 @@ void Objectmanager::add_country_blok(){
     QModelIndex index = UI->object_manager_tree->currentIndex();
     QString id=index.data(Qt::UserRole).toString();
     QStringList list=id.split("_");
-    add_element->setWindowTitle("Добвление страны в блок");
+    add_element->setWindowTitle("Р”РѕР±РІР»РµРЅРёРµ СЃС‚СЂР°РЅС‹ РІ Р±Р»РѕРє");
 
-    QLabel *element_name_blok = new QLabel("Блок:");
-    QLabel *element_name_country = new QLabel("Страна:");
+    QLabel *element_name_blok = new QLabel("Р‘Р»РѕРє:");
+    QLabel *element_name_country = new QLabel("РЎС‚СЂР°РЅР°:");
 
     QComboBox *blok_combo = new QComboBox();
     QComboBox *country_combo = new QComboBox();
@@ -1580,9 +1580,9 @@ void Objectmanager::add_country_blok(){
     BP_count_layout->addWidget(element_name_country);
     BP_count_layout->addWidget(country_combo);
 
-    QPushButton *ok_button = new QPushButton("Добавить");
+    QPushButton *ok_button = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
     connect(ok_button,SIGNAL(clicked()),add_element,SLOT(accept()));
-    QPushButton *cancel_button = new QPushButton("Отмена");
+    QPushButton *cancel_button = new QPushButton("РћС‚РјРµРЅР°");
     connect(cancel_button,SIGNAL(clicked()),add_element,SLOT(close()));
 
     QHBoxLayout *buttons_layout = new QHBoxLayout();
@@ -1601,10 +1601,10 @@ void Objectmanager::add_country_blok(){
     if(add_element->exec() == QDialog::Accepted){
         if (country_combo->currentIndex() == 0){
             QMessageBox::StandardButton ret;
-            ret = QMessageBox::critical (this,"Ошибка",("Выберите страну "),QMessageBox::Ok );
+            ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’С‹Р±РµСЂРёС‚Рµ СЃС‚СЂР°РЅСѓ "),QMessageBox::Ok );
         }
 
-        //=============== По кнопке Добавить добавление в БД нового уязвимого элемента ===========
+        //=============== РџРѕ РєРЅРѕРїРєРµ Р”РѕР±Р°РІРёС‚СЊ РґРѕР±Р°РІР»РµРЅРёРµ РІ Р‘Р” РЅРѕРІРѕРіРѕ СѓСЏР·РІРёРјРѕРіРѕ СЌР»РµРјРµРЅС‚Р° ===========
 
         int id_blok = blok_combo->itemData(blok_combo->currentIndex()).toInt();
         int id_country = country_combo->itemData(country_combo->currentIndex()).toInt();
@@ -1620,7 +1620,7 @@ void Objectmanager::add_country_blok(){
             if (id_country == id_country_1){
 
                 QMessageBox::StandardButton ret;
-                ret = QMessageBox::critical (this,"Ошибка",("Страна присутствует в блоке "),QMessageBox::Ok );
+                ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("РЎС‚СЂР°РЅР° РїСЂРёСЃСѓС‚СЃС‚РІСѓРµС‚ РІ Р±Р»РѕРєРµ "),QMessageBox::Ok );
                 return;
             }
         }
@@ -1641,16 +1641,16 @@ void Objectmanager::add_country_blok(){
     }
 
 }
-//===================== Удаление страны из блока ===============================================================
+//===================== РЈРґР°Р»РµРЅРёРµ СЃС‚СЂР°РЅС‹ РёР· Р±Р»РѕРєР° ===============================================================
 void Objectmanager::delete_country_blok()
 {
     QMessageBox msgBox;
-    msgBox.setWindowTitle("Предупреждение");
-    msgBox.setText("Вы действительно хотите удалить страну из блока?");
+    msgBox.setWindowTitle("РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ");
+    msgBox.setText("Р’С‹ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅРѕ С…РѕС‚РёС‚Рµ СѓРґР°Р»РёС‚СЊ СЃС‚СЂР°РЅСѓ РёР· Р±Р»РѕРєР°?");
 
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-    msgBox.setButtonText(QMessageBox::Yes, "Да");
-    msgBox.setButtonText(QMessageBox::No, "Нет");
+    msgBox.setButtonText(QMessageBox::Yes, "Р”Р°");
+    msgBox.setButtonText(QMessageBox::No, "РќРµС‚");
     switch (msgBox.exec()) {
     case QMessageBox::Yes:
         // yes was clicked
@@ -1694,12 +1694,12 @@ void Objectmanager::updateDB(QStandardItem *item)
     query.exec(str);
     qDebug(query.lastError().text().toLocal8Bit());
 }
-//================= выбор объекта из дерева ====================================================================
+//================= РІС‹Р±РѕСЂ РѕР±СЉРµРєС‚Р° РёР· РґРµСЂРµРІР° ====================================================================
 void Objectmanager::show_objects(const QModelIndex &index)
 {
     UI->property_object->setModel(0);
     clear_tableWidget(UI->coord_table);
- //   QProgressDialog * progress = new QProgressDialog("Формирование информации о регионах", "Отмена", 0, 0,this);
+ //   QProgressDialog * progress = new QProgressDialog("Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ РёРЅС„РѕСЂРјР°С†РёРё Рѕ СЂРµРіРёРѕРЅР°С…", "РћС‚РјРµРЅР°", 0, 0,this);
   //  QThread *thr = new QThread(this);
   //  progress->moveToThread(thr);
 //progress->show();
@@ -1729,7 +1729,7 @@ void Objectmanager::show_objects(const QModelIndex &index)
 
             while (query.next())
             {
-                QSqlQuery query_count; // подсчет ********
+                QSqlQuery query_count; // РїРѕРґСЃС‡РµС‚ ********
                 query_count.exec(QString("select count(name_region) from region where parent_region = %1").arg(query.value(0).toInt()));
 
                 while (query_count.next())
@@ -1747,11 +1747,11 @@ void Objectmanager::show_objects(const QModelIndex &index)
 
                 }
             }
-            QStandardItem *item = new QStandardItem(QIcon(":/Resources/add.png"),"Добавить регион");
+            QStandardItem *item = new QStandardItem(QIcon(":/Resources/add.png"),"Р”РѕР±Р°РІРёС‚СЊ СЂРµРіРёРѕРЅ");
             item->setFont(font);
             item->setData(QString("pregion_%1").arg(id_country),Qt::UserRole);
             model->appendRow(item);
-            model->setHeaderData(0,Qt::Horizontal,"Регионы");
+            model->setHeaderData(0,Qt::Horizontal,"Р РµРіРёРѕРЅС‹");
             UI->columnView->setModel(model);
 
         }
@@ -1761,7 +1761,7 @@ void Objectmanager::show_objects(const QModelIndex &index)
     return;
 }
 
-//================= Расчеты МПО ================================================================================
+//================= Р Р°СЃС‡РµС‚С‹ РњРџРћ ================================================================================
 int Objectmanager::calcul(int id_region){
 
     int count_smi_ = count_smi(id_region);
@@ -1830,16 +1830,16 @@ void Objectmanager::child_region_objects(QStandardItem *parent_item,int id_paren
     QFont font;
     font.setBold(true);
 
-    set_child_item("Добавить регион",QString("preg_%1").arg(id_parent_region),parent_item,row,":/Resources/add.png" ,font);
+    set_child_item("Р”РѕР±Р°РІРёС‚СЊ СЂРµРіРёРѕРЅ",QString("preg_%1").arg(id_parent_region),parent_item,row,":/Resources/add.png" ,font);
     add_region_components(parent_item,id_parent_region,row);
     query.clear();
     UI->searchButton->setEnabled(true);
     UI->searchLineEdit->setEnabled(true);
 }
 
-//============================== Все для региона ===============================================================
+//============================== Р’СЃРµ РґР»СЏ СЂРµРіРёРѕРЅР° ===============================================================
 void Objectmanager::add_region_components(QStandardItem *parent_item,int id_parent_region,int start_row){
-    //=== СМИ ===
+    //=== РЎРњР ===
     QSqlQuery query;
     query.exec(QString("SELECT sm.id_region,sm.id_smi,sm.id_smi_region,poz.id_position_smi,poz.id_smi FROM smi_region sm,smi poz WHERE id_region=%1 AND sm.id_smi = poz.id_smi").arg(id_parent_region));
     int row=start_row+1;
@@ -1852,12 +1852,12 @@ void Objectmanager::add_region_components(QStandardItem *parent_item,int id_pare
     while (query_count.next()){
         g = query_count.value(0).toInt();}
 
-    QStandardItem *item=set_child_item("СМИ ["  + QString::number(g) +"/" + QString::number(ggg)+ "]","smi",parent_item,row,":/Resources/printer.png");
-    //QStandardItem *item=set_child_item("СМИ","smi",parent_item,row,"./icons/printer.png");
+    QStandardItem *item=set_child_item("РЎРњР ["  + QString::number(g) +"/" + QString::number(ggg)+ "]","smi",parent_item,row,":/Resources/printer.png");
+    //QStandardItem *item=set_child_item("РЎРњР","smi",parent_item,row,"./icons/printer.png");
     row++;
 
     if (query.size() != 0)
-    {//	ветка СМИ
+    {//	РІРµС‚РєР° РЎРњР
         row_sw=0;
         while (query.next())
         {
@@ -1892,9 +1892,9 @@ void Objectmanager::add_region_components(QStandardItem *parent_item,int id_pare
     QFont font;
     font.setBold(true);
 
-    set_child_item("Добавить CМИ",QString("psmi_%1").arg(id_parent_region),item,row_sw,font);
+    set_child_item("Р”РѕР±Р°РІРёС‚СЊ CРњР",QString("psmi_%1").arg(id_parent_region),item,row_sw,font);
     query.clear();
-    //=== Воинские формирования ===
+    //=== Р’РѕРёРЅСЃРєРёРµ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ ===
     query.exec(QString("SELECT id_region, id_ls,name_ls,enimy_ls FROM ls WHERE id_region=%1 ORDER BY name_ls").arg(id_parent_region));
     int row_vf=0;
     int b;
@@ -1904,10 +1904,10 @@ void Objectmanager::add_region_components(QStandardItem *parent_item,int id_pare
     while (query_count_ls.next()){
         b = query_count_ls.value(0).toInt();
     }
-    item=set_child_item("ВОИНСКИЕ ФОРМИРОВАНИЯ ["  + QString::number(b) + "]",QString("ls_%1").arg(id_parent_region),parent_item,row,":/Resources/weapon.png");
+    item=set_child_item("Р’РћРРќРЎРљРР• Р¤РћР РњРР РћР’РђРќРРЇ ["  + QString::number(b) + "]",QString("ls_%1").arg(id_parent_region),parent_item,row,":/Resources/weapon.png");
     row++;
     if (query.size() != 0)
-    {//Ветка воинские формирования
+    {//Р’РµС‚РєР° РІРѕРёРЅСЃРєРёРµ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ
         row_vf=0;
         while (query.next())
         {
@@ -1930,9 +1930,9 @@ void Objectmanager::add_region_components(QStandardItem *parent_item,int id_pare
         }
     }
 
-    set_child_item("Добавить Воинские формирования",QString("pls_%1").arg(id_parent_region),item,row_vf,font);
+    set_child_item("Р”РѕР±Р°РІРёС‚СЊ Р’РѕРёРЅСЃРєРёРµ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ",QString("pls_%1").arg(id_parent_region),item,row_vf,font);
     query.clear();
-    //=== Организации ===
+    //=== РћСЂРіР°РЅРёР·Р°С†РёРё ===
     query.exec(QString("SELECT id_region, id_groups,name_groups FROM groups WHERE id_region=%1").arg(id_parent_region));
     int row_gr=0;
 
@@ -1943,12 +1943,12 @@ void Objectmanager::add_region_components(QStandardItem *parent_item,int id_pare
     while (query_count_gr.next()){
         a = query_count_gr.value(0).toInt();}
 
-    item=set_child_item("ОРГАНИЗАЦИИ ["  + QString::number(a) + "]","gr",parent_item,row,":/Resources/group.png");
+    item=set_child_item("РћР Р“РђРќРР—РђР¦РР ["  + QString::number(a) + "]","gr",parent_item,row,":/Resources/group.png");
 
-    //item = set_child_item("ОРГАНИЗАЦИИ","gr",parent_item,row,"./icons/group.png");
+    //item = set_child_item("РћР Р“РђРќРР—РђР¦РР","gr",parent_item,row,"./icons/group.png");
     row++;
     if (query.size() != 0)
-    {//Ветка организации
+    {//Р’РµС‚РєР° РѕСЂРіР°РЅРёР·Р°С†РёРё
         row_gr=0;
         while (query.next())
         {
@@ -1967,9 +1967,9 @@ void Objectmanager::add_region_components(QStandardItem *parent_item,int id_pare
             row_gr++;
         }
     }
-    set_child_item("Добавить Организации",QString("pgr_%1").arg(id_parent_region),item,row_gr,font);
+    set_child_item("Р”РѕР±Р°РІРёС‚СЊ РћСЂРіР°РЅРёР·Р°С†РёРё",QString("pgr_%1").arg(id_parent_region),item,row_gr,font);
     query.clear();
-    //=== Условия ===
+    //=== РЈСЃР»РѕРІРёСЏ ===
     query.exec(QString("SELECT id_region, id_special_conditions,name_special_conditions FROM special_conditions WHERE id_region=%1 ORDER BY name_special_conditions").arg(id_parent_region));
     int row_sc=0;
 
@@ -1980,12 +1980,12 @@ void Objectmanager::add_region_components(QStandardItem *parent_item,int id_pare
     while (query_count_sc.next()){
         y = query_count_sc.value(0).toInt();}
 
-    item=set_child_item("ОСОБЫЕ УСЛОВИЯ ["  + QString::number(y) + "]","gr",parent_item,row,":/Resources/Stop2.png");
+    item=set_child_item("РћРЎРћР‘Р«Р• РЈРЎР›РћР’РРЇ ["  + QString::number(y) + "]","gr",parent_item,row,":/Resources/Stop2.png");
 
-    //item = set_child_item("ОРГАНИЗАЦИИ","gr",parent_item,row,"./icons/group.png");
+    //item = set_child_item("РћР Р“РђРќРР—РђР¦РР","gr",parent_item,row,"./icons/group.png");
     row++;
     if (query.size() != 0)
-    {//Ветка условия
+    {//Р’РµС‚РєР° СѓСЃР»РѕРІРёСЏ
         row_sc=0;
         while (query.next())
         {
@@ -2003,7 +2003,7 @@ void Objectmanager::add_region_components(QStandardItem *parent_item,int id_pare
             row_sc++;
         }
     }
-    set_child_item("Добавить Особые условия",QString("psc_%1").arg(id_parent_region),item,row_sc,font);
+    set_child_item("Р”РѕР±Р°РІРёС‚СЊ РћСЃРѕР±С‹Рµ СѓСЃР»РѕРІРёСЏ",QString("psc_%1").arg(id_parent_region),item,row_sc,font);
     query.clear();
 }	
 void Objectmanager::column_item_clicked ( const QModelIndex &index){
@@ -2027,13 +2027,13 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
             reg->exec();
         }
         else if(list.value(0)=="psmi"){
-            //вызов диалога добавления СМИ на объекте
+            //РІС‹Р·РѕРІ РґРёР°Р»РѕРіР° РґРѕР±Р°РІР»РµРЅРёСЏ РЎРњР РЅР° РѕР±СЉРµРєС‚Рµ
             Add_elements_dialog *add_element= new Add_elements_dialog(1,list.value(1).toInt());
             add_element->setModal(true);
             int result=add_element->exec();
-            //вернул id
+            //РІРµСЂРЅСѓР» id
             if (result==0)return;
-            //обновление модели, добавление нового item-а
+            //РѕР±РЅРѕРІР»РµРЅРёРµ РјРѕРґРµР»Рё, РґРѕР±Р°РІР»РµРЅРёРµ РЅРѕРІРѕРіРѕ item-Р°
             QSqlQuery query_smi;
             query_smi.exec(QString("SELECT s.id_smi,s.name_smi FROM smi_region r,smi s WHERE r.id_smi_region=%1 and s.id_smi=r.id_smi").arg(result));
             while (query_smi.next())
@@ -2044,15 +2044,15 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
                 QStandardItem *par = model->itemFromIndex(index)->parent();
                 int r1 = model->itemFromIndex(index)->parent()->rowCount()-1;
                 int r2 = model->itemFromIndex(index)->parent()->rowCount();
-                //добавляем в модель новый элемент, затирая "Добавить СМИ"
+                //РґРѕР±Р°РІР»СЏРµРј РІ РјРѕРґРµР»СЊ РЅРѕРІС‹Р№ СЌР»РµРјРµРЅС‚, Р·Р°С‚РёСЂР°СЏ "Р”РѕР±Р°РІРёС‚СЊ РЎРњР"
                 child_smi_objects(set_child_item(name_smi,user_data_smi,par,r1),result);
 
-                //вновь добавляем элемент "Добавить СМИ"
-                set_child_item("Добавить СМИ",QString("psmi_%1").arg(list.value(1)),par,r2,font);
+                //РІРЅРѕРІСЊ РґРѕР±Р°РІР»СЏРµРј СЌР»РµРјРµРЅС‚ "Р”РѕР±Р°РІРёС‚СЊ РЎРњР"
+                set_child_item("Р”РѕР±Р°РІРёС‚СЊ РЎРњР",QString("psmi_%1").arg(list.value(1)),par,r2,font);
 
             }
         }
-        //воинские формирования
+        //РІРѕРёРЅСЃРєРёРµ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ
         else if(list.value(0)=="pls"){
 
             Add_elements_dialog *add_element= new Add_elements_dialog(2,list.value(1).toInt());
@@ -2076,7 +2076,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 
                     child_ls_objects(set_child_item(name_ls,user_data_ls,par,r1,b),result);
 
-                    set_child_item("Добавить воинское формирование",QString("pls_%1").arg(list.value(1)),par,r2,font);
+                    set_child_item("Р”РѕР±Р°РІРёС‚СЊ РІРѕРёРЅСЃРєРѕРµ С„РѕСЂРјРёСЂРѕРІР°РЅРёРµ",QString("pls_%1").arg(list.value(1)),par,r2,font);
                 }
                 else{
                     QBrush b(Qt::red);
@@ -2086,12 +2086,12 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
                     //
                     child_ls_objects(set_child_item(name_ls,user_data_ls,par,r1,b),result);
                     //
-                    set_child_item("Добавить воинское формирование",QString("pls_%1").arg(list.value(1)),par,r2,font);
+                    set_child_item("Р”РѕР±Р°РІРёС‚СЊ РІРѕРёРЅСЃРєРѕРµ С„РѕСЂРјРёСЂРѕРІР°РЅРёРµ",QString("pls_%1").arg(list.value(1)),par,r2,font);
 
                 }
             }
         }
-        // подчиненные воинские формирования
+        // РїРѕРґС‡РёРЅРµРЅРЅС‹Рµ РІРѕРёРЅСЃРєРёРµ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ
         else if(list.value(0)=="plss"){
 
             Add_elements_dialog *add_element= new Add_elements_dialog(5,list.value(1).toInt());
@@ -2128,16 +2128,16 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
                 QStandardItem *par_i=par->takeChild(r1);
                 QStandardItem *par_y=par->takeChild(r2);
                 child_ls_objects(set_child_item(name_ls,user_data_ls,par,r4,b),result);
-                set_child_item("Добавить подчиненные ВФ",QString("plss_%1").arg(list.value(1)),par,r1,font);
+                set_child_item("Р”РѕР±Р°РІРёС‚СЊ РїРѕРґС‡РёРЅРµРЅРЅС‹Рµ Р’Р¤",QString("plss_%1").arg(list.value(1)),par,r1,font);
                 par->setChild(r2,par_i);
                 par->setChild(r3,par_y);
-                //			set_child_item("Национальный состав",QString("nationss_%1").arg(list.value(1)),par,r4,font);
-                //			set_child_item("Религиозный состав",QString("confesss_%1").arg(list.value(1)),par,r5,font);
-                //			set_child_item("Штатно-должностной состав",QString("rankss_%1").arg(list.value(1)),par,r6,font);
+                //			set_child_item("РќР°С†РёРѕРЅР°Р»СЊРЅС‹Р№ СЃРѕСЃС‚Р°РІ",QString("nationss_%1").arg(list.value(1)),par,r4,font);
+                //			set_child_item("Р РµР»РёРіРёРѕР·РЅС‹Р№ СЃРѕСЃС‚Р°РІ",QString("confesss_%1").arg(list.value(1)),par,r5,font);
+                //			set_child_item("РЁС‚Р°С‚РЅРѕ-РґРѕР»Р¶РЅРѕСЃС‚РЅРѕР№ СЃРѕСЃС‚Р°РІ",QString("rankss_%1").arg(list.value(1)),par,r6,font);
             }
 
         }
-        // ================  организации
+        // ================  РѕСЂРіР°РЅРёР·Р°С†РёРё
         else if(list.value(0)=="pgr"){
             QFont font;
             font.setBold(true);
@@ -2158,10 +2158,10 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 
                 child_groups_objects(set_child_item(name_group,user_data_group,par,r1),result);
 
-                set_child_item("Добавить организацию",QString("pgr_%1").arg(list.value(1)),par,r2,font);
+                set_child_item("Р”РѕР±Р°РІРёС‚СЊ РѕСЂРіР°РЅРёР·Р°С†РёСЋ",QString("pgr_%1").arg(list.value(1)),par,r2,font);
             }
         }
-        // ================  условия =========================================================
+        // ================  СѓСЃР»РѕРІРёСЏ =========================================================
         else if(list.value(0)=="psc"){
             QFont font;
             font.setBold(true);
@@ -2182,16 +2182,16 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 
                 set_child_item(name_sc,user_data_sc,par,r1);
 
-                set_child_item("Добавить Особые условия",QString("psc_%1").arg(list.value(1)),par,r2,font);
+                set_child_item("Р”РѕР±Р°РІРёС‚СЊ РћСЃРѕР±С‹Рµ СѓСЃР»РѕРІРёСЏ",QString("psc_%1").arg(list.value(1)),par,r2,font);
             }
         }
-        // ==================================== средства ======================================
+        // ==================================== СЃСЂРµРґСЃС‚РІР° ======================================
         else if(list.value(0)=="pmpo"){
 
             Add_elements_dialog *add_element= new Add_elements_dialog(13,list.value(1).toInt());
             add_element->setModal(true);
             int result=add_element->exec();
-            //вернул id
+            //РІРµСЂРЅСѓР» id
             if (result==0)return;
 
             QSqlQuery query_mpo;
@@ -2207,7 +2207,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 
                 set_child_item(name_mpo,user_data_mpo,par,r1);
 
-                set_child_item("Добавить Средства",QString("pmpo_%1").arg(list.value(1)),par,r2,font);
+                set_child_item("Р”РѕР±Р°РІРёС‚СЊ РЎСЂРµРґСЃС‚РІР°",QString("pmpo_%1").arg(list.value(1)),par,r2,font);
 
             }
         }
@@ -2216,7 +2216,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
             Add_elements_dialog *add_element= new Add_elements_dialog(14,list.value(1).toInt());
             add_element->setModal(true);
             int result=add_element->exec();
-            //вернул id
+            //РІРµСЂРЅСѓР» id
             if (result==0)return;
 
             QSqlQuery query_mpo;
@@ -2232,7 +2232,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 
                 set_child_item(name_mpo,user_data_mpo,par,r1);
 
-                set_child_item("Добавить Средства",QString("pmpos_%1").arg(list.value(1)),par,r2,font);
+                set_child_item("Р”РѕР±Р°РІРёС‚СЊ РЎСЂРµРґСЃС‚РІР°",QString("pmpos_%1").arg(list.value(1)),par,r2,font);
 
             }
         }
@@ -2241,7 +2241,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
             Add_elements_dialog *add_element= new Add_elements_dialog(15,list.value(1).toInt());
             add_element->setModal(true);
             int result=add_element->exec();
-            //вернул id
+            //РІРµСЂРЅСѓР» id
             if (result==0)return;
 
             QSqlQuery query_mpo;
@@ -2257,7 +2257,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 
                 set_child_item(name_mpo,user_data_mpo,par,r1);
 
-                set_child_item("Добавить Средства",QString("pmposmi_%1").arg(list.value(1)),par,r2,font);
+                set_child_item("Р”РѕР±Р°РІРёС‚СЊ РЎСЂРµРґСЃС‚РІР°",QString("pmposmi_%1").arg(list.value(1)),par,r2,font);
 
             }
         }
@@ -2271,7 +2271,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 //          Add_elements_dialog *add_element= new Add_elements_dialog(23,list.value(1).toInt());
 //          add_element->setModal(true);
 //          int result=add_element->exec();
-            //вернул id
+            //РІРµСЂРЅСѓР» id
             if (result==0)return;
 
             QSqlQuery query_pe;
@@ -2287,7 +2287,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 
                 set_child_item(name_pers,user_data_pers,par,r1);
 
-                set_child_item("Добавить Персоналии",QString("ppers_%1").arg(list.value(1)),par,r2,font);
+                set_child_item("Р”РѕР±Р°РІРёС‚СЊ РџРµСЂСЃРѕРЅР°Р»РёРё",QString("ppers_%1").arg(list.value(1)),par,r2,font);
 
             }
         }
@@ -2302,7 +2302,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 //            Add_elements_dialog *add_element= new Add_elements_dialog(26,list.value(1).toInt());
 //            add_element->setModal(true);
 //            int result=add_element->exec();
-            //вернул id
+            //РІРµСЂРЅСѓР» id
             if (result==0)return;
 
             QSqlQuery query_pers_smi;
@@ -2318,12 +2318,12 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 
                 set_child_item(name_pers_smi,user_data_pers_smi,par,r1);
 
-                set_child_item("Добавить персоналии",QString("pperssmi_%1").arg(list.value(1)),par,r2,font);
+                set_child_item("Р”РѕР±Р°РІРёС‚СЊ РїРµСЂСЃРѕРЅР°Р»РёРё",QString("pperssmi_%1").arg(list.value(1)),par,r2,font);
 
             }
         }
 
-        // ======================= для ВФ персоналии ===============================================================
+        // ======================= РґР»СЏ Р’Р¤ РїРµСЂСЃРѕРЅР°Р»РёРё ===============================================================
         else if(list.value(0)=="ppersls"){
 
             QString type_elem = "ls";
@@ -2335,7 +2335,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 //            Add_elements_dialog *add_element= new Add_elements_dialog(25,list.value(1).toInt());
 //            add_element->setModal(true);
 //            int result=add_element->exec();
-            //вернул id
+            //РІРµСЂРЅСѓР» id
             if (result==0)return;
 
             QSqlQuery query_pe;
@@ -2351,11 +2351,11 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
 
                 set_child_item(name_pers,user_data_pers,par,r1);
 
-                set_child_item("Добавить Персоналии",QString("ppersls_%1").arg(list.value(1)),par,r2,font);
+                set_child_item("Р”РѕР±Р°РІРёС‚СЊ РџРµСЂСЃРѕРЅР°Р»РёРё",QString("ppersls_%1").arg(list.value(1)),par,r2,font);
 
             }
         }
-        //================== работа с координатами ***** АПГРЕЙД САТУРНА *****
+        //================== СЂР°Р±РѕС‚Р° СЃ РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё ***** РђРџР“Р Р•Р™Р” РЎРђРўРЈР РќРђ *****
         else if(list.value(0)=="dpers"){
             QString type_elem = "group";
             show_coordinates(list.value(0),list.value(1).toInt(),"coord_persones","id_persones");
@@ -2363,7 +2363,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
             persInfo->setModal(true);
             persInfo->exec();
 
-        }// =============== для формирований по персоналу ================================
+        }// =============== РґР»СЏ С„РѕСЂРјРёСЂРѕРІР°РЅРёР№ РїРѕ РїРµСЂСЃРѕРЅР°Р»Сѓ ================================
         else if(list.value(0)=="dpersls"){
             QString type_elem = "ls";
             show_coordinates(list.value(0),list.value(1).toInt(),"coord_persones","id_persones");
@@ -2371,7 +2371,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
             persInfo->setModal(true);
             persInfo->exec();
         }
-        // =============== для smi по персоналу ================================
+        // =============== РґР»СЏ smi РїРѕ РїРµСЂСЃРѕРЅР°Р»Сѓ ================================
         else if(list.value(0)=="dperssmi"){
             QString type_elem = "smi";
             show_coordinates(list.value(0),list.value(1).toInt(),"coord_persones","id_persones");
@@ -2379,7 +2379,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
             persInfo->setModal(true);
             persInfo->exec();
         }
-        //============== выбор для заполнения таблицы ====================================
+        //============== РІС‹Р±РѕСЂ РґР»СЏ Р·Р°РїРѕР»РЅРµРЅРёСЏ С‚Р°Р±Р»РёС†С‹ ====================================
         else if(list.value(0)=="region"){
             region_click(list.value(1).toInt());
             show_coordinates(list.value(0),list.value(1).toInt(),"coord_region","id_region");
@@ -2389,23 +2389,23 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
             region_click(list.value(1).toInt());
             show_coordinates(list.value(0),list.value(1).toInt(),"coord_region","id_region");
             UI->add_many_coord_button->setEnabled(true);
-        } // ================= в таблицу данные о СМИ =======================================
+        } // ================= РІ С‚Р°Р±Р»РёС†Сѓ РґР°РЅРЅС‹Рµ Рѕ РЎРњР =======================================
         else if(list.value(0)=="dsmi"){
             smi_click(list.value(2).toInt());
-        } // ================= в таблицу данные о ВФ =======================
+        } // ================= РІ С‚Р°Р±Р»РёС†Сѓ РґР°РЅРЅС‹Рµ Рѕ Р’Р¤ =======================
         else if(list.value(0)=="dls"){
             ls_click(list.value(1).toInt());
             show_coordinates(list.value(0),list.value(1).toInt(),"coord_ls","id_ls");
-        } // ================= в таблицу данные о Организациях =======================
+        } // ================= РІ С‚Р°Р±Р»РёС†Сѓ РґР°РЅРЅС‹Рµ Рѕ РћСЂРіР°РЅРёР·Р°С†РёСЏС… =======================
         else if(list.value(0)=="dgr"){
             gr_click(list.value(1).toInt());
 //            show_coordinates(list.value(0),list.value(1).toInt(),"coord_groups","id_groups");
 
-        }	// ================= в таблицу данные о Условиях =======================
+        }	// ================= РІ С‚Р°Р±Р»РёС†Сѓ РґР°РЅРЅС‹Рµ Рѕ РЈСЃР»РѕРІРёСЏС… =======================
         else if(list.value(0)=="dsc"){
             sc_click(list.value(1).toInt());
             show_coordinates(list.value(0),list.value(1).toInt(),"coord_spec_cond","id_special_conditions");
-        }//======================= в таблицу воинские формирования (подчиненные)======
+        }//======================= РІ С‚Р°Р±Р»РёС†Сѓ РІРѕРёРЅСЃРєРёРµ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ (РїРѕРґС‡РёРЅРµРЅРЅС‹Рµ)======
         else if(list.value(0)=="lss"){
             ls_click(list.value(1).toInt());
             show_coordinates(list.value(0),list.value(1).toInt(),"coord_ls","id_ls");
@@ -2413,7 +2413,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
         else if(list.value(0)=="chls"){
             ls_click(list.value(1).toInt());
             show_coordinates(list.value(0),list.value(1).toInt(),"coord_ls","id_ls");
-        } // ================= в таблицу данные о СРЕДСТВАХ =======================
+        } // ================= РІ С‚Р°Р±Р»РёС†Сѓ РґР°РЅРЅС‹Рµ Рѕ РЎР Р•Р”РЎРўР’РђРҐ =======================
         else if(list.value(0)=="dmpo" || list.value(0)=="dmpos" || list.value(0)=="dmposmi" ){
             mpo_click(list.value(1).toInt());
             show_coordinates(list.value(0),list.value(1).toInt(),"coord_mpo_pso","id_mpo_pso");
@@ -2421,7 +2421,7 @@ void Objectmanager::column_item_clicked ( const QModelIndex &index){
     }
 }
 
-//========================== ветка для воинских формирований ===========================================
+//========================== РІРµС‚РєР° РґР»СЏ РІРѕРёРЅСЃРєРёС… С„РѕСЂРјРёСЂРѕРІР°РЅРёР№ ===========================================
 void Objectmanager::child_ls_objects(QStandardItem *parent_item,int parent_ls)
 {	
     QFont font;
@@ -2455,7 +2455,7 @@ void Objectmanager::child_ls_objects(QStandardItem *parent_item,int parent_ls)
             row++;
         }
     }
-    set_child_item("Добавить подчиненные ВФ",QString("plss_%1").arg(parent_ls),parent_item,row,font);
+    set_child_item("Р”РѕР±Р°РІРёС‚СЊ РїРѕРґС‡РёРЅРµРЅРЅС‹Рµ Р’Р¤",QString("plss_%1").arg(parent_ls),parent_item,row,font);
     add_ls_components(parent_item,parent_ls,row);
     query.clear();
 }
@@ -2509,7 +2509,7 @@ void Objectmanager::child_smi_objects(QStandardItem *parent_item,int smi)
     query.clear();
 }
 void Objectmanager::add_ls_components(QStandardItem *parent_item,int id_parent_region,int start_row){
-    // ========================================= средства =================================================
+    // ========================================= СЃСЂРµРґСЃС‚РІР° =================================================
 
     QFont font;
     font.setBold(true);
@@ -2523,8 +2523,8 @@ void Objectmanager::add_ls_components(QStandardItem *parent_item,int id_parent_r
     while (query_count.next()){
         g = query_count.value(0).toInt();}
 
-    QStandardItem *item=set_child_item("СРЕДСТВА ["  + QString::number(g) + "]","mpo",parent_item,row,":/Resources/connect_saturn.png");
-    //QStandardItem *item=set_child_item("СМИ","smi",parent_item,row,"./icons/printer.png");
+    QStandardItem *item=set_child_item("РЎР Р•Р”РЎРўР’Рђ ["  + QString::number(g) + "]","mpo",parent_item,row,":/Resources/connect_saturn.png");
+    //QStandardItem *item=set_child_item("РЎРњР","smi",parent_item,row,"./icons/printer.png");
     row++;
 
     if (query.size() != 0)
@@ -2544,9 +2544,9 @@ void Objectmanager::add_ls_components(QStandardItem *parent_item,int id_parent_r
         }
 
     }
-    set_child_item("Добавить Средства",QString("pmpo_%1").arg(id_parent_region),item,row_sw,font);
+    set_child_item("Р”РѕР±Р°РІРёС‚СЊ РЎСЂРµРґСЃС‚РІР°",QString("pmpo_%1").arg(id_parent_region),item,row_sw,font);
     query.clear();
-    // ========================================= персонал =================================================
+    // ========================================= РїРµСЂСЃРѕРЅР°Р» =================================================
     QSqlQuery query_pers;
     query_pers.exec(QString("SELECT id_ls,id_persones FROM persones WHERE id_ls=%1").arg(id_parent_region));
     int row_p=0;
@@ -2556,8 +2556,8 @@ void Objectmanager::add_ls_components(QStandardItem *parent_item,int id_parent_r
     while (query_count_p.next()){
         f = query_count_p.value(0).toInt();}
 
-    item=set_child_item("ПЕРСОНАЛИИ ["  + QString::number(f) + "]","persls",parent_item,row,":/Resources/connect_saturn.png");
-    //QStandardItem *item=set_child_item("СМИ","smi",parent_item,row,"./icons/printer.png");
+    item=set_child_item("РџР•Р РЎРћРќРђР›РР ["  + QString::number(f) + "]","persls",parent_item,row,":/Resources/connect_saturn.png");
+    //QStandardItem *item=set_child_item("РЎРњР","smi",parent_item,row,"./icons/printer.png");
     row++;
 
     if (query_pers.size() != 0)
@@ -2576,13 +2576,13 @@ void Objectmanager::add_ls_components(QStandardItem *parent_item,int id_parent_r
         }
 
     }
-    set_child_item("Добавить Персоналии",QString("ppersls_%1").arg(id_parent_region),item,row_p,font);
+    set_child_item("Р”РѕР±Р°РІРёС‚СЊ РџРµСЂСЃРѕРЅР°Р»РёРё",QString("ppersls_%1").arg(id_parent_region),item,row_p,font);
     query.clear();
 }	
 
 void Objectmanager::add_groups_components(QStandardItem *parent_item,int id_parent_region,int start_row)
 {
-    // ========================================= средства =================================================
+    // ========================================= СЃСЂРµРґСЃС‚РІР° =================================================
     QFont font;
     font.setBold(true);
 
@@ -2596,8 +2596,8 @@ void Objectmanager::add_groups_components(QStandardItem *parent_item,int id_pare
     while (query_count.next()){
         g = query_count.value(0).toInt();}
 
-    QStandardItem *item=set_child_item("СРЕДСТВА ["  + QString::number(g) + "]","mpo",parent_item,row,":/Resources/connect_saturn.png");
-    //QStandardItem *item=set_child_item("СМИ","smi",parent_item,row,"./icons/printer.png");
+    QStandardItem *item=set_child_item("РЎР Р•Р”РЎРўР’Рђ ["  + QString::number(g) + "]","mpo",parent_item,row,":/Resources/connect_saturn.png");
+    //QStandardItem *item=set_child_item("РЎРњР","smi",parent_item,row,"./icons/printer.png");
     row++;
 
     if (query.size() != 0)
@@ -2616,9 +2616,9 @@ void Objectmanager::add_groups_components(QStandardItem *parent_item,int id_pare
         }
 
     }
-    set_child_item("Добавить Средства",QString("pmpos_%1").arg(id_parent_region),item,row_sw,font);
+    set_child_item("Р”РѕР±Р°РІРёС‚СЊ РЎСЂРµРґСЃС‚РІР°",QString("pmpos_%1").arg(id_parent_region),item,row_sw,font);
     query.clear();
-    // ========================================= персонал =================================================
+    // ========================================= РїРµСЂСЃРѕРЅР°Р» =================================================
     QSqlQuery query_pers;
     query_pers.exec(QString("SELECT id_groups,id_persones FROM persones WHERE id_groups=%1").arg(id_parent_region));
     int row_p=0;
@@ -2628,8 +2628,8 @@ void Objectmanager::add_groups_components(QStandardItem *parent_item,int id_pare
     while (query_count_p.next()){
         f = query_count_p.value(0).toInt();}
 
-    item=set_child_item("ПЕРСОНАЛИИ ["  + QString::number(f) + "]","pers",parent_item,row,":/Resources/connect_saturn.png");
-    //QStandardItem *item=set_child_item("СМИ","smi",parent_item,row,"./icons/printer.png");
+    item=set_child_item("РџР•Р РЎРћРќРђР›РР ["  + QString::number(f) + "]","pers",parent_item,row,":/Resources/connect_saturn.png");
+    //QStandardItem *item=set_child_item("РЎРњР","smi",parent_item,row,"./icons/printer.png");
     row++;
 
     if (query_pers.size() != 0)
@@ -2648,14 +2648,14 @@ void Objectmanager::add_groups_components(QStandardItem *parent_item,int id_pare
         }
 
     }
-    set_child_item("Добавить Персоналии",QString("ppers_%1").arg(id_parent_region),item,row_p,font);
+    set_child_item("Р”РѕР±Р°РІРёС‚СЊ РџРµСЂСЃРѕРЅР°Р»РёРё",QString("ppers_%1").arg(id_parent_region),item,row_p,font);
     query.clear();
 
 }
 
 void Objectmanager::add_smi_components(QStandardItem *parent_item,int id_parent_region,int start_row)
 {
-    // ========================================= средства =================================================
+    // ========================================= СЃСЂРµРґСЃС‚РІР° =================================================
     QFont font;
     font.setBold(true);
 
@@ -2669,8 +2669,8 @@ void Objectmanager::add_smi_components(QStandardItem *parent_item,int id_parent_
     while (query_count.next()){
         g = query_count.value(0).toInt();}
 
-    QStandardItem *item=set_child_item("СРЕДСТВА ["  + QString::number(g) + "]","mpo",parent_item,row,":/Resources/connect_saturn.png");
-    //QStandardItem *item=set_child_item("СМИ","smi",parent_item,row,"./icons/printer.png");
+    QStandardItem *item=set_child_item("РЎР Р•Р”РЎРўР’Рђ ["  + QString::number(g) + "]","mpo",parent_item,row,":/Resources/connect_saturn.png");
+    //QStandardItem *item=set_child_item("РЎРњР","smi",parent_item,row,"./icons/printer.png");
     row++;
 
     if (query.size() != 0)
@@ -2689,9 +2689,9 @@ void Objectmanager::add_smi_components(QStandardItem *parent_item,int id_parent_
         }
 
     }
-    set_child_item("Добавить Средства",QString("pmposmi_%1").arg(id_parent_region),item,row_sw,font);
+    set_child_item("Р”РѕР±Р°РІРёС‚СЊ РЎСЂРµРґСЃС‚РІР°",QString("pmposmi_%1").arg(id_parent_region),item,row_sw,font);
     query.clear();
-    // ========================================= персонал =================================================
+    // ========================================= РїРµСЂСЃРѕРЅР°Р» =================================================
     QSqlQuery query_pers;
     query_pers.exec(QString("SELECT id_smi,id_persones FROM persones WHERE id_smi=%1").arg(id_parent_region));
     int row_p=0;
@@ -2701,8 +2701,8 @@ void Objectmanager::add_smi_components(QStandardItem *parent_item,int id_parent_
     while (query_count_p.next()){
         t = query_count_p.value(0).toInt();}
 
-    item=set_child_item("ПЕРСОНАЛИИ ["  + QString::number(t) + "]","perssmi",parent_item,row,":/Resources/connect_saturn.png");
-    //QStandardItem *item=set_child_item("СМИ","smi",parent_item,row,"./icons/printer.png");
+    item=set_child_item("РџР•Р РЎРћРќРђР›РР ["  + QString::number(t) + "]","perssmi",parent_item,row,":/Resources/connect_saturn.png");
+    //QStandardItem *item=set_child_item("РЎРњР","smi",parent_item,row,"./icons/printer.png");
     row++;
 
     if (query_pers.size() != 0)
@@ -2721,7 +2721,7 @@ void Objectmanager::add_smi_components(QStandardItem *parent_item,int id_parent_
         }
 
     }
-    set_child_item("Добавить Персоналии",QString("pperssmi_%1").arg(id_parent_region),item,row_p,font);
+    set_child_item("Р”РѕР±Р°РІРёС‚СЊ РџРµСЂСЃРѕРЅР°Р»РёРё",QString("pperssmi_%1").arg(id_parent_region),item,row_p,font);
     query.clear();
 }
 
@@ -2769,18 +2769,18 @@ QStandardItem * Objectmanager::set_child_item(QString item_text,QString user_dat
     parent_item->setChild(row,item);
     return item;
 }
-//============= функции заполнения свойств в tableview ==================================
+//============= С„СѓРЅРєС†РёРё Р·Р°РїРѕР»РЅРµРЅРёСЏ СЃРІРѕР№СЃС‚РІ РІ tableview ==================================
 void Objectmanager::region_click(int id_region){
 
 //***************************************************************************************
-//===================== standardItemModel - может пригодится ============================
+//===================== standardItemModel - РјРѕР¶РµС‚ РїСЂРёРіРѕРґРёС‚СЃСЏ ============================
   /*  QMap<QString, QString> map_info;
 
     QStandardItemModel *model_region = new QStandardItemModel(UI->info_tableView);
     model_region->setColumnCount(2);
 
     QStringList list;
-    list<<"Характеристика"<<"Свойства";
+    list<<"РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєР°"<<"РЎРІРѕР№СЃС‚РІР°";
     model_region->setHorizontalHeaderLabels(list);
     QString name_reg,type_region, desc_reg;
     QSqlQuery query;
@@ -2798,10 +2798,10 @@ void Objectmanager::region_click(int id_region){
     }
 //    QList<int> hiddens_rows;
 //    hiddens_rows.append(81);
-    nameList.replace(0,"Наименование");
-    nameList.replace(1,"Тип региона");
-    nameList.replace(2,"Описание региона");
-    //nameList    << "Наименование"<< "Тип региона" << "Описание региона";
+    nameList.replace(0,"РќР°РёРјРµРЅРѕРІР°РЅРёРµ");
+    nameList.replace(1,"РўРёРї СЂРµРіРёРѕРЅР°");
+    nameList.replace(2,"РћРїРёСЃР°РЅРёРµ СЂРµРіРёРѕРЅР°");
+    //nameList    << "РќР°РёРјРµРЅРѕРІР°РЅРёРµ"<< "РўРёРї СЂРµРіРёРѕРЅР°" << "РћРїРёСЃР°РЅРёРµ СЂРµРіРёРѕРЅР°";
     while(query.next()){
         for (int field=0;field<sl.count();field++){
          //   if(hiddens_rows.contains(field)) continue;
@@ -2856,50 +2856,50 @@ void Objectmanager::region_click(int id_region){
 
         QSqlRelationalDelegate *delegat_reg=new QSqlRelationalDelegate(UI->property_object);
 
-        model_region->setHeaderData(3, Qt::Horizontal,"Наименование региона");model_region->setHeaderData(5, Qt::Horizontal, "Описание региона");
+        model_region->setHeaderData(3, Qt::Horizontal,"РќР°РёРјРµРЅРѕРІР°РЅРёРµ СЂРµРіРёРѕРЅР°");model_region->setHeaderData(5, Qt::Horizontal, "РћРїРёСЃР°РЅРёРµ СЂРµРіРёРѕРЅР°");
 
-        model_region->setHeaderData(6, Qt::Horizontal, "Численность населения");
-        model_region->setHeaderData(7, Qt::Horizontal, "Плотность населения");model_region->setHeaderData(8, Qt::Horizontal, "Уровень имиграции");
-        model_region->setHeaderData(9, Qt::Horizontal, "Уровень эммиграции");model_region->setHeaderData(10, Qt::Horizontal, "Уровень рождаемости");
-        model_region->setHeaderData(11, Qt::Horizontal, "Уровень смертности");model_region->setHeaderData(12, Qt::Horizontal, "Естественный прирост населения");
-        model_region->setHeaderData(13, Qt::Horizontal, "Уровень бедности(спф1)");
-        model_region->setHeaderData(14, Qt::Horizontal, "Pспф1");model_region->setHeaderData(15, Qt::Horizontal, "Уровень цен(спф2)");
-        model_region->setHeaderData(16, Qt::Horizontal, "Pспф2");model_region->setHeaderData(17, Qt::Horizontal, "Уровень образования(спф3)");
-        model_region->setHeaderData(18, Qt::Horizontal, "Pспф3");model_region->setHeaderData(19, Qt::Horizontal, "Степень доверия населения(спф4)");
-        model_region->setHeaderData(20, Qt::Horizontal, "Pспф4");model_region->setHeaderData(21, Qt::Horizontal, "Степень поддержки населением(спф5)");
-        model_region->setHeaderData(22, Qt::Horizontal, "Pспф5");model_region->setHeaderData(23, Qt::Horizontal, "Поддержка гос.структур(спф6)");
-        model_region->setHeaderData(24, Qt::Horizontal, "Pспф6");model_region->setHeaderData(25, Qt::Horizontal, "Поддержка организациями ВС(спф7)");
-        model_region->setHeaderData(26, Qt::Horizontal, "Pспф7");model_region->setHeaderData(27, Qt::Horizontal, "Влияние оппозиционных организаций(спф8)");
-        model_region->setHeaderData(28, Qt::Horizontal, "Pспф8");model_region->setHeaderData(29, Qt::Horizontal, "Поддержка авторитетных деятелей(спф9)");
-        model_region->setHeaderData(30, Qt::Horizontal, "Pспф9");model_region->setHeaderData(31, Qt::Horizontal, "Уровень безработицы(спф10)");
-        model_region->setHeaderData(32, Qt::Horizontal, "Pспф10");model_region->setHeaderData(33, Qt::Horizontal, "Миграция населения (спф11)");
-        model_region->setHeaderData(34, Qt::Horizontal, "Pспф11");model_region->setHeaderData(35, Qt::Horizontal, "Демография(спф12)");
-        model_region->setHeaderData(36, Qt::Horizontal, "Pспф12");model_region->setHeaderData(37, Qt::Horizontal, "Уровень информатизации(спф13)");
-        model_region->setHeaderData(38, Qt::Horizontal, "Pспф13");model_region->setHeaderData(39, Qt::Horizontal, "Направленность информации(спф14)");
-        model_region->setHeaderData(40, Qt::Horizontal, "Pспф14");model_region->setHeaderData(41, Qt::Horizontal, "Защищенность инфраструктуры(спф15)");
-        model_region->setHeaderData(42, Qt::Horizontal, "Pспф15");model_region->setHeaderData(43, Qt::Horizontal, "Неправительственные организации(спф16)");
-        model_region->setHeaderData(44, Qt::Horizontal, "Pспф16");model_region->setHeaderData(45, Qt::Horizontal, "Уровень патриотизма(спф17)");
-        model_region->setHeaderData(46, Qt::Horizontal, "Pспф17");model_region->setHeaderData(47, Qt::Horizontal, "Уровень преступности(кф1)");
-        model_region->setHeaderData(48, Qt::Horizontal, "Pкф1");model_region->setHeaderData(49, Qt::Horizontal, "Коррупция(кф2)");
-        model_region->setHeaderData(50, Qt::Horizontal, "Pкф2");model_region->setHeaderData(51, Qt::Horizontal, "Теневой сектор(кф3)");
-        model_region->setHeaderData(52, Qt::Horizontal, "Pкф3");model_region->setHeaderData(53, Qt::Horizontal, "Влияние некоренного населения(кф4)");
-        model_region->setHeaderData(54, Qt::Horizontal, "Pкф4");model_region->setHeaderData(55, Qt::Horizontal, "Экстремизм,НВФ(кф5)");
-        model_region->setHeaderData(56, Qt::Horizontal, "Pкф5");model_region->setHeaderData(57, Qt::Horizontal, "Исправительные учереждения(кф6)");
-        model_region->setHeaderData(58, Qt::Horizontal, "Pкф6");model_region->setHeaderData(59, Qt::Horizontal, "Протестная активность(кф7)");
-        model_region->setHeaderData(60, Qt::Horizontal, "Pкф7");model_region->setHeaderData(61, Qt::Horizontal, "Организованная преступность(кф8)");
-        model_region->setHeaderData(62, Qt::Horizontal, "Pкф8");model_region->setHeaderData(63, Qt::Horizontal, "Оружие,наркотрафик(кф9)");
-        model_region->setHeaderData(64, Qt::Horizontal, "Pкф9");model_region->setHeaderData(65, Qt::Horizontal, "Межнациональные конфликты(кф10)");
-        model_region->setHeaderData(66, Qt::Horizontal, "Pкф10");model_region->setHeaderData(67, Qt::Horizontal, "Поддержка религиозных объединений(рф1)");
-        model_region->setHeaderData(68, Qt::Horizontal, "Pрф1");model_region->setHeaderData(69, Qt::Horizontal, "Культовые сооружения(рф2)");
-        model_region->setHeaderData(70, Qt::Horizontal, "Pрф2");model_region->setHeaderData(71, Qt::Horizontal, "Авторитет религиозных лидеров(рф3)");
-        model_region->setHeaderData(72, Qt::Horizontal, "Pрф3");model_region->setHeaderData(73, Qt::Horizontal, "Поддержка религиозных лидеров(рф4)");
-        model_region->setHeaderData(74, Qt::Horizontal, "Pрф4");model_region->setHeaderData(75, Qt::Horizontal, "Религиозность противника(рф5)");
-        model_region->setHeaderData(76, Qt::Horizontal, "Pрф5");model_region->setHeaderData(77, Qt::Horizontal, "Религиозность своих войск(рф6)");
-        model_region->setHeaderData(78, Qt::Horizontal, "Pрф6");model_region->setHeaderData(79, Qt::Horizontal, "Групповой коэффициент(спф)");
-        model_region->setHeaderData(80, Qt::Horizontal, "Групповой коэффициент(кф)");model_region->setHeaderData(81, Qt::Horizontal, "Групповой коэффициент(рф)");
-        model_region->setHeaderData(82, Qt::Horizontal, "Код значка региона");
+        model_region->setHeaderData(6, Qt::Horizontal, "Р§РёСЃР»РµРЅРЅРѕСЃС‚СЊ РЅР°СЃРµР»РµРЅРёСЏ");
+        model_region->setHeaderData(7, Qt::Horizontal, "РџР»РѕС‚РЅРѕСЃС‚СЊ РЅР°СЃРµР»РµРЅРёСЏ");model_region->setHeaderData(8, Qt::Horizontal, "РЈСЂРѕРІРµРЅСЊ РёРјРёРіСЂР°С†РёРё");
+        model_region->setHeaderData(9, Qt::Horizontal, "РЈСЂРѕРІРµРЅСЊ СЌРјРјРёРіСЂР°С†РёРё");model_region->setHeaderData(10, Qt::Horizontal, "РЈСЂРѕРІРµРЅСЊ СЂРѕР¶РґР°РµРјРѕСЃС‚Рё");
+        model_region->setHeaderData(11, Qt::Horizontal, "РЈСЂРѕРІРµРЅСЊ СЃРјРµСЂС‚РЅРѕСЃС‚Рё");model_region->setHeaderData(12, Qt::Horizontal, "Р•СЃС‚РµСЃС‚РІРµРЅРЅС‹Р№ РїСЂРёСЂРѕСЃС‚ РЅР°СЃРµР»РµРЅРёСЏ");
+        model_region->setHeaderData(13, Qt::Horizontal, "РЈСЂРѕРІРµРЅСЊ Р±РµРґРЅРѕСЃС‚Рё(СЃРїС„1)");
+        model_region->setHeaderData(14, Qt::Horizontal, "PСЃРїС„1");model_region->setHeaderData(15, Qt::Horizontal, "РЈСЂРѕРІРµРЅСЊ С†РµРЅ(СЃРїС„2)");
+        model_region->setHeaderData(16, Qt::Horizontal, "PСЃРїС„2");model_region->setHeaderData(17, Qt::Horizontal, "РЈСЂРѕРІРµРЅСЊ РѕР±СЂР°Р·РѕРІР°РЅРёСЏ(СЃРїС„3)");
+        model_region->setHeaderData(18, Qt::Horizontal, "PСЃРїС„3");model_region->setHeaderData(19, Qt::Horizontal, "РЎС‚РµРїРµРЅСЊ РґРѕРІРµСЂРёСЏ РЅР°СЃРµР»РµРЅРёСЏ(СЃРїС„4)");
+        model_region->setHeaderData(20, Qt::Horizontal, "PСЃРїС„4");model_region->setHeaderData(21, Qt::Horizontal, "РЎС‚РµРїРµРЅСЊ РїРѕРґРґРµСЂР¶РєРё РЅР°СЃРµР»РµРЅРёРµРј(СЃРїС„5)");
+        model_region->setHeaderData(22, Qt::Horizontal, "PСЃРїС„5");model_region->setHeaderData(23, Qt::Horizontal, "РџРѕРґРґРµСЂР¶РєР° РіРѕСЃ.СЃС‚СЂСѓРєС‚СѓСЂ(СЃРїС„6)");
+        model_region->setHeaderData(24, Qt::Horizontal, "PСЃРїС„6");model_region->setHeaderData(25, Qt::Horizontal, "РџРѕРґРґРµСЂР¶РєР° РѕСЂРіР°РЅРёР·Р°С†РёСЏРјРё Р’РЎ(СЃРїС„7)");
+        model_region->setHeaderData(26, Qt::Horizontal, "PСЃРїС„7");model_region->setHeaderData(27, Qt::Horizontal, "Р’Р»РёСЏРЅРёРµ РѕРїРїРѕР·РёС†РёРѕРЅРЅС‹С… РѕСЂРіР°РЅРёР·Р°С†РёР№(СЃРїС„8)");
+        model_region->setHeaderData(28, Qt::Horizontal, "PСЃРїС„8");model_region->setHeaderData(29, Qt::Horizontal, "РџРѕРґРґРµСЂР¶РєР° Р°РІС‚РѕСЂРёС‚РµС‚РЅС‹С… РґРµСЏС‚РµР»РµР№(СЃРїС„9)");
+        model_region->setHeaderData(30, Qt::Horizontal, "PСЃРїС„9");model_region->setHeaderData(31, Qt::Horizontal, "РЈСЂРѕРІРµРЅСЊ Р±РµР·СЂР°Р±РѕС‚РёС†С‹(СЃРїС„10)");
+        model_region->setHeaderData(32, Qt::Horizontal, "PСЃРїС„10");model_region->setHeaderData(33, Qt::Horizontal, "РњРёРіСЂР°С†РёСЏ РЅР°СЃРµР»РµРЅРёСЏ (СЃРїС„11)");
+        model_region->setHeaderData(34, Qt::Horizontal, "PСЃРїС„11");model_region->setHeaderData(35, Qt::Horizontal, "Р”РµРјРѕРіСЂР°С„РёСЏ(СЃРїС„12)");
+        model_region->setHeaderData(36, Qt::Horizontal, "PСЃРїС„12");model_region->setHeaderData(37, Qt::Horizontal, "РЈСЂРѕРІРµРЅСЊ РёРЅС„РѕСЂРјР°С‚РёР·Р°С†РёРё(СЃРїС„13)");
+        model_region->setHeaderData(38, Qt::Horizontal, "PСЃРїС„13");model_region->setHeaderData(39, Qt::Horizontal, "РќР°РїСЂР°РІР»РµРЅРЅРѕСЃС‚СЊ РёРЅС„РѕСЂРјР°С†РёРё(СЃРїС„14)");
+        model_region->setHeaderData(40, Qt::Horizontal, "PСЃРїС„14");model_region->setHeaderData(41, Qt::Horizontal, "Р—Р°С‰РёС‰РµРЅРЅРѕСЃС‚СЊ РёРЅС„СЂР°СЃС‚СЂСѓРєС‚СѓСЂС‹(СЃРїС„15)");
+        model_region->setHeaderData(42, Qt::Horizontal, "PСЃРїС„15");model_region->setHeaderData(43, Qt::Horizontal, "РќРµРїСЂР°РІРёС‚РµР»СЊСЃС‚РІРµРЅРЅС‹Рµ РѕСЂРіР°РЅРёР·Р°С†РёРё(СЃРїС„16)");
+        model_region->setHeaderData(44, Qt::Horizontal, "PСЃРїС„16");model_region->setHeaderData(45, Qt::Horizontal, "РЈСЂРѕРІРµРЅСЊ РїР°С‚СЂРёРѕС‚РёР·РјР°(СЃРїС„17)");
+        model_region->setHeaderData(46, Qt::Horizontal, "PСЃРїС„17");model_region->setHeaderData(47, Qt::Horizontal, "РЈСЂРѕРІРµРЅСЊ РїСЂРµСЃС‚СѓРїРЅРѕСЃС‚Рё(РєС„1)");
+        model_region->setHeaderData(48, Qt::Horizontal, "PРєС„1");model_region->setHeaderData(49, Qt::Horizontal, "РљРѕСЂСЂСѓРїС†РёСЏ(РєС„2)");
+        model_region->setHeaderData(50, Qt::Horizontal, "PРєС„2");model_region->setHeaderData(51, Qt::Horizontal, "РўРµРЅРµРІРѕР№ СЃРµРєС‚РѕСЂ(РєС„3)");
+        model_region->setHeaderData(52, Qt::Horizontal, "PРєС„3");model_region->setHeaderData(53, Qt::Horizontal, "Р’Р»РёСЏРЅРёРµ РЅРµРєРѕСЂРµРЅРЅРѕРіРѕ РЅР°СЃРµР»РµРЅРёСЏ(РєС„4)");
+        model_region->setHeaderData(54, Qt::Horizontal, "PРєС„4");model_region->setHeaderData(55, Qt::Horizontal, "Р­РєСЃС‚СЂРµРјРёР·Рј,РќР’Р¤(РєС„5)");
+        model_region->setHeaderData(56, Qt::Horizontal, "PРєС„5");model_region->setHeaderData(57, Qt::Horizontal, "РСЃРїСЂР°РІРёС‚РµР»СЊРЅС‹Рµ СѓС‡РµСЂРµР¶РґРµРЅРёСЏ(РєС„6)");
+        model_region->setHeaderData(58, Qt::Horizontal, "PРєС„6");model_region->setHeaderData(59, Qt::Horizontal, "РџСЂРѕС‚РµСЃС‚РЅР°СЏ Р°РєС‚РёРІРЅРѕСЃС‚СЊ(РєС„7)");
+        model_region->setHeaderData(60, Qt::Horizontal, "PРєС„7");model_region->setHeaderData(61, Qt::Horizontal, "РћСЂРіР°РЅРёР·РѕРІР°РЅРЅР°СЏ РїСЂРµСЃС‚СѓРїРЅРѕСЃС‚СЊ(РєС„8)");
+        model_region->setHeaderData(62, Qt::Horizontal, "PРєС„8");model_region->setHeaderData(63, Qt::Horizontal, "РћСЂСѓР¶РёРµ,РЅР°СЂРєРѕС‚СЂР°С„РёРє(РєС„9)");
+        model_region->setHeaderData(64, Qt::Horizontal, "PРєС„9");model_region->setHeaderData(65, Qt::Horizontal, "РњРµР¶РЅР°С†РёРѕРЅР°Р»СЊРЅС‹Рµ РєРѕРЅС„Р»РёРєС‚С‹(РєС„10)");
+        model_region->setHeaderData(66, Qt::Horizontal, "PРєС„10");model_region->setHeaderData(67, Qt::Horizontal, "РџРѕРґРґРµСЂР¶РєР° СЂРµР»РёРіРёРѕР·РЅС‹С… РѕР±СЉРµРґРёРЅРµРЅРёР№(СЂС„1)");
+        model_region->setHeaderData(68, Qt::Horizontal, "PСЂС„1");model_region->setHeaderData(69, Qt::Horizontal, "РљСѓР»СЊС‚РѕРІС‹Рµ СЃРѕРѕСЂСѓР¶РµРЅРёСЏ(СЂС„2)");
+        model_region->setHeaderData(70, Qt::Horizontal, "PСЂС„2");model_region->setHeaderData(71, Qt::Horizontal, "РђРІС‚РѕСЂРёС‚РµС‚ СЂРµР»РёРіРёРѕР·РЅС‹С… Р»РёРґРµСЂРѕРІ(СЂС„3)");
+        model_region->setHeaderData(72, Qt::Horizontal, "PСЂС„3");model_region->setHeaderData(73, Qt::Horizontal, "РџРѕРґРґРµСЂР¶РєР° СЂРµР»РёРіРёРѕР·РЅС‹С… Р»РёРґРµСЂРѕРІ(СЂС„4)");
+        model_region->setHeaderData(74, Qt::Horizontal, "PСЂС„4");model_region->setHeaderData(75, Qt::Horizontal, "Р РµР»РёРіРёРѕР·РЅРѕСЃС‚СЊ РїСЂРѕС‚РёРІРЅРёРєР°(СЂС„5)");
+        model_region->setHeaderData(76, Qt::Horizontal, "PСЂС„5");model_region->setHeaderData(77, Qt::Horizontal, "Р РµР»РёРіРёРѕР·РЅРѕСЃС‚СЊ СЃРІРѕРёС… РІРѕР№СЃРє(СЂС„6)");
+        model_region->setHeaderData(78, Qt::Horizontal, "PСЂС„6");model_region->setHeaderData(79, Qt::Horizontal, "Р“СЂСѓРїРїРѕРІРѕР№ РєРѕСЌС„С„РёС†РёРµРЅС‚(СЃРїС„)");
+        model_region->setHeaderData(80, Qt::Horizontal, "Р“СЂСѓРїРїРѕРІРѕР№ РєРѕСЌС„С„РёС†РёРµРЅС‚(РєС„)");model_region->setHeaderData(81, Qt::Horizontal, "Р“СЂСѓРїРїРѕРІРѕР№ РєРѕСЌС„С„РёС†РёРµРЅС‚(СЂС„)");
+        model_region->setHeaderData(82, Qt::Horizontal, "РљРѕРґ Р·РЅР°С‡РєР° СЂРµРіРёРѕРЅР°");
         model_region->setRelation(83,QSqlRelation("type_region","id_type_region","name_type_region"));
-        model_region->setHeaderData(83, Qt::Horizontal, "Тип региона");
+        model_region->setHeaderData(83, Qt::Horizontal, "РўРёРї СЂРµРіРёРѕРЅР°");
 
         model_region->setEditStrategy(QSqlTableModel::OnFieldChange);
 
@@ -3015,25 +3015,25 @@ for(int row=0; row!=model->rowCount(); ++row){
 }*/
 
     model_region->setRelation(1,QSqlRelation("type_smi","id_type_smi","nametype_smi"));
-    model_region->setHeaderData(1,Qt::Horizontal,"Тип СМИ");
+    model_region->setHeaderData(1,Qt::Horizontal,"РўРёРї РЎРњР");
     model_region->setRelation(2,QSqlRelation("type_office_smi","id_type_office_smi","name_type_office_smi"));
-    model_region->setHeaderData(2,Qt::Horizontal,"Представительство СМИ");
+    model_region->setHeaderData(2,Qt::Horizontal,"РџСЂРµРґСЃС‚Р°РІРёС‚РµР»СЊСЃС‚РІРѕ РЎРњР");
     model_region->setRelation(3,QSqlRelation("type_broadcast_smi","id_type_broadcast_smi","name_type_broadcast_smi"));
-    model_region->setHeaderData(3,Qt::Horizontal,"Способ вещания СМИ");
+    model_region->setHeaderData(3,Qt::Horizontal,"РЎРїРѕСЃРѕР± РІРµС‰Р°РЅРёСЏ РЎРњР");
     model_region->setRelation(4,QSqlRelation("position_smi","id_position_smi","name_position_smi"));
-    model_region->setHeaderData(4,Qt::Horizontal,"Направленность СМИ");
+    model_region->setHeaderData(4,Qt::Horizontal,"РќР°РїСЂР°РІР»РµРЅРЅРѕСЃС‚СЊ РЎРњР");
     model_region->setRelation(5,QSqlRelation("level_smi","id_level_smi","name_level_smi"));
-    model_region->setHeaderData(5,Qt::Horizontal,"Уровень вещания");
+    model_region->setHeaderData(5,Qt::Horizontal,"РЈСЂРѕРІРµРЅСЊ РІРµС‰Р°РЅРёСЏ");
     model_region->setRelation(6,QSqlRelation("theme_smi","id_theme_smi","name_theme_smi"));
-    model_region->setHeaderData(6,Qt::Horizontal,"Тематика СМИ");
-    model_region->setHeaderData(7, Qt::Horizontal,"Наименование СМИ");
-    model_region->setHeaderData(8, Qt::Horizontal,"Мощность сигнала");
-    model_region->setHeaderData(9, Qt::Horizontal,"Сайт СМИ");
-    model_region->setHeaderData(10, Qt::Horizontal,"Описание СМИ");
-    model_region->setHeaderData(11, Qt::Horizontal,"Частоты вещания");
-    model_region->setHeaderData(13, Qt::Horizontal,"Аудитория СМИ");
-    model_region->setHeaderData(14, Qt::Horizontal,"Тираж СМИ");
-    //	model_region->setHeaderData(15, Qt::Horizontal,"Защищенность");
+    model_region->setHeaderData(6,Qt::Horizontal,"РўРµРјР°С‚РёРєР° РЎРњР");
+    model_region->setHeaderData(7, Qt::Horizontal,"РќР°РёРјРµРЅРѕРІР°РЅРёРµ РЎРњР");
+    model_region->setHeaderData(8, Qt::Horizontal,"РњРѕС‰РЅРѕСЃС‚СЊ СЃРёРіРЅР°Р»Р°");
+    model_region->setHeaderData(9, Qt::Horizontal,"РЎР°Р№С‚ РЎРњР");
+    model_region->setHeaderData(10, Qt::Horizontal,"РћРїРёСЃР°РЅРёРµ РЎРњР");
+    model_region->setHeaderData(11, Qt::Horizontal,"Р§Р°СЃС‚РѕС‚С‹ РІРµС‰Р°РЅРёСЏ");
+    model_region->setHeaderData(13, Qt::Horizontal,"РђСѓРґРёС‚РѕСЂРёСЏ РЎРњР");
+    model_region->setHeaderData(14, Qt::Horizontal,"РўРёСЂР°Р¶ РЎРњР");
+    //	model_region->setHeaderData(15, Qt::Horizontal,"Р—Р°С‰РёС‰РµРЅРЅРѕСЃС‚СЊ");
 
     bool is= model_region->select();
 
@@ -3072,18 +3072,18 @@ void Objectmanager::ls_click (int id_ls)
     UI->property_object->verticalHeader()->setVisible(true);
 
     model_region->setRelation(2,QSqlRelation("region","id_region","name_region"));
-    model_region->setHeaderData(2,Qt::Horizontal,"Регион");
-    model_region->setHeaderData(3,Qt::Horizontal,"Наименование");
-    model_region->setHeaderData(4,Qt::Horizontal,"Враждебность подразделения");
-    model_region->setHeaderData(5,Qt::Horizontal,"Подразделение МПО");
-    model_region->setHeaderData(6,Qt::Horizontal,"Численность л/с");
-    model_region->setHeaderData(7,Qt::Horizontal,"Численность л/с в БД");
-    model_region->setHeaderData(8,Qt::Horizontal,"л/с по призыву");
-    model_region->setHeaderData(9,Qt::Horizontal,"л/с по по контракту");
-    model_region->setHeaderData(10,Qt::Horizontal,"Офицеры");
+    model_region->setHeaderData(2,Qt::Horizontal,"Р РµРіРёРѕРЅ");
+    model_region->setHeaderData(3,Qt::Horizontal,"РќР°РёРјРµРЅРѕРІР°РЅРёРµ");
+    model_region->setHeaderData(4,Qt::Horizontal,"Р’СЂР°Р¶РґРµР±РЅРѕСЃС‚СЊ РїРѕРґСЂР°Р·РґРµР»РµРЅРёСЏ");
+    model_region->setHeaderData(5,Qt::Horizontal,"РџРѕРґСЂР°Р·РґРµР»РµРЅРёРµ РњРџРћ");
+    model_region->setHeaderData(6,Qt::Horizontal,"Р§РёСЃР»РµРЅРЅРѕСЃС‚СЊ Р»/СЃ");
+    model_region->setHeaderData(7,Qt::Horizontal,"Р§РёСЃР»РµРЅРЅРѕСЃС‚СЊ Р»/СЃ РІ Р‘Р”");
+    model_region->setHeaderData(8,Qt::Horizontal,"Р»/СЃ РїРѕ РїСЂРёР·С‹РІСѓ");
+    model_region->setHeaderData(9,Qt::Horizontal,"Р»/СЃ РїРѕ РїРѕ РєРѕРЅС‚СЂР°РєС‚Сѓ");
+    model_region->setHeaderData(10,Qt::Horizontal,"РћС„РёС†РµСЂС‹");
     model_region->setRelation(12,QSqlRelation("type_ls","id_type_ls","name_type_ls"));
-    model_region->setHeaderData(12,Qt::Horizontal,"Тип подразделения");
-    model_region->setHeaderData(13,Qt::Horizontal,"Сокращенное наименование подразделения");
+    model_region->setHeaderData(12,Qt::Horizontal,"РўРёРї РїРѕРґСЂР°Р·РґРµР»РµРЅРёСЏ");
+    model_region->setHeaderData(13,Qt::Horizontal,"РЎРѕРєСЂР°С‰РµРЅРЅРѕРµ РЅР°РёРјРµРЅРѕРІР°РЅРёРµ РїРѕРґСЂР°Р·РґРµР»РµРЅРёСЏ");
 
 
 
@@ -3128,19 +3128,19 @@ void Objectmanager::gr_click (int id_gr)
     model_region->setFilter(QString("id_groups=%1").arg(id_gr));
 
     model_region->setRelation(1,QSqlRelation("sphere_groups","id_sphere_groups","name_sphere_groups"));
-    model_region->setHeaderData(1,Qt::Horizontal,"Сфера деятельности");
+    model_region->setHeaderData(1,Qt::Horizontal,"РЎС„РµСЂР° РґРµСЏС‚РµР»СЊРЅРѕСЃС‚Рё");
     model_region->setRelation(2,QSqlRelation("form_groups","id_form_groups","name_form_groups"));
-    model_region->setHeaderData(2,Qt::Horizontal,"Форма организации");
+    model_region->setHeaderData(2,Qt::Horizontal,"Р¤РѕСЂРјР° РѕСЂРіР°РЅРёР·Р°С†РёРё");
     model_region->setRelation(3,QSqlRelation("trend_groups","id_trend_groups","name_trend_groups"));
-    model_region->setHeaderData(3,Qt::Horizontal,"Направленность");
-    model_region->setHeaderData(4, Qt::Horizontal,"Наименование организации");
-    model_region->setHeaderData(5, Qt::Horizontal,"Численность организации");
-    model_region->setHeaderData(6, Qt::Horizontal,"Учредители организации");
-    model_region->setHeaderData(7, Qt::Horizontal,"Руководство организации");
-    model_region->setHeaderData(8, Qt::Horizontal,"Представительство организации");
-    model_region->setHeaderData(9, Qt::Horizontal,"Описание организации");
-    model_region->setHeaderData(10, Qt::Horizontal,"Оппозиционность организации");
-    model_region->setHeaderData(14, Qt::Horizontal,"Информационные органы");
+    model_region->setHeaderData(3,Qt::Horizontal,"РќР°РїСЂР°РІР»РµРЅРЅРѕСЃС‚СЊ");
+    model_region->setHeaderData(4, Qt::Horizontal,"РќР°РёРјРµРЅРѕРІР°РЅРёРµ РѕСЂРіР°РЅРёР·Р°С†РёРё");
+    model_region->setHeaderData(5, Qt::Horizontal,"Р§РёСЃР»РµРЅРЅРѕСЃС‚СЊ РѕСЂРіР°РЅРёР·Р°С†РёРё");
+    model_region->setHeaderData(6, Qt::Horizontal,"РЈС‡СЂРµРґРёС‚РµР»Рё РѕСЂРіР°РЅРёР·Р°С†РёРё");
+    model_region->setHeaderData(7, Qt::Horizontal,"Р СѓРєРѕРІРѕРґСЃС‚РІРѕ РѕСЂРіР°РЅРёР·Р°С†РёРё");
+    model_region->setHeaderData(8, Qt::Horizontal,"РџСЂРµРґСЃС‚Р°РІРёС‚РµР»СЊСЃС‚РІРѕ РѕСЂРіР°РЅРёР·Р°С†РёРё");
+    model_region->setHeaderData(9, Qt::Horizontal,"РћРїРёСЃР°РЅРёРµ РѕСЂРіР°РЅРёР·Р°С†РёРё");
+    model_region->setHeaderData(10, Qt::Horizontal,"РћРїРїРѕР·РёС†РёРѕРЅРЅРѕСЃС‚СЊ РѕСЂРіР°РЅРёР·Р°С†РёРё");
+    model_region->setHeaderData(14, Qt::Horizontal,"РРЅС„РѕСЂРјР°С†РёРѕРЅРЅС‹Рµ РѕСЂРіР°РЅС‹");
 
     bool is= model_region->select();
 
@@ -3177,10 +3177,10 @@ void Objectmanager::mpo_click (int id_mpo){
     model_region->setFilter(QString("id_mpo_pso=%1").arg(id_mpo));
 
     model_region->setRelation(1,QSqlRelation("type_mpo_pso","id_type_mpo_pso","name_type_mpo_pso"));
-    model_region->setHeaderData(1,Qt::Horizontal,"Тип средства");
-    model_region->setHeaderData(6, Qt::Horizontal,"Наименование средства");
-    model_region->setHeaderData(7, Qt::Horizontal,"Количество средств");
-    model_region->setHeaderData(8, Qt::Horizontal,"Описание средства");
+    model_region->setHeaderData(1,Qt::Horizontal,"РўРёРї СЃСЂРµРґСЃС‚РІР°");
+    model_region->setHeaderData(6, Qt::Horizontal,"РќР°РёРјРµРЅРѕРІР°РЅРёРµ СЃСЂРµРґСЃС‚РІР°");
+    model_region->setHeaderData(7, Qt::Horizontal,"РљРѕР»РёС‡РµСЃС‚РІРѕ СЃСЂРµРґСЃС‚РІ");
+    model_region->setHeaderData(8, Qt::Horizontal,"РћРїРёСЃР°РЅРёРµ СЃСЂРµРґСЃС‚РІР°");
 
     bool is= model_region->select();
 
@@ -3219,11 +3219,11 @@ void Objectmanager::sc_click (int id_sc){
     model_region->setFilter(QString("id_special_conditions=%1").arg(id_sc));
 
     model_region->setRelation(2,QSqlRelation("type_special_conditions","id_type_special_conditions","name_type_special_conditions"));
-    model_region->setHeaderData(2,Qt::Horizontal,"Тип особого условия");
-    model_region->setHeaderData(3, Qt::Horizontal,"Наименование особого условия");
-    model_region->setHeaderData(4, Qt::Horizontal,"Описание особого условия");
-    model_region->setHeaderData(5, Qt::Horizontal,"Семантика_1");
-    model_region->setHeaderData(6, Qt::Horizontal,"Семантика_2");
+    model_region->setHeaderData(2,Qt::Horizontal,"РўРёРї РѕСЃРѕР±РѕРіРѕ СѓСЃР»РѕРІРёСЏ");
+    model_region->setHeaderData(3, Qt::Horizontal,"РќР°РёРјРµРЅРѕРІР°РЅРёРµ РѕСЃРѕР±РѕРіРѕ СѓСЃР»РѕРІРёСЏ");
+    model_region->setHeaderData(4, Qt::Horizontal,"РћРїРёСЃР°РЅРёРµ РѕСЃРѕР±РѕРіРѕ СѓСЃР»РѕРІРёСЏ");
+    model_region->setHeaderData(5, Qt::Horizontal,"РЎРµРјР°РЅС‚РёРєР°_1");
+    model_region->setHeaderData(6, Qt::Horizontal,"РЎРµРјР°РЅС‚РёРєР°_2");
 
     bool is= model_region->select();
 
@@ -3246,15 +3246,15 @@ void Objectmanager::sc_click (int id_sc){
 }
 
 
-//==========================  удаление по нажатию контекстного меню ================================
+//==========================  СѓРґР°Р»РµРЅРёРµ РїРѕ РЅР°Р¶Р°С‚РёСЋ РєРѕРЅС‚РµРєСЃС‚РЅРѕРіРѕ РјРµРЅСЋ ================================
 void Objectmanager::delete_region(){
     QMessageBox msgBox;
-    msgBox.setWindowTitle("Предупреждение");
-    msgBox.setText("Вы действительно хотите удалить регион?");
+    msgBox.setWindowTitle("РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ");
+    msgBox.setText("Р’С‹ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅРѕ С…РѕС‚РёС‚Рµ СѓРґР°Р»РёС‚СЊ СЂРµРіРёРѕРЅ?");
 
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-    msgBox.setButtonText(QMessageBox::Yes, "Да");
-    msgBox.setButtonText(QMessageBox::No, "Нет");
+    msgBox.setButtonText(QMessageBox::Yes, "Р”Р°");
+    msgBox.setButtonText(QMessageBox::No, "РќРµС‚");
     switch (msgBox.exec()) {
     case QMessageBox::Yes:
         // yes was clicked
@@ -3276,22 +3276,22 @@ void Objectmanager::delete_region(){
     QString str = QString("DELETE FROM region WHERE id_region = %1").arg(list.value(1));//.toInt());
 
     if(!query.exec(str)){
-        QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Удаление региона не выполнено"),QMessageBox::Ok );
+        QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("РЈРґР°Р»РµРЅРёРµ СЂРµРіРёРѕРЅР° РЅРµ РІС‹РїРѕР»РЅРµРЅРѕ"),QMessageBox::Ok );
         return;
     }
     UI->columnView->model()->removeRow(index.row(),index.parent());
 
-    QMessageBox::StandardButton ret; ret = QMessageBox::information(this,"Предупреждение",("Удаление региона выполнено"),QMessageBox::Ok );
+    QMessageBox::StandardButton ret; ret = QMessageBox::information(this,"РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ",("РЈРґР°Р»РµРЅРёРµ СЂРµРіРёРѕРЅР° РІС‹РїРѕР»РЅРµРЅРѕ"),QMessageBox::Ok );
     UI->property_object->setModel(0);
 
 }
 void Objectmanager::delete_smi(){
     QMessageBox msgBox;
-    msgBox.setWindowTitle("Предупреждение");
-    msgBox.setText("Вы действительно хотите удалить СМИ?");
+    msgBox.setWindowTitle("РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ");
+    msgBox.setText("Р’С‹ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅРѕ С…РѕС‚РёС‚Рµ СѓРґР°Р»РёС‚СЊ РЎРњР?");
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-    msgBox.setButtonText(QMessageBox::Yes, "Да");
-    msgBox.setButtonText(QMessageBox::No, "Нет");
+    msgBox.setButtonText(QMessageBox::Yes, "Р”Р°");
+    msgBox.setButtonText(QMessageBox::No, "РќРµС‚");
     switch (msgBox.exec()) {
     case QMessageBox::Yes:
         // yes was clicked
@@ -3313,23 +3313,23 @@ void Objectmanager::delete_smi(){
     QString str = QString("DELETE FROM smi_region WHERE id_smi_region = %1").arg(list.value(1));
 
     if(!query.exec(str)){
-        QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Удаление СМИ не выполнено"),QMessageBox::Ok );
+        QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("РЈРґР°Р»РµРЅРёРµ РЎРњР РЅРµ РІС‹РїРѕР»РЅРµРЅРѕ"),QMessageBox::Ok );
         return;
     }
     UI->columnView->model()->removeRow(index.row(),index.parent());
-    QMessageBox::StandardButton ret; ret = QMessageBox::information(this,"Предупреждение",("Удаление СМИ выполнено"),QMessageBox::Ok );
+    QMessageBox::StandardButton ret; ret = QMessageBox::information(this,"РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ",("РЈРґР°Р»РµРЅРёРµ РЎРњР РІС‹РїРѕР»РЅРµРЅРѕ"),QMessageBox::Ok );
 
     UI->property_object->setModel(0);
 
 }
 void Objectmanager::delete_ls(){
     QMessageBox msgBox;
-    msgBox.setWindowTitle("Предупреждение");
-    msgBox.setText("Вы действительно хотите удалить воинское формирование?");
+    msgBox.setWindowTitle("РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ");
+    msgBox.setText("Р’С‹ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅРѕ С…РѕС‚РёС‚Рµ СѓРґР°Р»РёС‚СЊ РІРѕРёРЅСЃРєРѕРµ С„РѕСЂРјРёСЂРѕРІР°РЅРёРµ?");
 
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-    msgBox.setButtonText(QMessageBox::Yes, "Да");
-    msgBox.setButtonText(QMessageBox::No, "Нет");
+    msgBox.setButtonText(QMessageBox::Yes, "Р”Р°");
+    msgBox.setButtonText(QMessageBox::No, "РќРµС‚");
     switch (msgBox.exec()) {
     case QMessageBox::Yes:
         // yes was clicked
@@ -3351,23 +3351,23 @@ void Objectmanager::delete_ls(){
     QString str = QString("DELETE FROM ls WHERE id_ls = %1").arg(list.value(1));
 
     if(!query.exec(str)){
-        QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Удаление ВФ не выполнено"),QMessageBox::Ok );
+        QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("РЈРґР°Р»РµРЅРёРµ Р’Р¤ РЅРµ РІС‹РїРѕР»РЅРµРЅРѕ"),QMessageBox::Ok );
         return;
     }
     UI->columnView->model()->removeRow(index.row(),index.parent());
-    QMessageBox::StandardButton ret; ret = QMessageBox::information(this,"Предупреждение",("Удаление ВФ выполнено"),QMessageBox::Ok );
+    QMessageBox::StandardButton ret; ret = QMessageBox::information(this,"РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ",("РЈРґР°Р»РµРЅРёРµ Р’Р¤ РІС‹РїРѕР»РЅРµРЅРѕ"),QMessageBox::Ok );
     UI->property_object->setModel(0);
 
     clear_tableWidget(UI->coord_table);
 }
 void Objectmanager::delete_groups(){
     QMessageBox msgBox;
-    msgBox.setWindowTitle("Предупреждение");
-    msgBox.setText("Вы действительно хотите удалить организацию?");
+    msgBox.setWindowTitle("РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ");
+    msgBox.setText("Р’С‹ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅРѕ С…РѕС‚РёС‚Рµ СѓРґР°Р»РёС‚СЊ РѕСЂРіР°РЅРёР·Р°С†РёСЋ?");
 
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-    msgBox.setButtonText(QMessageBox::Yes, "Да");
-    msgBox.setButtonText(QMessageBox::No, "Нет");
+    msgBox.setButtonText(QMessageBox::Yes, "Р”Р°");
+    msgBox.setButtonText(QMessageBox::No, "РќРµС‚");
     switch (msgBox.exec()) {
     case QMessageBox::Yes:
         // yes was clicked
@@ -3389,23 +3389,23 @@ void Objectmanager::delete_groups(){
     QString str = QString("DELETE FROM groups WHERE id_groups = %1").arg(list.value(1));
 
     if(!query.exec(str)){
-        QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Удаление организации не выполнено"),QMessageBox::Ok );
+        QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("РЈРґР°Р»РµРЅРёРµ РѕСЂРіР°РЅРёР·Р°С†РёРё РЅРµ РІС‹РїРѕР»РЅРµРЅРѕ"),QMessageBox::Ok );
         return;
     }
     UI->columnView->model()->removeRow(index.row(),index.parent());
-    QMessageBox::StandardButton ret; ret = QMessageBox::information(this,"Предупреждение",("Удаление организации выполнено"),QMessageBox::Ok );
+    QMessageBox::StandardButton ret; ret = QMessageBox::information(this,"РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ",("РЈРґР°Р»РµРЅРёРµ РѕСЂРіР°РЅРёР·Р°С†РёРё РІС‹РїРѕР»РЅРµРЅРѕ"),QMessageBox::Ok );
     UI->property_object->setModel(0);
     clear_tableWidget(UI->coord_table);
 
 }
 void Objectmanager::delete_mpo(){
     QMessageBox msgBox;
-    msgBox.setWindowTitle("Предупреждение");
-    msgBox.setText("Вы действительно хотите удалить средство?");
+    msgBox.setWindowTitle("РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ");
+    msgBox.setText("Р’С‹ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅРѕ С…РѕС‚РёС‚Рµ СѓРґР°Р»РёС‚СЊ СЃСЂРµРґСЃС‚РІРѕ?");
 
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-    msgBox.setButtonText(QMessageBox::Yes, "Да");
-    msgBox.setButtonText(QMessageBox::No, "Нет");
+    msgBox.setButtonText(QMessageBox::Yes, "Р”Р°");
+    msgBox.setButtonText(QMessageBox::No, "РќРµС‚");
     switch (msgBox.exec()) {
     case QMessageBox::Yes:
         // yes was clicked
@@ -3427,22 +3427,22 @@ void Objectmanager::delete_mpo(){
 
     QString str1 = QString("DELETE FROM mpo_pso WHERE id_mpo_pso = %1").arg(list.value(1));
     if(!query.exec(str1)){
-        QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Удаление средства не выполнено"),QMessageBox::Ok );
+        QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("РЈРґР°Р»РµРЅРёРµ СЃСЂРµРґСЃС‚РІР° РЅРµ РІС‹РїРѕР»РЅРµРЅРѕ"),QMessageBox::Ok );
         return;
     }
     UI->columnView->model()->removeRow(index.row(),index.parent());
-    QMessageBox::StandardButton ret; ret = QMessageBox::information(this,"Предупреждение",("Удаление средства выполнено"),QMessageBox::Ok );
+    QMessageBox::StandardButton ret; ret = QMessageBox::information(this,"РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ",("РЈРґР°Р»РµРЅРёРµ СЃСЂРµРґСЃС‚РІР° РІС‹РїРѕР»РЅРµРЅРѕ"),QMessageBox::Ok );
     UI->property_object->setModel(0);
     clear_tableWidget(UI->coord_table);
 }
 void Objectmanager::delete_sc(){
     QMessageBox msgBox;
-    msgBox.setWindowTitle("Предупреждение");
-    msgBox.setText("Вы действительно хотите удалить особое условие?");
+    msgBox.setWindowTitle("РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ");
+    msgBox.setText("Р’С‹ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅРѕ С…РѕС‚РёС‚Рµ СѓРґР°Р»РёС‚СЊ РѕСЃРѕР±РѕРµ СѓСЃР»РѕРІРёРµ?");
 
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-    msgBox.setButtonText(QMessageBox::Yes, "Да");
-    msgBox.setButtonText(QMessageBox::No, "Нет");
+    msgBox.setButtonText(QMessageBox::Yes, "Р”Р°");
+    msgBox.setButtonText(QMessageBox::No, "РќРµС‚");
     switch (msgBox.exec()) {
     case QMessageBox::Yes:
         // yes was clicked
@@ -3464,11 +3464,11 @@ void Objectmanager::delete_sc(){
     QString str = QString("DELETE FROM special_conditions WHERE id_special_conditions = %1").arg(list.value(1));
 
     if(!query.exec(str)){
-        QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Удаление особого условия не выполнено"),QMessageBox::Ok );
+        QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("РЈРґР°Р»РµРЅРёРµ РѕСЃРѕР±РѕРіРѕ СѓСЃР»РѕРІРёСЏ РЅРµ РІС‹РїРѕР»РЅРµРЅРѕ"),QMessageBox::Ok );
         return;
     }
     UI->columnView->model()->removeRow(index.row(),index.parent());
-    QMessageBox::StandardButton ret; ret = QMessageBox::information(this,"Предупреждение",("Удаление особого условия выполнено"),QMessageBox::Ok );
+    QMessageBox::StandardButton ret; ret = QMessageBox::information(this,"РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ",("РЈРґР°Р»РµРЅРёРµ РѕСЃРѕР±РѕРіРѕ СѓСЃР»РѕРІРёСЏ РІС‹РїРѕР»РЅРµРЅРѕ"),QMessageBox::Ok );
     UI->property_object->setModel(0);
     clear_tableWidget(UI->coord_table);
 }
@@ -3482,7 +3482,7 @@ void Objectmanager::edit_persones(){
 }
 void Objectmanager::clicked_open_file()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, "Выбор фотографии", "",
+    QString fileName = QFileDialog::getOpenFileName(this, "Р’С‹Р±РѕСЂ С„РѕС‚РѕРіСЂР°С„РёРё", "",
                                                     "Images (*.jpg *.png)");
     if (fileName.isEmpty()) return;
     //	edit_dlg_pers->raise();
@@ -3497,8 +3497,8 @@ void Objectmanager::clicked_open_file()
     if(!file.open(QIODevice::ReadOnly))
     {
         QMessageBox msgBox;
-        msgBox.setWindowTitle(tr("Внимание"));
-        msgBox.setText(tr("Изображение не выбрано"));
+        msgBox.setWindowTitle(tr("Р’РЅРёРјР°РЅРёРµ"));
+        msgBox.setText(tr("РР·РѕР±СЂР°Р¶РµРЅРёРµ РЅРµ РІС‹Р±СЂР°РЅРѕ"));
         msgBox.setStandardButtons(QMessageBox::Yes);
         switch (msgBox.exec()) {
         case QMessageBox::Yes:
@@ -3526,12 +3526,12 @@ void Objectmanager::clicked_open_file()
 }
 void Objectmanager::delete_pers(){
     QMessageBox msgBox;
-    msgBox.setWindowTitle("Предупреждение");
-    msgBox.setText("Вы действительно хотите удалить данные по персоналу?");
+    msgBox.setWindowTitle("РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ");
+    msgBox.setText("Р’С‹ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅРѕ С…РѕС‚РёС‚Рµ СѓРґР°Р»РёС‚СЊ РґР°РЅРЅС‹Рµ РїРѕ РїРµСЂСЃРѕРЅР°Р»Сѓ?");
 
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-    msgBox.setButtonText(QMessageBox::Yes, "Да");
-    msgBox.setButtonText(QMessageBox::No, "Нет");
+    msgBox.setButtonText(QMessageBox::Yes, "Р”Р°");
+    msgBox.setButtonText(QMessageBox::No, "РќРµС‚");
     switch (msgBox.exec()) {
     case QMessageBox::Yes:
         // yes was clicked
@@ -3553,16 +3553,16 @@ void Objectmanager::delete_pers(){
     QString str = QString("DELETE FROM persones WHERE id_persones = %1").arg(list.value(1));
 
     if(!query.exec(str)){
-        QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Удаление данных по персоналу не выполнено"),QMessageBox::Ok );
+        QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("РЈРґР°Р»РµРЅРёРµ РґР°РЅРЅС‹С… РїРѕ РїРµСЂСЃРѕРЅР°Р»Сѓ РЅРµ РІС‹РїРѕР»РЅРµРЅРѕ"),QMessageBox::Ok );
         return;
     }
     UI->columnView->model()->removeRow(index.row(),index.parent());
-    QMessageBox::StandardButton ret; ret = QMessageBox::information(this,"Предупреждение",("Удаление данных по персоналу выполнено"),QMessageBox::Ok );
+    QMessageBox::StandardButton ret; ret = QMessageBox::information(this,"РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ",("РЈРґР°Р»РµРЅРёРµ РґР°РЅРЅС‹С… РїРѕ РїРµСЂСЃРѕРЅР°Р»Сѓ РІС‹РїРѕР»РЅРµРЅРѕ"),QMessageBox::Ok );
     UI->property_object->setModel(0);
     clear_tableWidget(UI->coord_table);
 
 }
-//============================      отчеты    ================================================================
+//============================      РѕС‚С‡РµС‚С‹    ================================================================
 void Objectmanager::otchet_groups()
 {
     QModelIndex index = UI->columnView->currentIndex();
@@ -3629,7 +3629,7 @@ void Objectmanager::otchet_groups()
     }
 }
 // QString str = QString("select gr.name_groups,gr.counte_groups,gr.founder_group,gr.menegement_groups,gr.officce_groups,gr.description_groups,gr.propaganda_groups,tr.name_trend_groups,sph.name_sphere_groups, form.name_form_groups, reg.name_region FROM groups gr,trend_groups tr,sphere_groups sph, form_groups form, region reg where gr.id_trend=tr.id_trend_groups AND gr.id_sphere_groups=sph.id_sphere_groups AND gr.id_form_groups=form.id_form_groups AND gr.id_region = reg.id_region AND gr.id_groups=%1").arg(group_id);
-//==============================   расчеты   =============================================================
+//==============================   СЂР°СЃС‡РµС‚С‹   =============================================================
 int Objectmanager::calc_info_for_region(QString id_region)
 {
     Calculate_K_omkrf calc;
@@ -3666,7 +3666,7 @@ void Objectmanager::add_new_coordinates()
 {
     add_coord = new QDialog();
 
-    add_coord->setWindowTitle(tr("Добавить новые координаты"));
+    add_coord->setWindowTitle(tr("Р”РѕР±Р°РІРёС‚СЊ РЅРѕРІС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹"));
 
     QModelIndex index = UI->columnView->currentIndex();
     if(!index.data(Qt::UserRole).toBool()) return;
@@ -3684,7 +3684,7 @@ void Objectmanager::add_new_coordinates()
     QLabel *lab5 = new QLabel(tr("E ") + "' :");
     QLabel *lab6 = new QLabel(tr("E ") + "\" :");
 
-    QLabel *lab_rect = new QLabel("<b>" + tr("Прямоугольные") + "</b>");
+    QLabel *lab_rect = new QLabel("<b>" + tr("РџСЂСЏРјРѕСѓРіРѕР»СЊРЅС‹Рµ") + "</b>");
     lab_rect->setAlignment(Qt::AlignCenter);
 
     QLabel *lab15 = new QLabel(tr("X ") + ":");
@@ -3699,8 +3699,8 @@ void Objectmanager::add_new_coordinates()
     e15 = new QLineEdit();
     e16 = new QLineEdit();
 
-    QPushButton *wgs_button = new QPushButton(tr("Перевести"));
-    QPushButton *plane_button = new QPushButton(tr("Перевести"));
+    QPushButton *wgs_button = new QPushButton(tr("РџРµСЂРµРІРµСЃС‚Рё"));
+    QPushButton *plane_button = new QPushButton(tr("РџРµСЂРµРІРµСЃС‚Рё"));
     connect(wgs_button,SIGNAL(clicked()),this,SLOT(WGS_to_other()));
     connect(plane_button,SIGNAL(clicked()),this,SLOT(PLANE_to_other()));
 
@@ -3733,7 +3733,7 @@ void Objectmanager::add_new_coordinates()
 
     QPushButton *ok_button = new QPushButton("OK");
     connect(ok_button,SIGNAL(clicked()),add_coord,SLOT(accept()));
-    QPushButton *cancel_button = new QPushButton("Отмена");
+    QPushButton *cancel_button = new QPushButton("РћС‚РјРµРЅР°");
     connect(cancel_button,SIGNAL(clicked()),add_coord,SLOT(close()));
 
     QHBoxLayout *b_lay = new QHBoxLayout;
@@ -3753,7 +3753,7 @@ void Objectmanager::add_new_coordinates()
             || list.value(0)=="smi" || list.value(0)=="ls" || list.value(0)=="gr" || list.value(0)=="dgr"){
 
         QMessageBox::StandardButton ret;
-        ret = QMessageBox::critical (this,"Ошибка",("Нет возможности ввести координаты "),QMessageBox::Ok );
+        ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("РќРµС‚ РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё РІРІРµСЃС‚Рё РєРѕРѕСЂРґРёРЅР°С‚С‹ "),QMessageBox::Ok );
     }
     else if(add_coord->exec() == QDialog::Accepted)
     {
@@ -3775,7 +3775,7 @@ void Objectmanager::add_new_coordinates()
             QString str22= query.lastError().databaseText();
             return;
         }
-        // Определение последнего id_coordinates
+        // РћРїСЂРµРґРµР»РµРЅРёРµ РїРѕСЃР»РµРґРЅРµРіРѕ id_coordinates
         int id_coordinates;
         while (query.next())
         {
@@ -3874,7 +3874,7 @@ void Objectmanager::add_new_coordinates()
         return;
     }
 }
-//========================== добавление списка координат =================================
+//========================== РґРѕР±Р°РІР»РµРЅРёРµ СЃРїРёСЃРєР° РєРѕРѕСЂРґРёРЅР°С‚ =================================
 void Objectmanager::show_dialog_add_file()
 {
     int id_obj = 0;
@@ -3887,9 +3887,9 @@ void Objectmanager::show_dialog_add_file()
     if(list_id.value(0)=="region" || list_id.value(0)=="reg" ) {
 
         QString filepath = QFileDialog::getOpenFileName(this,
-                                                        "Открыть txt-файл", "../", tr("Text Files (*.txt *.csv)"));
+                                                        "РћС‚РєСЂС‹С‚СЊ txt-С„Р°Р№Р»", "../", tr("Text Files (*.txt *.csv)"));
 
-        ///============== проверку сделать на пустой стринг ========================================
+        ///============== РїСЂРѕРІРµСЂРєСѓ СЃРґРµР»Р°С‚СЊ РЅР° РїСѓСЃС‚РѕР№ СЃС‚СЂРёРЅРі ========================================
 
         QFile file(filepath);
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -3925,15 +3925,15 @@ void Objectmanager::show_dialog_add_file()
         {
             //================MessageBox===============================
             QMessageBox msgBox;
-            msgBox.setWindowTitle("Сообщение");
-            msgBox.setText("Вы должны открыть карту, чтобы перевести координаты объекта\nОткрыть карту??");
+            msgBox.setWindowTitle("РЎРѕРѕР±С‰РµРЅРёРµ");
+            msgBox.setText("Р’С‹ РґРѕР»Р¶РЅС‹ РѕС‚РєСЂС‹С‚СЊ РєР°СЂС‚Сѓ, С‡С‚РѕР±С‹ РїРµСЂРµРІРµСЃС‚Рё РєРѕРѕСЂРґРёРЅР°С‚С‹ РѕР±СЉРµРєС‚Р°\nРћС‚РєСЂС‹С‚СЊ РєР°СЂС‚Сѓ??");
             msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-            msgBox.setButtonText(QMessageBox::Yes, "Да");
-            msgBox.setButtonText(QMessageBox::No, "Нет");
+            msgBox.setButtonText(QMessageBox::Yes, "Р”Р°");
+            msgBox.setButtonText(QMessageBox::No, "РќРµС‚");
 
             switch (msgBox.exec()) {
             case QMessageBox::Yes:
-                mapPath = QFileDialog::getOpenFileName(this, QString::null, QString::null,"Maps (*.map)" );
+                mapPath = QFileDialog::getOpenFileName(this, NULL, NULL,"Maps (*.map)" );
                 break;
             case QMessageBox::No:
                 return;
@@ -3956,7 +3956,7 @@ void Objectmanager::show_dialog_add_file()
             QStringList list = line.split("   ");
             if (list.value(0)=="" || list.value(1) == ""){
                 QMessageBox::StandardButton ret;
-                ret = QMessageBox::critical (this,"Ошибка",("В файле нет координат "),QMessageBox::Ok );
+                ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’ С„Р°Р№Р»Рµ РЅРµС‚ РєРѕРѕСЂРґРёРЅР°С‚ "),QMessageBox::Ok );
                 return;
             }
 
@@ -4023,9 +4023,9 @@ void Objectmanager::show_dialog_add_file()
     else if(list_id.value(0)=="dsc" ) {
 
         QString filepath = QFileDialog::getOpenFileName(this,
-                                                        "Открыть txt-файл", "../", tr("Text Files (*.txt *.csv)"));
+                                                        "РћС‚РєСЂС‹С‚СЊ txt-С„Р°Р№Р»", "../", tr("Text Files (*.txt *.csv)"));
 
-        ///============== проверку сделать на пустой стринг ========================================
+        ///============== РїСЂРѕРІРµСЂРєСѓ СЃРґРµР»Р°С‚СЊ РЅР° РїСѓСЃС‚РѕР№ СЃС‚СЂРёРЅРі ========================================
 
         QFile file(filepath);
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -4061,15 +4061,15 @@ void Objectmanager::show_dialog_add_file()
         {
             //================MessageBox===============================
             QMessageBox msgBox;
-            msgBox.setWindowTitle("Сообщение");
-            msgBox.setText("Вы должны открыть карту, чтобы перевести координаты объекта\nОткрыть карту??");
+            msgBox.setWindowTitle("РЎРѕРѕР±С‰РµРЅРёРµ");
+            msgBox.setText("Р’С‹ РґРѕР»Р¶РЅС‹ РѕС‚РєСЂС‹С‚СЊ РєР°СЂС‚Сѓ, С‡С‚РѕР±С‹ РїРµСЂРµРІРµСЃС‚Рё РєРѕРѕСЂРґРёРЅР°С‚С‹ РѕР±СЉРµРєС‚Р°\nРћС‚РєСЂС‹С‚СЊ РєР°СЂС‚Сѓ??");
             msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-            msgBox.setButtonText(QMessageBox::Yes, "Да");
-            msgBox.setButtonText(QMessageBox::No, "Нет");
+            msgBox.setButtonText(QMessageBox::Yes, "Р”Р°");
+            msgBox.setButtonText(QMessageBox::No, "РќРµС‚");
 
             switch (msgBox.exec()) {
             case QMessageBox::Yes:
-                mapPath = QFileDialog::getOpenFileName(this, QString::null, QString::null,"Maps (*.map)" );
+                mapPath = QFileDialog::getOpenFileName(this, NULL, NULL,"Maps (*.map)" );
                 break;
             case QMessageBox::No:
                 return;
@@ -4092,7 +4092,7 @@ void Objectmanager::show_dialog_add_file()
             QStringList list = line.split("   ");
             if (list.value(0)=="" || list.value(1) == ""){
                 QMessageBox::StandardButton ret;
-                ret = QMessageBox::critical (this,"Ошибка",("В файле нет координат "),QMessageBox::Ok );
+                ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’ С„Р°Р№Р»Рµ РЅРµС‚ РєРѕРѕСЂРґРёРЅР°С‚ "),QMessageBox::Ok );
                 return;
             }
 
@@ -4164,7 +4164,7 @@ void Objectmanager::show_dialog_add_file()
              || list_id.value(0)=="dls" || list_id.value(0)=="chls" || list_id.value(0)=="lss" || list_id.value(0)=="dgr" || list_id.value(0)=="dmpo"
              || list_id.value(0)=="dmpos" || list_id.value(0)=="dmposmi" || list_id.value(0)=="dpers" || list_id.value(0)=="dperssmi" || list_id.value(0)=="dpersls" || list_id.value(0)=="pers"){
         QMessageBox::StandardButton ret;
-        ret = QMessageBox::critical (this,"Ошибка",("Для данного объекта невозможно добавить список координат"),QMessageBox::Ok );
+        ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р”Р»СЏ РґР°РЅРЅРѕРіРѕ РѕР±СЉРµРєС‚Р° РЅРµРІРѕР·РјРѕР¶РЅРѕ РґРѕР±Р°РІРёС‚СЊ СЃРїРёСЃРѕРє РєРѕРѕСЂРґРёРЅР°С‚"),QMessageBox::Ok );
         return;
     }
 
@@ -4236,7 +4236,7 @@ void Objectmanager::show_coordinates(QString ob_name,int id_object_for_coord,QSt
     }
 }
 
-//========== Изменение отображения системы координат =========
+//========== РР·РјРµРЅРµРЅРёРµ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ СЃРёСЃС‚РµРјС‹ РєРѕРѕСЂРґРёРЅР°С‚ =========
 void Objectmanager::change_coord_system(int)
 {
     for(int i=2;i<UI->coord_table->columnCount();i++)
@@ -4253,11 +4253,11 @@ void Objectmanager::change_coord_system(int)
         for(int i=2;i<=7;i++) UI->coord_table->hideColumn(i);
         break;
     }
-    UI->coord_table->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
-    UI->coord_table->horizontalHeader()->setResizeMode(0,QHeaderView::Fixed);
+    UI->coord_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    UI->coord_table->horizontalHeader()->setSectionResizeMode(0,QHeaderView::Fixed);
     UI->coord_table->setColumnWidth(0,20);
 }
-//======== Получение координат и сохранение их в ассоц. массиве opp_map<QString,QMap<QString,QString>> ==============
+//======== РџРѕР»СѓС‡РµРЅРёРµ РєРѕРѕСЂРґРёРЅР°С‚ Рё СЃРѕС…СЂР°РЅРµРЅРёРµ РёС… РІ Р°СЃСЃРѕС†. РјР°СЃСЃРёРІРµ opp_map<QString,QMap<QString,QString>> ==============
 void Objectmanager::get_coordinates(int id_object_coord, QString ob_name,QString table_name,QString id_name)
 {
     object_map.clear();
@@ -4300,7 +4300,7 @@ void Objectmanager::get_coordinates(int id_object_coord, QString ob_name,QString
     }
 }
 
-//========== Функция очищения таблицы (удаление всех строк и столбцов) ===============
+//========== Р¤СѓРЅРєС†РёСЏ РѕС‡РёС‰РµРЅРёСЏ С‚Р°Р±Р»РёС†С‹ (СѓРґР°Р»РµРЅРёРµ РІСЃРµС… СЃС‚СЂРѕРє Рё СЃС‚РѕР»Р±С†РѕРІ) ===============
 void Objectmanager::clear_tableWidget(QTableWidget *table)
 {
     int count_rows = table->rowCount();
@@ -4317,7 +4317,7 @@ void Objectmanager::clear_tableWidget(QTableWidget *table)
         count_cols--;
     }
 }
-//========== Удаление координат ============
+//========== РЈРґР°Р»РµРЅРёРµ РєРѕРѕСЂРґРёРЅР°С‚ ============
 void Objectmanager::delete_coordinates()
 {
     QModelIndex index = UI->columnView->currentIndex();
@@ -4342,7 +4342,7 @@ void Objectmanager::delete_coordinates()
             || list.value(0)=="smi" || list.value(0)=="ls" || list.value(0)=="gr" || list.value(0)=="mpo" || list.value(0)=="perssmi" || list.value(0)=="persls"){
 
         QMessageBox::StandardButton ret;
-        ret = QMessageBox::critical (this,"Ошибка",("Нет возможности  удалить координаты "),QMessageBox::Ok );
+        ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("РќРµС‚ РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё  СѓРґР°Р»РёС‚СЊ РєРѕРѕСЂРґРёРЅР°С‚С‹ "),QMessageBox::Ok );
 
     }
     else
@@ -4350,11 +4350,11 @@ void Objectmanager::delete_coordinates()
         {
             //================MessageBox===============================
             QMessageBox msgBox;
-            msgBox.setWindowTitle("Внимание");
-            msgBox.setText(tr("Вы действительно хотите удалить координаты?"));
+            msgBox.setWindowTitle("Р’РЅРёРјР°РЅРёРµ");
+            msgBox.setText(tr("Р’С‹ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅРѕ С…РѕС‚РёС‚Рµ СѓРґР°Р»РёС‚СЊ РєРѕРѕСЂРґРёРЅР°С‚С‹?"));
             msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-            msgBox.setButtonText(QMessageBox::Yes, "Да");
-            msgBox.setButtonText(QMessageBox::No, "Нет");
+            msgBox.setButtonText(QMessageBox::Yes, "Р”Р°");
+            msgBox.setButtonText(QMessageBox::No, "РќРµС‚");
             switch (msgBox.exec()) {
             case QMessageBox::Yes:
                 // yes was clicked
@@ -4371,8 +4371,8 @@ void Objectmanager::delete_coordinates()
         {
             //================MessageBox===============================
             QMessageBox msgBox;
-            msgBox.setWindowTitle(tr("Сообщение"));
-            msgBox.setText(tr("Ни одна строка не выбрана!"));
+            msgBox.setWindowTitle(tr("РЎРѕРѕР±С‰РµРЅРёРµ"));
+            msgBox.setText(tr("РќРё РѕРґРЅР° СЃС‚СЂРѕРєР° РЅРµ РІС‹Р±СЂР°РЅР°!"));
             msgBox.setStandardButtons(QMessageBox::Ok);
             switch (msgBox.exec()) {
             case QMessageBox::Yes:
@@ -4448,18 +4448,18 @@ void Objectmanager::edit_coordinates_view()
             || list.value(0)=="smi" || list.value(0)=="ls" || list.value(0)=="gr" || list.value(0)=="mpo" || list.value(0)=="perssmi" || list.value(0)=="persls"){
 
         QMessageBox::StandardButton ret;
-        ret = QMessageBox::critical (this,"Ошибка",("Нет возможности  редактировать координаты "),QMessageBox::Ok );
+        ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("РќРµС‚ РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё  СЂРµРґР°РєС‚РёСЂРѕРІР°С‚СЊ РєРѕРѕСЂРґРёРЅР°С‚С‹ "),QMessageBox::Ok );
 
     }else
         if(f > 0)
         {
             //================MessageBox===============================
             QMessageBox msgBox;
-            msgBox.setWindowTitle("Внимание");
-            msgBox.setText(tr("Вы действительно хотите редактировать координаты?"));
+            msgBox.setWindowTitle("Р’РЅРёРјР°РЅРёРµ");
+            msgBox.setText(tr("Р’С‹ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅРѕ С…РѕС‚РёС‚Рµ СЂРµРґР°РєС‚РёСЂРѕРІР°С‚СЊ РєРѕРѕСЂРґРёРЅР°С‚С‹?"));
             msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-            msgBox.setButtonText(QMessageBox::Yes, "Да");
-            msgBox.setButtonText(QMessageBox::No, "Нет");
+            msgBox.setButtonText(QMessageBox::Yes, "Р”Р°");
+            msgBox.setButtonText(QMessageBox::No, "РќРµС‚");
             switch (msgBox.exec()) {
             case QMessageBox::Yes:
                 if(list.value(0)=="dls" || list.value(0)=="chls" || list.value(0)=="lss" ){
@@ -4493,8 +4493,8 @@ void Objectmanager::edit_coordinates_view()
         {
             //================MessageBox===============================
             QMessageBox msgBox;
-            msgBox.setWindowTitle(tr("Сообщение"));
-            msgBox.setText(tr("Ни одна строка не выбрана!"));
+            msgBox.setWindowTitle(tr("РЎРѕРѕР±С‰РµРЅРёРµ"));
+            msgBox.setText(tr("РќРё РѕРґРЅР° СЃС‚СЂРѕРєР° РЅРµ РІС‹Р±СЂР°РЅР°!"));
             msgBox.setStandardButtons(QMessageBox::Ok);
             switch (msgBox.exec()) {
             case QMessageBox::Yes:
@@ -4509,7 +4509,7 @@ void Objectmanager::edit_coordinates(QString ob_name, int id_obj, QString table_
 {
     add_coord = new QDialog();
 
-    add_coord->setWindowTitle(tr("Добавить новые координаты"));
+    add_coord->setWindowTitle(tr("Р”РѕР±Р°РІРёС‚СЊ РЅРѕРІС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹"));
 
     QLabel *lab_wgs = new QLabel("<b>" + tr("WGS-84") + "</b>");
     lab_wgs->setAlignment(Qt::AlignCenter);
@@ -4521,7 +4521,7 @@ void Objectmanager::edit_coordinates(QString ob_name, int id_obj, QString table_
     QLabel *lab5 = new QLabel(tr("E ") + "' :");
     QLabel *lab6 = new QLabel(tr("E ") + "\" :");
 
-    QLabel *lab_rect = new QLabel("<b>" + tr("Прямоугольные") + "</b>");
+    QLabel *lab_rect = new QLabel("<b>" + tr("РџСЂСЏРјРѕСѓРіРѕР»СЊРЅС‹Рµ") + "</b>");
     lab_rect->setAlignment(Qt::AlignCenter);
 
     QLabel *lab15 = new QLabel(tr("X ") + ":");
@@ -4536,8 +4536,8 @@ void Objectmanager::edit_coordinates(QString ob_name, int id_obj, QString table_
     e15 = new QLineEdit();
     e16 = new QLineEdit();
 
-    QPushButton *wgs_button = new QPushButton(tr("Перевести"));
-    QPushButton *plane_button = new QPushButton(tr("Перевести"));
+    QPushButton *wgs_button = new QPushButton(tr("РџРµСЂРµРІРµСЃС‚Рё"));
+    QPushButton *plane_button = new QPushButton(tr("РџРµСЂРµРІРµСЃС‚Рё"));
     connect(wgs_button,SIGNAL(clicked()),this,SLOT(WGS_to_other()));
     connect(plane_button,SIGNAL(clicked()),this,SLOT(PLANE_to_other()));
 
@@ -4568,9 +4568,9 @@ void Objectmanager::edit_coordinates(QString ob_name, int id_obj, QString table_
     grid->addWidget(plane_button,3,4);
 
 
-    QPushButton *ok_button = new QPushButton("Сохранить");
+    QPushButton *ok_button = new QPushButton("РЎРѕС…СЂР°РЅРёС‚СЊ");
     connect(ok_button,SIGNAL(clicked()),add_coord,SLOT(accept()));
-    QPushButton *cancel_button = new QPushButton("Отмена");
+    QPushButton *cancel_button = new QPushButton("РћС‚РјРµРЅР°");
     connect(cancel_button,SIGNAL(clicked()),add_coord,SLOT(close()));
 
     QHBoxLayout *b_lay = new QHBoxLayout;
@@ -4641,7 +4641,7 @@ void Objectmanager::edit_coordinates(QString ob_name, int id_obj, QString table_
 }
 return;
 }
-//=============== Автоперевод систем координат ====================
+//=============== РђРІС‚РѕРїРµСЂРµРІРѕРґ СЃРёСЃС‚РµРј РєРѕРѕСЂРґРёРЅР°С‚ ====================
 void Objectmanager::WGS_to_other()
 {
     QSettings *settings = new QSettings("vka","saturnMap");
@@ -4651,15 +4651,15 @@ void Objectmanager::WGS_to_other()
     {
         //================MessageBox===============================
         QMessageBox msgBox;
-        msgBox.setWindowTitle("Сообщение");
-        msgBox.setText("Вы должны открыть карту, чтобы перевести координаты объекта\nОткрыть карту?");
+        msgBox.setWindowTitle("РЎРѕРѕР±С‰РµРЅРёРµ");
+        msgBox.setText("Р’С‹ РґРѕР»Р¶РЅС‹ РѕС‚РєСЂС‹С‚СЊ РєР°СЂС‚Сѓ, С‡С‚РѕР±С‹ РїРµСЂРµРІРµСЃС‚Рё РєРѕРѕСЂРґРёРЅР°С‚С‹ РѕР±СЉРµРєС‚Р°\nРћС‚РєСЂС‹С‚СЊ РєР°СЂС‚Сѓ?");
         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-        msgBox.setButtonText(QMessageBox::Yes, "Да");
-        msgBox.setButtonText(QMessageBox::No, "Нет");
+        msgBox.setButtonText(QMessageBox::Yes, "Р”Р°");
+        msgBox.setButtonText(QMessageBox::No, "РќРµС‚");
 
         switch (msgBox.exec()) {
         case QMessageBox::Yes:
-            mapPath = QFileDialog::getOpenFileName(this, QString::null, QString::null,"Maps (*.map)" );
+            mapPath = QFileDialog::getOpenFileName(this, NULL, NULL,"Maps (*.map)" );
             break;
         case QMessageBox::No:
             return;
@@ -4670,7 +4670,7 @@ void Objectmanager::WGS_to_other()
         }
         //==============================================================
     }
-    if(mapPath.isEmpty()) return;//если карта не выбрана
+    if(mapPath.isEmpty()) return;//РµСЃР»Рё РєР°СЂС‚Р° РЅРµ РІС‹Р±СЂР°РЅР°
 
     MyMapAccess *map = new MyMapAccess();
     hmap = 0;
@@ -4694,7 +4694,7 @@ void Objectmanager::WGS_to_other()
 
         map->mapDegreeToRadian(&E, &E_rad);
 
-        //----- Перезаписываем введенные координаты в поля Edit для WGS-84------------
+        //----- РџРµСЂРµР·Р°РїРёСЃС‹РІР°РµРј РІРІРµРґРµРЅРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ РІ РїРѕР»СЏ Edit РґР»СЏ WGS-84------------
         e1->setText(QString::number(N.Degree));
         e2->setText(QString::number(N.Minute));
         e3->setText(QString::number(N.Second,'f',2));
@@ -4728,15 +4728,15 @@ void Objectmanager::PLANE_to_other()
     {
         //================MessageBox===============================
         QMessageBox msgBox;
-        msgBox.setWindowTitle("Сообщение");
-        msgBox.setText("Вы должны открыть карту, чтобы перевести координаты объекта\nОткрыть карту??");
+        msgBox.setWindowTitle("РЎРѕРѕР±С‰РµРЅРёРµ");
+        msgBox.setText("Р’С‹ РґРѕР»Р¶РЅС‹ РѕС‚РєСЂС‹С‚СЊ РєР°СЂС‚Сѓ, С‡С‚РѕР±С‹ РїРµСЂРµРІРµСЃС‚Рё РєРѕРѕСЂРґРёРЅР°С‚С‹ РѕР±СЉРµРєС‚Р°\nРћС‚РєСЂС‹С‚СЊ РєР°СЂС‚Сѓ??");
         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-        msgBox.setButtonText(QMessageBox::Yes, "Да");
-        msgBox.setButtonText(QMessageBox::No, "Нет");
+        msgBox.setButtonText(QMessageBox::Yes, "Р”Р°");
+        msgBox.setButtonText(QMessageBox::No, "РќРµС‚");
 
         switch (msgBox.exec()) {
         case QMessageBox::Yes:
-            mapPath = QFileDialog::getOpenFileName(this, QString::null, QString::null,"Maps (*.map)" );
+            mapPath = QFileDialog::getOpenFileName(this, NULL, NULL,"Maps (*.map)" );
             break;
         case QMessageBox::No:
             return;
@@ -4747,7 +4747,7 @@ void Objectmanager::PLANE_to_other()
         }
         //==============================================================
     }
-    if(mapPath.isEmpty()) return;//если карта не выбрана
+    if(mapPath.isEmpty()) return;//РµСЃР»Рё РєР°СЂС‚Р° РЅРµ РІС‹Р±СЂР°РЅР°
 
     MyMapAccess *map = new MyMapAccess();
     hmap = 0;
@@ -4756,10 +4756,10 @@ void Objectmanager::PLANE_to_other()
 	{
 		 //================MessageBox===============================
         QMessageBox msgBox;
-        msgBox.setWindowTitle("Сообщение");
+        msgBox.setWindowTitle("РЎРѕРѕР±С‰РµРЅРёРµ");
         msgBox.setText("hmap == 0");
         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-        msgBox.setButtonText(QMessageBox::Yes, "Да");
+        msgBox.setButtonText(QMessageBox::Yes, "Р”Р°");
 
         switch (msgBox.exec()) {
         case QMessageBox::Yes:
@@ -4796,10 +4796,10 @@ void Objectmanager::PLANE_to_other()
 	{
 				 //================MessageBox===============================
         QMessageBox msgBox;
-        msgBox.setWindowTitle("Сообщение");
+        msgBox.setWindowTitle("РЎРѕРѕР±С‰РµРЅРёРµ");
         msgBox.setText("Map is not geosupported");
         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-        msgBox.setButtonText(QMessageBox::Yes, "Да");
+        msgBox.setButtonText(QMessageBox::Yes, "Р”Р°");
 
         switch (msgBox.exec()) {
         case QMessageBox::Yes:
@@ -4833,8 +4833,8 @@ void Objectmanager::fill_combobox_persones_(QComboBox *Box,int current_index)
     Box->setCurrentIndex(ci_3);
 }
 //==========================================================================
-//====== Слот поиска объектов по введенной строке в поле ввода =============
-//====== Результаты поиска отображаются в диалоговом окне ==================
+//====== РЎР»РѕС‚ РїРѕРёСЃРєР° РѕР±СЉРµРєС‚РѕРІ РїРѕ РІРІРµРґРµРЅРЅРѕР№ СЃС‚СЂРѕРєРµ РІ РїРѕР»Рµ РІРІРѕРґР° =============
+//====== Р РµР·СѓР»СЊС‚Р°С‚С‹ РїРѕРёСЃРєР° РѕС‚РѕР±СЂР°Р¶Р°СЋС‚СЃСЏ РІ РґРёР°Р»РѕРіРѕРІРѕРј РѕРєРЅРµ ==================
 //==========================================================================
 void Objectmanager::slotSearchObject()
 {
@@ -4843,11 +4843,11 @@ void Objectmanager::slotSearchObject()
 
     if(indexes.isEmpty() ) {
         QMessageBox msgBox;
-        msgBox.setWindowTitle("Результат поиска");
-        msgBox.setText("Указанный объект не найден");
+        msgBox.setWindowTitle("Р РµР·СѓР»СЊС‚Р°С‚ РїРѕРёСЃРєР°");
+        msgBox.setText("РЈРєР°Р·Р°РЅРЅС‹Р№ РѕР±СЉРµРєС‚ РЅРµ РЅР°Р№РґРµРЅ");
 
         msgBox.setStandardButtons(QMessageBox::Yes);
-        msgBox.setButtonText(QMessageBox::Yes, "Да");
+        msgBox.setButtonText(QMessageBox::Yes, "Р”Р°");
         switch (msgBox.exec()) {
        case QMessageBox::Yes:
             return;
@@ -4874,23 +4874,23 @@ void Objectmanager::update_one_click(const QModelIndex &index){
         region_click(list.value(1).toInt());
         show_coordinates(list.value(0),list.value(1).toInt(),"coord_region","id_region");
         UI->add_many_coord_button->setEnabled(true);
-    } // ================= в таблицу данные о СМИ =======================================
+    } // ================= РІ С‚Р°Р±Р»РёС†Сѓ РґР°РЅРЅС‹Рµ Рѕ РЎРњР =======================================
         else if(list.value(0)=="dsmi"){
         smi_click(list.value(2).toInt());
-    } // ================= в таблицу данные о ВФ =======================
+    } // ================= РІ С‚Р°Р±Р»РёС†Сѓ РґР°РЅРЅС‹Рµ Рѕ Р’Р¤ =======================
         else if(list.value(0)=="dls"){
         ls_click(list.value(1).toInt());
         show_coordinates(list.value(0),list.value(1).toInt(),"coord_ls","id_ls");
-    } // ================= в таблицу данные о Организациях =======================
+    } // ================= РІ С‚Р°Р±Р»РёС†Сѓ РґР°РЅРЅС‹Рµ Рѕ РћСЂРіР°РЅРёР·Р°С†РёСЏС… =======================
         else if(list.value(0)=="dgr"){
         gr_click(list.value(1).toInt());
 //            show_coordinates(list.value(0),list.value(1).toInt(),"coord_groups","id_groups");
 
-    }	// ================= в таблицу данные о Условиях =======================
+    }	// ================= РІ С‚Р°Р±Р»РёС†Сѓ РґР°РЅРЅС‹Рµ Рѕ РЈСЃР»РѕРІРёСЏС… =======================
         else if(list.value(0)=="dsc"){
         sc_click(list.value(1).toInt());
         show_coordinates(list.value(0),list.value(1).toInt(),"coord_spec_cond","id_special_conditions");
-    }//======================= в таблицу воинские формирования (подчиненные)======
+    }//======================= РІ С‚Р°Р±Р»РёС†Сѓ РІРѕРёРЅСЃРєРёРµ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ (РїРѕРґС‡РёРЅРµРЅРЅС‹Рµ)======
         else if(list.value(0)=="lss"){
         ls_click(list.value(1).toInt());
         show_coordinates(list.value(0),list.value(1).toInt(),"coord_ls","id_ls");
@@ -4898,7 +4898,7 @@ void Objectmanager::update_one_click(const QModelIndex &index){
         else if(list.value(0)=="chls"){
         ls_click(list.value(1).toInt());
         show_coordinates(list.value(0),list.value(1).toInt(),"coord_ls","id_ls");
-    } // ================= в таблицу данные о СРЕДСТВАХ =======================
+    } // ================= РІ С‚Р°Р±Р»РёС†Сѓ РґР°РЅРЅС‹Рµ Рѕ РЎР Р•Р”РЎРўР’РђРҐ =======================
         else if(list.value(0)=="dmpo" || list.value(0)=="dmpos" || list.value(0)=="dmposmi" ){
         mpo_click(list.value(1).toInt());
         show_coordinates(list.value(0),list.value(1).toInt(),"coord_mpo_pso","id_mpo_pso");

@@ -13,32 +13,32 @@
 *                                                                  *
 ********************************************************************
 *                                                                  *
-*      FOR WINDOWS, WINDOWS CE, LINUX, QNX, ОС-РВ, & ...           *
+*      FOR WINDOWS, WINDOWS CE, LINUX, QNX, РћРЎ-Р Р’, & ...           *
 *                                                                  *
 ********************************************************************
 *                                                                  *
-*                ОПИСАНИЕ СИСТЕМНЫХ ФУНКЦИЙ                        *
+*                РћРџРРЎРђРќРР• РЎРРЎРўР•РњРќР«РҐ Р¤РЈРќРљР¦РР™                        *
 *                                                                  *
 *******************************************************************/
      
 #if !defined(MAPSYST_H) 
 #define MAPSYST_H
 
-#define WIN32API        // Тип системного интерфейса Win32Api
-//#define  LINUXAPI     // Тип системного интерфейса Linux  
-//#define NUMBERTURN    // Процессор типа SPARC/MIPS (разворот байт)
+#define WIN32API        // РўРёРї СЃРёСЃС‚РµРјРЅРѕРіРѕ РёРЅС‚РµСЂС„РµР№СЃР° Win32Api
+//#define  LINUXAPI     // РўРёРї СЃРёСЃС‚РµРјРЅРѕРіРѕ РёРЅС‚РµСЂС„РµР№СЃР° Linux  
+//#define NUMBERTURN    // РџСЂРѕС†РµСЃСЃРѕСЂ С‚РёРїР° SPARC/MIPS (СЂР°Р·РІРѕСЂРѕС‚ Р±Р°Р№С‚)
 
-//#define LINUXSERVER   // Тип сборки для Linux-сервера (увеличение размеров   // 06/03/08
-                                          //  области памяти для отображения карты)
+//#define LINUXSERVER   // РўРёРї СЃР±РѕСЂРєРё РґР»СЏ Linux-СЃРµСЂРІРµСЂР° (СѓРІРµР»РёС‡РµРЅРёРµ СЂР°Р·РјРµСЂРѕРІ   // 06/03/08
+                                          //  РѕР±Р»Р°СЃС‚Рё РїР°РјСЏС‚Рё РґР»СЏ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РєР°СЂС‚С‹)
 
-//#define WINCE           // ВАРИАНТ ДЛЯ WINDOWS CE 
+//#define WINCE           // Р’РђР РРђРќРў Р”Р›РЇ WINDOWS CE 
 //#undef  LINUXAPI 
 
 #ifdef QNX
  #define  HIDETRY       // 02/09/00
- #define  LINUXAPI      // Тип системного интерфейса Linux
- #define  TINYDATA      // Тип данных для бортовых систем
- #define  WATCOM        // Тип компилятора WATCOM
+ #define  LINUXAPI      // РўРёРї СЃРёСЃС‚РµРјРЅРѕРіРѕ РёРЅС‚РµСЂС„РµР№СЃР° Linux
+ #define  TINYDATA      // РўРёРї РґР°РЅРЅС‹С… РґР»СЏ Р±РѕСЂС‚РѕРІС‹С… СЃРёСЃС‚РµРј
+ #define  WATCOM        // РўРёРї РєРѕРјРїРёР»СЏС‚РѕСЂР° WATCOM
 #endif
 
 #ifdef TINYDATA
@@ -65,11 +65,11 @@
 
 #ifdef LINUXAPI
 
-//  #define OC2000        // Для ОС2000 открыть
+//  #define OC2000        // Р”Р»СЏ РћРЎ2000 РѕС‚РєСЂС‹С‚СЊ
 #ifdef NUMBERTURN       // 14/03/03
   #define HIDEACC43
 #endif
-  #define RISCCPU       // Выравнивание переменных и структур
+  #define RISCCPU       // Р’С‹СЂР°РІРЅРёРІР°РЅРёРµ РїРµСЂРµРјРµРЅРЅС‹С… Рё СЃС‚СЂСѓРєС‚СѓСЂ
 #ifdef OC2000             // 11/10/02
   #define MINIDATA      // IDSHORT2,IDDOUBLE2,IDDOUBLE3
 #endif
@@ -90,14 +90,14 @@
   #define HIDESET       // 10/10/02
 //  #define HIDEIML         // 09/09/04
 #endif
-  #define HIDEX11    // Скрыть функции Xwindow  // 20/09/05
+  #define HIDEX11    // РЎРєСЂС‹С‚СЊ С„СѓРЅРєС†РёРё Xwindow  // 20/09/05
 #ifdef HIDEX11
   #define HIDESCREENIMAGE
 #endif
-  #define CROSS_MIPS   // 20/09/05 // Поддержка кросскомпилятора под процессор MIPS
-  #define HIDEPAINTSTEP  // 17/04/06 // Игнорировать шаг вывода DIB в окно
+  #define CROSS_MIPS   // 20/09/05 // РџРѕРґРґРµСЂР¶РєР° РєСЂРѕСЃСЃРєРѕРјРїРёР»СЏС‚РѕСЂР° РїРѕРґ РїСЂРѕС†РµСЃСЃРѕСЂ MIPS
+  #define HIDEPAINTSTEP  // 17/04/06 // РРіРЅРѕСЂРёСЂРѕРІР°С‚СЊ С€Р°Рі РІС‹РІРѕРґР° DIB РІ РѕРєРЅРѕ
 
-  #define MULTIPLATFORM  // 10/07/07 // Одновременная работа с данными на платформах SPARC и INTEL
+  #define MULTIPLATFORM  // 10/07/07 // РћРґРЅРѕРІСЂРµРјРµРЅРЅР°СЏ СЂР°Р±РѕС‚Р° СЃ РґР°РЅРЅС‹РјРё РЅР° РїР»Р°С‚С„РѕСЂРјР°С… SPARC Рё INTEL
   #define TRANSTELECOM   // 12/07/07
   #define ANSI           // 11/09/07 
 
@@ -239,13 +239,13 @@
   #define OFN_ALLOWMULTISELECT    0x00000200        // 12/04/02
   #define OFN_HIDEREADONLY        0x00000004        // 19/05/02
   #define OFN_NOREADONLYRETURN    0x00008000
-  // Маски клавиш (полное соотвествие WIN32)        // 14/05/02
+  // РњР°СЃРєРё РєР»Р°РІРёС€ (РїРѕР»РЅРѕРµ СЃРѕРѕС‚РІРµСЃС‚РІРёРµ WIN32)        // 14/05/02
   #define MK_LBUTTON                  0x0001
   #define MK_RBUTTON                  0x0002
   #define MK_SHIFT                    0x0004
   #define MK_CONTROL                  0x0008
   #define MK_MBUTTON                  0x0010
-  // Коды клавиш (XWindow)
+  // РљРѕРґС‹ РєР»Р°РІРёС€ (XWindow)
   #define VK_F10                      0xFFC7             // XK_F10
   #define VK_ESCAPE                   0xFF1B             // XK_Escape
   #define VK_TAB                      0xFF09             // XK_Tab
@@ -269,7 +269,7 @@
   #define VK_INSERT                   0xFF63             // XK_Insert      Insert, insert here    WIN32 Ins 45
   #define VK_ADD                      0xFFAB             // XK_KP_Add
   #define VK_DELETE                   0xFFFF             // XK_Delete  Delete, rubout WIN32 Del  0x2e
-                                                         // XK_KP_Delete 0xFF9F не добавлена
+                                                         // XK_KP_Delete 0xFF9F РЅРµ РґРѕР±Р°РІР»РµРЅР°
   #define VK_SUBTRACT                 0xFFAD             // XK_KP_Subtract   WIN32 109
 
   #define MB_OK                       0x00000000L // 15/04/99
@@ -302,11 +302,11 @@
   #define DT_RASDISPLAY       1   // Raster display
   #define DT_RASPRINTER       2   // Raster printer
 
-  #define R2_COPYPEN          0x3 // GXcopy   - src  для XWindow
-//  #define R2_NOT              0x6 // GXxor      //0xa // GXinvert - (NOT dst) для XWindow // 04/04/02
-  #define R2_NOT              0xa // GXinvert - (NOT dst) для XWindow // 19/04/02
-  #define R2_NOTXORPEN        0x9 // GXequiv    - (NOT src) XOR dst  для XWindow   //11/04/02
-  #define R2_XORPEN           0x6 // GXxor    - src XOR dst для XWindow            // 21/03/02
+  #define R2_COPYPEN          0x3 // GXcopy   - src  РґР»СЏ XWindow
+//  #define R2_NOT              0x6 // GXxor      //0xa // GXinvert - (NOT dst) РґР»СЏ XWindow // 04/04/02
+  #define R2_NOT              0xa // GXinvert - (NOT dst) РґР»СЏ XWindow // 19/04/02
+  #define R2_NOTXORPEN        0x9 // GXequiv    - (NOT src) XOR dst  РґР»СЏ XWindow   //11/04/02
+  #define R2_XORPEN           0x6 // GXxor    - src XOR dst РґР»СЏ XWindow            // 21/03/02
 
   #define OEM_CHARSET         255
   #define RUSSIAN_CHARSET     204 // 12/04/01
@@ -320,7 +320,7 @@
   #define TA_BOTTOM           8
   #define TA_BASELINE         24
 
-  // Стандартный вид курсора            // Коды XWindow:                // 21/04/04
+  // РЎС‚Р°РЅРґР°СЂС‚РЅС‹Р№ РІРёРґ РєСѓСЂСЃРѕСЂР°            // РљРѕРґС‹ XWindow:                // 21/04/04
   #define IDC_ARROW    (char *)68L      // XC_left_ptr
   #define IDC_ICON     IDC_ARROW
   #define IDC_IBEAM    (char *)152L     // XC_xterm
@@ -454,7 +454,7 @@ typedef struct TMessage    //12/05/03
 }
     TMessage;
 
-// Прототипы переопределенных функций (XWindow.cpp)
+// РџСЂРѕС‚РѕС‚РёРїС‹ РїРµСЂРµРѕРїСЂРµРґРµР»РµРЅРЅС‹С… С„СѓРЅРєС†РёР№ (XWindow.cpp)
 char * _fastcall strlwr(char * string);
 char * _fastcall itoa(int number, char * string,int index);
 char * _fastcall ltoa(long number, char* string,int index);
@@ -462,16 +462,16 @@ void   _fastcall GetSystemTime(SYSTEMTIME * systemtime);
 int    _fastcall MessageBox(HWND hwnd, const TCHAR * message,
                             const TCHAR * title, int flag);
 
-// Прототипы функций, определенных только для Linux (xwindow.cpp)  // 17/09/02
+// РџСЂРѕС‚РѕС‚РёРїС‹ С„СѓРЅРєС†РёР№, РѕРїСЂРµРґРµР»РµРЅРЅС‹С… С‚РѕР»СЊРєРѕ РґР»СЏ Linux (xwindow.cpp)  // 17/09/02
 
-// Конвертировать индекс палитры в цвет вида COLORREF
-// index - индекс палитры XWindow
-// возвращает COLORREF
+// РљРѕРЅРІРµСЂС‚РёСЂРѕРІР°С‚СЊ РёРЅРґРµРєСЃ РїР°Р»РёС‚СЂС‹ РІ С†РІРµС‚ РІРёРґР° COLORREF
+// index - РёРЅРґРµРєСЃ РїР°Р»РёС‚СЂС‹ XWindow
+// РІРѕР·РІСЂР°С‰Р°РµС‚ COLORREF
 COLORREF _fastcall ConvertIndexPaletteToCOLORREF(COLORREF index);
 
-// Конвертировать цвет вида COLORREF в индекс палитры
-// color - цвет вида COLORREF
-// возвращает индекс палитры
+// РљРѕРЅРІРµСЂС‚РёСЂРѕРІР°С‚СЊ С†РІРµС‚ РІРёРґР° COLORREF РІ РёРЅРґРµРєСЃ РїР°Р»РёС‚СЂС‹
+// color - С†РІРµС‚ РІРёРґР° COLORREF
+// РІРѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РїР°Р»РёС‚СЂС‹
 COLORREF _fastcall ConvertCOLORREFToIndexPalette(COLORREF color);
 
 typedef int(WINAPI *FARPROC) ();
@@ -502,7 +502,7 @@ typedef long int   XHBRUSH;
 #endif
 
 #ifdef BUILD_DLL
-// Прототипы переопределенных функций (XWindow.cpp)
+// РџСЂРѕС‚РѕС‚РёРїС‹ РїРµСЂРµРѕРїСЂРµРґРµР»РµРЅРЅС‹С… С„СѓРЅРєС†РёР№ (XWindow.cpp)
 int _fastcall CheckDiskFreeSpaceEx(const char * name, double length);
 #endif
 
@@ -514,17 +514,17 @@ int _fastcall CheckDiskFreeSpaceEx(const char * name, double length);
  #include <stdlib.h>
  typedef long int XYTYPE;
 
-#if defined(__BORLANDC__) // Для Borland C++
+#if defined(__BORLANDC__) // Р”Р»СЏ Borland C++
   #include <dir.h>        // 19/01/06
 #endif
 #endif
 
-// MAPTRACER   - включение трассировки (TRUE/FALSE);
-// TRACE_MEM   - трассировка работы с памятью;
-// TRACE_MAP   - трассировка работы конструкторов,деструкторов,
-//               доступа к району работ;
-// TRACE_READ  - трассировка операций чтения;
-// TRACE_WRITE - трассировка операций записи.
+// MAPTRACER   - РІРєР»СЋС‡РµРЅРёРµ С‚СЂР°СЃСЃРёСЂРѕРІРєРё (TRUE/FALSE);
+// TRACE_MEM   - С‚СЂР°СЃСЃРёСЂРѕРІРєР° СЂР°Р±РѕС‚С‹ СЃ РїР°РјСЏС‚СЊСЋ;
+// TRACE_MAP   - С‚СЂР°СЃСЃРёСЂРѕРІРєР° СЂР°Р±РѕС‚С‹ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂРѕРІ,РґРµСЃС‚СЂСѓРєС‚РѕСЂРѕРІ,
+//               РґРѕСЃС‚СѓРїР° Рє СЂР°Р№РѕРЅСѓ СЂР°Р±РѕС‚;
+// TRACE_READ  - С‚СЂР°СЃСЃРёСЂРѕРІРєР° РѕРїРµСЂР°С†РёР№ С‡С‚РµРЅРёСЏ;
+// TRACE_WRITE - С‚СЂР°СЃСЃРёСЂРѕРІРєР° РѕРїРµСЂР°С†РёР№ Р·Р°РїРёСЃРё.
 
 #ifndef MAPTRACER
  #define MAPTRACER 0
@@ -584,7 +584,7 @@ int _fastcall CheckDiskFreeSpaceEx(const char * name, double length);
 // #undef UNICODE
 // #undef _UNICODE
 
-#ifndef __BORLANDC__          // Кроме Borland C++
+#ifndef __BORLANDC__          // РљСЂРѕРјРµ Borland C++
  #define strncmpi strnicmp
 #endif
 
@@ -620,16 +620,16 @@ int _fastcall CheckDiskFreeSpaceEx(const char * name, double length);
 #endif // BUILD_DLL
 
 #ifndef MAPTRACE_H
-  #include "maptrace.h"  // Трассировка вызовов функций
+  #include "maptrace.h"  // РўСЂР°СЃСЃРёСЂРѕРІРєР° РІС‹Р·РѕРІРѕРІ С„СѓРЅРєС†РёР№
 #endif
 
 // --------------------------------------------------------------
-// РЕАЛИЗАЦИЯ СИСТЕМНЫХ ФУНКЦИЙ В БИБЛИОТЕКАХ
-//  MAPACCES.DLL (Borland C++) и MAPAXSVC.DLL (Visual C++)
+// Р Р•РђР›РР—РђР¦РРЇ РЎРРЎРўР•РњРќР«РҐ Р¤РЈРќРљР¦РР™ Р’ Р‘РР‘Р›РРћРўР•РљРђРҐ
+//  MAPACCES.DLL (Borland C++) Рё MAPAXSVC.DLL (Visual C++)
 // --------------------------------------------------------------
-// ПРИ ОШИБКЕ ВСЕ ФУНКЦИИ ВОЗВРАЩАЮТ НОЛЬ !
+// РџР Р РћРЁРР‘РљР• Р’РЎР• Р¤РЈРќРљР¦РР Р’РћР—Р’Р РђР©РђР®Рў РќРћР›Р¬ !
 
-// Преобразовать строку "char" в UNICODE
+// РџСЂРµРѕР±СЂР°Р·РѕРІР°С‚СЊ СЃС‚СЂРѕРєСѓ "char" РІ UNICODE
 // ---------------------------------------
 #ifdef __cplusplus        // 05/03/01
 inline int StringToUnicode(const char * src,
@@ -677,7 +677,7 @@ inline int StringToUnicode(const char * src,
  #define StringToUnicode(src,dest,bytes) strncpy(dest,src,bytes)
 #endif
 
-// Преобразовать символы UNICODE в строку "char"
+// РџСЂРµРѕР±СЂР°Р·РѕРІР°С‚СЊ СЃРёРјРІРѕР»С‹ UNICODE РІ СЃС‚СЂРѕРєСѓ "char"
 // ---------------------------------------
 #ifdef __cplusplus        // 05/03/01
 inline int UnicodeToString(const WCHAR * src,              // 11/12/06
@@ -730,7 +730,7 @@ inline int UnicodeToString(const WCHAR * src,              // 11/12/06
 #  define min(a,b) (((a) < (b)) ? (a) : (b))
 #  define max(a,b) (((a) > (b)) ? (a) : (b))// 29/04/99
 
-// Процедура strupr для LINUX
+// РџСЂРѕС†РµРґСѓСЂР° strupr РґР»СЏ LINUX
 #ifdef __cplusplus        // 05/03/01
  inline char * strupr(char * string) {return string;} // 27/05/99
 #else
@@ -739,7 +739,7 @@ inline int UnicodeToString(const WCHAR * src,              // 11/12/06
 
 #endif
 
-// РАБОТА С ПАМЯТЬЮ
+// Р РђР‘РћРўРђ РЎ РџРђРњРЇРўР¬Р®
 // ----------------------
 #ifdef __cplusplus        // 05/03/01
 inline char * AllocateTheMemory(int size)
@@ -827,7 +827,7 @@ inline int GetTheLastError()
  #define GetTheLastError() 0
 #endif 
 
-// РАБОТА С ФАЙЛАМИ
+// Р РђР‘РћРўРђ РЎ Р¤РђР™Р›РђРњР
 // ----------------------
 
 #ifdef __cplusplus   // 31/03/03
@@ -850,7 +850,7 @@ inline void SplitThePath(const char *path, char *drive, char *dir,
   {
     drive[0] = 0;
     drivesize = strcspn(path, ":");                    //20/11/01
-    if (drivesize !=  size)  // строка содержит ':'    //20/11/01
+    if (drivesize !=  size)  // СЃС‚СЂРѕРєР° СЃРѕРґРµСЂР¶РёС‚ ':'    //20/11/01
     {
       strncpy(drive, path, drivesize+1);
       drive[drivesize+1] = 0;
@@ -938,7 +938,7 @@ inline void SplitThePath(const char *path, char *drive, char *dir,
 
 #else // if WIN32API
 
-#if defined(__BORLANDC__) // Для Borland C++
+#if defined(__BORLANDC__) // Р”Р»СЏ Borland C++
   fnsplit(path,drive,dir,name,ext);           // 19/01/06
 #else
   _splitpath(path,drive,dir,name,ext);
@@ -983,7 +983,7 @@ inline void MakeThePath(char *path, const char *drive, const char *dir,
 
 #else // if WIN32API
 
-#if defined(__BORLANDC__) // Для Borland C++
+#if defined(__BORLANDC__) // Р”Р»СЏ Borland C++
   fnmerge(path,drive,dir,name,ext);         // 19/01/06
 #else
   _makepath(path,drive,dir,name,ext);
@@ -998,7 +998,7 @@ void MakeThePath(char *path, const char *drive, const char *dir,
 #endif
 
 
-// Открыть файл
+// РћС‚РєСЂС‹С‚СЊ С„Р°Р№Р»
 #ifdef __cplusplus   // 21/02/01
 inline HANDLE OpenTheFile(const char * name,int access = 0,
                           int mode = FILE_SHARE_READ|FILE_SHARE_WRITE,
@@ -1019,13 +1019,13 @@ inline HANDLE OpenTheFile(const char * name,int access = 0,
   {
     if (access & GENERIC_READ)
     {
-      // Уберем GENERIC_READ(это наш флаг)
+      // РЈР±РµСЂРµРј GENERIC_READ(СЌС‚Рѕ РЅР°С€ С„Р»Р°Рі)
       access = access & 0xFFEFFFFF;
       if (access & GENERIC_WRITE) 
       {
-        // Уберем GENERIC_WRITE
+        // РЈР±РµСЂРµРј GENERIC_WRITE
         access = access & 0xFFFFFFFE;
-	// Зададим аттрибуты файла на запись и чтение
+	// Р—Р°РґР°РґРёРј Р°С‚С‚СЂРёР±СѓС‚С‹ С„Р°Р№Р»Р° РЅР° Р·Р°РїРёСЃСЊ Рё С‡С‚РµРЅРёРµ
         access = access | O_RDWR;
       }
     }
@@ -1075,12 +1075,12 @@ inline HANDLE OpenTheFile(const char * name,int access = 0,
      SplitThePath(name, 0, dir, 0, 0);
      if (strlen(dir))
      {
-       // Узнаем права каталога на запись и чтение 
+       // РЈР·РЅР°РµРј РїСЂР°РІР° РєР°С‚Р°Р»РѕРіР° РЅР° Р·Р°РїРёСЃСЊ Рё С‡С‚РµРЅРёРµ 
        stat(dir, &statv);
      }
      else statv.st_mode = FILE_SHARE_READ | FILE_SHARE_WRITE;
 
-     // Установим права созданного файла на запись и чтение 
+     // РЈСЃС‚Р°РЅРѕРІРёРј РїСЂР°РІР° СЃРѕР·РґР°РЅРЅРѕРіРѕ С„Р°Р№Р»Р° РЅР° Р·Р°РїРёСЃСЊ Рё С‡С‚РµРЅРёРµ 
      chmod(name, (statv.st_mode & ~flag));
    }     
   #else
@@ -1121,7 +1121,7 @@ HANDLE OpenTheFile(const char * name,int access ,
 
   if ((mode & FILE_SHARE_WRITE) == 0)
     {
-      // Доступ на запись монопольный
+      // Р”РѕСЃС‚СѓРї РЅР° Р·Р°РїРёСЃСЊ РјРѕРЅРѕРїРѕР»СЊРЅС‹Р№
       return OpenTheFile(name,access,mode,attribute);
     }
 
@@ -1134,13 +1134,13 @@ HANDLE OpenTheFile(const char * name,int access ,
   {
     if (access & GENERIC_READ)
     {
-      // Уберем GENERIC_READ(это наш флаг)
+      // РЈР±РµСЂРµРј GENERIC_READ(СЌС‚Рѕ РЅР°С€ С„Р»Р°Рі)
       access = access & 0xFFEFFFFF;
       if (access & GENERIC_WRITE) 
       {
-        // Уберем GENERIC_WRITE
+        // РЈР±РµСЂРµРј GENERIC_WRITE
         access = access & 0xFFFFFFFE;
-	// Зададим аттрибуты файла на запись и чтение
+	// Р—Р°РґР°РґРёРј Р°С‚С‚СЂРёР±СѓС‚С‹ С„Р°Р№Р»Р° РЅР° Р·Р°РїРёСЃСЊ Рё С‡С‚РµРЅРёРµ
         access = access | O_RDWR;
       }
     }
@@ -1168,12 +1168,12 @@ HANDLE OpenTheFile(const char * name,int access ,
      SplitThePath(name, 0, dir, 0, 0);
      if (strlen(dir))
      {
-       // Узнаем права каталога на запись и чтение 
+       // РЈР·РЅР°РµРј РїСЂР°РІР° РєР°С‚Р°Р»РѕРіР° РЅР° Р·Р°РїРёСЃСЊ Рё С‡С‚РµРЅРёРµ 
        stat(dir, &statv);
      }
      else statv.st_mode = FILE_SHARE_READ | FILE_SHARE_WRITE;
 
-     // Установим права созданного файла на запись и чтение
+     // РЈСЃС‚Р°РЅРѕРІРёРј РїСЂР°РІР° СЃРѕР·РґР°РЅРЅРѕРіРѕ С„Р°Р№Р»Р° РЅР° Р·Р°РїРёСЃСЊ Рё С‡С‚РµРЅРёРµ
      chmod(name, (statv.st_mode & ~flag));
   }
 #else
@@ -1222,7 +1222,7 @@ HANDLE OpenTheShareFile(const char * name,int access,
                                int attribute );
 #endif
 
-// Закрыть файл
+// Р—Р°РєСЂС‹С‚СЊ С„Р°Р№Р»
 #ifdef __cplusplus   // 21/02/01
 #ifndef WINCE
 inline int CloseTheFile(HANDLE& file)
@@ -1279,7 +1279,7 @@ inline int CloseTheFile(HANDLE file)
 int CloseTheFile(HANDLE file);      // 20/06/02  // 09/09/04
 #endif
 
-// Проверить наличие файла
+// РџСЂРѕРІРµСЂРёС‚СЊ РЅР°Р»РёС‡РёРµ С„Р°Р№Р»Р°
 #ifdef __cplusplus   // 05/03/01
  inline int ExistTheFile(const char * name)
 {
@@ -1316,7 +1316,7 @@ int CloseTheFile(HANDLE file);      // 20/06/02  // 09/09/04
  int ExistTheFile(const char * name);
 #endif 
 
-// Считать блок данных из файла
+// РЎС‡РёС‚Р°С‚СЊ Р±Р»РѕРє РґР°РЅРЅС‹С… РёР· С„Р°Р№Р»Р°
 #ifdef __cplusplus   // 05/03/01
 inline int ReadTheFile(HANDLE file,char * address,long int length,
                        long int * result)
@@ -1349,7 +1349,7 @@ inline int ReadTheFile(HANDLE file,char * address,long int length,
 #define ReadTheFile(file,address,length,result) ((*result=read(file,address,length)) != -1)
 #endif
 
-// Установить смещение в файле перед чтением/записью
+// РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЃРјРµС‰РµРЅРёРµ РІ С„Р°Р№Р»Рµ РїРµСЂРµРґ С‡С‚РµРЅРёРµРј/Р·Р°РїРёСЃСЊСЋ
 #ifdef __cplusplus   // 05/03/01
 inline long int OffsetTheFile(HANDLE file,long int offset,int type)
 {
@@ -1402,7 +1402,7 @@ inline long int OffsetTheFile(HANDLE file,long int offset,int type)
 #define OffsetTheFile(file, offset, type) lseek(file,offset,type)
 #endif 
 
-// Запросить длину файла
+// Р—Р°РїСЂРѕСЃРёС‚СЊ РґР»РёРЅСѓ С„Р°Р№Р»Р°
 
 #ifdef __cplusplus   // 05/03/01
 inline long int LengthTheFile(HANDLE file)
@@ -1450,7 +1450,7 @@ inline long int LengthTheFile(HANDLE file)
 #define LengthTheFile(file) lseek(file,0,SEEK_END)
 #endif
 
-// Установить новую длину файла
+// РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РЅРѕРІСѓСЋ РґР»РёРЅСѓ С„Р°Р№Р»Р°
 
 #ifdef __cplusplus   // 05/03/01
 inline int EndTheFile(HANDLE file)
@@ -1502,7 +1502,7 @@ inline int EndTheFile(HANDLE file)
  int EndTheFile(HANDLE file); // xwindow.cpp
 #endif
 
-// Записать блок данных в файл
+// Р—Р°РїРёСЃР°С‚СЊ Р±Р»РѕРє РґР°РЅРЅС‹С… РІ С„Р°Р№Р»
 
 #ifdef __cplusplus   // 05/03/01
 inline int WriteTheFile(HANDLE file,const char * address,long int length,
@@ -1595,7 +1595,7 @@ inline int MoveTheFile(const char * oldname,const char * newname)
   OSVERSIONINFO version;                                               // 07/12/06
   version.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 
-  // Запросить версию Windows
+  // Р—Р°РїСЂРѕСЃРёС‚СЊ РІРµСЂСЃРёСЋ Windows
   // 5.0 - Windows 2000
   // 5.1 - Windows XP
   if ((GetVersionEx(&version) != 0) && (version.dwMajorVersion >= 5))
@@ -1696,7 +1696,7 @@ inline int CreateTheDirectory(const char * name)
     }
   else
     {
-      // Дополнительная проверка для NT    // 16/03/00
+      // Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅР°СЏ РїСЂРѕРІРµСЂРєР° РґР»СЏ NT    // 16/03/00
 #ifdef UNICODE
 #ifndef WINCE                              // 22/04/03
       ret = ::SetCurrentDirectory(tname);
@@ -1722,7 +1722,7 @@ inline int CreateTheDirectory(const char * name)
       struct stat statv;
       int i = -1;
 
-      // Узнаем имя каталога, в котором создается текущий подкаталог
+      // РЈР·РЅР°РµРј РёРјСЏ РєР°С‚Р°Р»РѕРіР°, РІ РєРѕС‚РѕСЂРѕРј СЃРѕР·РґР°РµС‚СЃСЏ С‚РµРєСѓС‰РёР№ РїРѕРґРєР°С‚Р°Р»РѕРі
       strcpy(currentdir, name);
 
       if (strlen(currentdir) > 1)
@@ -1739,9 +1739,9 @@ inline int CreateTheDirectory(const char * name)
 
       if (i == -1) statv.st_mode = S_IRWXU|S_IRWXG|S_IRWXO;
       else
-        // Узнаем права каталога на запись и чтение
+        // РЈР·РЅР°РµРј РїСЂР°РІР° РєР°С‚Р°Р»РѕРіР° РЅР° Р·Р°РїРёСЃСЊ Рё С‡С‚РµРЅРёРµ
         stat(currentdir, &statv);
-      // Установим права созданного каталога на запись и чтение
+      // РЈСЃС‚Р°РЅРѕРІРёРј РїСЂР°РІР° СЃРѕР·РґР°РЅРЅРѕРіРѕ РєР°С‚Р°Р»РѕРіР° РЅР° Р·Р°РїРёСЃСЊ Рё С‡С‚РµРЅРёРµ
       chmod(name, statv.st_mode);
     }
   #else
@@ -1916,11 +1916,11 @@ inline int GetTheSystemDate(char * dest,int size)
   
   GetSystemTime(&data);         // 21/02/01
 
-  delta = (data.wYear - 1990) * 10000;  // ГОД
+  delta = (data.wYear - 1990) * 10000;  // Р“РћР”
   if (delta > 0) form += delta;
-  delta     = data.wMonth * 100;            // МЕСЯЦ
+  delta     = data.wMonth * 100;            // РњР•РЎРЇР¦
   if (delta > 0) form += delta;
-  delta     = data.wDay;                    // ДЕНЬ
+  delta     = data.wDay;                    // Р”Р•РќР¬
   if (delta > 0) form += delta;
 
   ltoa(form,dest,10);
@@ -1931,7 +1931,7 @@ inline int GetTheSystemDate(char * dest,int size)
 int GetTheSystemDate(char * dest,int size);
 #endif
 
-// Запрос даты и времени в формате "YYYYMMDD" и число секунд от 00:00:00
+// Р—Р°РїСЂРѕСЃ РґР°С‚С‹ Рё РІСЂРµРјРµРЅРё РІ С„РѕСЂРјР°С‚Рµ "YYYYMMDD" Рё С‡РёСЃР»Рѕ СЃРµРєСѓРЅРґ РѕС‚ 00:00:00
 #ifdef __cplusplus   // 05/03/01
 inline void GetTheSystemDateAndTime(long int *date, long int *outtime) // 21/02/01
 {
@@ -1944,11 +1944,11 @@ inline void GetTheSystemDateAndTime(long int *date, long int *outtime) // 21/02/
     {
       *date = 19900000;
 
-       delta = (data.wYear - 1990) * 10000;  // ГОД
+       delta = (data.wYear - 1990) * 10000;  // Р“РћР”
        if (delta > 0) *date += delta;
-         delta     = data.wMonth * 100;            // МЕСЯЦ
+         delta     = data.wMonth * 100;            // РњР•РЎРЇР¦
        if (delta > 0) *date += delta;
-         delta     = data.wDay;                    // ДЕНЬ
+         delta     = data.wDay;                    // Р”Р•РќР¬
        if (delta > 0) *date += delta;
     }
 
@@ -2022,8 +2022,8 @@ inline void SleepTheThread(long int milliseconds = 1)
 
 
 //-----------------------------------------------------------------
-// Проверить наличие свободного места на диске
-// При ошибке возвращает ноль
+// РџСЂРѕРІРµСЂРёС‚СЊ РЅР°Р»РёС‡РёРµ СЃРІРѕР±РѕРґРЅРѕРіРѕ РјРµСЃС‚Р° РЅР° РґРёСЃРєРµ
+// РџСЂРё РѕС€РёР±РєРµ РІРѕР·РІСЂР°С‰Р°РµС‚ РЅРѕР»СЊ
 //-----------------------------------------------------------------
 #ifdef __cplusplus  // 21/02/01
 inline int CheckTheDiskFreeSpace(const char *name, double length)
@@ -2048,14 +2048,14 @@ inline int CheckTheDiskFreeSpace(const char *name, double length)
            &NumberOfFreeClusters,
            &TotalNumberOfClusters) == 0)*/
     {
-      // "Не могу определить свободное место на диске .
+      // "РќРµ РјРѕРіСѓ РѕРїСЂРµРґРµР»РёС‚СЊ СЃРІРѕР±РѕРґРЅРѕРµ РјРµСЃС‚Рѕ РЅР° РґРёСЃРєРµ .
       return 1;
     }
 
   if (NumberOfFreeClusters == 0 ||   // 17/09/07
       (SectorsPerCluster*BytesPerSector) < (length/NumberOfFreeClusters))
     {
-      // Отсутствует свободное место на диске
+      // РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ СЃРІРѕР±РѕРґРЅРѕРµ РјРµСЃС‚Рѕ РЅР° РґРёСЃРєРµ
       return 0;
     }
 #endif       // !WINCE
@@ -2129,8 +2129,8 @@ inline int LockTheFileOrSleep(HANDLE file,long int offset,
 *******************************************************************/
 
 //-----------------------------------------------------------------
-// Получить короткое имя файла
-// При ошибке возвращает ноль
+// РџРѕР»СѓС‡РёС‚СЊ РєРѕСЂРѕС‚РєРѕРµ РёРјСЏ С„Р°Р№Р»Р°
+// РџСЂРё РѕС€РёР±РєРµ РІРѕР·РІСЂР°С‰Р°РµС‚ РЅРѕР»СЊ
 //-----------------------------------------------------------------
 #ifdef __cplusplus   // 05/03/01
 inline int GetShortFileName(char * filename,char * shortname, long int size)
@@ -2172,8 +2172,8 @@ inline int GetShortFileName(char * filename,char * shortname, long int size)
 #endif
 
 //-----------------------------------------------------------------
-// Получить длинное имя файла
-// При ошибке возвращает ноль
+// РџРѕР»СѓС‡РёС‚СЊ РґР»РёРЅРЅРѕРµ РёРјСЏ С„Р°Р№Р»Р°
+// РџСЂРё РѕС€РёР±РєРµ РІРѕР·РІСЂР°С‰Р°РµС‚ РЅРѕР»СЊ
 //-----------------------------------------------------------------
 #ifdef __cplusplus   // 05/03/01
 inline int GetLongFileName(char * filename,char * longname, long int size)
@@ -2209,7 +2209,7 @@ inline int GetLongFileName(char * filename,char * longname, long int size)
 #ifndef HIDESECTION   // 28/09/06
 #ifdef __cplusplus
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// +++++++++++++ РАЗГРАНИЧЕНИЕ ДОСТУПА НА ЗАПИСЬ ПОТОКОВ++++
+// +++++++++++++ Р РђР—Р“Р РђРќРР§Р•РќРР• Р”РћРЎРўРЈРџРђ РќРђ Р—РђРџРРЎР¬ РџРћРўРћРљРћР’++++
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #ifdef WIN32API
@@ -2219,7 +2219,7 @@ typedef pthread_mutex_t MAPCRITICALSECTION;
 #endif
 
 //-----------------------------------------------------------------
-// Инициализация критической секции
+// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РєСЂРёС‚РёС‡РµСЃРєРѕР№ СЃРµРєС†РёРё
 //-----------------------------------------------------------------
 inline void InitializeTheCriticalSection(MAPCRITICALSECTION *section)
 {
@@ -2242,7 +2242,7 @@ inline void InitializeTheCriticalSection(MAPCRITICALSECTION *section)
 }
 
 //-----------------------------------------------------------------
-// Удаление критической секции
+// РЈРґР°Р»РµРЅРёРµ РєСЂРёС‚РёС‡РµСЃРєРѕР№ СЃРµРєС†РёРё
 //-----------------------------------------------------------------
 inline void DeleteTheCriticalSection(MAPCRITICALSECTION *section)
 {
@@ -2254,7 +2254,7 @@ inline void DeleteTheCriticalSection(MAPCRITICALSECTION *section)
 }
 
 //-----------------------------------------------------------------
-// Активировать критическую секцию
+// РђРєС‚РёРІРёСЂРѕРІР°С‚СЊ РєСЂРёС‚РёС‡РµСЃРєСѓСЋ СЃРµРєС†РёСЋ
 //-----------------------------------------------------------------
 inline void EnterTheCriticalSection(MAPCRITICALSECTION *section)
 {
@@ -2266,7 +2266,7 @@ inline void EnterTheCriticalSection(MAPCRITICALSECTION *section)
 }
 
 //-----------------------------------------------------------------
-// Деактивировать критическую секцию
+// Р”РµР°РєС‚РёРІРёСЂРѕРІР°С‚СЊ РєСЂРёС‚РёС‡РµСЃРєСѓСЋ СЃРµРєС†РёСЋ
 //-----------------------------------------------------------------
 inline void LeaveTheCriticalSection(MAPCRITICALSECTION *section)
 {

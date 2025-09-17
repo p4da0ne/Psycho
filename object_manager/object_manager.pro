@@ -1,7 +1,8 @@
 TEMPLATE = lib
 TARGET = object_manager
 
-QT += sql widgets gui
+QT += core sql widgets gui axcontainer core5compat printsupport
+QMAKE_LIBDIR = "C:/Qt/6.7.3/llvm-mingw_64/lib"
 
 DESTDIR = ../build
 

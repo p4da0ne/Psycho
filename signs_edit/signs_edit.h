@@ -1,7 +1,7 @@
 #ifndef SIGNS_EDIT_H
 #define SIGNS_EDIT_H
 
-#include <QtGui/QDialog>
+#include <QDialog>
 #include "config_signs_edit.h"
 #include <QLabel>
 #include <QSqlQuery>
@@ -27,7 +27,7 @@ class __EXPORT_SIGNS_EDIT SignsEdit : public QDialog
     Q_OBJECT
 
 public:
-    SignsEdit(QDialog *parent = 0, Qt::WFlags flags = 0);
+    SignsEdit(QDialog *parent = 0, QFlag flags = 0);
     ~SignsEdit();
     void delete_sign();
 

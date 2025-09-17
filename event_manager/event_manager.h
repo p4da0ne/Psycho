@@ -7,6 +7,8 @@
 #include <QLayout>
 #include <QList>
 #include <QSortFilterProxyModel>
+#include <QtWidgets>
+#include <QRegExp>
 #include "config_event_manager.h"
 #include "progressthread.h"
 #include "../eventsmodel/eventsmodel.h"

@@ -23,14 +23,14 @@ Output::~Output()
 {
     
 }
-//===== Формирование заголовка HTML-документа ======
+//===== Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ Р·Р°РіРѕР»РѕРІРєР° HTML-РґРѕРєСѓРјРµРЅС‚Р° ======
 QString Output::createHtmlHeader()
 {
 	QString str;
     str="<html><head> </head><body><FONT FACE = 'Times new Roman'>";
 	return str;
 }
-//===== Формирование заголовка документа ======
+//===== Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ Р·Р°РіРѕР»РѕРІРєР° РґРѕРєСѓРјРµРЅС‚Р° ======
 QString Output::createHtmlH(QString text,int size,QString align)
 {   
 	if(size <1) size = 1;
@@ -76,7 +76,7 @@ QString Output::createHtmlH_pers_2_page(int id_object)
 		t = "<br><br><br>"
 
            "<u><center><FONT size='6' FACE = 'Times new Roman'>" + fio + "</font></u></center><br><br>"
-           "<center><p><FONT size='5' FACE = 'Times new Roman'> Личный номер <u>" + personal_number + "</font></u></p></center>"
+           "<center><p><FONT size='5' FACE = 'Times new Roman'> Р›РёС‡РЅС‹Р№ РЅРѕРјРµСЂ <u>" + personal_number + "</font></u></p></center>"
            "<br>";
     return t;
 }
@@ -106,21 +106,21 @@ QString Output::createHtmlH_pers(int id_object)
 
        
        t = "<h5 align='right'> _________________ </h5>"
-           "<h5 align='right'> <FONT FACE = 'Times new Roman'> (гриф секретности)</h5>"
-           "<h5 align='right'> <FONT FACE = 'Times new Roman'> Экз. № __________ </h5> <br><br><br><br><br><br>"
+           "<h5 align='right'> <FONT FACE = 'Times new Roman'> (РіСЂРёС„ СЃРµРєСЂРµС‚РЅРѕСЃС‚Рё)</h5>"
+           "<h5 align='right'> <FONT FACE = 'Times new Roman'> Р­РєР·. в„– __________ </h5> <br><br><br><br><br><br>"
 
-           "<h1 align='center'><b><FONT FACE = 'Times new Roman'> ЛИЧНОЕ ДЕЛО </b></h1><br><br>"
+           "<h1 align='center'><b><FONT FACE = 'Times new Roman'> Р›РР§РќРћР• Р”Р•Р›Рћ </b></h1><br><br>"
 
-           "<h2 align='center'> <FONT FACE = 'Times new Roman'><b> должность </b></FONT></h2>"
+           "<h2 align='center'> <FONT FACE = 'Times new Roman'><b> РґРѕР»Р¶РЅРѕСЃС‚СЊ </b></FONT></h2>"
            "<h2 align='center'> <FONT FACE = 'Times new Roman'>" + rank +" </FONT></h2> <br>"
 
            "<table align='center' width=50% border='1' cellspacing=0 cellpadding=0>"
 		   "<CENTER><tr align='center' ><td ><CENTER><FONT size='10' FACE = 'Times new Roman'>" + surname.toUpper() + "</FONT></CENTER></td></tr></table>"
-           "<CENTER><FONT SIZE = '2' FACE = 'Times new Roman'> (фамилия) <br>"
+           "<CENTER><FONT SIZE = '2' FACE = 'Times new Roman'> (С„Р°РјРёР»РёСЏ) <br>"
 
            "<table align='center' width=50%  border='1' cellspacing=0 cellpadding=0>"
            "<tr align='center' ><td><CENTER><CENTER><FONT size='10' FACE = 'Times new Roman'>" + name + " " + patronumic + "</FONT></CENTER></td></tr></table>"
-           "<CENTER><FONT SIZE = '2' align='center' FACE = 'Times new Roman'> (имя, отчество) <br><br><br><br><br><br><br>"
+           "<CENTER><FONT SIZE = '2' align='center' FACE = 'Times new Roman'> (РёРјСЏ, РѕС‚С‡РµСЃС‚РІРѕ) <br><br><br><br><br><br><br>"
              //  "</div>";
             "<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></center>";
     return t;
@@ -153,7 +153,7 @@ QString Output::createHtmlTable_vzv(QMap<QString,QString> table_data, QStringLis
 return r;
 }
 
-//===== Формирование текста в документе ======
+//===== Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ С‚РµРєСЃС‚Р° РІ РґРѕРєСѓРјРµРЅС‚Рµ ======
 QString Output::createHtmlP(QString text,  int weight_italic,QString align)
 {	
 	QString weight_italic1;QString weight_italic2;
@@ -212,7 +212,7 @@ return r;
 }
 
 //==================================================================================================
-//====== Метод формирует html-таблицу на основе списка строковых списков, списка заголовков ========
+//====== РњРµС‚РѕРґ С„РѕСЂРјРёСЂСѓРµС‚ html-С‚Р°Р±Р»РёС†Сѓ РЅР° РѕСЃРЅРѕРІРµ СЃРїРёСЃРєР° СЃС‚СЂРѕРєРѕРІС‹С… СЃРїРёСЃРєРѕРІ, СЃРїРёСЃРєР° Р·Р°РіРѕР»РѕРІРєРѕРІ ========
 //==================================================================================================
 QString Output::createHtmlTableFromList(QList <QStringList> table_data, QStringList headerList, int width)
 {
@@ -286,7 +286,7 @@ QString Output::createHtmlTable_row_foto(QMap<QString,QString> table_data,int wi
 return r;
 }
 
-//===== Формирование таблицы на основе двумерного массива и списка ======
+//===== Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ РЅР° РѕСЃРЅРѕРІРµ РґРІСѓРјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР° Рё СЃРїРёСЃРєР° ======
 QString Output::createHtmlTable(QMap<QString,QString> table_data, QStringList header_list,int width)
 {
 	QString r;
@@ -313,7 +313,7 @@ QString Output::createHtmlTable(QMap<QString,QString> table_data, QStringList he
 	r.append("</table>");
 return r;
 }
-//======= Формирование списков (маркированный\нумерованный) ========
+//======= Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ СЃРїРёСЃРєРѕРІ (РјР°СЂРєРёСЂРѕРІР°РЅРЅС‹Р№\РЅСѓРјРµСЂРѕРІР°РЅРЅС‹Р№) ========
 QString Output::createHtmlLi(QStringList list, int type, int type_style)
 {
 	QString ss, type_n_m, type_n_m2;
@@ -356,7 +356,7 @@ QString Output::createHtmlLi(QStringList list, int type, int type_style)
 	ss.append("</" + type_n_m + ">");
 return ss;
 }
-//===== Формирование таблицы на основе массива QMap<QString,QMap<QString,QString>> (_,_,_) ======
+//===== Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ РЅР° РѕСЃРЅРѕРІРµ РјР°СЃСЃРёРІР° QMap<QString,QMap<QString,QString>> (_,_,_) ======
 QString Output::createHtmlTableM(QMap<QString, QMap<QString, QString> > table_data,  int width)
 {
     QString r;
@@ -391,12 +391,12 @@ QString Output::createHtmlFooter_pers(int id_object)
 {
 
     QString close;
-    close = "<br> <p><FONT size='4'> Послужной список составлен:"
+    close = "<br> <p><FONT size='4'> РџРѕСЃР»СѓР¶РЅРѕР№ СЃРїРёСЃРѕРє СЃРѕСЃС‚Р°РІР»РµРЅ:"
 		"<u> <___> _________________ </font></u></p>"
         "</font></body></html>";
     return close;
 }
-//===== Закрытие HTML-документа ======
+//===== Р—Р°РєСЂС‹С‚РёРµ HTML-РґРѕРєСѓРјРµРЅС‚Р° ======
 QString Output::createHtmlFooter()
 {
 	QString close;

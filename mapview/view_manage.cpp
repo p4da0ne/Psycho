@@ -24,7 +24,7 @@ ViewManage::~ViewManage()
 
 
 //======================================================================================
-//========= Метод перевода геодезических координат (WGS84) в прямоугольные =============
+//========= РњРµС‚РѕРґ РїРµСЂРµРІРѕРґР° РіРµРѕРґРµР·РёС‡РµСЃРєРёС… РєРѕРѕСЂРґРёРЅР°С‚ (WGS84) РІ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅС‹Рµ =============
 //======================================================================================
 Coord* ViewManage::WGStoPlane(long int hMap,Coord *coordObject)
 {
@@ -61,8 +61,8 @@ Coord* ViewManage::WGStoPlane(long int hMap,Coord *coordObject)
 }
 
 //================================================================================
-//==== Метод возвращает список объектов SignData с информацией ===================
-//==== для нанесения на карту и инициализации условных знаков средств СМИ ========
+//==== РњРµС‚РѕРґ РІРѕР·РІСЂР°С‰Р°РµС‚ СЃРїРёСЃРѕРє РѕР±СЉРµРєС‚РѕРІ SignData СЃ РёРЅС„РѕСЂРјР°С†РёРµР№ ===================
+//==== РґР»СЏ РЅР°РЅРµСЃРµРЅРёСЏ РЅР° РєР°СЂС‚Сѓ Рё РёРЅРёС†РёР°Р»РёР·Р°С†РёРё СѓСЃР»РѕРІРЅС‹С… Р·РЅР°РєРѕРІ СЃСЂРµРґСЃС‚РІ РЎРњР ========
 //================================================================================
 QList<SignData*> ViewManage::getSmiMeans(long int hMap,double x1,double y1,double x2,double y2)
 {
@@ -90,7 +90,7 @@ QList<SignData*> ViewManage::getSmiMeans(long int hMap,double x1,double y1,doubl
 			int long_wgs_m = query.value(rec.indexOf("longitude_wgs_84_m")).toInt();
 			double long_wgs_s = query.value(rec.indexOf("longitude_wgs_84_s")).toDouble();
 					
-			///получить из запроса 6 параметров координат WGS
+			///РїРѕР»СѓС‡РёС‚СЊ РёР· Р·Р°РїСЂРѕСЃР° 6 РїР°СЂР°РјРµС‚СЂРѕРІ РєРѕРѕСЂРґРёРЅР°С‚ WGS
 
 			Coord c1(wgs_g,wgs_m,wgs_s,long_wgs_g,long_wgs_m,long_wgs_s);
 			
@@ -106,9 +106,9 @@ QList<SignData*> ViewManage::getSmiMeans(long int hMap,double x1,double y1,doubl
 			QString signCode = query.value(rec.indexOf("sign_key")).toString();
 			QString id_mpo_pso = query.value(rec.indexOf("id_mpo_pso")).toString();
 
-			// дальность (радиус) действия, километры
+			// РґР°Р»СЊРЅРѕСЃС‚СЊ (СЂР°РґРёСѓСЃ) РґРµР№СЃС‚РІРёСЏ, РєРёР»РѕРјРµС‚СЂС‹
 			QString semantika_digit1_mpo_pso = query.value(rec.indexOf("semantika_digit1")).toString();
-			// угол (направление) относительно горизонта против часовой стрелки, градусы
+			// СѓРіРѕР» (РЅР°РїСЂР°РІР»РµРЅРёРµ) РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РіРѕСЂРёР·РѕРЅС‚Р° РїСЂРѕС‚РёРІ С‡Р°СЃРѕРІРѕР№ СЃС‚СЂРµР»РєРё, РіСЂР°РґСѓСЃС‹
 			QString semantika_digit2_mpo_pso = query.value(rec.indexOf("semantika_digit2")).toString();
 			QString semantika_1_mpo_pso = query.value(rec.indexOf("semantika_1")).toString();
 
@@ -120,17 +120,17 @@ QList<SignData*> ViewManage::getSmiMeans(long int hMap,double x1,double y1,doubl
 			double radius;
 			double angle;
 			
-			if(semantika_digit1_mpo_pso > 0)
+            if(!semantika_digit1_mpo_pso.isNull())
 			{
 				radius = semantika_digit1_mpo_pso.toDouble()*250;
 			}
-			if(semantika_digit2_mpo_pso > 0)
+            if(!semantika_digit2_mpo_pso.isNull())
 			{
 				angle = 5*3.14/2 - (semantika_digit2_mpo_pso.toDouble()*3.14/180);
 			}
 
 		 
-			// если зачек радио-теле центра (свой или вражеский), то добавляем вторую метрику
+			// РµСЃР»Рё Р·Р°С‡РµРє СЂР°РґРёРѕ-С‚РµР»Рµ С†РµРЅС‚СЂР° (СЃРІРѕР№ РёР»Рё РІСЂР°Р¶РµСЃРєРёР№), С‚Рѕ РґРѕР±Р°РІР»СЏРµРј РІС‚РѕСЂСѓСЋ РјРµС‚СЂРёРєСѓ
 			if ((signCode=="V0000169007")||(signCode=="V0000169029")||(signCode == "V0000060503"))
 			{	
 				coord = new Coord(x_coord,y_coord+radius);
@@ -138,7 +138,7 @@ QList<SignData*> ViewManage::getSmiMeans(long int hMap,double x1,double y1,doubl
 			}
 
 
-			if (signCode=="L00000060504") // самолет
+			if (signCode=="L00000060504") // СЃР°РјРѕР»РµС‚
 			{	
 				coord = new Coord(x_coord+120000,y_coord+140000);
 				coordList.append(coord);
@@ -147,8 +147,8 @@ QList<SignData*> ViewManage::getSmiMeans(long int hMap,double x1,double y1,doubl
 			}
 
 
-			// если передвижная звуковещательная станция, то добавляем вторую метрику 
-			// (получаем ее как угол места и длину радиус-вектора, направленного из первой точки метрики)
+			// РµСЃР»Рё РїРµСЂРµРґРІРёР¶РЅР°СЏ Р·РІСѓРєРѕРІРµС‰Р°С‚РµР»СЊРЅР°СЏ СЃС‚Р°РЅС†РёСЏ, С‚Рѕ РґРѕР±Р°РІР»СЏРµРј РІС‚РѕСЂСѓСЋ РјРµС‚СЂРёРєСѓ 
+			// (РїРѕР»СѓС‡Р°РµРј РµРµ РєР°Рє СѓРіРѕР» РјРµСЃС‚Р° Рё РґР»РёРЅСѓ СЂР°РґРёСѓСЃ-РІРµРєС‚РѕСЂР°, РЅР°РїСЂР°РІР»РµРЅРЅРѕРіРѕ РёР· РїРµСЂРІРѕР№ С‚РѕС‡РєРё РјРµС‚СЂРёРєРё)
 			if (signCode=="V0000060505")
 			{	
 				double xx=4*radius*qCos(angle);
@@ -163,10 +163,10 @@ QList<SignData*> ViewManage::getSmiMeans(long int hMap,double x1,double y1,doubl
 
 			semantic_map[17501] = id_mpo_pso;
 			semantic_map[17502] = QString::number(SMI_MEANS);
-			semantic_map[18]=semantika_digit1_mpo_pso;	// иногда это наполнение значка (в тех случаях, когда не "дальность")
-			semantic_map[19]=semantika_1_mpo_pso;	// подпись значка
-			semantic_map[32811]=semantika_digit1_mpo_pso;	//дальность действия средства
-			semantic_map[32852]=semantika_digit2_mpo_pso;	//направление (угол) действия средства
+			semantic_map[18]=semantika_digit1_mpo_pso;	// РёРЅРѕРіРґР° СЌС‚Рѕ РЅР°РїРѕР»РЅРµРЅРёРµ Р·РЅР°С‡РєР° (РІ С‚РµС… СЃР»СѓС‡Р°СЏС…, РєРѕРіРґР° РЅРµ "РґР°Р»СЊРЅРѕСЃС‚СЊ")
+			semantic_map[19]=semantika_1_mpo_pso;	// РїРѕРґРїРёСЃСЊ Р·РЅР°С‡РєР°
+			semantic_map[32811]=semantika_digit1_mpo_pso;	//РґР°Р»СЊРЅРѕСЃС‚СЊ РґРµР№СЃС‚РІРёСЏ СЃСЂРµРґСЃС‚РІР°
+			semantic_map[32852]=semantika_digit2_mpo_pso;	//РЅР°РїСЂР°РІР»РµРЅРёРµ (СѓРіРѕР») РґРµР№СЃС‚РІРёСЏ СЃСЂРµРґСЃС‚РІР°
 
 			SignData *signData = new SignData(signCode,coordList,semantic_map);
 				
@@ -178,8 +178,8 @@ QList<SignData*> ViewManage::getSmiMeans(long int hMap,double x1,double y1,doubl
 
 
 //===================================================================================
-//==== Метод возвращает список объектов SignData с информацией ======================
-//==== для нанесения на карту и инициализации условных знаков средств формирований ==
+//==== РњРµС‚РѕРґ РІРѕР·РІСЂР°С‰Р°РµС‚ СЃРїРёСЃРѕРє РѕР±СЉРµРєС‚РѕРІ SignData СЃ РёРЅС„РѕСЂРјР°С†РёРµР№ ======================
+//==== РґР»СЏ РЅР°РЅРµСЃРµРЅРёСЏ РЅР° РєР°СЂС‚Сѓ Рё РёРЅРёС†РёР°Р»РёР·Р°С†РёРё СѓСЃР»РѕРІРЅС‹С… Р·РЅР°РєРѕРІ СЃСЂРµРґСЃС‚РІ С„РѕСЂРјРёСЂРѕРІР°РЅРёР№ ==
 //===================================================================================
 QList<SignData*> ViewManage::getFormationsMeans(long int hMap,double x1,double y1,double x2,double y2)
 {
@@ -207,7 +207,7 @@ QList<SignData*> ViewManage::getFormationsMeans(long int hMap,double x1,double y
 			int long_wgs_m = query.value(rec.indexOf("longitude_wgs_84_m")).toInt();
 			double long_wgs_s = query.value(rec.indexOf("longitude_wgs_84_s")).toDouble();
 					
-			///получить из запроса 6 параметров координат WGS
+			///РїРѕР»СѓС‡РёС‚СЊ РёР· Р·Р°РїСЂРѕСЃР° 6 РїР°СЂР°РјРµС‚СЂРѕРІ РєРѕРѕСЂРґРёРЅР°С‚ WGS
 
 			Coord c1(wgs_g,wgs_m,wgs_s,long_wgs_g,long_wgs_m,long_wgs_s);
 			
@@ -224,9 +224,9 @@ QList<SignData*> ViewManage::getFormationsMeans(long int hMap,double x1,double y
 			QString signCode = query.value(rec.indexOf("sign_key")).toString();
 			QString id_mpo_pso = query.value(rec.indexOf("id_mpo_pso")).toString();
 
-			// дальность (радиус) действия, километры
+			// РґР°Р»СЊРЅРѕСЃС‚СЊ (СЂР°РґРёСѓСЃ) РґРµР№СЃС‚РІРёСЏ, РєРёР»РѕРјРµС‚СЂС‹
 			QString semantika_digit1_mpo_pso = query.value(rec.indexOf("semantika_digit1")).toString();
-			// угол (направление) относительно горизонта против часовой стрелки, градусы
+			// СѓРіРѕР» (РЅР°РїСЂР°РІР»РµРЅРёРµ) РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РіРѕСЂРёР·РѕРЅС‚Р° РїСЂРѕС‚РёРІ С‡Р°СЃРѕРІРѕР№ СЃС‚СЂРµР»РєРё, РіСЂР°РґСѓСЃС‹
 			QString semantika_digit2_mpo_pso = query.value(rec.indexOf("semantika_digit2")).toString();
 			QString semantika_1_mpo_pso = query.value(rec.indexOf("semantika_1")).toString();
 
@@ -238,10 +238,10 @@ QList<SignData*> ViewManage::getFormationsMeans(long int hMap,double x1,double y
 
 			semantic_map[17501] = id_mpo_pso;
 			semantic_map[17502] = QString::number(FORMATIONS_MEANS);
-			semantic_map[18]=semantika_digit1_mpo_pso;	// иногда это наполнение значка (в тех случаях, когда не "дальность")
-			semantic_map[19]=semantika_1_mpo_pso;	// подпись значка
-			semantic_map[32811]=semantika_digit1_mpo_pso;	//дальность действия средства
-			semantic_map[32852]=semantika_digit2_mpo_pso;	//направление (угол) действия средства
+			semantic_map[18]=semantika_digit1_mpo_pso;	// РёРЅРѕРіРґР° СЌС‚Рѕ РЅР°РїРѕР»РЅРµРЅРёРµ Р·РЅР°С‡РєР° (РІ С‚РµС… СЃР»СѓС‡Р°СЏС…, РєРѕРіРґР° РЅРµ "РґР°Р»СЊРЅРѕСЃС‚СЊ")
+			semantic_map[19]=semantika_1_mpo_pso;	// РїРѕРґРїРёСЃСЊ Р·РЅР°С‡РєР°
+			semantic_map[32811]=semantika_digit1_mpo_pso;	//РґР°Р»СЊРЅРѕСЃС‚СЊ РґРµР№СЃС‚РІРёСЏ СЃСЂРµРґСЃС‚РІР°
+			semantic_map[32852]=semantika_digit2_mpo_pso;	//РЅР°РїСЂР°РІР»РµРЅРёРµ (СѓРіРѕР») РґРµР№СЃС‚РІРёСЏ СЃСЂРµРґСЃС‚РІР°
 
 			SignData *signData = new SignData(signCode,coordList,semantic_map);
 				
@@ -252,8 +252,8 @@ QList<SignData*> ViewManage::getFormationsMeans(long int hMap,double x1,double y
 }
 
 //===================================================================================
-//==== Метод возвращает список объектов SignData с информацией ======================
-//==== для нанесения на карту и инициализации условных знаков средств организаций ===
+//==== РњРµС‚РѕРґ РІРѕР·РІСЂР°С‰Р°РµС‚ СЃРїРёСЃРѕРє РѕР±СЉРµРєС‚РѕРІ SignData СЃ РёРЅС„РѕСЂРјР°С†РёРµР№ ======================
+//==== РґР»СЏ РЅР°РЅРµСЃРµРЅРёСЏ РЅР° РєР°СЂС‚Сѓ Рё РёРЅРёС†РёР°Р»РёР·Р°С†РёРё СѓСЃР»РѕРІРЅС‹С… Р·РЅР°РєРѕРІ СЃСЂРµРґСЃС‚РІ РѕСЂРіР°РЅРёР·Р°С†РёР№ ===
 //===================================================================================
 QList<SignData*> ViewManage::getGroupsMeans(long int hMap,double x1,double y1,double x2,double y2)
 {
@@ -281,7 +281,7 @@ QList<SignData*> ViewManage::getGroupsMeans(long int hMap,double x1,double y1,do
 			int long_wgs_m = query.value(rec.indexOf("longitude_wgs_84_m")).toInt();
 			double long_wgs_s = query.value(rec.indexOf("longitude_wgs_84_s")).toDouble();
 					
-			///получить из запроса 6 параметров координат WGS
+			///РїРѕР»СѓС‡РёС‚СЊ РёР· Р·Р°РїСЂРѕСЃР° 6 РїР°СЂР°РјРµС‚СЂРѕРІ РєРѕРѕСЂРґРёРЅР°С‚ WGS
 
 			Coord c1(wgs_g,wgs_m,wgs_s,long_wgs_g,long_wgs_m,long_wgs_s);
 			
@@ -297,9 +297,9 @@ QList<SignData*> ViewManage::getGroupsMeans(long int hMap,double x1,double y1,do
 			QString signCode = query.value(rec.indexOf("sign_key")).toString();
 			QString id_mpo_pso = query.value(rec.indexOf("id_mpo_pso")).toString();
 
-			// дальность (радиус) действия, километры
+			// РґР°Р»СЊРЅРѕСЃС‚СЊ (СЂР°РґРёСѓСЃ) РґРµР№СЃС‚РІРёСЏ, РєРёР»РѕРјРµС‚СЂС‹
 			QString semantika_digit1_mpo_pso = query.value(rec.indexOf("semantika_digit1")).toString();
-			// угол (направление) относительно горизонта против часовой стрелки, градусы
+			// СѓРіРѕР» (РЅР°РїСЂР°РІР»РµРЅРёРµ) РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РіРѕСЂРёР·РѕРЅС‚Р° РїСЂРѕС‚РёРІ С‡Р°СЃРѕРІРѕР№ СЃС‚СЂРµР»РєРё, РіСЂР°РґСѓСЃС‹
 			QString semantika_digit2_mpo_pso = query.value(rec.indexOf("semantika_digit2")).toString();
 			QString semantika_1_mpo_pso = query.value(rec.indexOf("semantika_1")).toString();
 
@@ -311,10 +311,10 @@ QList<SignData*> ViewManage::getGroupsMeans(long int hMap,double x1,double y1,do
 
 			semantic_map[17501] = id_mpo_pso;
 			semantic_map[17502] = QString::number(GROUPS_MEANS);
-			semantic_map[18]=semantika_digit1_mpo_pso;	// иногда это наполнение значка (в тех случаях, когда не "дальность")
-			semantic_map[19]=semantika_1_mpo_pso;	// подпись значка
-			semantic_map[32811]=semantika_digit1_mpo_pso;	//дальность действия средства
-			semantic_map[32852]=semantika_digit2_mpo_pso;	//направление (угол) действия средства
+			semantic_map[18]=semantika_digit1_mpo_pso;	// РёРЅРѕРіРґР° СЌС‚Рѕ РЅР°РїРѕР»РЅРµРЅРёРµ Р·РЅР°С‡РєР° (РІ С‚РµС… СЃР»СѓС‡Р°СЏС…, РєРѕРіРґР° РЅРµ "РґР°Р»СЊРЅРѕСЃС‚СЊ")
+			semantic_map[19]=semantika_1_mpo_pso;	// РїРѕРґРїРёСЃСЊ Р·РЅР°С‡РєР°
+			semantic_map[32811]=semantika_digit1_mpo_pso;	//РґР°Р»СЊРЅРѕСЃС‚СЊ РґРµР№СЃС‚РІРёСЏ СЃСЂРµРґСЃС‚РІР°
+			semantic_map[32852]=semantika_digit2_mpo_pso;	//РЅР°РїСЂР°РІР»РµРЅРёРµ (СѓРіРѕР») РґРµР№СЃС‚РІРёСЏ СЃСЂРµРґСЃС‚РІР°
 
 			SignData *signData = new SignData(signCode,coordList,semantic_map);
 				
@@ -326,8 +326,8 @@ QList<SignData*> ViewManage::getGroupsMeans(long int hMap,double x1,double y1,do
 
 
 //================================================================================
-//==== Метод возвращает список объектов SignData с информацией ===================
-//==== для нанесения на карту и инициализации условных знаков формирований =======
+//==== РњРµС‚РѕРґ РІРѕР·РІСЂР°С‰Р°РµС‚ СЃРїРёСЃРѕРє РѕР±СЉРµРєС‚РѕРІ SignData СЃ РёРЅС„РѕСЂРјР°С†РёРµР№ ===================
+//==== РґР»СЏ РЅР°РЅРµСЃРµРЅРёСЏ РЅР° РєР°СЂС‚Сѓ Рё РёРЅРёС†РёР°Р»РёР·Р°С†РёРё СѓСЃР»РѕРІРЅС‹С… Р·РЅР°РєРѕРІ С„РѕСЂРјРёСЂРѕРІР°РЅРёР№ =======
 //================================================================================
 QList<SignData*> ViewManage::getFormations(long int hMap,double x1,double y1,double x2,double y2)
 {
@@ -354,7 +354,7 @@ QList<SignData*> ViewManage::getFormations(long int hMap,double x1,double y1,dou
 			int long_wgs_m = query.value(rec.indexOf("longitude_wgs_84_m")).toInt();
 			double long_wgs_s = query.value(rec.indexOf("longitude_wgs_84_s")).toDouble();
 					
-			///получить из запроса 6 параметров координат WGS
+			///РїРѕР»СѓС‡РёС‚СЊ РёР· Р·Р°РїСЂРѕСЃР° 6 РїР°СЂР°РјРµС‚СЂРѕРІ РєРѕРѕСЂРґРёРЅР°С‚ WGS
 
 			Coord c1(wgs_g,wgs_m,wgs_s,long_wgs_g,long_wgs_m,long_wgs_s);
 			
@@ -390,8 +390,8 @@ QList<SignData*> ViewManage::getFormations(long int hMap,double x1,double y1,dou
 	return formationsList;
 }
 //================================================================================
-//==== Метод возвращает список объектов SignData с информацией ===================
-//==== для нанесения на карту и инициализации условных знаков персоналии =======
+//==== РњРµС‚РѕРґ РІРѕР·РІСЂР°С‰Р°РµС‚ СЃРїРёСЃРѕРє РѕР±СЉРµРєС‚РѕРІ SignData СЃ РёРЅС„РѕСЂРјР°С†РёРµР№ ===================
+//==== РґР»СЏ РЅР°РЅРµСЃРµРЅРёСЏ РЅР° РєР°СЂС‚Сѓ Рё РёРЅРёС†РёР°Р»РёР·Р°С†РёРё СѓСЃР»РѕРІРЅС‹С… Р·РЅР°РєРѕРІ РїРµСЂСЃРѕРЅР°Р»РёРё =======
 //================================================================================
 QList<SignData*> ViewManage::getPersones(long int hMap,double x1,double y1,double x2,double y2)
 {
@@ -418,7 +418,7 @@ QList<SignData*> ViewManage::getPersones(long int hMap,double x1,double y1,doubl
 			int long_wgs_m = query.value(rec.indexOf("longitude_wgs_84_m")).toInt();
 			double long_wgs_s = query.value(rec.indexOf("longitude_wgs_84_s")).toDouble();
 					
-			///получить из запроса 6 параметров координат WGS
+			///РїРѕР»СѓС‡РёС‚СЊ РёР· Р·Р°РїСЂРѕСЃР° 6 РїР°СЂР°РјРµС‚СЂРѕРІ РєРѕРѕСЂРґРёРЅР°С‚ WGS
 
 			Coord c1(wgs_g,wgs_m,wgs_s,long_wgs_g,long_wgs_m,long_wgs_s);
 			
@@ -451,8 +451,8 @@ QList<SignData*> ViewManage::getPersones(long int hMap,double x1,double y1,doubl
 }
 
 //==================================================================================
-//==== Метод(ы) возвращает список объектов SignData с информацией =====================
-//==== для нанесения на карту и инициализации условных знаков специальных условий ==
+//==== РњРµС‚РѕРґ(С‹) РІРѕР·РІСЂР°С‰Р°РµС‚ СЃРїРёСЃРѕРє РѕР±СЉРµРєС‚РѕРІ SignData СЃ РёРЅС„РѕСЂРјР°С†РёРµР№ =====================
+//==== РґР»СЏ РЅР°РЅРµСЃРµРЅРёСЏ РЅР° РєР°СЂС‚Сѓ Рё РёРЅРёС†РёР°Р»РёР·Р°С†РёРё СѓСЃР»РѕРІРЅС‹С… Р·РЅР°РєРѕРІ СЃРїРµС†РёР°Р»СЊРЅС‹С… СѓСЃР»РѕРІРёР№ ==
 //==================================================================================
 QList<SignData*> ViewManage::getSpecialConditions(long int hMap,double x1,double y1,double x2,double y2)
 {
@@ -475,7 +475,7 @@ QList<SignData*> ViewManage::getSpecialConditions(long int hMap,double x1,double
 	{
 		if(isScOnMap(hMap,scList.at(i),x1,y1,x2,y2))
 		{
-			//========== Код условного знака   =================
+			//========== РљРѕРґ СѓСЃР»РѕРІРЅРѕРіРѕ Р·РЅР°РєР°   =================
 			QSqlQuery query_;
 			QString ex_cod_;
 				QString str = QString("SELECT s.sign_key \
@@ -490,10 +490,10 @@ QList<SignData*> ViewManage::getSpecialConditions(long int hMap,double x1,double
 					ex_cod_ = query_.value(rec.indexOf("sign_key")).toString();
 			}
 		
-			//============== список координат =======================
+			//============== СЃРїРёСЃРѕРє РєРѕРѕСЂРґРёРЅР°С‚ =======================
 			QList<Coord*> coordList = getSCMetric(hMap,scList.at(i));
 
-			//================= cемантики ============================
+			//================= cРµРјР°РЅС‚РёРєРё ============================
 			QMap<long int,QString> semantic_map;
 			QSqlQuery query_sem;
 			QString str_sem = QString("SELECT special_conditions.semantika_1, special_conditions.semantika_2 \
@@ -520,7 +520,7 @@ QList<SignData*> ViewManage::getSpecialConditions(long int hMap,double x1,double
 	
 	return spec_cond_List;
 }
-//========== проверяем попадос особых условий на нашу карту =================================
+//========== РїСЂРѕРІРµСЂСЏРµРј РїРѕРїР°РґРѕСЃ РѕСЃРѕР±С‹С… СѓСЃР»РѕРІРёР№ РЅР° РЅР°С€Сѓ РєР°СЂС‚Сѓ =================================
 bool ViewManage::isScOnMap(long int hMap,int idSc,double x1,double y1,double x2,double y2)
 {  
 	QSqlQuery query;
@@ -542,7 +542,7 @@ bool ViewManage::isScOnMap(long int hMap,int idSc,double x1,double y1,double x2,
 			int long_wgs_m = query.value(rec.indexOf("longitude_wgs_84_m")).toInt();
 			double long_wgs_s = query.value(rec.indexOf("longitude_wgs_84_s")).toDouble();
 					
-			///получить из запроса 6 параметров координат WGS
+			///РїРѕР»СѓС‡РёС‚СЊ РёР· Р·Р°РїСЂРѕСЃР° 6 РїР°СЂР°РјРµС‚СЂРѕРІ РєРѕРѕСЂРґРёРЅР°С‚ WGS
 
 			Coord scCoordinates(wgs_g,wgs_m,wgs_s,long_wgs_g,long_wgs_m,long_wgs_s);
 			
@@ -551,14 +551,14 @@ bool ViewManage::isScOnMap(long int hMap,int idSc,double x1,double y1,double x2,
 			double x_coord = plainscCoordinates->getX();
 			double y_coord = plainscCoordinates->getY();
 
-			//если хоть одна координата региона попадает в область карты, то выходим с true
+			//РµСЃР»Рё С…РѕС‚СЊ РѕРґРЅР° РєРѕРѕСЂРґРёРЅР°С‚Р° СЂРµРіРёРѕРЅР° РїРѕРїР°РґР°РµС‚ РІ РѕР±Р»Р°СЃС‚СЊ РєР°СЂС‚С‹, С‚Рѕ РІС‹С…РѕРґРёРј СЃ true
 			if(((x_coord > x1) && (y_coord > y1) && (x_coord < x2) && (y_coord < y2))) return true;
 		}
 		return false;
 	}
 	return false;
 }
-//============== Возвращаем координаты для ОСОБЫХ УСЛОВИЙ ======================================
+//============== Р’РѕР·РІСЂР°С‰Р°РµРј РєРѕРѕСЂРґРёРЅР°С‚С‹ РґР»СЏ РћРЎРћР‘Р«РҐ РЈРЎР›РћР’РР™ ======================================
 QList<Coord*> ViewManage::getSCMetric(long int hMap,int idSC)
 {
 	QSqlQuery query;
@@ -582,7 +582,7 @@ QList<Coord*> ViewManage::getSCMetric(long int hMap,int idSC)
 			int long_wgs_m = query.value(rec.indexOf("longitude_wgs_84_m")).toInt();
 			double long_wgs_s = query.value(rec.indexOf("longitude_wgs_84_s")).toDouble();
 					
-			///получить из запроса 6 параметров координат WGS
+			///РїРѕР»СѓС‡РёС‚СЊ РёР· Р·Р°РїСЂРѕСЃР° 6 РїР°СЂР°РјРµС‚СЂРѕРІ РєРѕРѕСЂРґРёРЅР°С‚ WGS
 
 			Coord scCoordinates(wgs_g,wgs_m,wgs_s,long_wgs_g,long_wgs_m,long_wgs_s);
 			
@@ -595,7 +595,7 @@ QList<Coord*> ViewManage::getSCMetric(long int hMap,int idSC)
 }
 
 //================================================================================
-//====== Метод возвращает строку с типом и наименованием объекта =================
+//====== РњРµС‚РѕРґ РІРѕР·РІСЂР°С‰Р°РµС‚ СЃС‚СЂРѕРєСѓ СЃ С‚РёРїРѕРј Рё РЅР°РёРјРµРЅРѕРІР°РЅРёРµРј РѕР±СЉРµРєС‚Р° =================
 //================================================================================
 QString ViewManage::getObjectTypeAndName(int idObject, int objectType)
 {
@@ -683,7 +683,7 @@ QString ViewManage::getObjectTypeAndName(int idObject, int objectType)
 	return objectInfo;
 }
 //======================================================================================================
-//====== Метод возвращает строку c информацией об объекте при нажатии на левую кнопень =================
+//====== РњРµС‚РѕРґ РІРѕР·РІСЂР°С‰Р°РµС‚ СЃС‚СЂРѕРєСѓ c РёРЅС„РѕСЂРјР°С†РёРµР№ РѕР± РѕР±СЉРµРєС‚Рµ РїСЂРё РЅР°Р¶Р°С‚РёРё РЅР° Р»РµРІСѓСЋ РєРЅРѕРїРµРЅСЊ =================
 //======================================================================================================
 QString ViewManage::getObjectInfo(int idObject, int objectType)
 {
@@ -730,7 +730,7 @@ QString ViewManage::getObjectInfo(int idObject, int objectType)
 		
 	return str;
 }
-//============================ инфа по воинским формированиям ================================
+//============================ РёРЅС„Р° РїРѕ РІРѕРёРЅСЃРєРёРј С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏРј ================================
 QString ViewManage::get_ls_info(int idObject){
 	
 	QString name_blok,name_mpo,name_ls,name_country,objectInfo_parent,html_info_ls,id_root_ls;
@@ -769,7 +769,7 @@ QString ViewManage::get_ls_info(int idObject){
 			}
 			query.clear();
 		}
-//=======================	Нахождение корневого региона для формиования  =================================================
+//=======================	РќР°С…РѕР¶РґРµРЅРёРµ РєРѕСЂРЅРµРІРѕРіРѕ СЂРµРіРёРѕРЅР° РґР»СЏ С„РѕСЂРјРёРѕРІР°РЅРёСЏ  =================================================
 	
 		int parent_region = id_region;
 		while (!(parent_region == 0))
@@ -784,7 +784,7 @@ QString ViewManage::get_ls_info(int idObject){
 			}
 			query.clear();
 		}
-//============================================ средства ВФ ===============================================	
+//============================================ СЃСЂРµРґСЃС‚РІР° Р’Р¤ ===============================================	
 	
 	str = QString("SELECT name_mpo_pso FROM mpo_pso WHERE id_ls = %1 ").arg(idObject);
 
@@ -797,7 +797,7 @@ QString ViewManage::get_ls_info(int idObject){
 		}
 		query.clear();
 	}
-//============================================ имя страны и флаг страны ===============================================	
+//============================================ РёРјСЏ СЃС‚СЂР°РЅС‹ Рё С„Р»Р°Рі СЃС‚СЂР°РЅС‹ ===============================================	
 	str = QString("SELECT country.flag,  country.name_country, country.id_country FROM region, country WHERE region.id_country = country.id_country AND region.id_region = %1").arg(id_region);
                    
 		if(query.exec(str))
@@ -817,7 +817,7 @@ QString ViewManage::get_ls_info(int idObject){
 		
 
 
-//============================================ имя блока и эмблема блока ===============================================
+//============================================ РёРјСЏ Р±Р»РѕРєР° Рё СЌРјР±Р»РµРјР° Р±Р»РѕРєР° ===============================================
 			
 		str = QString("SELECT blok.name_blok, blok.emblem_blok FROM blok , blok_country WHERE blok.id_blok = blok_country.id_blok AND blok_country.id_country = %1 ").arg(id_country);
 		
@@ -832,10 +832,10 @@ QString ViewManage::get_ls_info(int idObject){
 	}
 		QString blok_flag = get_blok_foto_from_DB(id_country);
 		QFile file_blok(blok_flag);
-//============================================ подчиненность ===============================================
+//============================================ РїРѕРґС‡РёРЅРµРЅРЅРѕСЃС‚СЊ ===============================================
 	
 		if (id_parent_ls==0) {
-			objectInfo_parent = " в подчинении не замечен";
+			objectInfo_parent = " РІ РїРѕРґС‡РёРЅРµРЅРёРё РЅРµ Р·Р°РјРµС‡РµРЅ";
 		}
 		else{
 		str = QString("SELECT name_ls FROM ls WHERE id_ls= %1").arg(id_parent_ls);
@@ -854,50 +854,50 @@ QString ViewManage::get_ls_info(int idObject){
 		if ((enemy_ls == true) && (file.size()==0) && (file_blok.size()==0)) {
 			html_info_ls = "<style>table {border-color: blue; border-style: solid; background-color:#f5f5f5;}</style><table border='1' cellpadding='4' cellspacing='0'>"
 		"<tr align='center'><td colspan='2'><H3><CENTER><font color='blue'>" + name_ls + "</font></CENTER></H3></td></tr>"
-        "<tr><td> Подчиненность:</td><td>" + objectInfo_parent + "</td></tr>"
-		"<tr><td> Страна:</td><td>" + name_country + "</td></tr>"
+        "<tr><td> РџРѕРґС‡РёРЅРµРЅРЅРѕСЃС‚СЊ:</td><td>" + objectInfo_parent + "</td></tr>"
+		"<tr><td> РЎС‚СЂР°РЅР°:</td><td>" + name_country + "</td></tr>"
 //		"<tr align='center'><td colspan='2'><CENTER> </CENTER></td></tr>"
-		"<tr><td>Блок:</td><td>" + name_blok + "</td></tr>"
+		"<tr><td>Р‘Р»РѕРє:</td><td>" + name_blok + "</td></tr>"
 //		"<tr align='center'><td colspan='2'><CENTER> </CENTER></td></tr>"
-		"<tr><td>Численность:</td><td>" + QString::number(counte_ls) + "</td></tr>"
-		"<tr><td>Средства ПсО:</td><td>" + name_mpo + "</td></tr></table>";
+		"<tr><td>Р§РёСЃР»РµРЅРЅРѕСЃС‚СЊ:</td><td>" + QString::number(counte_ls) + "</td></tr>"
+		"<tr><td>РЎСЂРµРґСЃС‚РІР° РџСЃРћ:</td><td>" + name_mpo + "</td></tr></table>";
 		}
 		else if ((enemy_ls == false) && (file.size()==0) && (file_blok.size()==0)) {
 			html_info_ls = "<style>table {border-color: red; border-style: solid;background-color:#f5f5f5;}</style><table border='1' cellpadding='4' cellspacing='0' >"
 		"<tr align='center'><td colspan='2'><H3><CENTER><font color='red'>" + name_ls + "</font></CENTER></H3></td></tr>"
-        "<tr><td> Подчиненность:</td><td>" + objectInfo_parent + "</td></tr>"
-		"<tr><td> Страна:</td><td>" + name_country + "</td></tr>" 
+        "<tr><td> РџРѕРґС‡РёРЅРµРЅРЅРѕСЃС‚СЊ:</td><td>" + objectInfo_parent + "</td></tr>"
+		"<tr><td> РЎС‚СЂР°РЅР°:</td><td>" + name_country + "</td></tr>" 
 //		"<tr align='center'><td colspan='2'><CENTER> </CENTER></td></tr>"
-		"<tr><td>Блок:</td><td>" + name_blok + "</td></tr>"
+		"<tr><td>Р‘Р»РѕРє:</td><td>" + name_blok + "</td></tr>"
 //		"<tr align='center'><td colspan='2'><CENTER> </CENTER></td></tr>"
-		"<tr><td>Численность:</td><td>" + QString::number(counte_ls) + "</td></tr>"
-		"<tr><td>Средства ПсО:</td><td>" + name_mpo + "</td></tr></table>";
+		"<tr><td>Р§РёСЃР»РµРЅРЅРѕСЃС‚СЊ:</td><td>" + QString::number(counte_ls) + "</td></tr>"
+		"<tr><td>РЎСЂРµРґСЃС‚РІР° РџСЃРћ:</td><td>" + name_mpo + "</td></tr></table>";
 		}
 		else if (enemy_ls == true) {
 		html_info_ls = "<style>table {border-color: blue; border-style: solid; background-color:#f5f5f5;}</style><table border='1' cellpadding='4' cellspacing='0'>"
 		"<tr align='center'><td colspan='2'><H3><CENTER><font color='blue'>" + name_ls + "</font></CENTER></H3></td></tr>"
-        "<tr><td> Подчиненность:</td><td>" + objectInfo_parent + "</td></tr>"
-		"<tr><td> Страна:</td><td>" + name_country + "</td></tr>"
+        "<tr><td> РџРѕРґС‡РёРЅРµРЅРЅРѕСЃС‚СЊ:</td><td>" + objectInfo_parent + "</td></tr>"
+		"<tr><td> РЎС‚СЂР°РЅР°:</td><td>" + name_country + "</td></tr>"
 		"<tr align='center'><td colspan='2'><CENTER><img src=\"" + foto_flag + "\" width = 50 ></CENTER></td></tr>"
-		"<tr><td>Блок:</td><td>" + name_blok + "</td></tr>"
+		"<tr><td>Р‘Р»РѕРє:</td><td>" + name_blok + "</td></tr>"
 		"<tr align='center'><td colspan='2'><CENTER><img src=\"" + blok_flag + "\" width = 50 ></CENTER></td></tr>"
-		"<tr><td>Численность:</td><td>" + QString::number(counte_ls) + "</td></tr>"
-		"<tr><td>Средства ПсО:</td><td>" + name_mpo + "</td></tr></table>";
+		"<tr><td>Р§РёСЃР»РµРЅРЅРѕСЃС‚СЊ:</td><td>" + QString::number(counte_ls) + "</td></tr>"
+		"<tr><td>РЎСЂРµРґСЃС‚РІР° РџСЃРћ:</td><td>" + name_mpo + "</td></tr></table>";
 		}
 		else  
 			html_info_ls = "<style>table {border-color: red; border-style: solid;background-color:#f5f5f5;}</style><table border='1' cellpadding='4' cellspacing='0' >"
 		"<tr align='center'><td colspan='2'><H3><CENTER><font color='red'>" + name_ls + "</font></CENTER></H3></td></tr>"
-        "<tr><td> Подчиненность:</td><td>" + objectInfo_parent + "</td></tr>"
-		"<tr><td> Страна:</td><td>" + name_country + "</td></tr>" 
+        "<tr><td> РџРѕРґС‡РёРЅРµРЅРЅРѕСЃС‚СЊ:</td><td>" + objectInfo_parent + "</td></tr>"
+		"<tr><td> РЎС‚СЂР°РЅР°:</td><td>" + name_country + "</td></tr>" 
 		"<tr align='center'><td colspan='2'><CENTER><img src=\"" + foto_flag + "\" width = 50 ></CENTER></td></tr>"
-		"<tr><td>Блок:</td><td>" + name_blok + "</td></tr>"
+		"<tr><td>Р‘Р»РѕРє:</td><td>" + name_blok + "</td></tr>"
 		"<tr align='center'><td colspan='2'><CENTER><img src=\"" + blok_flag + "\" width = 50 ></CENTER></td></tr>"
-		"<tr><td>Численность:</td><td>" + QString::number(counte_ls) + "</td></tr>"
-		"<tr><td>Средства ПсО:</td><td>" + name_mpo + "</td></tr></table>";
+		"<tr><td>Р§РёСЃР»РµРЅРЅРѕСЃС‚СЊ:</td><td>" + QString::number(counte_ls) + "</td></tr>"
+		"<tr><td>РЎСЂРµРґСЃС‚РІР° РџСЃРћ:</td><td>" + name_mpo + "</td></tr></table>";
 		
 	return html_info_ls;
 }
-//============================ инфа по особым условиям ================================
+//============================ РёРЅС„Р° РїРѕ РѕСЃРѕР±С‹Рј СѓСЃР»РѕРІРёСЏРј ================================
 QString ViewManage::get_spec_cond_info(int idObject){
 	
 	QString name_sc,desc_sc,html_info_sc;
@@ -921,16 +921,16 @@ QString ViewManage::get_spec_cond_info(int idObject){
 		if (file_.size()==0){
 		html_info_sc = "<style>table {border-color: black; border-style: solid;}</style><table border='1' cellpadding='4' cellspacing='0'>"
 								"<tr align='center'><td colspan='2'><H3><CENTER><font color = 'black'>" + name_sc + "</font></CENTER></H3></td></tr>"
-								"<tr><td> Описание:</td><td>" + desc_sc + "</td></tr></table>";
+								"<tr><td> РћРїРёСЃР°РЅРёРµ:</td><td>" + desc_sc + "</td></tr></table>";
 		}
 		else
 			html_info_sc = "<table border='1' cellpadding='4' cellspacing='0'>"
 					"<tr align='center'><td colspan='2'><H3><CENTER><font color = 'black'>" + name_sc + "</font></CENTER></H3></td></tr>"
 					"<tr align='center'><td colspan='2'><CENTER><img src=\"" + foto_ + "\" height = 200></CENTER></td></tr>"
-					"<tr><td> Описание:</td><td>" + desc_sc + "</td></tr></table>";
+					"<tr><td> РћРїРёСЃР°РЅРёРµ:</td><td>" + desc_sc + "</td></tr></table>";
 	return html_info_sc;
 }
-//===================================== инфа по всем средствам, имеющим отношения к объектам ===============================================
+//===================================== РёРЅС„Р° РїРѕ РІСЃРµРј СЃСЂРµРґСЃС‚РІР°Рј, РёРјРµСЋС‰РёРј РѕС‚РЅРѕС€РµРЅРёСЏ Рє РѕР±СЉРµРєС‚Р°Рј ===============================================
 QString ViewManage::get_means_info(int idObject){
 	
 	QString name_mpo_pso,name_type_mpo_pso,description_mpo_pso,name_means,html_info_means;
@@ -1000,25 +1000,25 @@ QString ViewManage::get_means_info(int idObject){
 		if (file_.size()==0){ 
 			html_info_means = "<style>table {border-color: #D3D3D3; border-style: solid;}</style><table border='1' cellpadding='4' cellspacing='0' >"
 		"<tr align='center'><td colspan='2'><H3><CENTER><font color='black'>" + name_mpo_pso + "</font></CENTER></H3></td></tr>"
-        "<tr><td> Тип объекта:</td><td>" + name_type_mpo_pso + "</td></tr>"
+        "<tr><td> РўРёРї РѕР±СЉРµРєС‚Р°:</td><td>" + name_type_mpo_pso + "</td></tr>"
 //		"<tr align='center'><td colspan='2'><CENTER> </CENTER></td></tr>"
-		"<tr><td> Количество:</td><td>" + QString::number(count_mpo_pso) + "</td></tr>"
-		"<tr><td>Подчиненность: </td><td>" + name_means + "</td></tr>"
-		"<tr><td>Описание:</td><td>" + description_mpo_pso + "</td></tr></table>";
+		"<tr><td> РљРѕР»РёС‡РµСЃС‚РІРѕ:</td><td>" + QString::number(count_mpo_pso) + "</td></tr>"
+		"<tr><td>РџРѕРґС‡РёРЅРµРЅРЅРѕСЃС‚СЊ: </td><td>" + name_means + "</td></tr>"
+		"<tr><td>РћРїРёСЃР°РЅРёРµ:</td><td>" + description_mpo_pso + "</td></tr></table>";
 		}
 		else
 			html_info_means = "<style>table {border-color: #D3D3D3; border-style: solid;}</style><table border='1' cellpadding='4' cellspacing='0' >"
 		"<tr align='center'><td colspan='2'><H3><CENTER><font color='black'>" + name_mpo_pso + "</font></CENTER></H3></td></tr>"
-        "<tr><td> Тип объекта:</td><td>" + name_type_mpo_pso + "</td></tr>"
+        "<tr><td> РўРёРї РѕР±СЉРµРєС‚Р°:</td><td>" + name_type_mpo_pso + "</td></tr>"
 		"<tr align='center'><td colspan='2'><CENTER><img src=\"" + foto_ + "\" height = 200></CENTER></td></tr>"
-		"<tr><td> Количество:</td><td>" + QString::number(count_mpo_pso) + "</td></tr>"
-		"<tr><td>Подчиненность: </td><td>" + name_means + "</td></tr>"
-		"<tr><td>Описание:</td><td>" + description_mpo_pso + "</td></tr></table>";
+		"<tr><td> РљРѕР»РёС‡РµСЃС‚РІРѕ:</td><td>" + QString::number(count_mpo_pso) + "</td></tr>"
+		"<tr><td>РџРѕРґС‡РёРЅРµРЅРЅРѕСЃС‚СЊ: </td><td>" + name_means + "</td></tr>"
+		"<tr><td>РћРїРёСЃР°РЅРёРµ:</td><td>" + description_mpo_pso + "</td></tr></table>";
 		
 	
 	return html_info_means;
 }
-//===================================== инфа по регионам ===============================================
+//===================================== РёРЅС„Р° РїРѕ СЂРµРіРёРѕРЅР°Рј ===============================================
 QString ViewManage::get_info_region(int idObject){
 
 	int id_region,parent_region;
@@ -1054,37 +1054,37 @@ QString ViewManage::get_info_region(int idObject){
 	html_info_region = "<style>table {border-color:#D3D3D3; border-style: solid;background-color:#f5f5f5;}</style></style><table border='1' cellpadding='4' cellspacing='0' >"
 					"<tr align='center'><td colspan='2'><H2><CENTER><font color='black'>" + name_region + "</font></CENTER></H2></td></tr>"
 	//				"<tr align='center'><td colspan='2'><CENTER> </CENTER></td></tr>"
-					"<tr><td> Тип региона:</td><td>" + type_region_string + "</td></tr>"
-					"<tr align='center'><td colspan='2'><H3><CENTER><font color='black'> 1. Население </font></CENTER></H3></td></tr>"
-					"<tr><td> Численность населения:</td><td align='center'>" + counte_population_string + "</td></tr>"
-					"<tr><td> Плотность населения:</td><td align='center'>" + density_population_string + "</td></tr>"
-					"<tr><td> Уровень рождаемости:</td><td align='center'>" + birth_population_string + "</td></tr>"
-					"<tr><td> Уровень смертности:</td><td align='center'>" + dead_population_string + "</td></tr>"
-					"<tr><td> Уровень эммиграции:</td><td align='center'>" + emmigration_population_string + "</td></tr>"
-					"<tr><td> Уровень иммиграции:</td><td align='center'>" + immigration_population_string + "</td></tr>"
+					"<tr><td> РўРёРї СЂРµРіРёРѕРЅР°:</td><td>" + type_region_string + "</td></tr>"
+					"<tr align='center'><td colspan='2'><H3><CENTER><font color='black'> 1. РќР°СЃРµР»РµРЅРёРµ </font></CENTER></H3></td></tr>"
+					"<tr><td> Р§РёСЃР»РµРЅРЅРѕСЃС‚СЊ РЅР°СЃРµР»РµРЅРёСЏ:</td><td align='center'>" + counte_population_string + "</td></tr>"
+					"<tr><td> РџР»РѕС‚РЅРѕСЃС‚СЊ РЅР°СЃРµР»РµРЅРёСЏ:</td><td align='center'>" + density_population_string + "</td></tr>"
+					"<tr><td> РЈСЂРѕРІРµРЅСЊ СЂРѕР¶РґР°РµРјРѕСЃС‚Рё:</td><td align='center'>" + birth_population_string + "</td></tr>"
+					"<tr><td> РЈСЂРѕРІРµРЅСЊ СЃРјРµСЂС‚РЅРѕСЃС‚Рё:</td><td align='center'>" + dead_population_string + "</td></tr>"
+					"<tr><td> РЈСЂРѕРІРµРЅСЊ СЌРјРјРёРіСЂР°С†РёРё:</td><td align='center'>" + emmigration_population_string + "</td></tr>"
+					"<tr><td> РЈСЂРѕРІРµРЅСЊ РёРјРјРёРіСЂР°С†РёРё:</td><td align='center'>" + immigration_population_string + "</td></tr>"
 					"</table>";}
 	else
 		html_info_region ="<style>table {border-color:#D3D3D3; border-style: solid;background-color:#f5f5f5;}</style></style><table border='1' cellpadding='4' cellspacing='0' >"
 					"<tr align='center'><td colspan='2'><H2><CENTER><font color='black'>" + name_region + "</font></CENTER></H2></td></tr>"
 					"<tr align='center'><td colspan='2'><CENTER><img src=\"" + foto_flag + "\"  width = 50 ></CENTER></td></tr>"
-					"<tr><td> Тип региона:</td><td>" + type_region_string + "</td></tr>"
-					"<tr align='center'><td colspan='2'><H3><CENTER><font color='black'> 1. Население </font></CENTER></H3></td></tr>"
-					"<tr><td> Численность населения:</td><td align='center'>" + counte_population_string + "</td></tr>"
-					"<tr><td> Плотность населения:</td><td align='center'>" + density_population_string + "</td></tr>"
-					"<tr><td> Уровень рождаемости:</td><td align='center'>" + birth_population_string + "</td></tr>"
-					"<tr><td> Уровень смертности:</td><td align='center'>" + dead_population_string + "</td></tr>"
-					"<tr><td> Уровень эммиграции:</td><td align='center'>" + emmigration_population_string + "</td></tr>"
-					"<tr><td> Уровень иммиграции:</td><td align='center'>" + immigration_population_string + "</td></tr>"
+					"<tr><td> РўРёРї СЂРµРіРёРѕРЅР°:</td><td>" + type_region_string + "</td></tr>"
+					"<tr align='center'><td colspan='2'><H3><CENTER><font color='black'> 1. РќР°СЃРµР»РµРЅРёРµ </font></CENTER></H3></td></tr>"
+					"<tr><td> Р§РёСЃР»РµРЅРЅРѕСЃС‚СЊ РЅР°СЃРµР»РµРЅРёСЏ:</td><td align='center'>" + counte_population_string + "</td></tr>"
+					"<tr><td> РџР»РѕС‚РЅРѕСЃС‚СЊ РЅР°СЃРµР»РµРЅРёСЏ:</td><td align='center'>" + density_population_string + "</td></tr>"
+					"<tr><td> РЈСЂРѕРІРµРЅСЊ СЂРѕР¶РґР°РµРјРѕСЃС‚Рё:</td><td align='center'>" + birth_population_string + "</td></tr>"
+					"<tr><td> РЈСЂРѕРІРµРЅСЊ СЃРјРµСЂС‚РЅРѕСЃС‚Рё:</td><td align='center'>" + dead_population_string + "</td></tr>"
+					"<tr><td> РЈСЂРѕРІРµРЅСЊ СЌРјРјРёРіСЂР°С†РёРё:</td><td align='center'>" + emmigration_population_string + "</td></tr>"
+					"<tr><td> РЈСЂРѕРІРµРЅСЊ РёРјРјРёРіСЂР°С†РёРё:</td><td align='center'>" + immigration_population_string + "</td></tr>"
 					"</table>";
 
-				/*	"<tr><td> Количество:</td><td>" + QString::number(count_mpo_pso) + "</td></tr>"
-					"<tr><td>Подчиненность: </td><td>" + name_means + "</td></tr>"
-					"<tr><td>Описание:</td><td>" + description_mpo_pso + "</td></tr>*/
+				/*	"<tr><td> РљРѕР»РёС‡РµСЃС‚РІРѕ:</td><td>" + QString::number(count_mpo_pso) + "</td></tr>"
+					"<tr><td>РџРѕРґС‡РёРЅРµРЅРЅРѕСЃС‚СЊ: </td><td>" + name_means + "</td></tr>"
+					"<tr><td>РћРїРёСЃР°РЅРёРµ:</td><td>" + description_mpo_pso + "</td></tr>*/
 
 	
 	return html_info_region;
 }
-//==================================== инфа по персоналиям ===================================================================
+//==================================== РёРЅС„Р° РїРѕ РїРµСЂСЃРѕРЅР°Р»РёСЏРј ===================================================================
 QString ViewManage::get_info_personel(int idObject){
 	
 	QString name_pers,birth_date,html_info_pers,birth_place,nationality,rank_pers,name_type_pers;
@@ -1117,29 +1117,29 @@ QString ViewManage::get_info_personel(int idObject){
 		if (file_.size()==0){
 		html_info_pers = "<style>table {border-color: #D3D3D3; border-style: solid;}</style><table border='1' cellpadding='4' cellspacing='0'>"
 								"<tr align='center'><td colspan='2'><H3><CENTER><font color = 'black'>" + name_pers + "</font></CENTER></H3></td></tr>"
-								"<tr><td> Дата рождения:</td><td>" + birth_date + "</td></tr>"
-								"<tr><td> Национальность:</td><td>" + nationality + "</td></tr>"
-								"<tr><td> Место рождения:</td><td>" + birth_place + "</td></tr>"
-								"<tr><td> Должность(звание):</td><td>" + rank_pers + "</td></tr>"
-								"<tr><td> Тип персоналии:</td><td>" + name_type_pers + "</td></tr></table>";
+								"<tr><td> Р”Р°С‚Р° СЂРѕР¶РґРµРЅРёСЏ:</td><td>" + birth_date + "</td></tr>"
+								"<tr><td> РќР°С†РёРѕРЅР°Р»СЊРЅРѕСЃС‚СЊ:</td><td>" + nationality + "</td></tr>"
+								"<tr><td> РњРµСЃС‚Рѕ СЂРѕР¶РґРµРЅРёСЏ:</td><td>" + birth_place + "</td></tr>"
+								"<tr><td> Р”РѕР»Р¶РЅРѕСЃС‚СЊ(Р·РІР°РЅРёРµ):</td><td>" + rank_pers + "</td></tr>"
+								"<tr><td> РўРёРї РїРµСЂСЃРѕРЅР°Р»РёРё:</td><td>" + name_type_pers + "</td></tr></table>";
 
 		}
 		else
 		html_info_pers = "<style>table {border-color: #D3D3D3; border-style: solid;}</style><table border='1' cellpadding='4' cellspacing='0'>"
 							"<tr align='center'><td colspan='2'><CENTER><img src=\"" + foto_ + "\" height = 200></CENTER></td></tr>"		
 								"<tr align='center'><td colspan='2'><H3><CENTER><font color = 'black'>" + name_pers + "</font></CENTER></H3></td></tr>"
-								"<tr><td> Дата рождения:</td><td>" + birth_date + "</td></tr>"
-								"<tr><td> Национальность:</td><td>" + nationality + "</td></tr>"
-								"<tr><td> Место рождения:</td><td>" + birth_place + "</td></tr>"
-								"<tr><td> Должность(звание):</td><td>" + rank_pers + "</td></tr>"
-								"<tr><td> Тип персоналии:</td><td>" + name_type_pers + "</td></tr></table>";
+								"<tr><td> Р”Р°С‚Р° СЂРѕР¶РґРµРЅРёСЏ:</td><td>" + birth_date + "</td></tr>"
+								"<tr><td> РќР°С†РёРѕРЅР°Р»СЊРЅРѕСЃС‚СЊ:</td><td>" + nationality + "</td></tr>"
+								"<tr><td> РњРµСЃС‚Рѕ СЂРѕР¶РґРµРЅРёСЏ:</td><td>" + birth_place + "</td></tr>"
+								"<tr><td> Р”РѕР»Р¶РЅРѕСЃС‚СЊ(Р·РІР°РЅРёРµ):</td><td>" + rank_pers + "</td></tr>"
+								"<tr><td> РўРёРї РїРµСЂСЃРѕРЅР°Р»РёРё:</td><td>" + name_type_pers + "</td></tr></table>";
 
 	return html_info_pers;
 }
 
 
 //=====================================================================================
-//====== Метод возвращает информацию о событии =========
+//====== РњРµС‚РѕРґ РІРѕР·РІСЂР°С‰Р°РµС‚ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ СЃРѕР±С‹С‚РёРё =========
 //=====================================================================================
 QString ViewManage::get_event_info(int idEvent)
 {
@@ -1154,7 +1154,7 @@ QString ViewManage::get_event_info(int idEvent)
 }
 
 //==============================================================================
-//======= Метод возвращает первую часть информации о событии (характеристику) ==
+//======= РњРµС‚РѕРґ РІРѕР·РІСЂР°С‰Р°РµС‚ РїРµСЂРІСѓСЋ С‡Р°СЃС‚СЊ РёРЅС„РѕСЂРјР°С†РёРё Рѕ СЃРѕР±С‹С‚РёРё (С…Р°СЂР°РєС‚РµСЂРёСЃС‚РёРєСѓ) ==
 //==============================================================================
 QString ViewManage::get_event_common_info(int idEvent)
 {
@@ -1186,20 +1186,20 @@ QString ViewManage::get_event_common_info(int idEvent)
 	}
 
 		event_info = "<style>table {border-color: #D3D3D3; border-style: solid;}</style><table border='1' cellpadding='4' cellspacing='0'>"
-								"<tr align='center'><td colspan='2'><H3><CENTER><font color = 'black'>Характеристика события</font></CENTER></H3></td></tr>"
-								"<tr><td> Тип события:</td><td>" + event_type + "</td></tr>"
-								"<tr><td> Статус:</td><td>" + event_status + "</td></tr>"
-								"<tr><td> Наименование:</td><td>" + name_event + "</td></tr>"
-								"<tr><td> Начало:</td><td>" + time_event_start + "</td></tr>"
-								"<tr><td> Окончание:</td><td>" + time_event_end + "</td></tr>"
-								"<tr><td> Описание:</td><td>" + desc_event + "</td></tr>"
-								"<tr><td> Заключение:</td><td>" + resume_event + "</td></tr></table>";
+								"<tr align='center'><td colspan='2'><H3><CENTER><font color = 'black'>РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєР° СЃРѕР±С‹С‚РёСЏ</font></CENTER></H3></td></tr>"
+								"<tr><td> РўРёРї СЃРѕР±С‹С‚РёСЏ:</td><td>" + event_type + "</td></tr>"
+								"<tr><td> РЎС‚Р°С‚СѓСЃ:</td><td>" + event_status + "</td></tr>"
+								"<tr><td> РќР°РёРјРµРЅРѕРІР°РЅРёРµ:</td><td>" + name_event + "</td></tr>"
+								"<tr><td> РќР°С‡Р°Р»Рѕ:</td><td>" + time_event_start + "</td></tr>"
+								"<tr><td> РћРєРѕРЅС‡Р°РЅРёРµ:</td><td>" + time_event_end + "</td></tr>"
+								"<tr><td> РћРїРёСЃР°РЅРёРµ:</td><td>" + desc_event + "</td></tr>"
+								"<tr><td> Р—Р°РєР»СЋС‡РµРЅРёРµ:</td><td>" + resume_event + "</td></tr></table>";
 		return event_info;
 }
 
 
 //==============================================================================
-//======= Метод возвращает информацию об объектах, связанных с событием ========
+//======= РњРµС‚РѕРґ РІРѕР·РІСЂР°С‰Р°РµС‚ РёРЅС„РѕСЂРјР°С†РёСЋ РѕР± РѕР±СЉРµРєС‚Р°С…, СЃРІСЏР·Р°РЅРЅС‹С… СЃ СЃРѕР±С‹С‚РёРµРј ========
 //==============================================================================
 QString ViewManage::get_event_objects_info(int idEvent)
 {
@@ -1220,7 +1220,7 @@ QString ViewManage::get_event_objects_info(int idEvent)
 	if(query.exec(str))
 	{
 		event_info = "<style>table {border-color: #D3D3D3; border-style: solid;}</style><table border='1' cellpadding='4' cellspacing='0'>"
-								"<tr align='center'><td colspan='2'><H3><CENTER><font color = 'black'>Участники события</font></CENTER></H3></td></tr>";
+								"<tr align='center'><td colspan='2'><H3><CENTER><font color = 'black'>РЈС‡Р°СЃС‚РЅРёРєРё СЃРѕР±С‹С‚РёСЏ</font></CENTER></H3></td></tr>";
 
 		QSqlRecord rec = query.record();
 		while(query.next())
@@ -1230,7 +1230,7 @@ QString ViewManage::get_event_objects_info(int idEvent)
 			table_name = query.value(rec.indexOf("table_name")).toString();
 			
 			QString eventSource;
-			if(isEventSource) eventSource = "инициатор события";
+			if(isEventSource) eventSource = "РёРЅРёС†РёР°С‚РѕСЂ СЃРѕР±С‹С‚РёСЏ";
 
 
 			QString objectTypeAndName;
@@ -1253,7 +1253,7 @@ QString ViewManage::get_event_objects_info(int idEvent)
 
 
 //=====================================================================================================
-//=========================== МЕТОДЫ работают с картинками из БД =======================================
+//=========================== РњР•РўРћР”Р« СЂР°Р±РѕС‚Р°СЋС‚ СЃ РєР°СЂС‚РёРЅРєР°РјРё РёР· Р‘Р” =======================================
 QString ViewManage::get_blok_foto_from_DB(int id_country)
 {
 		QDir dir;
@@ -1266,7 +1266,7 @@ QString ViewManage::get_blok_foto_from_DB(int id_country)
 		   file.remove(pathStr);
 		}
 		QSqlQuery query;
-   //============================================ имя блока и эмблема блока ===============================================
+   //============================================ РёРјСЏ Р±Р»РѕРєР° Рё СЌРјР±Р»РµРјР° Р±Р»РѕРєР° ===============================================
 		QString str = QString("SELECT blok.emblem_blok FROM blok , blok_country WHERE blok.id_blok = blok_country.id_blok AND blok_country.id_country = %1 ").arg(id_country);
 		
 		if(!query.exec(str))
@@ -1335,7 +1335,7 @@ QString ViewManage::get_mpo_foto_from_DB(int id_mpo_object)
 		   file.remove(pathStr);
 		}
 		QSqlQuery query;
-   //============================================ имя блока и эмблема блока ===============================================
+   //============================================ РёРјСЏ Р±Р»РѕРєР° Рё СЌРјР±Р»РµРјР° Р±Р»РѕРєР° ===============================================
 		QString str = QString("SELECT image_mpo_pso FROM mpo_pso WHERE id_mpo_pso = %1 ").arg(id_mpo_object);
 		
 		if(!query.exec(str))
@@ -1363,7 +1363,7 @@ QString ViewManage::get_srec_cond_foto_from_DB(int id_sc_object)
 		   file.remove(pathStr);
 		}
 		QSqlQuery query;
-   //============================================ имя блока и эмблема блока ===============================================
+   //============================================ РёРјСЏ Р±Р»РѕРєР° Рё СЌРјР±Р»РµРјР° Р±Р»РѕРєР° ===============================================
 		QString str = QString("SELECT image_special_conditions FROM special_conditions WHERE id_special_conditions = %1 ").arg(id_sc_object);
 		
 		if(!query.exec(str))
@@ -1391,7 +1391,7 @@ QString ViewManage::get_pers_foto_from_DB(int id_pers_object)
 		   file.remove(pathStr);
 		}
 		QSqlQuery query;
-   //============================================ имя блока и эмблема блока ===============================================
+   //============================================ РёРјСЏ Р±Р»РѕРєР° Рё СЌРјР±Р»РµРјР° Р±Р»РѕРєР° ===============================================
 		QString str = QString("SELECT pers.image_persones FROM  persones pers, type_persones WHERE pers.id_persones = %1 AND pers.id_type_persones = type_persones.id_type_persones").arg(id_pers_object);
 		
 		if(!query.exec(str))

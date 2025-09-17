@@ -7,10 +7,10 @@
 class __EXPORT_COORD Coord 
 {
  private:
-	double x,y,h; //прямоугольные координаты
-	int latDegrees, latMinutes, longDegrees, longMinutes; //градусы и минуты в геодезической СК
-	double latSeconds, longSeconds; //секунды в геодезической СК
-	double xRad, yRad; //X и Y в радианах
+	double x,y,h; //РїСЂСЏРјРѕСѓРіРѕР»СЊРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹
+	int latDegrees, latMinutes, longDegrees, longMinutes; //РіСЂР°РґСѓСЃС‹ Рё РјРёРЅСѓС‚С‹ РІ РіРµРѕРґРµР·РёС‡РµСЃРєРѕР№ РЎРљ
+	double latSeconds, longSeconds; //СЃРµРєСѓРЅРґС‹ РІ РіРµРѕРґРµР·РёС‡РµСЃРєРѕР№ РЎРљ
+	double xRad, yRad; //X Рё Y РІ СЂР°РґРёР°РЅР°С…
 public:
 	Coord();
 	Coord(double x, double y, double h=0);

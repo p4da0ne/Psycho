@@ -20,14 +20,13 @@
 #include <QMessageBox>
 #include <QComboBox>
 #include <QMap>
-#include <cmath>
 #include <QFileInfo>
+#include <QDebug>
 #include "mapview.h"
 
+#include "qprintdialog.h"
 #include "signdata.h"
-#include "calculating_mps.h"
 #include "Calculate_K_omkrf.h"
-#include "People_Losses.h"
 #include "regions_mpos.h"
 #include "formationsPsiLooses.h"
 #include "formationsMPS.h"
@@ -37,7 +36,6 @@
 #include "events_map_model.h"
 #include <event_manager.h>
 #include <event.h>
-
 
 MapView::MapView(QWidget *parent)
     : QWidget(parent)
@@ -53,21 +51,21 @@ MapView::MapView(QWidget *parent)
 	// === mapscroll ================================================================================================================================
 	mapwin = new MapScroll();
 	
-	connect(mapwin,SIGNAL(cursorIsMoved(QPointF)),this,SLOT(showCoordinates(QPointF))); //отображение координат в строке состояния при движении курсора по карте
-	connect(mapwin,SIGNAL(selectedPoint(double,double)),this,SLOT(changeObjectCoordInDB(double,double))); //изменение координат в БД после указания точки мышью
+	connect(mapwin,SIGNAL(cursorIsMoved(QPointF)),this,SLOT(showCoordinates(QPointF))); //РѕС‚РѕР±СЂР°Р¶РµРЅРёРµ РєРѕРѕСЂРґРёРЅР°С‚ РІ СЃС‚СЂРѕРєРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ РїСЂРё РґРІРёР¶РµРЅРёРё РєСѓСЂСЃРѕСЂР° РїРѕ РєР°СЂС‚Рµ
+	connect(mapwin,SIGNAL(selectedPoint(double,double)),this,SLOT(changeObjectCoordInDB(double,double))); //РёР·РјРµРЅРµРЅРёРµ РєРѕРѕСЂРґРёРЅР°С‚ РІ Р‘Р” РїРѕСЃР»Рµ СѓРєР°Р·Р°РЅРёСЏ С‚РѕС‡РєРё РјС‹С€СЊСЋ
 	connect(mapwin,SIGNAL(leftButtonClicked(QPoint, QList<QStringList>)),this,SLOT(slotMouseLeftButtonClicked(QPoint, QList<QStringList>)));
 	connect(mapwin,SIGNAL(rightButtonClicked(QPoint, QList<QStringList>)),this,SLOT(slotMouseRightButtonClicked(QPoint, QList<QStringList>)));
 	// ===================================================================================================================================
-	vertLayout = new QVBoxLayout();  //==== основной лэйаут
-	vertLayout->setMargin(1);
+	vertLayout = new QVBoxLayout();  //==== РѕСЃРЅРѕРІРЅРѕР№ Р»СЌР№Р°СѓС‚
+    vertLayout->setContentsMargins(1,1,1,1);
 	
-	//==== формирование меню на основе QFrame и QToolButton's ====
+	//==== С„РѕСЂРјРёСЂРѕРІР°РЅРёРµ РјРµРЅСЋ РЅР° РѕСЃРЅРѕРІРµ QFrame Рё QToolButton's ====
 	
 	initToolButtonsPanel();
 	
 	//===================================================================
     
-	centralLayout = new QHBoxLayout(); //======= лэйаут для размещения левой панели и mapview  
+	centralLayout = new QHBoxLayout(); //======= Р»СЌР№Р°СѓС‚ РґР»СЏ СЂР°Р·РјРµС‰РµРЅРёСЏ Р»РµРІРѕР№ РїР°РЅРµР»Рё Рё mapview  
 
 	initSaturnLeftMenu();
 
@@ -102,7 +100,7 @@ MapView::MapView(QWidget *parent)
 
 
 //=========================================================
-//====== Деструктор ========
+//====== Р”РµСЃС‚СЂСѓРєС‚РѕСЂ ========
 //========================================================
 MapView::~MapView()
 {
@@ -112,7 +110,7 @@ MapView::~MapView()
 
 
 //=========================================================
-//== Метод создания панели кнопок управления картой =======
+//== РњРµС‚РѕРґ СЃРѕР·РґР°РЅРёСЏ РїР°РЅРµР»Рё РєРЅРѕРїРѕРє СѓРїСЂР°РІР»РµРЅРёСЏ РєР°СЂС‚РѕР№ =======
 //=========================================================
 void MapView::initToolButtonsPanel()
 {
@@ -120,78 +118,78 @@ void MapView::initToolButtonsPanel()
 	buttons_menu->setFrameStyle(QFrame::Panel | QFrame::Raised);
 	buttons_menu->setLineWidth(2);
 
-//Открыть карту
+//РћС‚РєСЂС‹С‚СЊ РєР°СЂС‚Сѓ
 	QToolButton *open_map_but = new QToolButton();
 	open_map_but->setIcon(QIcon(":/Resources/map_open.png"));
 	open_map_but->setIconSize(QSize(20,20));
-	open_map_but->setToolTip("Открыть карту");
+	open_map_but->setToolTip("РћС‚РєСЂС‹С‚СЊ РєР°СЂС‚Сѓ");
 	connect(open_map_but, SIGNAL(clicked()), this, SLOT(openNewMap()));
-//Закрыть карту и все данные
+//Р—Р°РєСЂС‹С‚СЊ РєР°СЂС‚Сѓ Рё РІСЃРµ РґР°РЅРЅС‹Рµ
 	QToolButton *close_map_but = new QToolButton();
 	close_map_but->setIcon(QIcon(":/Resources/map_close.png"));
 	close_map_but->setIconSize(QSize(20,20));
-	close_map_but->setToolTip("Закрыть карту и все данные");
+	close_map_but->setToolTip("Р—Р°РєСЂС‹С‚СЊ РєР°СЂС‚Сѓ Рё РІСЃРµ РґР°РЅРЅС‹Рµ");
 	connect(close_map_but, SIGNAL(clicked()), this, SLOT(closeMap()));
-//Увеличить яркость
+//РЈРІРµР»РёС‡РёС‚СЊ СЏСЂРєРѕСЃС‚СЊ
 	QToolButton *set_map_bright1 = new QToolButton();
 	set_map_bright1->setIcon(QIcon(":/Resources/up_bright.png"));
 	set_map_bright1->setIconSize(QSize(20,20));
-	set_map_bright1->setToolTip("Увеличить яркость карты");
+	set_map_bright1->setToolTip("РЈРІРµР»РёС‡РёС‚СЊ СЏСЂРєРѕСЃС‚СЊ РєР°СЂС‚С‹");
 	connect(set_map_bright1, SIGNAL(clicked()), this, SLOT(changeBrihgtUp()));
-//Уменьшить яркость
+//РЈРјРµРЅСЊС€РёС‚СЊ СЏСЂРєРѕСЃС‚СЊ
 	QToolButton *set_map_bright2 = new QToolButton();
 	set_map_bright2->setIcon(QIcon(":/Resources//down_bright.png"));
 	set_map_bright2->setIconSize(QSize(20,20));
-	set_map_bright2->setToolTip("Уменьшить яркость карты");
+	set_map_bright2->setToolTip("РЈРјРµРЅСЊС€РёС‚СЊ СЏСЂРєРѕСЃС‚СЊ РєР°СЂС‚С‹");
 	connect(set_map_bright2, SIGNAL(clicked()), this, SLOT(changeBrihgtDown()));
-//Увеличить контрастность
+//РЈРІРµР»РёС‡РёС‚СЊ РєРѕРЅС‚СЂР°СЃС‚РЅРѕСЃС‚СЊ
 	QToolButton *set_map_contrast1 = new QToolButton();
 	set_map_contrast1->setIcon(QIcon(":/Resources/contrast-up.png"));
 	set_map_contrast1->setIconSize(QSize(20,20));
-	set_map_contrast1->setToolTip("Увеличить контрастность карты");
+	set_map_contrast1->setToolTip("РЈРІРµР»РёС‡РёС‚СЊ РєРѕРЅС‚СЂР°СЃС‚РЅРѕСЃС‚СЊ РєР°СЂС‚С‹");
 	connect(set_map_contrast1, SIGNAL(clicked()), this, SLOT(changeContrastUp()));
-//Уменьшить контрастность
+//РЈРјРµРЅСЊС€РёС‚СЊ РєРѕРЅС‚СЂР°СЃС‚РЅРѕСЃС‚СЊ
 	QToolButton *set_map_contrast2 = new QToolButton();
 	set_map_contrast2->setIcon(QIcon(":/Resources/contrast-down.png"));
 	set_map_contrast2->setIconSize(QSize(20,20));
-	set_map_contrast2->setToolTip("Уменьшить контрастность карты");
+	set_map_contrast2->setToolTip("РЈРјРµРЅСЊС€РёС‚СЊ РєРѕРЅС‚СЂР°СЃС‚РЅРѕСЃС‚СЊ РєР°СЂС‚С‹");
 	connect(set_map_contrast2, SIGNAL(clicked()), this, SLOT(changeContrastDown()));
-//печать всей карты
+//РїРµС‡Р°С‚СЊ РІСЃРµР№ РєР°СЂС‚С‹
 	QToolButton *print_map_but = new QToolButton();
 	print_map_but->setIcon(QIcon(":/Resources/print.png"));
 	print_map_but->setIconSize(QSize(20,20));
-	print_map_but->setToolTip("Печать всей карты");
+	print_map_but->setToolTip("РџРµС‡Р°С‚СЊ РІСЃРµР№ РєР°СЂС‚С‹");
 	connect(print_map_but, SIGNAL(clicked()), this, SLOT(PrintMapSlot()));
-//печать видимой области карты
+//РїРµС‡Р°С‚СЊ РІРёРґРёРјРѕР№ РѕР±Р»Р°СЃС‚Рё РєР°СЂС‚С‹
 	QToolButton *print_screen_but = new QToolButton();
 	print_screen_but->setIcon(QIcon(":/Resources/print_part.png"));
 	print_screen_but->setIconSize(QSize(20,20));
-	print_screen_but->setToolTip("Печать видимой области карты");
+	print_screen_but->setToolTip("РџРµС‡Р°С‚СЊ РІРёРґРёРјРѕР№ РѕР±Р»Р°СЃС‚Рё РєР°СЂС‚С‹");
 	connect(print_screen_but, SIGNAL(clicked()), this, SLOT(PrintScreenSlot()));
-//уменьшить масштаб отображения карты
+//СѓРјРµРЅСЊС€РёС‚СЊ РјР°СЃС€С‚Р°Р± РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РєР°СЂС‚С‹
 	QToolButton *less_scale_but = new QToolButton();
 	less_scale_but->setIcon(QIcon(":/Resources/less_scale.jpg"));
 	less_scale_but->setIconSize(QSize(20,20));
-	less_scale_but->setToolTip("Уменьшить масштаб");
+	less_scale_but->setToolTip("РЈРјРµРЅСЊС€РёС‚СЊ РјР°СЃС€С‚Р°Р±");
 	connect(less_scale_but, SIGNAL(clicked()), this, SLOT(lessScale()));
-//увеличить масштаб отображения карты
+//СѓРІРµР»РёС‡РёС‚СЊ РјР°СЃС€С‚Р°Р± РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РєР°СЂС‚С‹
 	QToolButton *greate_scale_but = new QToolButton();
 	greate_scale_but->setIcon(QIcon(":/Resources/greate_scale.jpg"));
 	greate_scale_but->setIconSize(QSize(20,20));
-	greate_scale_but->setToolTip("Увеличить масштаб");
+	greate_scale_but->setToolTip("РЈРІРµР»РёС‡РёС‚СЊ РјР°СЃС€С‚Р°Р±");
 	connect(greate_scale_but, SIGNAL(clicked()), this, SLOT(greateScale()));
 
-//РАСТР! ! ! Открыть растр
+//Р РђРЎРўР ! ! ! РћС‚РєСЂС‹С‚СЊ СЂР°СЃС‚СЂ
 	QToolButton *open_rsc_but = new QToolButton();
 	open_rsc_but->setIcon(QIcon(":/Resources/foto.png"));
 	open_rsc_but->setIconSize(QSize(20,20));
-	open_rsc_but->setToolTip("Открыть растр");
+	open_rsc_but->setToolTip("РћС‚РєСЂС‹С‚СЊ СЂР°СЃС‚СЂ");
 	connect(open_rsc_but, SIGNAL(clicked()), this, SLOT(openRST()));
-//закрыть растр
+//Р·Р°РєСЂС‹С‚СЊ СЂР°СЃС‚СЂ
 	QToolButton *close_rsc_but = new QToolButton();
 	close_rsc_but->setIcon(QIcon(":/Resources/no_photo1.png"));
 	close_rsc_but->setIconSize(QSize(20,20));
-	close_rsc_but->setToolTip("Закрыть растр");
+	close_rsc_but->setToolTip("Р—Р°РєСЂС‹С‚СЊ СЂР°СЃС‚СЂ");
 	connect(close_rsc_but, SIGNAL(clicked()), this, SLOT(closeRST()));
 
 	QLabel *v_lab = new QLabel();
@@ -229,7 +227,7 @@ void MapView::initToolButtonsPanel()
 
 	QHBoxLayout *menuLayout = new QHBoxLayout();
 	menuLayout->setAlignment(Qt::AlignLeft);
-	menuLayout->setMargin(2);
+    menuLayout->setContentsMargins(2,2,2,2);
 	menuLayout->setSpacing(0);
 
 	menuLayout->addWidget(open_map_but);
@@ -259,7 +257,7 @@ void MapView::initToolButtonsPanel()
 
 
 //================================================================================
-//============== Метод создания левой панели управления картой ===================
+//============== РњРµС‚РѕРґ СЃРѕР·РґР°РЅРёСЏ Р»РµРІРѕР№ РїР°РЅРµР»Рё СѓРїСЂР°РІР»РµРЅРёСЏ РєР°СЂС‚РѕР№ ===================
 //================================================================================
 void MapView::initSaturnLeftMenu()
 {
@@ -267,30 +265,30 @@ void MapView::initSaturnLeftMenu()
 	fr->setFrameStyle(QFrame::Box | QFrame::Raised);
 	fr->setLineWidth(2);
 	
-	//--------------- Панель "Фильтр объектов" ----------------------------------------
+	//--------------- РџР°РЅРµР»СЊ "Р¤РёР»СЊС‚СЂ РѕР±СЉРµРєС‚РѕРІ" ----------------------------------------
 	QWidget *mapWorkWidget = createObjectPanel();
 	//----------------------------------------------------------------------------------
 	
-	//--------------- Панель "Расчетные задачи" ----------------------------------------
+	//--------------- РџР°РЅРµР»СЊ "Р Р°СЃС‡РµС‚РЅС‹Рµ Р·Р°РґР°С‡Рё" ----------------------------------------
 
 	QWidget *calcWidget = createCalculatePanel();
 	
 	//----------------------------------------------------------------
 	
-	//--------------- Панель "Фильтр событий" ----------------------------------------
+	//--------------- РџР°РЅРµР»СЊ "Р¤РёР»СЊС‚СЂ СЃРѕР±С‹С‚РёР№" ----------------------------------------
 
 	QWidget *eventWidget = createEventPanel();
 	
 	//----------------------------------------------------------------
 
 	QToolBox *mapWorkToolBox = new QToolBox;
-	mapWorkToolBox->addItem(mapWorkWidget,QIcon(":/Resources/map_search.png"),"Фильтр объектов");
-	mapWorkToolBox->addItem(calcWidget,QIcon(":/Resources/edit_1.png"),"Расчетные задачи");
-	mapWorkToolBox->addItem(eventWidget,QIcon(":/Resources/event-search.png"),"Фильтр событий");
+	mapWorkToolBox->addItem(mapWorkWidget,QIcon(":/Resources/map_search.png"),"Р¤РёР»СЊС‚СЂ РѕР±СЉРµРєС‚РѕРІ");
+	mapWorkToolBox->addItem(calcWidget,QIcon(":/Resources/edit_1.png"),"Р Р°СЃС‡РµС‚РЅС‹Рµ Р·Р°РґР°С‡Рё");
+	mapWorkToolBox->addItem(eventWidget,QIcon(":/Resources/event-search.png"),"Р¤РёР»СЊС‚СЂ СЃРѕР±С‹С‚РёР№");
 
 	QVBoxLayout *left_panel_layout = new QVBoxLayout();
 	left_panel_layout->setAlignment(Qt::AlignTop);
-	left_panel_layout->setMargin(2);
+    left_panel_layout->setContentsMargins(2,2,2,2);
 	left_panel_layout->setContentsMargins(4,5,4,5);
 
 	left_panel_layout->addWidget(mapWorkToolBox);
@@ -302,42 +300,42 @@ void MapView::initSaturnLeftMenu()
 
 
 //====================================================================
-//====== Метод формирует панель фильтра отображения объектов =========
+//====== РњРµС‚РѕРґ С„РѕСЂРјРёСЂСѓРµС‚ РїР°РЅРµР»СЊ С„РёР»СЊС‚СЂР° РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РѕР±СЉРµРєС‚РѕРІ =========
 //====================================================================
 QWidget* MapView::createObjectPanel()
 {
-	mpo_regions_checkbox = new QCheckBox("МПОб регионов");
+	mpo_regions_checkbox = new QCheckBox("РњРџРћР± СЂРµРіРёРѕРЅРѕРІ");
 	mpo_regions_checkbox->setChecked(true);
 	
-	QLabel *means_label = new QLabel("Средства:");
+	QLabel *means_label = new QLabel("РЎСЂРµРґСЃС‚РІР°:");
 	QFont font("Arial",8);
 	font.setUnderline(true);
 	means_label->setFont(font);
 
-	smi_means_checkbox = new QCheckBox("СМИ");
+	smi_means_checkbox = new QCheckBox("РЎРњР");
 	smi_means_checkbox->setChecked(true);
 
-	formation_means_checkbox = new QCheckBox("Формирований");
+	formation_means_checkbox = new QCheckBox("Р¤РѕСЂРјРёСЂРѕРІР°РЅРёР№");
 	formation_means_checkbox->setChecked(true);
 
-	organization_means_checkbox = new QCheckBox("Организаций");
+	organization_means_checkbox = new QCheckBox("РћСЂРіР°РЅРёР·Р°С†РёР№");
 	organization_means_checkbox->setChecked(true);
 
 	//--------------------------------------------------------------
 	
-	formations_checkbox = new QCheckBox("Формирования");
+	formations_checkbox = new QCheckBox("Р¤РѕСЂРјРёСЂРѕРІР°РЅРёСЏ");
 	formations_checkbox->setChecked(true);
 
-	conditions_checkbox = new QCheckBox("Особые условия");
+	conditions_checkbox = new QCheckBox("РћСЃРѕР±С‹Рµ СѓСЃР»РѕРІРёСЏ");
 	conditions_checkbox->setChecked(true);
 	//-----------------------------------------------------
 
-	persones_checkbox = new QCheckBox("Персоналии");
+	persones_checkbox = new QCheckBox("РџРµСЂСЃРѕРЅР°Р»РёРё");
 	persones_checkbox->setChecked(true);
 
 
 
-	QPushButton * show_oper_obst_but = new QPushButton("Показать");
+	QPushButton * show_oper_obst_but = new QPushButton("РџРѕРєР°Р·Р°С‚СЊ");
 	connect(show_oper_obst_but, SIGNAL(clicked()), this, SLOT(showCheckedObjects()));
 	
 	
@@ -378,22 +376,22 @@ QWidget* MapView::createObjectPanel()
 
 
 //====================================================================
-//====== Метод формирует панель расчетных задач ======================
+//====== РњРµС‚РѕРґ С„РѕСЂРјРёСЂСѓРµС‚ РїР°РЅРµР»СЊ СЂР°СЃС‡РµС‚РЅС‹С… Р·Р°РґР°С‡ ======================
 //====================================================================
 QWidget* MapView::createCalculatePanel()
 {
-	mps_our_Mil_checkbox = new QCheckBox("МПС своих войск");
+	mps_our_Mil_checkbox = new QCheckBox("РњРџРЎ СЃРІРѕРёС… РІРѕР№СЃРє");
 	mps_our_Mil_checkbox->setChecked(true);
 
-	mps_enemy_checkbox = new QCheckBox("МПС противника");
+	mps_enemy_checkbox = new QCheckBox("РњРџРЎ РїСЂРѕС‚РёРІРЅРёРєР°");
 	mps_enemy_checkbox->setChecked(true);
 
-	psi_looses_checkbox = new QCheckBox("Психогенные потери");
+	psi_looses_checkbox = new QCheckBox("РџСЃРёС…РѕРіРµРЅРЅС‹Рµ РїРѕС‚РµСЂРё");
 	psi_looses_checkbox->setChecked(true);
 
 	//-----------------------------------------------------
 
-	QPushButton * calc_button = new QPushButton("Рассчитать");
+	QPushButton * calc_button = new QPushButton("Р Р°СЃСЃС‡РёС‚Р°С‚СЊ");
 	connect(calc_button, SIGNAL(clicked()), this, SLOT(showCheckedCalcResults()));
 	
 	
@@ -419,12 +417,12 @@ QWidget* MapView::createCalculatePanel()
 
 
 //====================================================================
-//====== Метод формирует панель отображения событий ==================
+//====== РњРµС‚РѕРґ С„РѕСЂРјРёСЂСѓРµС‚ РїР°РЅРµР»СЊ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ СЃРѕР±С‹С‚РёР№ ==================
 //====================================================================
 QWidget* MapView::createEventPanel()
 {
-	//----------- Панель "Период:" --------------------
-	QLabel *periodLabel = new QLabel("Период:");
+	//----------- РџР°РЅРµР»СЊ "РџРµСЂРёРѕРґ:" --------------------
+	QLabel *periodLabel = new QLabel("РџРµСЂРёРѕРґ:");
 	QFont font("Arial",8);
 	font.setUnderline(true);
 	font.setBold(true);
@@ -452,9 +450,9 @@ QWidget* MapView::createEventPanel()
 	endEventDateTime->setCalendarWidget(cw);
 	endEventDateTime->setCalendarPopup(true);
 	
-	QLabel *fromLabel = new QLabel("С:");
+	QLabel *fromLabel = new QLabel("РЎ:");
 	fromLabel->setMaximumWidth(20);
-	QLabel *toLabel = new QLabel("По:");
+	QLabel *toLabel = new QLabel("РџРѕ:");
 	toLabel->setMaximumWidth(20);
 
 	QHBoxLayout *fromLay = new QHBoxLayout;
@@ -472,20 +470,20 @@ QWidget* MapView::createEventPanel()
 
 	//------------------------------------------------------------
 
-	//------- Панель "По объектам:" -------------------
+	//------- РџР°РЅРµР»СЊ "РџРѕ РѕР±СЉРµРєС‚Р°Рј:" -------------------
 	QLabel *lineLabel = new QLabel();
 	lineLabel->setFrameStyle(QFrame::HLine | QFrame::Raised);
 	lineLabel->setLineWidth(2);
 	
-	QLabel *objectsLabel = new QLabel("По объектам:");
+	QLabel *objectsLabel = new QLabel("РџРѕ РѕР±СЉРµРєС‚Р°Рј:");
 	QFont font1("Arial",8);
 	font1.setUnderline(true);
 	font1.setBold(true);
 	objectsLabel->setFont(font1);
 
-	allObjectsButton = new QRadioButton("Все объекты");
+	allObjectsButton = new QRadioButton("Р’СЃРµ РѕР±СЉРµРєС‚С‹");
 	allObjectsButton->toggle();
-	selectObjectsButton = new QRadioButton("Выбор объектов");
+	selectObjectsButton = new QRadioButton("Р’С‹Р±РѕСЂ РѕР±СЉРµРєС‚РѕРІ");
 
 	connect(selectObjectsButton,SIGNAL(toggled(bool)),this,SLOT(slotSelectButtonToggled(bool)));
 
@@ -497,10 +495,10 @@ QWidget* MapView::createEventPanel()
 	connect(searchObjectButton,SIGNAL(clicked()),this,SLOT(slotSearchObject()));
 
 	QHBoxLayout *searchLay = new QHBoxLayout;
-	searchLay->addWidget(searchObjectLineEdit); /// Поле ввода строки поиска
-	searchLay->addWidget(searchObjectButton);	/// Кнопка поиска объектов
+	searchLay->addWidget(searchObjectLineEdit); /// РџРѕР»Рµ РІРІРѕРґР° СЃС‚СЂРѕРєРё РїРѕРёСЃРєР°
+	searchLay->addWidget(searchObjectButton);	/// РљРЅРѕРїРєР° РїРѕРёСЃРєР° РѕР±СЉРµРєС‚РѕРІ
 
-	QLabel *selectedObjLabel = new QLabel("Отобранные объекты:");
+	QLabel *selectedObjLabel = new QLabel("РћС‚РѕР±СЂР°РЅРЅС‹Рµ РѕР±СЉРµРєС‚С‹:");
 	selectedObjectsListView = new QListView;
 	selectedObjectsModel = new QStandardItemModel;
 	selectedObjectsListView->setModel(selectedObjectsModel);
@@ -526,7 +524,7 @@ QWidget* MapView::createEventPanel()
 	selectObjectsWidget->hide();
 	
 	//-----------------------------------------------------
-	QLabel *stateLabel = new QLabel("По состоянию:");
+	QLabel *stateLabel = new QLabel("РџРѕ СЃРѕСЃС‚РѕСЏРЅРёСЋ:");
 	QFont font2("Arial",8);
 	font2.setUnderline(true);
 	font2.setBold(true);
@@ -559,7 +557,7 @@ QWidget* MapView::createEventPanel()
 	//-----------------------------------------------------
 
 	//-----------------------------------------------------
-	QLabel *eventTypeLabel = new QLabel("По типу:");
+	QLabel *eventTypeLabel = new QLabel("РџРѕ С‚РёРїСѓ:");
 	QFont font3("Arial",8);
 	font3.setUnderline(true);
 	font3.setBold(true);
@@ -589,7 +587,7 @@ QWidget* MapView::createEventPanel()
 	typesLay->addWidget(lineLabel);
 	//-----------------------------------------------------
 
-	QPushButton * event_button = new QPushButton("Показать события");
+	QPushButton * event_button = new QPushButton("РџРѕРєР°Р·Р°С‚СЊ СЃРѕР±С‹С‚РёСЏ");
 	connect(event_button, SIGNAL(clicked()), this, SLOT(showCheckedEvents()));
 	
 	typesLay->addWidget(event_button);
@@ -597,7 +595,7 @@ QWidget* MapView::createEventPanel()
 
 
 	QVBoxLayout *event_layout = new QVBoxLayout;
-	event_layout->setMargin(2);
+    event_layout->setContentsMargins(2,2,2,2);
 	event_layout->setContentsMargins(5,2,5,2);
 	
 	event_layout->addLayout(dateLay);
@@ -614,7 +612,7 @@ QWidget* MapView::createEventPanel()
 }
 
 //===============================================================================
-//== Слот контекстного меню для списка отобранных объектов в фильтре событий ====
+//== РЎР»РѕС‚ РєРѕРЅС‚РµРєСЃС‚РЅРѕРіРѕ РјРµРЅСЋ РґР»СЏ СЃРїРёСЃРєР° РѕС‚РѕР±СЂР°РЅРЅС‹С… РѕР±СЉРµРєС‚РѕРІ РІ С„РёР»СЊС‚СЂРµ СЃРѕР±С‹С‚РёР№ ====
 //===============================================================================
 void MapView::slotSelectedObjectsListViewCustomMenu(const QPoint &pe)
 {
@@ -622,10 +620,10 @@ void MapView::slotSelectedObjectsListViewCustomMenu(const QPoint &pe)
 	{
 		QPushButton *popupButton = new QPushButton;
 		QMenu *menu = new QMenu(this);
-		QAction *removeOne = new QAction("Удалить объект из списка",this);
+		QAction *removeOne = new QAction("РЈРґР°Р»РёС‚СЊ РѕР±СЉРµРєС‚ РёР· СЃРїРёСЃРєР°",this);
 		connect(removeOne,SIGNAL(triggered()),this,SLOT(slotRemoveOneObject()));
 
-		QAction *clearAct=new QAction("Очистить список",this);
+		QAction *clearAct=new QAction("РћС‡РёСЃС‚РёС‚СЊ СЃРїРёСЃРѕРє",this);
 		connect(clearAct,SIGNAL(triggered()),this,SLOT(slotClearSelectedList()));
 		menu->addAction(removeOne);
 		menu->addAction(clearAct);
@@ -636,7 +634,7 @@ void MapView::slotSelectedObjectsListViewCustomMenu(const QPoint &pe)
 
 
 //===============================================================================
-//== Слот удаления объекта из списка отобранных объектов в фильтре событий ======
+//== РЎР»РѕС‚ СѓРґР°Р»РµРЅРёСЏ РѕР±СЉРµРєС‚Р° РёР· СЃРїРёСЃРєР° РѕС‚РѕР±СЂР°РЅРЅС‹С… РѕР±СЉРµРєС‚РѕРІ РІ С„РёР»СЊС‚СЂРµ СЃРѕР±С‹С‚РёР№ ======
 //===============================================================================
 void MapView::slotRemoveOneObject()
 {
@@ -650,7 +648,7 @@ void MapView::slotRemoveOneObject()
 
 
 //===============================================================================
-//== Слот очистки списка отобранных объектов в фильтре событий ==================
+//== РЎР»РѕС‚ РѕС‡РёСЃС‚РєРё СЃРїРёСЃРєР° РѕС‚РѕР±СЂР°РЅРЅС‹С… РѕР±СЉРµРєС‚РѕРІ РІ С„РёР»СЊС‚СЂРµ СЃРѕР±С‹С‚РёР№ ==================
 //===============================================================================
 void MapView::slotClearSelectedList()
 {
@@ -659,7 +657,7 @@ void MapView::slotClearSelectedList()
 
 
 //===============================================================================
-//== Слот показа/сокрытия панели поиска объектов для отбора в фильтре событий ===
+//== РЎР»РѕС‚ РїРѕРєР°Р·Р°/СЃРѕРєСЂС‹С‚РёСЏ РїР°РЅРµР»Рё РїРѕРёСЃРєР° РѕР±СЉРµРєС‚РѕРІ РґР»СЏ РѕС‚Р±РѕСЂР° РІ С„РёР»СЊС‚СЂРµ СЃРѕР±С‹С‚РёР№ ===
 //===============================================================================
 void MapView::slotSelectButtonToggled(bool checked)
 {
@@ -676,8 +674,8 @@ void MapView::slotSelectButtonToggled(bool checked)
 
 
 //==========================================================================
-//====== Слот поиска объектов по введенной строке в поле ввода =============
-//====== Результаты поиска отображаются в диалоговом окне ==================
+//====== РЎР»РѕС‚ РїРѕРёСЃРєР° РѕР±СЉРµРєС‚РѕРІ РїРѕ РІРІРµРґРµРЅРЅРѕР№ СЃС‚СЂРѕРєРµ РІ РїРѕР»Рµ РІРІРѕРґР° =============
+//====== Р РµР·СѓР»СЊС‚Р°С‚С‹ РїРѕРёСЃРєР° РѕС‚РѕР±СЂР°Р¶Р°СЋС‚СЃСЏ РІ РґРёР°Р»РѕРіРѕРІРѕРј РѕРєРЅРµ ==================
 //==========================================================================
 void MapView::slotSearchObject()
 {
@@ -691,9 +689,9 @@ void MapView::slotSearchObject()
 	searchResultsDialog = new QDialog(this);
 	searchResultsDialog->resize(400,300);
 	searchResultsDialog->setAttribute(Qt::WA_DeleteOnClose);
-	searchResultsDialog->setWindowTitle("Результаты поиска объектов");
+	searchResultsDialog->setWindowTitle("Р РµР·СѓР»СЊС‚Р°С‚С‹ РїРѕРёСЃРєР° РѕР±СЉРµРєС‚РѕРІ");
 
-	//-------- построение таблицы-------
+	//-------- РїРѕСЃС‚СЂРѕРµРЅРёРµ С‚Р°Р±Р»РёС†С‹-------
 	searchResultListView = new QListView;
 	searchResultListView->setModel(searchResultsModel);
 	searchResultListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -701,12 +699,12 @@ void MapView::slotSearchObject()
 
 	QHBoxLayout *buttonLay = new QHBoxLayout();
 
-	QPushButton *select_button = new QPushButton("Выбрать");
+	QPushButton *select_button = new QPushButton("Р’С‹Р±СЂР°С‚СЊ");
 	connect(select_button, SIGNAL(clicked()), this, SLOT(chooseSelectedObjects()));
 	buttonLay->addWidget(select_button);
 	buttonLay->addStretch();
 
-	QPushButton *select_all_button = new QPushButton("Выбрать все");
+	QPushButton *select_all_button = new QPushButton("Р’С‹Р±СЂР°С‚СЊ РІСЃРµ");
 	connect(select_all_button, SIGNAL(clicked()), this, SLOT(chooseAllObjects()));
 	buttonLay->addWidget(select_all_button);
 
@@ -726,7 +724,7 @@ void MapView::slotSearchObject()
 
 
 //============================================================================================================
-//===== Слот отбора отмеченных среди найденных объектов для работы с событиями (с ними связанными) ===========
+//===== РЎР»РѕС‚ РѕС‚Р±РѕСЂР° РѕС‚РјРµС‡РµРЅРЅС‹С… СЃСЂРµРґРё РЅР°Р№РґРµРЅРЅС‹С… РѕР±СЉРµРєС‚РѕРІ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ СЃРѕР±С‹С‚РёСЏРјРё (СЃ РЅРёРјРё СЃРІСЏР·Р°РЅРЅС‹РјРё) ===========
 //============================================================================================================
 void MapView::chooseSelectedObjects()
 {
@@ -758,7 +756,7 @@ void MapView::chooseSelectedObjects()
 			}
 		}
 	}
-	if((searchResultsModel->rowCount() == 0) || (alreadySelectedFlag))  //если все объекты были отобраны
+	if((searchResultsModel->rowCount() == 0) || (alreadySelectedFlag))  //РµСЃР»Рё РІСЃРµ РѕР±СЉРµРєС‚С‹ Р±С‹Р»Рё РѕС‚РѕР±СЂР°РЅС‹
 	{
 		searchResultsDialog->reject();
 	}
@@ -767,7 +765,7 @@ void MapView::chooseSelectedObjects()
 }
 
 //================================================================================================
-//===== Слот отбора всех найденных объектов для работы с событиями (с ними связанными) ===========
+//===== РЎР»РѕС‚ РѕС‚Р±РѕСЂР° РІСЃРµС… РЅР°Р№РґРµРЅРЅС‹С… РѕР±СЉРµРєС‚РѕРІ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ СЃРѕР±С‹С‚РёСЏРјРё (СЃ РЅРёРјРё СЃРІСЏР·Р°РЅРЅС‹РјРё) ===========
 //================================================================================================
 void MapView::chooseAllObjects()
 {
@@ -796,7 +794,7 @@ void MapView::chooseAllObjects()
 			alreadySelectedFlag = true;
 		}
 	}
-	if((searchResultsModel->rowCount() == 0) || (alreadySelectedFlag))  //если все объекты были отобраны
+	if((searchResultsModel->rowCount() == 0) || (alreadySelectedFlag))  //РµСЃР»Рё РІСЃРµ РѕР±СЉРµРєС‚С‹ Р±С‹Р»Рё РѕС‚РѕР±СЂР°РЅС‹
 	{
 		searchResultsDialog->reject();
 	}
@@ -806,14 +804,14 @@ void MapView::chooseAllObjects()
 
 
 //====================================================================
-//======  Отклик на пункт меню открыть новую карту ===================
+//======  РћС‚РєР»РёРє РЅР° РїСѓРЅРєС‚ РјРµРЅСЋ РѕС‚РєСЂС‹С‚СЊ РЅРѕРІСѓСЋ РєР°СЂС‚Сѓ ===================
 //====================================================================
 void MapView::openNewMap()
 {
-	openMap();
+    openMap();
 }
 //====================================================================
-//==== Слот открытия карты, находящейся по пути в настройках =========
+//==== РЎР»РѕС‚ РѕС‚РєСЂС‹С‚РёСЏ РєР°СЂС‚С‹, РЅР°С…РѕРґСЏС‰РµР№СЃСЏ РїРѕ РїСѓС‚Рё РІ РЅР°СЃС‚СЂРѕР№РєР°С… =========
 //====================================================================
 void MapView::openMapFromSettings()
 {	
@@ -823,20 +821,20 @@ void MapView::openMapFromSettings()
 
 
 //====================================================================
-//============= Метод открытия карты =================================
+//============= РњРµС‚РѕРґ РѕС‚РєСЂС‹С‚РёСЏ РєР°СЂС‚С‹ =================================
 //====================================================================
 bool MapView::openMap(QString mapFilepath)
 {
 	QString filePath = mapFilepath;
 	if(filePath == "")
 	{
-		filePath = QFileDialog::getOpenFileName(this, QString::null, QString::null, 
+        filePath = QFileDialog::getOpenFileName(this, NULL, NULL,
                    "Maps (*.map)\n Sites (*.sit)\n Matrixes (*.mtw)\n Rasters (*.rsw)" );
-		if (filePath.isEmpty()) return false;//если карта не выбрана
+		if (filePath.isEmpty()) return false;//РµСЃР»Рё РєР°СЂС‚Р° РЅРµ РІС‹Р±СЂР°РЅР°
 	}
 	if(mapwin->mapOpen(filePath.toStdString().c_str()))
 	{
-		//показать середину карты при ее открытии
+		//РїРѕРєР°Р·Р°С‚СЊ СЃРµСЂРµРґРёРЅСѓ РєР°СЂС‚С‹ РїСЂРё РµРµ РѕС‚РєСЂС‹С‚РёРё
 
 		mapwin->setMapCenter();
 
@@ -853,7 +851,7 @@ bool MapView::openMap(QString mapFilepath)
 }
 
 //====================================================================
-//=== Метод закрытия пользовательской карты по имени =================
+//=== РњРµС‚РѕРґ Р·Р°РєСЂС‹С‚РёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРѕР№ РєР°СЂС‚С‹ РїРѕ РёРјРµРЅРё =================
 //====================================================================
 void MapView::closeSitByName(QString sitFileName)
 {
@@ -862,17 +860,17 @@ void MapView::closeSitByName(QString sitFileName)
 
 
 //======================================================================
-//===== Слот открытия растра ===========================================
+//===== РЎР»РѕС‚ РѕС‚РєСЂС‹С‚РёСЏ СЂР°СЃС‚СЂР° ===========================================
 //======================================================================
 void MapView::openRST()
 {
     long int a = mapwin->IsActive(mapwin->hMap);
 	if (a)
 	{
-		QString filePath = QFileDialog::getOpenFileName(this, QString::null, 
-						QString::null, "Maps (*.rsw)" );
+        QString filePath = QFileDialog::getOpenFileName(this, NULL,
+                        NULL, "Maps (*.rsw)" );
 
-		if (filePath.isEmpty()) return;//если растр не выбран
+		if (filePath.isEmpty()) return;//РµСЃР»Рё СЂР°СЃС‚СЂ РЅРµ РІС‹Р±СЂР°РЅ
 		long int a1 = mapwin->openRstOnMap(filePath.toLocal8Bit().data());
 		long int a2 = mapwin->setRstOnMap(a1);
 
@@ -888,12 +886,12 @@ void MapView::openRST()
 	}		
 	else
 	{
-		showInformationDialog("Не открыта карта местности\n для открытия растра необходимо открыть карту");
+		showInformationDialog("РќРµ РѕС‚РєСЂС‹С‚Р° РєР°СЂС‚Р° РјРµСЃС‚РЅРѕСЃС‚Рё\n РґР»СЏ РѕС‚РєСЂС‹С‚РёСЏ СЂР°СЃС‚СЂР° РЅРµРѕР±С…РѕРґРёРјРѕ РѕС‚РєСЂС‹С‚СЊ РєР°СЂС‚Сѓ");
     }
 }
 
 //=====================================================================
-//== Слот закрытия растра(ов) с диалогом выбора растров для закрытия ==
+//== РЎР»РѕС‚ Р·Р°РєСЂС‹С‚РёСЏ СЂР°СЃС‚СЂР°(РѕРІ) СЃ РґРёР°Р»РѕРіРѕРј РІС‹Р±РѕСЂР° СЂР°СЃС‚СЂРѕРІ РґР»СЏ Р·Р°РєСЂС‹С‚РёСЏ ==
 //=====================================================================
 void MapView::closeRST()
 {
@@ -910,20 +908,20 @@ void MapView::closeRST()
 		{	
 			closeRSTdialog = new QDialog(this);
 			closeRSTdialog->setAttribute(Qt::WA_DeleteOnClose);
-			closeRSTdialog->setWindowTitle("Выбор растров для закрытия");
+			closeRSTdialog->setWindowTitle("Р’С‹Р±РѕСЂ СЂР°СЃС‚СЂРѕРІ РґР»СЏ Р·Р°РєСЂС‹С‚РёСЏ");
 
-			//-------- построение таблицы-------
+			//-------- РїРѕСЃС‚СЂРѕРµРЅРёРµ С‚Р°Р±Р»РёС†С‹-------
 			rstListView = new QListView;
 			rstListView->setModel(rstModel);
 
 			QHBoxLayout *buttonLay = new QHBoxLayout();
 			
-			QPushButton *close_button = new QPushButton("Закрыть выбранные");
+			QPushButton *close_button = new QPushButton("Р—Р°РєСЂС‹С‚СЊ РІС‹Р±СЂР°РЅРЅС‹Рµ");
 			connect(close_button, SIGNAL(clicked()), this, SLOT(closeSelectedRST()));
 			buttonLay->addWidget(close_button);
 			buttonLay->addStretch();
 
-			QPushButton *close_all_button = new QPushButton("Закрыть все");
+			QPushButton *close_all_button = new QPushButton("Р—Р°РєСЂС‹С‚СЊ РІСЃРµ");
 			connect(close_all_button, SIGNAL(clicked()), this, SLOT(closeAllRST()));
 			buttonLay->addWidget(close_all_button);
 
@@ -939,7 +937,7 @@ void MapView::closeRST()
 }
 
 //======================================================================
-//======= Слот закрытия выбранных растров ==========
+//======= РЎР»РѕС‚ Р·Р°РєСЂС‹С‚РёСЏ РІС‹Р±СЂР°РЅРЅС‹С… СЂР°СЃС‚СЂРѕРІ ==========
 //======================================================================
 void MapView::closeSelectedRST()
 {
@@ -959,7 +957,7 @@ void MapView::closeSelectedRST()
 }
 
 //======================================================================
-//==================== Слот закрытия всех растров ======================
+//==================== РЎР»РѕС‚ Р·Р°РєСЂС‹С‚РёСЏ РІСЃРµС… СЂР°СЃС‚СЂРѕРІ ======================
 //======================================================================
 void MapView::closeAllRST()
 {
@@ -977,7 +975,7 @@ void MapView::closeAllRST()
 }
 
 //===============================================================
-// ==== Слот - отклик на нажатие кнопки/пункта меню "Закрыть" ===
+// ==== РЎР»РѕС‚ - РѕС‚РєР»РёРє РЅР° РЅР°Р¶Р°С‚РёРµ РєРЅРѕРїРєРё/РїСѓРЅРєС‚Р° РјРµРЅСЋ "Р—Р°РєСЂС‹С‚СЊ" ===
 //===============================================================
 void MapView::closeMap()
 {
@@ -986,7 +984,7 @@ void MapView::closeMap()
 
 
 //===============================================================
-//===== Слот - отклик на кнопку "<" =============================
+//===== РЎР»РѕС‚ - РѕС‚РєР»РёРє РЅР° РєРЅРѕРїРєСѓ "<" =============================
 //===============================================================
 void MapView::lessScale()
 {
@@ -995,7 +993,7 @@ void MapView::lessScale()
 }
 
 //===============================================================
-//===== Слот - отклик на кнопку ">" =============================
+//===== РЎР»РѕС‚ - РѕС‚РєР»РёРє РЅР° РєРЅРѕРїРєСѓ ">" =============================
 //===============================================================
 void MapView::greateScale()
 {
@@ -1004,7 +1002,7 @@ void MapView::greateScale()
 }
 
 //===============================================================
-//===== Слот - отклик на кнопку "увеличить яркость" =============
+//===== РЎР»РѕС‚ - РѕС‚РєР»РёРє РЅР° РєРЅРѕРїРєСѓ "СѓРІРµР»РёС‡РёС‚СЊ СЏСЂРєРѕСЃС‚СЊ" =============
 //===============================================================
 void MapView::changeBrihgtUp()
 {
@@ -1016,11 +1014,11 @@ void MapView::changeBrihgtUp()
 		mapwin->updateScreen();
 	}
 	else
-	showInformationDialog("Яркость максимальная");
+	showInformationDialog("РЇСЂРєРѕСЃС‚СЊ РјР°РєСЃРёРјР°Р»СЊРЅР°СЏ");
 }
 
 //===============================================================
-//===== Слот - отклик на кнопку "уменьшить яркость" =============
+//===== РЎР»РѕС‚ - РѕС‚РєР»РёРє РЅР° РєРЅРѕРїРєСѓ "СѓРјРµРЅСЊС€РёС‚СЊ СЏСЂРєРѕСЃС‚СЊ" =============
 //===============================================================
 void MapView::changeBrihgtDown()
 {
@@ -1032,11 +1030,11 @@ void MapView::changeBrihgtDown()
 		mapwin->updateScreen();
 	}
 	else
-	showInformationDialog("Яркость минимальная");
+	showInformationDialog("РЇСЂРєРѕСЃС‚СЊ РјРёРЅРёРјР°Р»СЊРЅР°СЏ");
 }
 
 //===============================================================
-//===== Слот - отклик на кнопку "увеличить контрастность" =======
+//===== РЎР»РѕС‚ - РѕС‚РєР»РёРє РЅР° РєРЅРѕРїРєСѓ "СѓРІРµР»РёС‡РёС‚СЊ РєРѕРЅС‚СЂР°СЃС‚РЅРѕСЃС‚СЊ" =======
 //===============================================================
 void MapView::changeContrastUp()
 {
@@ -1048,11 +1046,11 @@ void MapView::changeContrastUp()
 		mapwin->updateScreen();
 	}
 	else
-	showInformationDialog("Контрастность максимальная");
+	showInformationDialog("РљРѕРЅС‚СЂР°СЃС‚РЅРѕСЃС‚СЊ РјР°РєСЃРёРјР°Р»СЊРЅР°СЏ");
 }
 
 //===============================================================
-//===== Слот - отклик на кнопку "уменьшить контрастность" =======
+//===== РЎР»РѕС‚ - РѕС‚РєР»РёРє РЅР° РєРЅРѕРїРєСѓ "СѓРјРµРЅСЊС€РёС‚СЊ РєРѕРЅС‚СЂР°СЃС‚РЅРѕСЃС‚СЊ" =======
 //===============================================================
 void MapView::changeContrastDown()
 {
@@ -1064,25 +1062,25 @@ void MapView::changeContrastDown()
 		mapwin->updateScreen();
 	}
 	else
-	showInformationDialog("Контрастность минимальная");
+	showInformationDialog("РљРѕРЅС‚СЂР°СЃС‚РЅРѕСЃС‚СЊ РјРёРЅРёРјР°Р»СЊРЅР°СЏ");
 }
 
 //============================================================================
-//===== Метод отображения текущего масштаба в правом нижнем углу карты =======
+//===== РњРµС‚РѕРґ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ С‚РµРєСѓС‰РµРіРѕ РјР°СЃС€С‚Р°Р±Р° РІ РїСЂР°РІРѕРј РЅРёР¶РЅРµРј СѓРіР»Сѓ РєР°СЂС‚С‹ =======
 //============================================================================
 //
 void MapView::showViewScale()
 {
 	QString info;
 	long int scale = mapwin->getScale();
-	info = "Масштаб отображения карты: 1:";
+	info = "РњР°СЃС€С‚Р°Р± РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РєР°СЂС‚С‹: 1:";
 	info +=QString::number(scale);
 
 	scale_info->setText(info);
 }
 
 //======================================================================
-//======= Метод обработки нажатия клавиш клавиатуры ====================
+//======= РњРµС‚РѕРґ РѕР±СЂР°Р±РѕС‚РєРё РЅР°Р¶Р°С‚РёСЏ РєР»Р°РІРёС€ РєР»Р°РІРёР°С‚СѓСЂС‹ ====================
 //======================================================================
 void MapView::keyPressEvent(QKeyEvent *e)
 {
@@ -1117,8 +1115,8 @@ void MapView::keyPressEvent(QKeyEvent *e)
 }
 
 //======================================================================
-//======= Метод обработки движения мыши по карте =======================
-//======= Заносит координаты в строку состояния =======================
+//======= РњРµС‚РѕРґ РѕР±СЂР°Р±РѕС‚РєРё РґРІРёР¶РµРЅРёСЏ РјС‹С€Рё РїРѕ РєР°СЂС‚Рµ =======================
+//======= Р—Р°РЅРѕСЃРёС‚ РєРѕРѕСЂРґРёРЅР°С‚С‹ РІ СЃС‚СЂРѕРєСѓ СЃРѕСЃС‚РѕСЏРЅРёСЏ =======================
 //======================================================================
 void MapView::showCoordinates(QPointF xyCoord)
 {
@@ -1140,7 +1138,7 @@ void MapView::showCoordinates(QPointF xyCoord)
 }
 
 //======================================================================================
-//========= Метод перевода прямоугольных координат в геодезические (WGS-84) ============
+//========= РњРµС‚РѕРґ РїРµСЂРµРІРѕРґР° РїСЂСЏРјРѕСѓРіРѕР»СЊРЅС‹С… РєРѕРѕСЂРґРёРЅР°С‚ РІ РіРµРѕРґРµР·РёС‡РµСЃРєРёРµ (WGS-84) ============
 //======================================================================================
 Coord* MapView::planeToWGS(long int hMap,Coord *coord)
 {
@@ -1176,7 +1174,7 @@ Coord* MapView::planeToWGS(long int hMap,Coord *coord)
 
 
 //============================================================================
-//=== Метод открытия пользовательской карты ==================================
+//=== РњРµС‚РѕРґ РѕС‚РєСЂС‹С‚РёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРѕР№ РєР°СЂС‚С‹ ==================================
 //============================================================================
 HSITE MapView::openMapSit(QString sitFileName, QString rscFilePath)
 {				
@@ -1191,15 +1189,15 @@ HSITE MapView::openMapSit(QString sitFileName, QString rscFilePath)
 
 
 //======================================================================================
-//====== Метод формирует меню увеличения/уменьшения масштаба отображения карты =========
+//====== РњРµС‚РѕРґ С„РѕСЂРјРёСЂСѓРµС‚ РјРµРЅСЋ СѓРІРµР»РёС‡РµРЅРёСЏ/СѓРјРµРЅСЊС€РµРЅРёСЏ РјР°СЃС€С‚Р°Р±Р° РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РєР°СЂС‚С‹ =========
 //======================================================================================
 QMenu* MapView::createGreateLessScaleMenu()
 {
 	mouse_menu = new QMenu; 
-	QAction *great_scale_act = new QAction("Увеличить масштаб карты  \">\"", this);
+	QAction *great_scale_act = new QAction("РЈРІРµР»РёС‡РёС‚СЊ РјР°СЃС€С‚Р°Р± РєР°СЂС‚С‹  \">\"", this);
 	great_scale_act->setIcon(QIcon(":/Resources/greate_scale.jpg"));
 
-	QAction *less_scale_act = new QAction("Уменьшить масштаб карты  \"<\"", this);
+	QAction *less_scale_act = new QAction("РЈРјРµРЅСЊС€РёС‚СЊ РјР°СЃС€С‚Р°Р± РєР°СЂС‚С‹  \"<\"", this);
 	less_scale_act->setIcon(QIcon(":/Resources/less_scale.jpg"));
 
 
@@ -1218,11 +1216,11 @@ QMenu* MapView::createGreateLessScaleMenu()
 
 
 //======================================================================================
-//====== Метод формирует меню добавления события в точке нажатия мыши на карте =========
+//====== РњРµС‚РѕРґ С„РѕСЂРјРёСЂСѓРµС‚ РјРµРЅСЋ РґРѕР±Р°РІР»РµРЅРёСЏ СЃРѕР±С‹С‚РёСЏ РІ С‚РѕС‡РєРµ РЅР°Р¶Р°С‚РёСЏ РјС‹С€Рё РЅР° РєР°СЂС‚Рµ =========
 //======================================================================================
 QAction* MapView::createAddEventAction()
 {
-	QAction *add_event_act = new QAction("Добавить событие", this);
+	QAction *add_event_act = new QAction("Р”РѕР±Р°РІРёС‚СЊ СЃРѕР±С‹С‚РёРµ", this);
 	add_event_act->setIcon(QIcon(":/Resources/01.ico"));
 	connect(add_event_act, SIGNAL(triggered()), this, SLOT(addEvent()));
 	return add_event_act;
@@ -1231,7 +1229,7 @@ QAction* MapView::createAddEventAction()
 
 
 //=================================================================================================
-//========= Меню по клику правой клавишей мыши в любом месте карты ================================
+//========= РњРµРЅСЋ РїРѕ РєР»РёРєСѓ РїСЂР°РІРѕР№ РєР»Р°РІРёС€РµР№ РјС‹С€Рё РІ Р»СЋР±РѕРј РјРµСЃС‚Рµ РєР°СЂС‚С‹ ================================
 //=================================================================================================
 void MapView::mouseRightSimpleMenu(QPoint pe)
 {
@@ -1244,17 +1242,18 @@ void MapView::mouseRightSimpleMenu(QPoint pe)
 
 
 //============================================================================
-//== Метод отображения на карте объектов с помощью условных знаков ===========
-//== Первый параметр - номер пользовательской карты (*.sit), второй ==========
-//== параметр - список объектов SignData с информацией о знаке ===============
+//== РњРµС‚РѕРґ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РЅР° РєР°СЂС‚Рµ РѕР±СЉРµРєС‚РѕРІ СЃ РїРѕРјРѕС‰СЊСЋ СѓСЃР»РѕРІРЅС‹С… Р·РЅР°РєРѕРІ ===========
+//== РџРµСЂРІС‹Р№ РїР°СЂР°РјРµС‚СЂ - РЅРѕРјРµСЂ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРѕР№ РєР°СЂС‚С‹ (*.sit), РІС‚РѕСЂРѕР№ ==========
+//== РїР°СЂР°РјРµС‚СЂ - СЃРїРёСЃРѕРє РѕР±СЉРµРєС‚РѕРІ SignData СЃ РёРЅС„РѕСЂРјР°С†РёРµР№ Рѕ Р·РЅР°РєРµ ===============
 //============================================================================
 void MapView::createSitObjects(HSITE hSite, QList<SignData*> signsList)
 {
 	for(int i=0;i<signsList.count();i++)
 	{
-		mapwin->createObject(hSite,&signsList.at(i)->getMetricList(),
+        QList<Coord*> metrics = signsList.at(i)->getMetricList();
+		mapwin->createObject(hSite,metrics,
 							 signsList.at(i)->getSignCode().toStdString().c_str(),
-							 &signsList.at(i)->getSemanticList());
+                             signsList.at(i)->getSemanticList());
 	}
 	mapwin->updateScreen();
 }
@@ -1263,13 +1262,13 @@ void MapView::createSitObjects(HSITE hSite, QList<SignData*> signsList)
 
 
 //////////////////////////////////////////////////////////////////////////////////
-////// Методы, специфичные для ПК "Сатурн" /////////////////////////////////////// 
+////// РњРµС‚РѕРґС‹, СЃРїРµС†РёС„РёС‡РЅС‹Рµ РґР»СЏ РџРљ "РЎР°С‚СѓСЂРЅ" /////////////////////////////////////// 
 /////////////////////////////////////////////////////////////////////////////////
 
 
 //================================================================
-//== Слот отображения на карте выбранных пользователем объектов ==
-//== в соответствии с фильтром отображения объектов ==============
+//== РЎР»РѕС‚ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РЅР° РєР°СЂС‚Рµ РІС‹Р±СЂР°РЅРЅС‹С… РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј РѕР±СЉРµРєС‚РѕРІ ==
+//== РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ С„РёР»СЊС‚СЂРѕРј РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РѕР±СЉРµРєС‚РѕРІ ==============
 //================================================================
 void MapView::showCheckedObjects()
 {
@@ -1277,7 +1276,7 @@ void MapView::showCheckedObjects()
 	{
 		openMapFromSettings();
 	}
-	//------ Получение координат углов карты ---------
+	//------ РџРѕР»СѓС‡РµРЅРёРµ РєРѕРѕСЂРґРёРЅР°С‚ СѓРіР»РѕРІ РєР°СЂС‚С‹ ---------
 	double x1 = mapwin->getMapX1(mapwin->hMap);
 	double y1 = mapwin->getMapY1(mapwin->hMap);
 	double x2 = mapwin->getMapX2(mapwin->hMap);
@@ -1301,14 +1300,14 @@ void MapView::showCheckedObjects()
 
 	if (mpo_regions_checkbox->checkState())
 	{
-		//показать результаты расчета МПО регионов
+		//РїРѕРєР°Р·Р°С‚СЊ СЂРµР·СѓР»СЊС‚Р°С‚С‹ СЂР°СЃС‡РµС‚Р° РњРџРћ СЂРµРіРёРѕРЅРѕРІ
 		closeSitByName(mpoRegionsSitName);
 		HSITE mpoRegionsSite = openMapSit(mpoRegionsSitName,rscPath);
 		RegionsMpos * regionsModel = new RegionsMpos;
 
 		QList<SignData*> mpoRegionsSigns = regionsModel->getRegions(mapwin->hMap,x1,y1,x2,y2);
 		createSitObjects(mpoRegionsSite, mpoRegionsSigns);
-		/////// Временно - для обновления пользовательской карты, чтобы отображались знаки регионов ///////////////
+		/////// Р’СЂРµРјРµРЅРЅРѕ - РґР»СЏ РѕР±РЅРѕРІР»РµРЅРёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРѕР№ РєР°СЂС‚С‹, С‡С‚РѕР±С‹ РѕС‚РѕР±СЂР°Р¶Р°Р»РёСЃСЊ Р·РЅР°РєРё СЂРµРіРёРѕРЅРѕРІ ///////////////
 		greateScale();
 		lessScale();
 		///////////////////////////////////////////////
@@ -1321,7 +1320,7 @@ void MapView::showCheckedObjects()
 	//-------------------------------------------------------------------------
 	if (smi_means_checkbox->checkState())
 	{
-		//показать средства СМИ
+		//РїРѕРєР°Р·Р°С‚СЊ СЃСЂРµРґСЃС‚РІР° РЎРњР
 		closeSitByName(smiMeansSitName);
 		HSITE smiMeansSite = openMapSit(smiMeansSitName,rscPath);
 		QList<SignData*> smiMeansSigns = model->getSmiMeans(mapwin->hMap,x1,y1,x2,y2);
@@ -1335,7 +1334,7 @@ void MapView::showCheckedObjects()
 	//-------------------------------------------------------------------------
 	if (formation_means_checkbox->checkState())
 	{
-		//показать средства формирований
+		//РїРѕРєР°Р·Р°С‚СЊ СЃСЂРµРґСЃС‚РІР° С„РѕСЂРјРёСЂРѕРІР°РЅРёР№
 		closeSitByName(formationMeansSitName);
 		HSITE formationMeansSite = openMapSit(formationMeansSitName,rscPath);
 		QList<SignData*> formationsMeansSigns = model->getFormationsMeans(mapwin->hMap,x1,y1,x2,y2);
@@ -1349,7 +1348,7 @@ void MapView::showCheckedObjects()
 	//-------------------------------------------------------------------------
 	if (organization_means_checkbox->checkState())
 	{
-		//показать средства организаций
+		//РїРѕРєР°Р·Р°С‚СЊ СЃСЂРµРґСЃС‚РІР° РѕСЂРіР°РЅРёР·Р°С†РёР№
 		closeSitByName(organizationMeansSitName);
 		HSITE organizationMeansSite = openMapSit(organizationMeansSitName,rscPath);
 		QList<SignData*> groupsMeansSigns = model->getGroupsMeans(mapwin->hMap,x1,y1,x2,y2);
@@ -1363,7 +1362,7 @@ void MapView::showCheckedObjects()
 	//-------------------------------------------------------------------------
 	if (formations_checkbox->checkState())
 	{
-		//показать формирования
+		//РїРѕРєР°Р·Р°С‚СЊ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ
 		closeSitByName(formationsSitName);
 		HSITE formationsSite = openMapSit(formationsSitName,rscPath);
 		QList<SignData*> formationsSigns = model->getFormations(mapwin->hMap,x1,y1,x2,y2);
@@ -1377,7 +1376,7 @@ void MapView::showCheckedObjects()
 	//-------------------------------------------------------------------------
 	if (conditions_checkbox->checkState())
 	{
-		//показать особые условия
+		//РїРѕРєР°Р·Р°С‚СЊ РѕСЃРѕР±С‹Рµ СѓСЃР»РѕРІРёСЏ
 		closeSitByName(conditionsSitName);
 		HSITE conditionsSite = openMapSit(conditionsSitName,rscPath);
 		QList<SignData*> specialConditionsSigns = model->getSpecialConditions(mapwin->hMap,x1,y1,x2,y2);
@@ -1390,7 +1389,7 @@ void MapView::showCheckedObjects()
 	//-------------------------------------------------------------------------
 	if (persones_checkbox->checkState())
 	{
-		//показать персоналии
+		//РїРѕРєР°Р·Р°С‚СЊ РїРµСЂСЃРѕРЅР°Р»РёРё
 		closeSitByName(personesSitName);
 		HSITE personesSite = openMapSit(personesSitName,rscPath);
 		QList<SignData*> personesSigns = model->getPersones(mapwin->hMap,x1,y1,x2,y2);
@@ -1407,14 +1406,13 @@ void MapView::showCheckedObjects()
 
 
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////  Расчетные задачи  ////////////////////////////////////////////////////////////
+///////////////////  Р Р°СЃС‡РµС‚РЅС‹Рµ Р·Р°РґР°С‡Рё  ////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 //================================================================
-//== Слот отображения на карте результатов расчетных задач, ======
-//== отобранных оператором для решения ===========================
+//== РЎР»РѕС‚ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РЅР° РєР°СЂС‚Рµ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ СЂР°СЃС‡РµС‚РЅС‹С… Р·Р°РґР°С‡, ======
+//== РѕС‚РѕР±СЂР°РЅРЅС‹С… РѕРїРµСЂР°С‚РѕСЂРѕРј РґР»СЏ СЂРµС€РµРЅРёСЏ ===========================
 //================================================================
 void MapView::showCheckedCalcResults()
 {
@@ -1423,7 +1421,7 @@ void MapView::showCheckedCalcResults()
 		openMapFromSettings();
 	}
 	
-	//------ Получение координат углов карты ---------
+	//------ РџРѕР»СѓС‡РµРЅРёРµ РєРѕРѕСЂРґРёРЅР°С‚ СѓРіР»РѕРІ РєР°СЂС‚С‹ ---------
 	double x1 = mapwin->getMapX1(mapwin->hMap);
 	double y1 = mapwin->getMapY1(mapwin->hMap);
 	double x2 = mapwin->getMapX2(mapwin->hMap);
@@ -1444,7 +1442,7 @@ void MapView::showCheckedCalcResults()
 	//-------------------------------------------------------------------------
 	if (mps_our_Mil_checkbox->checkState())
 	{
-		//показать результаты расчета МПС наших войск
+		//РїРѕРєР°Р·Р°С‚СЊ СЂРµР·СѓР»СЊС‚Р°С‚С‹ СЂР°СЃС‡РµС‚Р° РњРџРЎ РЅР°С€РёС… РІРѕР№СЃРє
 		closeSitByName(mpsOursSitName);
 		HSITE mpsOursSite = openMapSit(mpsOursSitName,rscPath);
 		FormationsMPS *mpsCalc = new FormationsMPS;
@@ -1459,7 +1457,7 @@ void MapView::showCheckedCalcResults()
 	//-------------------------------------------------------------------------
 	if (mps_enemy_checkbox->checkState())
 	{
-		//показать результаты расчета МПС противника
+		//РїРѕРєР°Р·Р°С‚СЊ СЂРµР·СѓР»СЊС‚Р°С‚С‹ СЂР°СЃС‡РµС‚Р° РњРџРЎ РїСЂРѕС‚РёРІРЅРёРєР°
 		closeSitByName(mpsEnemiesSitName);
 		HSITE mpsEnemiesSite = openMapSit(mpsEnemiesSitName,rscPath);
 		FormationsMPS *mpsCalc = new FormationsMPS;
@@ -1475,7 +1473,7 @@ void MapView::showCheckedCalcResults()
 	//-------------------------------------------------------------------------
 	if (psi_looses_checkbox->checkState())
 	{
-		//показать результаты расчета психогенных потерь
+		//РїРѕРєР°Р·Р°С‚СЊ СЂРµР·СѓР»СЊС‚Р°С‚С‹ СЂР°СЃС‡РµС‚Р° РїСЃРёС…РѕРіРµРЅРЅС‹С… РїРѕС‚РµСЂСЊ
 		closeSitByName(psiLoosesSitName);
 		HSITE psiLoosesSite = openMapSit(psiLoosesSitName,rscPath);
 		
@@ -1500,7 +1498,7 @@ void MapView::showCheckedCalcResults()
 
 
 //==========================================================================
-//== Слот отображения на карте событий в соответствии с фильтром событий ===
+//== РЎР»РѕС‚ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РЅР° РєР°СЂС‚Рµ СЃРѕР±С‹С‚РёР№ РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ С„РёР»СЊС‚СЂРѕРј СЃРѕР±С‹С‚РёР№ ===
 //==========================================================================
 void MapView::showCheckedEvents()
 {
@@ -1521,7 +1519,7 @@ void MapView::showCheckedEvents()
 	startDateTime = new QDateTime(beginEventDateTime->dateTime());
 	endDateTime = new QDateTime(endEventDateTime->dateTime());
 
-	//------ Получение координат углов карты ---------
+	//------ РџРѕР»СѓС‡РµРЅРёРµ РєРѕРѕСЂРґРёРЅР°С‚ СѓРіР»РѕРІ РєР°СЂС‚С‹ ---------
 	double x1 = mapwin->getMapX1(mapwin->hMap);
 	double y1 = mapwin->getMapY1(mapwin->hMap);
 	double x2 = mapwin->getMapX2(mapwin->hMap);
@@ -1529,7 +1527,7 @@ void MapView::showCheckedEvents()
 	//-------------------------------------------------
 	
 	
-	//показать события на карте
+	//РїРѕРєР°Р·Р°С‚СЊ СЃРѕР±С‹С‚РёСЏ РЅР° РєР°СЂС‚Рµ
 	closeSitByName(eventsSitName);
 	HSITE eventsSite = openMapSit(eventsSitName,rscPath);
 
@@ -1541,13 +1539,13 @@ void MapView::showCheckedEvents()
 	}
 	else
 	{
-		showMessageToUser("По Вашему запросу событий не найдено.");
+		showMessageToUser("РџРѕ Р’Р°С€РµРјСѓ Р·Р°РїСЂРѕСЃСѓ СЃРѕР±С‹С‚РёР№ РЅРµ РЅР°Р№РґРµРЅРѕ.");
 	}
 	
 }
 
 //============================================================================
-//==== Слот обработки нажатия левой кнопки мыши ==============================
+//==== РЎР»РѕС‚ РѕР±СЂР°Р±РѕС‚РєРё РЅР°Р¶Р°С‚РёСЏ Р»РµРІРѕР№ РєРЅРѕРїРєРё РјС‹С€Рё ==============================
 //============================================================================
 void MapView::slotMouseLeftButtonClicked(QPoint pe, QList<QStringList> objectsList)
 {
@@ -1560,7 +1558,7 @@ void MapView::slotMouseLeftButtonClicked(QPoint pe, QList<QStringList> objectsLi
 
 
 //============================================================================
-//============ Слот обработки нажатия правой кнопки мыши =====================
+//============ РЎР»РѕС‚ РѕР±СЂР°Р±РѕС‚РєРё РЅР°Р¶Р°С‚РёСЏ РїСЂР°РІРѕР№ РєРЅРѕРїРєРё РјС‹С€Рё =====================
 //============================================================================
 void MapView::slotMouseRightButtonClicked(QPoint pe, QList<QStringList> objectsList)
 {
@@ -1577,7 +1575,7 @@ void MapView::slotMouseRightButtonClicked(QPoint pe, QList<QStringList> objectsL
 
 
 //======================================================================================
-//====== Метод формирует меню в виде списка найденных в точке поиска объектов ==========
+//====== РњРµС‚РѕРґ С„РѕСЂРјРёСЂСѓРµС‚ РјРµРЅСЋ РІ РІРёРґРµ СЃРїРёСЃРєР° РЅР°Р№РґРµРЅРЅС‹С… РІ С‚РѕС‡РєРµ РїРѕРёСЃРєР° РѕР±СЉРµРєС‚РѕРІ ==========
 //======================================================================================
 QMenu* MapView::createObjectsListMenu(QList<QStringList> objectsList)
 {
@@ -1599,8 +1597,8 @@ QMenu* MapView::createObjectsListMenu(QList<QStringList> objectsList)
 
 
 //=========================================================================================
-//== Метод формирует сложное многоуровневое меню в зависимости от типов объектов. =========
-//== Для обработки нажатия правой кнопки мыши. ============================================
+//== РњРµС‚РѕРґ С„РѕСЂРјРёСЂСѓРµС‚ СЃР»РѕР¶РЅпїЅпїЅРµ РјРЅРѕРіРѕСѓСЂРѕРІРЅРµРІРѕРµ РјРµРЅСЋ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ С‚РёРїРѕРІ РѕР±СЉРµРєС‚РѕРІ. =========
+//== Р”Р»СЏ РѕР±СЂР°Р±РѕС‚РєРё РЅР°Р¶Р°С‚РёСЏ РїСЂР°РІРѕР№ РєРЅРѕРїРєРё РјС‹С€Рё. ============================================
 //=========================================================================================
 QMenu* MapView::createObjectsListComplexMenu(QList<QStringList> objectsList)
 {
@@ -1653,7 +1651,7 @@ QMenu* MapView::createObjectsListComplexMenu(QList<QStringList> objectsList)
 
 
 //=============================================================================
-//==== Слот вывода информации об объекте по нажатию левой кнопки мыши =========
+//==== РЎР»РѕС‚ РІС‹РІРѕРґР° РёРЅС„РѕСЂРјР°С†РёРё РѕР± РѕР±СЉРµРєС‚Рµ РїРѕ РЅР°Р¶Р°С‚РёСЋ Р»РµРІРѕР№ РєРЅРѕРїРєРё РјС‹С€Рё =========
 //=============================================================================
 void MapView::slotObjectInfo()
 {
@@ -1673,7 +1671,7 @@ void MapView::slotObjectInfo()
 
 
 //===========================================================================================
-//===== Слот расчета психогенных потерь формирования (для контекстного меню) =================
+//===== РЎР»РѕС‚ СЂР°СЃС‡РµС‚Р° РїСЃРёС…РѕРіРµРЅРЅС‹С… РїРѕС‚РµСЂСЊ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ (РґР»СЏ РєРѕРЅС‚РµРєСЃС‚РЅРѕРіРѕ РјРµРЅСЋ) =================
 //===========================================================================================
 void MapView::slotFormationPsiLooses() 
 {
@@ -1694,7 +1692,7 @@ void MapView::slotFormationPsiLooses()
 }
 
 //===========================================================================================
-//===== Слот вывода уровня МПОб региона (для контекстного меню) =================
+//===== РЎР»РѕС‚ РІС‹РІРѕРґР° СѓСЂРѕРІРЅСЏ РњРџРћР± СЂРµРіРёРѕРЅР° (РґР»СЏ РєРѕРЅС‚РµРєСЃС‚РЅРѕРіРѕ РјРµРЅСЋ) =================
 //===========================================================================================
 void MapView::slotRegionMpos() 
 {
@@ -1716,7 +1714,7 @@ void MapView::slotRegionMpos()
 
 
 //===============================================================================
-//====== Слот перемещения объекта на карте с обновлением координат в БД =========
+//====== РЎР»РѕС‚ РїРµСЂРµРјРµС‰РµРЅРёСЏ РѕР±СЉРµРєС‚Р° РЅР° РєР°СЂС‚Рµ СЃ РѕР±РЅРѕРІР»РµРЅРёРµРј РєРѕРѕСЂРґРёРЅР°С‚ РІ Р‘Р” =========
 //===============================================================================
 void MapView::slotMoveObject()
 {
@@ -1739,7 +1737,7 @@ void MapView::slotMoveObject()
 			mapwin->moveFlag = dlg->mouseFlag;
 			if(!dlg->mouseFlag)
 			{
-				changeObjectCoordInDB(); //изменение координат в БД после ввода их в диалоговом окне
+				changeObjectCoordInDB(); //РёР·РјРµРЅРµРЅРёРµ РєРѕРѕСЂРґРёРЅР°С‚ РІ Р‘Р” РїРѕСЃР»Рµ РІРІРѕРґР° РёС… РІ РґРёР°Р»РѕРіРѕРІРѕРј РѕРєРЅРµ
 			}
 		}
 
@@ -1750,7 +1748,7 @@ void MapView::slotMoveObject()
 
 
 //===============================================================================
-//====== Слот просмотра медиаконтента события ===================================
+//====== РЎР»РѕС‚ РїСЂРѕСЃРјРѕС‚СЂР° РјРµРґРёР°РєРѕРЅС‚РµРЅС‚Р° СЃРѕР±С‹С‚РёСЏ ===================================
 //===============================================================================
 void MapView::slotEventMedia()
 {
@@ -1767,7 +1765,7 @@ void MapView::slotEventMedia()
 }
 
 //===============================================================================
-//====== Слот удаления события ==================================================
+//====== РЎР»РѕС‚ СѓРґР°Р»РµРЅРёСЏ СЃРѕР±С‹С‚РёСЏ ==================================================
 //===============================================================================
 void MapView::slotDeleteEvent()
 {
@@ -1781,7 +1779,7 @@ void MapView::slotDeleteEvent()
 		if(ev->DeleteEvent(objInfo.at(0).toInt()))
 		{
 			showCheckedEvents();
-			showMessageToUser("Событие удалено");
+			showMessageToUser("РЎРѕР±С‹С‚РёРµ СѓРґР°Р»РµРЅРѕ");
 		}
 		
 		
@@ -1792,7 +1790,7 @@ void MapView::slotDeleteEvent()
 }
 
 //==================================================================================
-//=== Слот изменения координат объекта в БД и обновления соответствующего слоя ====
+//=== РЎР»РѕС‚ РёР·РјРµРЅРµРЅРёСЏ РєРѕРѕСЂРґРёРЅР°С‚ РѕР±СЉРµРєС‚Р° РІ Р‘Р” Рё РѕР±РЅРѕРІР»РµРЅРёСЏ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРіРѕ СЃР»РѕСЏ ====
 //==================================================================================
 void MapView::changeObjectCoordInDB(double x, double y)
 {
@@ -1814,7 +1812,7 @@ void MapView::changeObjectCoordInDB(double x, double y)
 }
 
 //==================================================================================
-//=== Метод изменения координат объекта в БД и обновления соответствующего слоя ====
+//=== РњРµС‚РѕРґ РёР·РјРµРЅРµРЅРёСЏ РєРѕРѕСЂРґРёРЅР°С‚ РѕР±СЉРµРєС‚Р° РІ Р‘Р” Рё РѕР±РЅРѕРІР»РµРЅРёСЏ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРіРѕ СЃР»РѕСЏ ====
 //==================================================================================
 void MapView::changeObjectCoordInDB()
 {
@@ -1841,12 +1839,12 @@ void MapView::changeObjectCoordInDB()
 
 
 //=============================================================================================
-//======= Метод обновления пользовательской карты для указанного типа объектов ================
+//======= РњРµС‚РѕРґ РѕР±РЅРѕРІР»РµРЅРёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРѕР№ РєР°СЂС‚С‹ РґР»СЏ СѓРєР°Р·Р°РЅРЅРѕРіРѕ С‚РёРїР° РѕР±СЉРµРєС‚РѕРІ ================
 //=============================================================================================
 void MapView::updateSite(int objectType)
 {
 	
-	//------ Получение координат углов карты ---------
+	//------ РџРѕР»СѓС‡РµРЅРёРµ РєРѕРѕСЂРґРёРЅР°С‚ СѓРіР»РѕРІ РєР°СЂС‚С‹ ---------
 	double x1 = mapwin->getMapX1(mapwin->hMap);
 	double y1 = mapwin->getMapY1(mapwin->hMap);
 	double x2 = mapwin->getMapX2(mapwin->hMap);
@@ -1923,7 +1921,7 @@ void MapView::updateSite(int objectType)
 
 
 //=======================================================================================
-//====== Слот формирования отчета об объекте =========
+//====== РЎР»РѕС‚ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ РѕС‚С‡РµС‚Р° РѕР± РѕР±СЉРµРєС‚Рµ =========
 //=======================================================================================
 void MapView::slotObjectReport()
 {
@@ -1985,7 +1983,7 @@ void MapView::slotObjectReport()
 
 
 //===================================================================================
-//===== Метод создания контекстного меню для формирования =============
+//===== РњРµС‚РѕРґ СЃРѕР·РґР°РЅРёСЏ РєРѕРЅС‚РµРєСЃС‚РЅРѕРіРѕ РјРµРЅСЋ РґР»СЏ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ =============
 //===================================================================================
 QMenu* MapView::createFormationsMenu(QStringList objInfo)
 {
@@ -1996,17 +1994,17 @@ QMenu* MapView::createFormationsMenu(QStringList objInfo)
 
 	QMenu *mouse_menu = new QMenu(text); 
 
-	QAction *report_act = new QAction("Отчет",this);
+	QAction *report_act = new QAction("РћС‚С‡РµС‚",this);
 	report_act->setData(idAndType);
 	mouse_menu->addAction(report_act); 
 	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));
 
-	QAction *psiLooses_act = new QAction("Психогенные потери",this);
+	QAction *psiLooses_act = new QAction("РџСЃРёС…РѕРіРµРЅРЅС‹Рµ РїРѕС‚РµСЂРё",this);
 	psiLooses_act->setData(idAndType);
 	mouse_menu->addAction(psiLooses_act); 
 	connect(psiLooses_act, SIGNAL(triggered()), this, SLOT(slotFormationPsiLooses()));
 	
-	QAction *move_act = new QAction("Переместить объект",this);
+	QAction *move_act = new QAction("РџРµСЂРµРјРµСЃС‚РёС‚СЊ РѕР±СЉРµРєС‚",this);
 	move_act->setData(idAndType);
 	mouse_menu->addAction(move_act); 
 	connect(move_act, SIGNAL(triggered()), this, SLOT(slotMoveObject()));
@@ -2019,7 +2017,7 @@ QMenu* MapView::createFormationsMenu(QStringList objInfo)
 
 
 //===================================================================================
-//===== Метод создания и отображения контекстного меню для особых условий =============
+//===== РњРµС‚РѕРґ СЃРѕР·РґР°РЅРёСЏ Рё РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РєРѕРЅС‚РµРєСЃС‚РЅРѕРіРѕ РјРµРЅСЋ РґР»СЏ РѕСЃРѕР±С‹С… СѓСЃР»РѕРІРёР№ =============
 //===================================================================================
 QMenu* MapView::createSpecialConditionsMenu(QStringList objInfo)
 {
@@ -2028,12 +2026,12 @@ QMenu* MapView::createSpecialConditionsMenu(QStringList objInfo)
 
 	QMenu *mouse_menu = new QMenu(text); 
 
-	QAction *report_act = new QAction("Отчет",this);
+	QAction *report_act = new QAction("РћС‚С‡РµС‚",this);
 	report_act->setData(idAndType);
 	mouse_menu->addAction(report_act); 
 	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));
 	
-	QAction *move_act = new QAction("Переместить объект",this);
+	QAction *move_act = new QAction("РџРµСЂРµРјРµСЃС‚РёС‚СЊ РѕР±СЉРµРєС‚",this);
 	move_act->setData(idAndType);
 	mouse_menu->addAction(move_act); 
 	connect(move_act, SIGNAL(triggered()), this, SLOT(slotMoveObject()));
@@ -2044,7 +2042,7 @@ QMenu* MapView::createSpecialConditionsMenu(QStringList objInfo)
 
 
 //===================================================================================
-//===== Метод создания и отображения контекстного меню для средств СМИ ==============
+//===== РњРµС‚РѕРґ СЃРѕР·РґР°РЅРёСЏ Рё РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РєРѕРЅС‚РµРєСЃС‚РЅРѕРіРѕ РјРµРЅСЋ РґР»СЏ СЃСЂРµРґСЃС‚РІ РЎРњР ==============
 //===================================================================================
 QMenu* MapView::createSmiMeansMenu(QStringList objInfo)
 {
@@ -2053,12 +2051,12 @@ QMenu* MapView::createSmiMeansMenu(QStringList objInfo)
 
 	QMenu *mouse_menu = new QMenu(text); 
 
-	QAction *report_act = new QAction("Отчет",this);
+	QAction *report_act = new QAction("РћС‚С‡РµС‚",this);
 	report_act->setData(idAndType);
 	mouse_menu->addAction(report_act); 
 	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));
 	
-	QAction *move_act = new QAction("Переместить объект",this);
+	QAction *move_act = new QAction("РџРµСЂРµРјРµСЃС‚РёС‚СЊ РѕР±СЉРµРєС‚",this);
 	move_act->setData(idAndType);
 	mouse_menu->addAction(move_act); 
 	connect(move_act, SIGNAL(triggered()), this, SLOT(slotMoveObject()));
@@ -2069,7 +2067,7 @@ QMenu* MapView::createSmiMeansMenu(QStringList objInfo)
 
 
 //===================================================================================
-//===== Метод создания и отображения контекстного меню для средств формирований =====
+//===== РњРµС‚РѕРґ СЃРѕР·РґР°РЅРёСЏ Рё РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РєРѕРЅС‚РµРєСЃС‚РЅРѕРіРѕ РјРµРЅСЋ РґР»СЏ СЃСЂРµРґСЃС‚РІ С„РѕСЂРјРёСЂРѕРІР°РЅРёР№ =====
 //===================================================================================
 QMenu* MapView::createFormationsMeansMenu(QStringList objInfo)
 {
@@ -2078,12 +2076,12 @@ QMenu* MapView::createFormationsMeansMenu(QStringList objInfo)
 
 	QMenu *mouse_menu = new QMenu(text); 
 
-	QAction *report_act = new QAction("Отчет",this);
+	QAction *report_act = new QAction("РћС‚С‡РµС‚",this);
 	report_act->setData(idAndType);
 	mouse_menu->addAction(report_act); 
 	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));
 	
-	QAction *move_act = new QAction("Переместить объект",this);
+	QAction *move_act = new QAction("РџРµСЂРµРјРµСЃС‚РёС‚СЊ РѕР±СЉРµРєС‚",this);
 	move_act->setData(idAndType);
 	mouse_menu->addAction(move_act); 
 	connect(move_act, SIGNAL(triggered()), this, SLOT(slotMoveObject()));
@@ -2093,7 +2091,7 @@ QMenu* MapView::createFormationsMeansMenu(QStringList objInfo)
 
 
 //===================================================================================
-//===== Метод создания и отображения контекстного меню для средств организаций ======
+//===== РњРµС‚РѕРґ СЃРѕР·РґР°РЅРёСЏ Рё РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РєРѕРЅС‚РµРєСЃС‚РЅРѕРіРѕ РјРµРЅСЋ РґР»СЏ СЃСЂРµРґСЃС‚РІ РѕСЂРіР°РЅРёР·Р°С†РёР№ ======
 //===================================================================================
 QMenu* MapView::createGroupsMeansMenu(QStringList objInfo)
 {
@@ -2102,12 +2100,12 @@ QMenu* MapView::createGroupsMeansMenu(QStringList objInfo)
 
 	QMenu *mouse_menu = new QMenu(text); 
 
-	QAction *report_act = new QAction("Отчет",this);
+	QAction *report_act = new QAction("РћС‚С‡РµС‚",this);
 	report_act->setData(idAndType);
 	mouse_menu->addAction(report_act); 
 	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));
 	
-	QAction *move_act = new QAction("Переместить объект",this);
+	QAction *move_act = new QAction("РџРµСЂРµРјРµСЃС‚РёС‚СЊ РѕР±СЉРµРєС‚",this);
 	move_act->setData(idAndType);
 	mouse_menu->addAction(move_act); 
 	connect(move_act, SIGNAL(triggered()), this, SLOT(slotMoveObject()));
@@ -2118,7 +2116,7 @@ QMenu* MapView::createGroupsMeansMenu(QStringList objInfo)
 
 
 //===================================================================================
-//===== Метод создания и отображения контекстного меню для регионов =================
+//===== РњРµС‚РѕРґ СЃРѕР·РґР°РЅРёСЏ Рё РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РєРѕРЅС‚РµРєСЃС‚РЅРѕРіРѕ РјРµРЅСЋ РґР»СЏ СЂРµРіРёРѕРЅРѕРІ =================
 //===================================================================================
 QMenu* MapView::createRegionsMenu(QStringList objInfo)
 {
@@ -2127,15 +2125,15 @@ QMenu* MapView::createRegionsMenu(QStringList objInfo)
 
 	QMenu *mouse_menu = new QMenu(text); 
 
-	//--- Добавление в меню специфичных действий для региона ---------
+	//--- Р”РѕР±Р°РІР»РµРЅРёРµ РІ РјРµРЅСЋ СЃРїРµС†РёС„РёС‡РЅС‹С… РґРµР№СЃС‚РІРёР№ РґР»СЏ СЂРµРіРёРѕРЅР° ---------
 
-	QAction *report_act = new QAction("Отчет",this);
+	QAction *report_act = new QAction("РћС‚С‡РµС‚",this);
 	report_act->setData(idAndType);
 	mouse_menu->addAction(report_act); 
 	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));
 	
 
-	QAction *mpos_act = new QAction("МПОб региона",this);
+	QAction *mpos_act = new QAction("РњРџРћР± СЂРµРіРёРѕРЅР°",this);
 	mpos_act->setData(idAndType);
 	mouse_menu->addAction(mpos_act); 
 	connect(mpos_act, SIGNAL(triggered()), this, SLOT(slotRegionMpos()));
@@ -2145,7 +2143,7 @@ QMenu* MapView::createRegionsMenu(QStringList objInfo)
 
 
 //===================================================================================
-//===== Метод создания и отображения контекстного меню для персоналий =================
+//===== РњРµС‚РѕРґ СЃРѕР·РґР°РЅРёСЏ Рё РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РєРѕРЅС‚РµРєСЃС‚РЅРѕРіРѕ РјРµРЅСЋ РґР»СЏ РїРµСЂСЃРѕРЅР°Р»РёР№ =================
 //===================================================================================
 QMenu* MapView::createPersonnelMenu(QStringList objInfo)
 {
@@ -2154,14 +2152,14 @@ QMenu* MapView::createPersonnelMenu(QStringList objInfo)
 
 	QMenu *mouse_menu = new QMenu(text); 
 
-	//--- Добавление в меню специфичных действий для персоналий ---------
+	//--- Р”РѕР±Р°РІР»РµРЅРёРµ РІ РјРµРЅСЋ СЃРїРµС†РёС„РёС‡РЅС‹С… РґРµР№СЃС‚РІРёР№ РґР»СЏ РїРµСЂСЃРѕРЅР°Р»РёР№ ---------
 
-	QAction *report_act = new QAction("Отчет",this);
+	QAction *report_act = new QAction("РћС‚С‡РµС‚",this);
 	report_act->setData(idAndType);
 	mouse_menu->addAction(report_act); 
 	connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));
 	
-	QAction *move_act = new QAction("Переместить объект",this);
+	QAction *move_act = new QAction("РџРµСЂРµРјРµСЃС‚РёС‚СЊ РѕР±СЉРµРєС‚",this);
 	move_act->setData(idAndType);
 	mouse_menu->addAction(move_act); 
 	connect(move_act, SIGNAL(triggered()), this, SLOT(slotMoveObject()));
@@ -2172,7 +2170,7 @@ QMenu* MapView::createPersonnelMenu(QStringList objInfo)
 
 
 //===================================================================================
-//===== Метод создания и отображения контекстного меню для событий =================
+//===== РњРµС‚РѕРґ СЃРѕР·РґР°РЅРёСЏ Рё РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РєРѕРЅС‚РµРєСЃС‚РЅРѕРіРѕ РјРµРЅСЋ РґР»СЏ СЃРѕР±С‹С‚РёР№ =================
 //===================================================================================
 QMenu* MapView::createEventMenu(QStringList objInfo)
 {
@@ -2181,24 +2179,24 @@ QMenu* MapView::createEventMenu(QStringList objInfo)
 
 	QMenu *mouse_menu = new QMenu(text); 
 
-	//--- Добавление в меню специфичных действий для событий ---------
+	//--- Р”РѕР±Р°РІР»РµРЅРёРµ РІ РјРµРЅСЋ СЃРїРµС†РёС„РёС‡РЅС‹С… РґРµР№СЃС‚РІРёР№ РґР»СЏ СЃРѕР±С‹С‚РёР№ ---------
 
-	//QAction *report_act = new QAction("Отчет",this);
+	//QAction *report_act = new QAction("РћС‚С‡РµС‚",this);
 	//report_act->setData(idAndType);
 	//mouse_menu->addAction(report_act); 
-	//connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));  //пока не работает
+	//connect(report_act, SIGNAL(triggered()), this, SLOT(slotObjectReport()));  //РїРѕРєР° РЅРµ СЂР°Р±РѕС‚Р°РµС‚
 	
-	QAction *media_act = new QAction("Медиаконтент события",this);
+	QAction *media_act = new QAction("РњРµРґРёР°РєРѕРЅС‚РµРЅС‚ СЃРѕР±С‹С‚РёСЏ",this);
 	media_act->setData(idAndType);
 	mouse_menu->addAction(media_act); 
 	connect(media_act, SIGNAL(triggered()), this, SLOT(slotEventMedia())); 
 
-	QAction *move_act = new QAction("Переместить событие",this);
+	QAction *move_act = new QAction("РџРµСЂРµРјРµСЃС‚РёС‚СЊ СЃРѕР±С‹С‚РёРµ",this);
 	move_act->setData(idAndType);
 	mouse_menu->addAction(move_act); 
 	connect(move_act, SIGNAL(triggered()), this, SLOT(slotMoveObject()));
 
-	QAction *del_act = new QAction("Удалить событие",this);
+	QAction *del_act = new QAction("РЈРґР°Р»РёС‚СЊ СЃРѕР±С‹С‚РёРµ",this);
 	del_act->setData(idAndType);
 	mouse_menu->addAction(del_act); 
 	connect(del_act, SIGNAL(triggered()), this, SLOT(slotDeleteEvent())); 
@@ -2208,12 +2206,12 @@ QMenu* MapView::createEventMenu(QStringList objInfo)
 }
 
 //===============================================================================
-//============== Диалоговое окно с информацией об объекте =======================
+//============== Р”РёР°Р»РѕРіРѕРІРѕРµ РѕРєРЅРѕ СЃ РёРЅС„РѕСЂРјР°С†РёРµР№ РѕР± РѕР±СЉРµРєС‚Рµ =======================
 //===============================================================================
 void MapView::showInformationDialog(QString information)
 {
 	info_dialog = new QDialog;
-	info_dialog->setWindowTitle("Информация об объекте");
+	info_dialog->setWindowTitle("РРЅС„РѕСЂРјР°С†РёСЏ РѕР± РѕР±СЉРµРєС‚Рµ");
 	info_dialog->resize(400,400);
 
 	QTextBrowser *infoBrowser = new QTextBrowser;
@@ -2225,7 +2223,7 @@ void MapView::showInformationDialog(QString information)
 }
 
 //==========================================================================
-//========= Слот добавления нового события в точке нажатия мыши ============
+//========= РЎР»РѕС‚ РґРѕР±Р°РІР»РµРЅРёСЏ РЅРѕРІРѕРіРѕ СЃРѕР±С‹С‚РёСЏ РІ С‚РѕС‡РєРµ РЅР°Р¶Р°С‚РёСЏ РјС‹С€Рё ============
 //==========================================================================
 void MapView::addEvent()
 {
@@ -2256,54 +2254,82 @@ void MapView::addEvent()
 
 
 
-//печать всей карты
+//РїРµС‡Р°С‚СЊ РІСЃРµР№ РєР°СЂС‚С‹
 void	 MapView::PrintMapSlot()
 {
-	showInformationDialog("\n			ВНИМАНИЕ! \n Перед печатью лучше увеличить яркость и контрастность карты\n");
+	showInformationDialog("\n			Р’РќРРњРђРќРР•! \n РџРµСЂРµРґ РїРµС‡Р°С‚СЊСЋ Р»СѓС‡С€Рµ СѓРІРµР»РёС‡РёС‚СЊ СЏСЂРєРѕСЃС‚СЊ Рё РєРѕРЅС‚СЂР°СЃС‚РЅРѕСЃС‚СЊ РєР°СЂС‚С‹\n");
 	
 	QPrinter printer(QPrinter::HighResolution);
-	QPrintDialog *dialog = new QPrintDialog(&printer, this);
-	if (dialog->exec() == QDialog::Accepted)
-	 {
-		QPainter painter(&printer);
-		QRect rect = painter.viewport();
-		hdc = painter.paintEngine()->getDC();
-		RECT r;
-		int k=1;
-		r.bottom = rect.bottom()*k;
-		r.left = rect.left()*k;
-		r.right = rect.right()*k;
-		r.top = rect.top()*k;
-		mapwin->paintInDevice(hdc, &r);
+    printer.setPageOrientation(QPageLayout::Landscape);
+    QPrintDialog printDialog(&printer, this);
+		if (printDialog.exec() == QDialog::Accepted) {
+			QPainter painter;
+            if (!painter.begin(&printer)) {
+                showMessageToUser("РћС€РёР±РєР° РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РїРµС‡Р°С‚Рё");
+                return;
+            }
+            else {
+                QRect rect = printer.pageLayout().paintRectPixels(printer.resolution());
+
+                double scaleX = rect.width() / static_cast<double>(mapwin->width());
+                double scaleY = rect.height() / static_cast<double>(mapwin->height());
+                double scale = qMin(scaleX, scaleY);
+
+                painter.scale(scale, scale);
+
+                int x = (rect.width() / scale - mapwin->width()) / 2;
+                int y = (rect.height() / scale - mapwin->height()) / 2;
+
+                mapwin->render(&painter, QPoint(x, y));
+
+                painter.end();
+				
+        }
     }
 }
-//печать видимой области карты
-void	 MapView::PrintScreenSlot()
-{
-	QPrinter printer(QPrinter::HighResolution);
-	printer.setOrientation(QPrinter::Landscape);
-	QPrintDialog *dialog = new QPrintDialog(&printer, this);
-	if (dialog->exec() == QDialog::Accepted)
-	 {
-		 QPainter painter(&printer);
-		hdc = painter.paintEngine()->getDC();
-		RECT r;
-		int k1=6; int k2 =4;
-		r.left = (mapwin->horizontalScrollBar()->value())*k1;//rect.left()*k;
-		r.right = (r.left + mapwin->horizontalScrollBar()->pageStep())*k1;//rect.right()*k;
-		r.top = (mapwin->verticalScrollBar()->value())*k2;//rect.top()*k;
-		r.bottom = (r.top+mapwin->verticalScrollBar()->pageStep())*k2;//rect.bottom()*k;
-		mapwin->paintInDevice(hdc, &r);
+//РїРµС‡Р°С‚СЊ РІРёРґРёРјРѕР№ РѕР±Р»Р°СЃС‚Рё РєР°СЂС‚С‹
+void	 MapView::PrintScreenSlot() {
+    QPrinter printer(QPrinter::HighResolution);
+    printer.setPageOrientation(QPageLayout::Landscape);
+    
+    QPrintDialog printDialog(&printer, this);
+    if (printDialog.exec() != QDialog::Accepted) {
+        return;
     }
+
+    QPainter painter;
+    if (!painter.begin(&printer)) {
+        showMessageToUser("РћС€РёР±РєР° РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РїРµС‡Р°С‚Рё");
+        return;
+    }
+
+    QRect printRect = printer.pageLayout().paintRectPixels(printer.resolution());
+    
+    QRect viewportRect = mapwin->viewport()->rect();
+    
+    double scaleX = printRect.width() / static_cast<double>(viewportRect.width());
+    double scaleY = printRect.height() / static_cast<double>(viewportRect.height());
+    double scale = qMin(scaleX, scaleY);
+    
+    painter.scale(scale, scale);
+
+    int x = (printRect.width() / scale - viewportRect.width()) / 2;
+    int y = (printRect.height() / scale - viewportRect.height()) / 2;
+
+    mapwin->render(&painter, 
+                   QPoint(x, y), 
+                   QRegion(viewportRect));
+
+    painter.end();
 }
 
 
 //===========================================================================
-//=== Сообщение пользователю в виде диалогового окна ========================
+//=== РЎРѕРѕР±С‰РµРЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЋ РІ РІРёРґРµ РґРёР°Р»РѕРіРѕРІРѕРіРѕ РѕРєРЅР° ========================
 //===========================================================================
 void MapView::showMessageToUser(const QString message) 
 {
-    QMessageBox::information(this, "Сообщение",
+    QMessageBox::information(this, "РЎРѕРѕР±С‰РµРЅРёРµ",
                           message,
                           QMessageBox::Ok, 0);
 }

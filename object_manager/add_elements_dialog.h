@@ -1,6 +1,7 @@
 #ifndef ADD_ELEMENTS_DIALOG_H
 #define ADD_ELEMENTS_DIALOG_H
 
+#include "QtCore5Compat/qtextcodec.h"
 #include <QDialog>
 #include <QtSql>
 class MyLabel;

@@ -29,7 +29,7 @@ QString Reports::create_object_formular(int id_object)
     Output *out = new Output;
 
     QString s = out->createHtmlHeader();
-    s.append(out->createHtmlH("Формуляр организации", 2));
+    s.append(out->createHtmlH("Р¤РѕСЂРјСѓР»СЏСЂ РѕСЂРіР°РЅРёР·Р°С†РёРё", 2));
     s.append(out->createHtmlTable_2(obj_data));
     s.append(out->createHtmlTableM(obj_data2));
     s.append(out->createHtmlFooter());
@@ -39,35 +39,35 @@ QString Reports::create_object_formular_pers(int id_object)
 {
     ReportData *report_model = new ReportData;
     QMap <int, QMap< QString,QString> > obj_data;
-    obj_data = report_model->pers_info(id_object); // начало по персоналиям
+    obj_data = report_model->pers_info(id_object); // РЅР°С‡Р°Р»Рѕ РїРѕ РїРµСЂСЃРѕРЅР°Р»РёСЏРј
 
-    QMap<QString,QString> obj_data_vzv; // таблица по званиям
+    QMap<QString,QString> obj_data_vzv; // С‚Р°Р±Р»РёС†Р° РїРѕ Р·РІР°РЅРёСЏРј
 	obj_data_vzv = report_model->get_person_ranks_data(id_object);
 
-    QList<QStringList> obj_data_trud; // таблица по трудовой деятельности
+    QList<QStringList> obj_data_trud; // С‚Р°Р±Р»РёС†Р° РїРѕ С‚СЂСѓРґРѕРІРѕР№ РґРµСЏС‚РµР»СЊРЅРѕСЃС‚Рё
 	obj_data_trud = report_model->get_work_history(id_object);
 
-    QList<QStringList> obj_data_vid; // таблица по прохождению видов гос. службы
+    QList<QStringList> obj_data_vid; // С‚Р°Р±Р»РёС†Р° РїРѕ РїСЂРѕС…РѕР¶РґРµРЅРёСЋ РІРёРґРѕРІ РіРѕСЃ. СЃР»СѓР¶Р±С‹
     obj_data_vid = report_model->get_service_history(id_object);
 
-    QList<QStringList> obj_data_war; // таблица участие в войнах
+    QList<QStringList> obj_data_war; // С‚Р°Р±Р»РёС†Р° СѓС‡Р°СЃС‚РёРµ РІ РІРѕР№РЅР°С…
 	obj_data_war = report_model->get_war_history(id_object);
 
-    QMap<QString,QString> obj_data_foto; // фотка
+    QMap<QString,QString> obj_data_foto; // С„РѕС‚РєР°
     obj_data_foto = report_model->pers_info_foto(id_object);
 
-    QList<QStringList> obj_data_travma; //таблица увечья
+    QList<QStringList> obj_data_travma; //С‚Р°Р±Р»РёС†Р° СѓРІРµС‡СЊСЏ
 	obj_data_travma = report_model->get_travm_history(id_object);
 
-    QList<QStringList> obj_data_medal; //таблица нагрудные знаки
+    QList<QStringList> obj_data_medal; //С‚Р°Р±Р»РёС†Р° РЅР°РіСЂСѓРґРЅС‹Рµ Р·РЅР°РєРё
 	obj_data_medal = report_model->get_medal_history(id_object);
 
-    QList<QStringList> obj_data_plen; //таблица плен
+    QList<QStringList> obj_data_plen; //С‚Р°Р±Р»РёС†Р° РїР»РµРЅ
 	obj_data_plen = report_model->get_prison_history(id_object);
 
-    QList<QStringList> obj_data_kompromat; //таблица плен
+    QList<QStringList> obj_data_kompromat; //С‚Р°Р±Р»РёС†Р° РїР»РµРЅ
 	obj_data_kompromat = report_model->get_compromat(id_object);
-//=============== координаты персоны =============================
+//=============== РєРѕРѕСЂРґРёРЅР°С‚С‹ РїРµСЂСЃРѕРЅС‹ =============================
 //    QMap<QString,QMap<QString,QString> > obj_data2;
 //    obj_data2 = report_model->pers_info_coord(id_object);
 //================================================================
@@ -76,37 +76,37 @@ QString Reports::create_object_formular_pers(int id_object)
     obj_data_continue = report_model->pers_info_continue(id_object);
 
     QStringList list,list_trud,list_vid,list_war,list_medal,list_komro, list_travm;
-    list << "Воинские звания \n (специальные звания, \n классные чины )" << "Правовой акт о присвоении \n воинского звания \n (специального звания, классного чина), \n его дата и номер";
-    list_trud << "С какого времени (число, \n месяц и год)"<< "По какое время (число, \n месяц и год)" << "Место работы, занимаемая должность" << "Примечание";
-    list_vid << "С какого времени (число, \n месяц и год)"<< "По какое время (число, \n месяц и год)" << "Должность, номер ВУС (код специальности), в/зв (специальное звание по штату), тарифный разряд (должностной оклад)" << "Воинская часть, орган управления, учреждение, заведение, соединение, армия, группа войск, фронт или военнй округ, флот или флотилия" << "Чей приказ, дата и номер приказа";
-    list_war << "Участие в войнах и других боевых действиях"<< "С какого времени (число, \n месяц и год)"<< "По какое время (число, \n месяц и год)" ;
-    list_medal << "Наименование нагрудного знака"<< "За что награжден" << "Чей приказ, его дата и номер";
-    list_komro << "Дата" << "Обстоятельства";
-	list_travm<< "Травма, увечье, контузия" << "Обстоятельства";
+    list << "Р’РѕРёРЅСЃРєРёРµ Р·РІР°РЅРёСЏ \n (СЃРїРµС†РёР°Р»СЊРЅС‹Рµ Р·РІР°РЅРёСЏ, \n РєР»Р°СЃСЃРЅС‹Рµ С‡РёРЅС‹ )" << "РџСЂР°РІРѕРІРѕР№ Р°РєС‚ Рѕ РїСЂРёСЃРІРѕРµРЅРёРё \n РІРѕРёРЅСЃРєРѕРіРѕ Р·РІР°РЅРёСЏ \n (СЃРїРµС†РёР°Р»СЊРЅРѕРіРѕ Р·РІР°РЅРёСЏ, РєР»Р°СЃСЃРЅРѕРіРѕ С‡РёРЅР°), \n РµРіРѕ РґР°С‚Р° Рё РЅРѕРјРµСЂ";
+    list_trud << "РЎ РєР°РєРѕРіРѕ РІСЂРµРјРµРЅРё (С‡РёСЃР»Рѕ, \n РјРµСЃСЏС† Рё РіРѕРґ)"<< "РџРѕ РєР°РєРѕРµ РІСЂРµРјСЏ (С‡РёСЃР»Рѕ, \n РјРµСЃСЏС† Рё РіРѕРґ)" << "РњРµСЃС‚Рѕ СЂР°Р±РѕС‚С‹, Р·Р°РЅРёРјР°РµРјР°СЏ РґРѕР»Р¶РЅРѕСЃС‚СЊ" << "РџСЂРёРјРµС‡Р°РЅРёРµ";
+    list_vid << "РЎ РєР°РєРѕРіРѕ РІСЂРµРјРµРЅРё (С‡РёСЃР»Рѕ, \n РјРµСЃСЏС† Рё РіРѕРґ)"<< "РџРѕ РєР°РєРѕРµ РІСЂРµРјСЏ (С‡РёСЃР»Рѕ, \n РјРµСЃСЏС† Рё РіРѕРґ)" << "Р”РѕР»Р¶РЅРѕСЃС‚СЊ, РЅРѕРјРµСЂ Р’РЈРЎ (РєРѕРґ СЃРїРµС†РёР°Р»СЊРЅРѕСЃС‚Рё), РІ/Р·РІ (СЃРїРµС†РёР°Р»СЊРЅРѕРµ Р·РІР°РЅРёРµ РїРѕ С€С‚Р°С‚Сѓ), С‚Р°СЂРёС„РЅС‹Р№ СЂР°Р·СЂСЏРґ (РґРѕР»Р¶РЅРѕСЃС‚РЅРѕР№ РѕРєР»Р°Рґ)" << "Р’РѕРёРЅСЃРєР°СЏ С‡Р°СЃС‚СЊ, РѕСЂРіР°РЅ СѓРїСЂР°РІР»РµРЅРёСЏ, СѓС‡СЂРµР¶РґРµРЅРёРµ, Р·Р°РІРµРґРµРЅРёРµ, СЃРѕРµРґРёРЅРµРЅРёРµ, Р°СЂРјРёСЏ, РіСЂСѓРїРїР° РІРѕР№СЃРє, С„СЂРѕРЅС‚ РёР»Рё РІРѕРµРЅРЅР№ РѕРєСЂСѓРі, С„Р»РѕС‚ РёР»Рё С„Р»РѕС‚РёР»РёСЏ" << "Р§РµР№ РїСЂРёРєР°Р·, РґР°С‚Р° Рё РЅРѕРјРµСЂ РїСЂРёРєР°Р·Р°";
+    list_war << "РЈС‡Р°СЃС‚РёРµ РІ РІРѕР№РЅР°С… Рё РґСЂСѓРіРёС… Р±РѕРµРІС‹С… РґРµР№СЃС‚РІРёСЏС…"<< "РЎ РєР°РєРѕРіРѕ РІСЂРµРјРµРЅРё (С‡РёСЃР»Рѕ, \n РјРµСЃСЏС† Рё РіРѕРґ)"<< "РџРѕ РєР°РєРѕРµ РІСЂРµРјСЏ (С‡РёСЃР»Рѕ, \n РјРµСЃСЏС† Рё РіРѕРґ)" ;
+    list_medal << "РќР°РёРјРµРЅРѕРІР°РЅРёРµ РЅР°РіСЂСѓРґРЅРѕРіРѕ Р·РЅР°РєР°"<< "Р—Р° С‡С‚Рѕ РЅР°РіСЂР°Р¶РґРµРЅ" << "Р§РµР№ РїСЂРёРєР°Р·, РµРіРѕ РґР°С‚Р° Рё РЅРѕРјРµСЂ";
+    list_komro << "Р”Р°С‚Р°" << "РћР±СЃС‚РѕСЏС‚РµР»СЊСЃС‚РІР°";
+	list_travm<< "РўСЂР°РІРјР°, СѓРІРµС‡СЊРµ, РєРѕРЅС‚СѓР·РёСЏ" << "РћР±СЃС‚РѕСЏС‚РµР»СЊСЃС‚РІР°";
 
     Output *out = new Output;
 
     QString s = out->createHtmlHeader();
     s.append(out->createHtmlH_pers(id_object));
-    s.append(out->createHtmlH("ПОСЛУЖНОЙ СПИСОК", 3));
+    s.append(out->createHtmlH("РџРћРЎР›РЈР–РќРћР™ РЎРџРРЎРћРљ", 3));
     s.append(out->createHtmlTable_row_foto(obj_data_foto));
     s.append(out->createHtmlH_pers_2_page(id_object));
     s.append(out->createHtmlTable_vzv(obj_data_vzv,list));
     s.append(out->createHtmlTable_2(obj_data));
-    s.append(out->createHtmlH("11. Самостоятельная трудовая деятельность до государственной службы", 3, "left"));
+    s.append(out->createHtmlH("11. РЎР°РјРѕСЃС‚РѕСЏС‚РµР»СЊРЅР°СЏ С‚СЂСѓРґРѕРІР°СЏ РґРµСЏС‚РµР»СЊРЅРѕСЃС‚СЊ РґРѕ РіРѕСЃСѓРґР°СЂСЃС‚РІРµРЅРЅРѕР№ СЃР»СѓР¶Р±С‹", 3, "left"));
 	s.append(out->createHtmlTableFromList(obj_data_trud,list_trud));
-    s.append(out->createHtmlH("12. Прохождение видов государственной службы", 3, "left"));
+    s.append(out->createHtmlH("12. РџСЂРѕС…РѕР¶РґРµРЅРёРµ РІРёРґРѕРІ РіРѕСЃСѓРґР°СЂСЃС‚РІРµРЅРЅРѕР№ СЃР»СѓР¶Р±С‹", 3, "left"));
     s.append(out->createHtmlTableFromList(obj_data_vid,list_vid));
-    s.append(out->createHtmlH("13. Участие в войнах и других боевых действиях", 3, "left"));
+    s.append(out->createHtmlH("13. РЈС‡Р°СЃС‚РёРµ РІ РІРѕР№РЅР°С… Рё РґСЂСѓРіРёС… Р±РѕРµРІС‹С… РґРµР№СЃС‚РІРёСЏС…", 3, "left"));
     s.append(out->createHtmlTableFromList(obj_data_war,list_war));
-    s.append(out->createHtmlH("14. Увечья (ранения, травмы, контузии) и другие боевые поражения, их характер. Когда и где получены", 3, "left"));
+    s.append(out->createHtmlH("14. РЈРІРµС‡СЊСЏ (СЂР°РЅРµРЅРёСЏ, С‚СЂР°РІРјС‹, РєРѕРЅС‚СѓР·РёРё) Рё РґСЂСѓРіРёРµ Р±РѕРµРІС‹Рµ РїРѕСЂР°Р¶РµРЅРёСЏ, РёС… С…Р°СЂР°РєС‚РµСЂ. РљРѕРіРґР° Рё РіРґРµ РїРѕР»СѓС‡РµРЅС‹", 3, "left"));
     s.append(out->createHtmlTableFromList(obj_data_travma,list_travm));
-    s.append(out->createHtmlH("15. Какими нагрудными знаками награжден", 3, "left"));
+    s.append(out->createHtmlH("15. РљР°РєРёРјРё РЅР°РіСЂСѓРґРЅС‹РјРё Р·РЅР°РєР°РјРё РЅР°РіСЂР°Р¶РґРµРЅ", 3, "left"));
     s.append(out->createHtmlTableFromList(obj_data_medal,list_medal));
-    s.append(out->createHtmlH("16. Был ли в плену, при каких обстоятельствах, где и когда пленен и освобожден из плена", 3, "left"));
-    s.append(out->createHtmlTableFromList(obj_data_plen,QStringList("Обстоятельства")));
+    s.append(out->createHtmlH("16. Р‘С‹Р» Р»Рё РІ РїР»РµРЅСѓ, РїСЂРё РєР°РєРёС… РѕР±СЃС‚РѕСЏС‚РµР»СЊСЃС‚РІР°С…, РіРґРµ Рё РєРѕРіРґР° РїР»РµРЅРµРЅ Рё РѕСЃРІРѕР±РѕР¶РґРµРЅ РёР· РїР»РµРЅР°", 3, "left"));
+    s.append(out->createHtmlTableFromList(obj_data_plen,QStringList("РћР±СЃС‚РѕСЏС‚РµР»СЊСЃС‚РІР°")));
     s.append(out->createHtmlTable_2(obj_data_continue));
-    s.append(out->createHtmlH("20. Компрометирующие данные на военнослужащего", 3, "left"));
+    s.append(out->createHtmlH("20. РљРѕРјРїСЂРѕРјРµС‚РёСЂСѓСЋС‰РёРµ РґР°РЅРЅС‹Рµ РЅР° РІРѕРµРЅРЅРѕСЃР»СѓР¶Р°С‰РµРіРѕ", 3, "left"));
     s.append(out->createHtmlTableFromList(obj_data_kompromat,list_komro));
 
  // s.append(out->createHtmlTable_3(obj_data));
@@ -125,7 +125,7 @@ QString Reports::create_object_formular_smi(int id_object)
     Output *out = new Output;
 
     QString s = out->createHtmlHeader();
-    s.append(out->createHtmlH("Формуляр СМИ", 2));
+    s.append(out->createHtmlH("Р¤РѕСЂРјСѓР»СЏСЂ РЎРњР", 2));
     s.append(out->createHtmlTable_2(obj_data));
     s.append(out->createHtmlFooter());
     return s;
@@ -143,7 +143,7 @@ QString Reports::create_object_formular_ls(int id_object)
     Output *out = new Output;
 
     QString s = out->createHtmlHeader();
-    s.append(out->createHtmlH("Формуляр Воинского формирования", 2));
+    s.append(out->createHtmlH("Р¤РѕСЂРјСѓР»СЏСЂ Р’РѕРёРЅСЃРєРѕРіРѕ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ", 2));
     s.append(out->createHtmlTable_2(obj_data));
     s.append(out->createHtmlTableM(obj_data2));
     s.append(out->createHtmlFooter());
@@ -162,7 +162,7 @@ QString Reports::create_object_formular_mpo_pso_smi(int id_object)
     Output *out = new Output;
 
     QString s = out->createHtmlHeader();
-    s.append(out->createHtmlH("Формуляр средства СМИ", 2));
+    s.append(out->createHtmlH("Р¤РѕСЂРјСѓР»СЏСЂ СЃСЂРµРґСЃС‚РІР° РЎРњР", 2));
     s.append(out->createHtmlTable_2(obj_data));
     s.append(out->createHtmlTableM(obj_data2));
     s.append(out->createHtmlFooter());
@@ -180,7 +180,7 @@ QString Reports::create_object_formular_mpo_pso_ls(int id_object)
     Output *out = new Output;
 
     QString s = out->createHtmlHeader();
-    s.append(out->createHtmlH("Формуляр средства Воинского формирования", 2));
+    s.append(out->createHtmlH("Р¤РѕСЂРјСѓР»СЏСЂ СЃСЂРµРґСЃС‚РІР° Р’РѕРёРЅСЃРєРѕРіРѕ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ", 2));
     s.append(out->createHtmlTable_2(obj_data));
     s.append(out->createHtmlTableM(obj_data2));
     s.append(out->createHtmlFooter());
@@ -198,7 +198,7 @@ QString Reports::create_object_formular_mpo_pso_gr(int id_object)
     Output *out = new Output;
 
     QString s = out->createHtmlHeader();
-    s.append(out->createHtmlH("Формуляр средства организации", 2));
+    s.append(out->createHtmlH("Р¤РѕСЂРјСѓР»СЏСЂ СЃСЂРµРґСЃС‚РІР° РѕСЂРіР°РЅРёР·Р°С†РёРё", 2));
     s.append(out->createHtmlTable_2(obj_data));
     s.append(out->createHtmlTableM(obj_data2));
     s.append(out->createHtmlFooter());
@@ -216,7 +216,7 @@ QString Reports::create_object_formular_sc(int id_object)
     Output *out = new Output;
 
     QString s = out->createHtmlHeader();
-    s.append(out->createHtmlH("Формуляр особого условия", 2));
+    s.append(out->createHtmlH("Р¤РѕСЂРјСѓР»СЏСЂ РѕСЃРѕР±РѕРіРѕ СѓСЃР»РѕРІРёСЏ", 2));
     s.append(out->createHtmlTable_2(obj_data));
     s.append(out->createHtmlTableM(obj_data2));
     s.append(out->createHtmlFooter());
@@ -247,17 +247,17 @@ QString Reports::create_object_formular_region(float rez_,int id_object)
     Output *out = new Output;
 
     QString s = out->createHtmlHeader();
-    s.append(out->createHtmlH("Формуляр региона (района)", 2));
+    s.append(out->createHtmlH("Р¤РѕСЂРјСѓР»СЏСЂ СЂРµРіРёРѕРЅР° (СЂР°Р№РѕРЅР°)", 2));
     s.append(out->createHtmlTable_2(obj_data));
-    s.append(out->createHtmlH("1. НАСЕЛЕНИЕ", 2));
+    s.append(out->createHtmlH("1. РќРђРЎР•Р›Р•РќРР•", 2));
     s.append(out->createHtmlTable_2(obj_data2));
-    s.append(out->createHtmlH("2. СМИ", 2));
+    s.append(out->createHtmlH("2. РЎРњР", 2));
     s.append(out->createHtmlTable_2(obj_data3));
-    s.append(out->createHtmlH("3. ОРГАНИЗАЦИИ", 2));
+    s.append(out->createHtmlH("3. РћР Р“РђРќРР—РђР¦РР", 2));
     s.append(out->createHtmlTable_2(obj_data4));
-    s.append(out->createHtmlH("4. ФАКТОРЫ", 2));
+    s.append(out->createHtmlH("4. Р¤РђРљРўРћР Р«", 2));
     s.append(out->createHtmlTable_row(obj_data5));
-    s.append(out->createHtmlH("5. ВЫВОД", 2));
+    s.append(out->createHtmlH("5. Р’Р«Р’РћР”", 2));
     s.append(out->createHtmlTable_row(obj_data6));
     s.append(out->createHtmlFooter());
     return s;

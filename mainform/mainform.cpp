@@ -13,14 +13,14 @@
 #define kodec QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 #endif
 
-Mainform::Mainform(QMainWindow *parent, Qt::WFlags flags)
+Mainform::Mainform(QMainWindow *parent, QFlag flags)
 	: QMainWindow(parent, flags),
 	UI (new Ui::main_form)
 {
 	UI->setupUi(this);
-	settings=new Settings(this);   
+	settings=new Settings(this);
 
-	setWindowIcon(QIcon(":/Resources/metacontact.png"));
+    setWindowIcon(QIcon(":/Resources/RedStar.png"));
 
 	connection_flag = false;
 	login_flag = false;
@@ -36,7 +36,6 @@ Mainform::Mainform(QMainWindow *parent, Qt::WFlags flags)
 	connect(this,SIGNAL(signalMainWindowShown()),this,SLOT(show_login_form()));
 
     QTextCodec *codec = QTextCodec::codecForName("CP1251");
-    QTextCodec::setCodecForCStrings(codec);
 
 	if (test_db_connection())
 	{
@@ -64,7 +63,7 @@ Mainform::~Mainform()
 
 void Mainform::closeTab(int i)
 {
-	QMdiSubWindow *sub = m_mdiArea->subWindowList()[i];
+    QMdiSubWindow *sub = m_mdiArea->subWindowList()[i];
 	
 	QWidget *win = sub->widget();
 
@@ -73,41 +72,41 @@ void Mainform::closeTab(int i)
 }
 
 
-//========== Создание и открытие диалогового окна настроек соединения с БД ===============
+//========== РЎРѕР·РґР°РЅРёРµ Рё РѕС‚РєСЂС‹С‚РёРµ РґРёР°Р»РѕРіРѕРІРѕРіРѕ РѕРєРЅР° РЅР°СЃС‚СЂРѕРµРє СЃРѕРµРґРёРЅРµРЅРёСЏ СЃ Р‘Р” ===============
 void Mainform::show_connect_settings_dialog()
 {
  DB_dialog = new QDialog;
- DB_dialog->setWindowTitle("Настройки соединения с БД");
+ DB_dialog->setWindowTitle("РќР°СЃС‚СЂРѕР№РєРё СЃРѕРµРґРёРЅРµРЅРёСЏ СЃ Р‘Р”");
  DB_dialog->setFixedSize(400,250);
 
- //============== Создание элементов формы ====================
- QLabel *ServDB_label = new QLabel("Сервер БД: "); 
+ //============== РЎРѕР·РґР°РЅРёРµ СЌР»РµРјРµРЅС‚РѕРІ С„РѕСЂРјС‹ ====================
+ QLabel *ServDB_label = new QLabel("РЎРµСЂРІРµСЂ Р‘Р”: "); 
  ServDB_combobox = new QComboBox;
  ServDB_combobox->addItem("PostgreSQL",1);
  ServDB_combobox->addItem("MySQL",2);
  ServDB_combobox->setCurrentIndex(settings->id_db_server()-1);
  
- QLabel *db_name_label = new QLabel("Имя БД: ");
+ QLabel *db_name_label = new QLabel("РРјСЏ Р‘Р”: ");
  db_name_edit = new QLineEdit(settings->db_name());
 
- QLabel *host_label = new QLabel("Хост (ip-address): ");
+ QLabel *host_label = new QLabel("РҐРѕСЃС‚ (ip-address): ");
  host_edit = new QLineEdit(settings->host()); 
 
- QLabel *user_label = new QLabel("Пользователь: ");
+ QLabel *user_label = new QLabel("РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ: ");
  user_edit = new QLineEdit(settings->user_name());
 
- QLabel *password_label = new QLabel("Пароль: ");
+ QLabel *password_label = new QLabel("РџР°СЂРѕР»СЊ: ");
  password_edit = new QLineEdit();
  password_edit->setEchoMode(QLineEdit::Password);
 
  message_label = new QLabel;
  message_label->setWordWrap(true);
 
- QPushButton *test_button = new QPushButton("Тестирование соединения");
- QPushButton *ok_button = new QPushButton("Да");
- QPushButton *cancel_button = new QPushButton("Отмена");
+ QPushButton *test_button = new QPushButton("РўРµСЃС‚РёСЂРѕРІР°РЅРёРµ СЃРѕРµРґРёРЅРµРЅРёСЏ");
+ QPushButton *ok_button = new QPushButton("Р”Р°");
+ QPushButton *cancel_button = new QPushButton("РћС‚РјРµРЅР°");
  
- //=============== Размещение объектов на форме ===================
+ //=============== Р Р°Р·РјРµС‰РµРЅРёРµ РѕР±СЉРµРєС‚РѕРІ РЅР° С„РѕСЂРјРµ ===================
  QGridLayout *grid_layout = new QGridLayout;
  grid_layout->addWidget(ServDB_label,0,0);
  grid_layout->addWidget(ServDB_combobox,0,1);
@@ -162,7 +161,7 @@ void Mainform::get_db_settings()
 
 }
 
-//=============== Сохранение настроек соединения с БД =========================
+//=============== РЎРѕС…СЂР°РЅРµРЅРёРµ РЅР°СЃС‚СЂРѕРµРє СЃРѕРµРґРёРЅРµРЅРёСЏ СЃ Р‘Р” =========================
 void Mainform::save_connection_settings()
 {
     int index = ServDB_combobox->currentIndex();
@@ -176,7 +175,7 @@ void Mainform::save_connection_settings()
 	return;
 }
 
-//============= Проверка соединения с БД на форме настроек соединения =====================
+//============= РџСЂРѕРІРµСЂРєР° СЃРѕРµРґРёРЅРµРЅРёСЏ СЃ Р‘Р” РЅР° С„РѕСЂРјРµ РЅР°СЃС‚СЂРѕРµРє СЃРѕРµРґРёРЅРµРЅРёСЏ =====================
 void Mainform::test_connection()
 {
 	message_label->clear();
@@ -208,7 +207,7 @@ void Mainform::test_connection()
 }
 
 
-//============= Проверка соединения с БД при первом входе ==================================
+//============= РџСЂРѕРІРµСЂРєР° СЃРѕРµРґРёРЅРµРЅРёСЏ СЃ Р‘Р” РїСЂРё РїРµСЂРІРѕРј РІС…РѕРґРµ ==================================
 bool Mainform::test_db_connection()
 {
 	if (settings->id_db_server() == 1) db_driver = "QPSQL";
@@ -226,7 +225,7 @@ bool Mainform::test_db_connection()
 	}
 }
 
-//==================== Создание соединения с БД ====================================
+//==================== РЎРѕР·РґР°РЅРёРµ СЃРѕРµРґРёРЅРµРЅРёСЏ СЃ Р‘Р” ====================================
 bool Mainform::create_connection(QString db_driver, QString database, QString user, QString user_passwd, QString hostname)
 {
 	connection_flag = db->create_connection(db_driver, database, user, user_passwd, hostname);
@@ -236,36 +235,36 @@ bool Mainform::create_connection(QString db_driver, QString database, QString us
 
 
 
-//=============== Закрытие соединения с БД =====================================
+//=============== Р—Р°РєСЂС‹С‚РёРµ СЃРѕРµРґРёРЅРµРЅРёСЏ СЃ Р‘Р” =====================================
 bool Mainform::close_connection()
 {
 	return db->close_connection_();
 }
 
 
-//=============== Инициализация меню главной формы ==========================
+//=============== РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РјРµРЅСЋ РіР»Р°РІРЅРѕР№ С„РѕСЂРјС‹ ==========================
 void Mainform::init_menu(int id_user_group)
 {
 	QString mess;
 	QString wTitle;
     switch(id_user_group)
 	{
-	 case 0:	  //==== Незарегистрированный пользователь (вошел без логина и пароля)или нет соединения с БД ====
+	 case 0:	  //==== РќРµР·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅРЅС‹Р№ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ (РІРѕС€РµР» Р±РµР· Р»РѕРіРёРЅР° Рё РїР°СЂРѕР»СЏ)РёР»Рё РЅРµС‚ СЃРѕРµРґРёРЅРµРЅРёСЏ СЃ Р‘Р” ====
 		    UI->menuBar->clear();
-			menu = new QMenu("Файл");
+			menu = new QMenu("Р¤Р°Р№Р»");
             if(connection_flag == false)
 			{
-				mess = "Сатурн - нет соединения с БД";
+				mess = "РЎР°С‚СѓСЂРЅ - РЅРµС‚ СЃРѕРµРґРёРЅРµРЅРёСЏ СЃ Р‘Р”";
 			}
 			else if(connection_flag == true)
 			{
 				add_menu_enter_system(menu);
-				mess = "Сатурн - незарегистрированный пользователь";
+				mess = "РЎР°С‚СѓСЂРЅ - РЅРµР·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅРЅС‹Р№ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ";
 			}
 			add_menu_exit(menu);
 			UI->menuBar->addMenu(menu);
 
-			settings_menu = new QMenu("Настройки");
+			settings_menu = new QMenu("РќР°СЃС‚СЂРѕР№РєРё");
 			add_menu_db_connection(settings_menu);			
 			UI->menuBar->addMenu(settings_menu);
 			
@@ -273,14 +272,14 @@ void Mainform::init_menu(int id_user_group)
 
 		 	break;
 
-	 case 2:    //==== Администратор ====
+	 case 2:    //==== РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂ ====
 			UI->menuBar->clear();
-			menu = new QMenu("Файл");
+            menu = new QMenu("Р¤Р°Р№Р»");
 			add_menu_change_user(menu);
             add_menu_exit(menu);
 			UI->menuBar->addMenu(menu);
 
-			settings_menu = new QMenu("Настройки");
+			settings_menu = new QMenu("РќР°СЃС‚СЂРѕР№РєРё");
 			add_menu_db_connection(settings_menu);
 			add_menu_manage_users(settings_menu);
 			add_menu_map_settings(settings_menu);
@@ -288,31 +287,31 @@ void Mainform::init_menu(int id_user_group)
             add_menu_signs_edit(settings_menu);
 			UI->menuBar->addMenu(settings_menu);
 
-			oper_menu = new QMenu("Оперативная работа");
+			oper_menu = new QMenu("РћРїРµСЂР°С‚РёРІРЅР°СЏ СЂР°Р±РѕС‚Р°");
 			add_menu_supporting_tables(oper_menu);
 			add_menu_object_manager(oper_menu);
 			add_mapwork(oper_menu);
 			add_menu_event_manager(oper_menu);
 			UI->menuBar->addMenu(oper_menu);
 
-			wTitle = "Сатурн - сессия администратора " + getCurrentUserInfo();
+			wTitle = "РЎР°С‚СѓСЂРЅ - СЃРµСЃСЃРёСЏ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР° " + getCurrentUserInfo();
 			Mainform::setWindowTitle(wTitle);
 			break;
 
-	 case 3://==== Пользователь ====
+	 case 3://==== РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ ====
 			UI->menuBar->clear();
-			menu = new QMenu("Файл");
+			menu = new QMenu("Р¤Р°Р№Р»");
 			add_menu_change_user(menu);
 			add_menu_exit(menu);
 
 			UI->menuBar->addMenu(menu);
-            oper_menu = new QMenu("Оперативная работа");
+            oper_menu = new QMenu("РћРїРµСЂР°С‚РёРІРЅР°СЏ СЂР°Р±РѕС‚Р°");
 			add_menu_object_manager(oper_menu);
 			add_mapwork(oper_menu);
 			add_menu_event_manager(oper_menu);
 			UI->menuBar->addMenu(oper_menu);
 
-			wTitle = "Сатурн - сессия оператора " + getCurrentUserInfo();
+			wTitle = "РЎР°С‚СѓСЂРЅ - СЃРµСЃСЃРёСЏ РѕРїРµСЂР°С‚РѕСЂР° " + getCurrentUserInfo();
 			Mainform::setWindowTitle(wTitle);
 		 	break;
 	}
@@ -320,48 +319,48 @@ return;
 }
 
 void Mainform::add_menu_enter_system(QMenu *menu){
-	action1 = new QAction("Вход в систему",this);
+	action1 = new QAction("Р’С…РѕРґ РІ СЃРёСЃС‚РµРјСѓ",this);
 	action1->setIcon(QIcon(":/Resources/enter.png"));
 	menu->addAction(action1);
 	connect(action1, SIGNAL(triggered()),this, SLOT(show_login_form()));
 }
 
 void Mainform::add_menu_change_user(QMenu *menu){
-	action1 = new QAction("Сменить пользователя",this);
+	action1 = new QAction("РЎРјРµРЅРёС‚СЊ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ",this);
 	action1->setIcon(QIcon(":/Resources/change_user.png"));
 	menu->addAction(action1);
 	connect(action1, SIGNAL(triggered()),this, SLOT(show_login_form()));
 }
 
 void Mainform::add_menu_exit(QMenu *menu){
-	action2 = new QAction("Выход",this);
+	action2 = new QAction("Р’С‹С…РѕРґ",this);
 	action2->setIcon(QIcon(":/Resources/exit.png"));
 	menu->addAction(action2);
 	connect(action2, SIGNAL(triggered()),this, SLOT(close()));
 }
 
 void Mainform::add_mapwork(QMenu *oper_menu){
-	map_act = new QAction("Работа с картой",this);
+	map_act = new QAction("Р Р°Р±РѕС‚Р° СЃ РєР°СЂС‚РѕР№",this);
 	map_act->setIcon(QIcon(":/Resources/mapwork.png"));
 	oper_menu->addAction(map_act);
 	connect(map_act, SIGNAL(triggered()),this, SLOT(show_map_form()));
 }
 
 void Mainform::add_menu_db_connection(QMenu *settings_menu){
-	sett_act1 = new QAction("Подключение к БД",this);
+	sett_act1 = new QAction("РџРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р‘Р”",this);
 	sett_act1->setIcon(QIcon(":/Resources/db_settings.png"));
 	settings_menu->addAction(sett_act1);
 	connect(sett_act1, SIGNAL(triggered()),this, SLOT(show_connect_settings_dialog()));
 }
 
 void Mainform::add_menu_map_settings(QMenu *settings_menu){
-	open_map_sett_action = new QAction("Размещение файлов карт",this);
+	open_map_sett_action = new QAction("Р Р°Р·РјРµС‰РµРЅРёРµ С„Р°Р№Р»РѕРІ РєР°СЂС‚",this);
 	open_map_sett_action->setIcon(QIcon(":/Resources/planet.png"));
 	settings_menu->addAction(open_map_sett_action);
 	connect(open_map_sett_action, SIGNAL(triggered()),this, SLOT(slotOpenMapSettingsDialog()));
 }
 void Mainform::add_menu_backup_db(QMenu *settings_menu){
-	backup_db_action = new QAction("Резервное копирование БД",this);
+	backup_db_action = new QAction("Р РµР·РµСЂРІРЅРѕРµ РєРѕРїРёСЂРѕРІР°РЅРёРµ Р‘Р”",this);
 	backup_db_action->setIcon(QIcon(":/Resources/database.png"));
 	settings_menu->addAction(backup_db_action);
     connect(backup_db_action, SIGNAL(triggered()),this, SLOT(slotOpenBackupDbDialog()));
@@ -369,7 +368,7 @@ void Mainform::add_menu_backup_db(QMenu *settings_menu){
 
 void Mainform::add_menu_signs_edit(QMenu *settings_menu)
 {
-    sett_act5 = new QAction("Редактирование знаков типов объектов",this);
+    sett_act5 = new QAction("Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ Р·РЅР°РєРѕРІ С‚РёРїРѕРІ РѕР±СЉРµРєС‚РѕРІ",this);
     sett_act5->setIcon(QIcon(":/Resources/user_config.png"));
     settings_menu->addAction(sett_act5);
     connect(sett_act5, SIGNAL(triggered()),this, SLOT(show_signs_edit()));
@@ -377,21 +376,21 @@ void Mainform::add_menu_signs_edit(QMenu *settings_menu)
 
 
 void Mainform::add_menu_manage_users(QMenu *settings_menu){
-	users_action = new QAction("Управление пользователями",this);
+	users_action = new QAction("РЈРїСЂР°РІР»РµРЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏРјРё",this);
 	users_action->setIcon(QIcon(":/Resources/user_config.png"));
 	settings_menu->addAction(users_action);
 	connect(users_action, SIGNAL(triggered()),this, SLOT(slotOpenUserManageForm()));
 }
 
 void Mainform::add_menu_supporting_tables(QMenu *oper_menu){
-	sett_act2 = new QAction("Справочники",this);
+	sett_act2 = new QAction("РЎРїСЂР°РІРѕС‡РЅРёРєРё",this);
 	sett_act2->setIcon(QIcon(":/Resources/book.png"));
 	oper_menu->addAction(sett_act2);
 	connect(sett_act2, SIGNAL(triggered()),this, SLOT(show_supporting_tables_form()));
 }
 
 void Mainform::add_menu_object_manager(QMenu *oper_menu){
-	sett_act3 = new QAction("Управление объектами",this);
+	sett_act3 = new QAction("РЈРїСЂР°РІР»РµРЅРёРµ РѕР±СЉРµРєС‚Р°РјРё",this);
 	sett_act3->setIcon(QIcon(":/Resources/change_user.png"));
 	oper_menu->addAction(sett_act3);
 	connect(sett_act3, SIGNAL(triggered()),this, SLOT(show_object_manager_form()));
@@ -399,37 +398,37 @@ void Mainform::add_menu_object_manager(QMenu *oper_menu){
 
 void Mainform::add_menu_event_manager(QMenu *oper_menu)
 {
-	event_act = new QAction("Управление событиями",this);
+	event_act = new QAction("РЈРїСЂР°РІР»РµРЅРёРµ СЃРѕР±С‹С‚РёСЏРјРё",this);
 	event_act->setIcon(QIcon(":/Resources/change_user.png"));
 	oper_menu->addAction(event_act);
 	connect(event_act, SIGNAL(triggered()),this, SLOT(slotOpenEventManagerForm()));
 }
 
 
-//============= Создание и открытие формы входа (смены) пользователя ==========
+//============= РЎРѕР·РґР°РЅРёРµ Рё РѕС‚РєСЂС‹С‚РёРµ С„РѕСЂРјС‹ РІС…РѕРґР° (СЃРјРµРЅС‹) РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ ==========
 void Mainform::show_login_form()
 {
  login_flag = false;
  login_form = new QDialog;
- login_form->setWindowTitle("Вход в систему");
+ login_form->setWindowTitle("Р’С…РѕРґ РІ СЃРёСЃС‚РµРјСѓ");
  
  login_form->setFixedSize(300,200);
  
- //============== Создание элементов формы ====================
- QLabel *login_label = new QLabel("Имя пользователя: "); 
+ //============== РЎРѕР·РґР°РЅРёРµ СЌР»РµРјРµРЅС‚РѕРІ С„РѕСЂРјС‹ ====================
+ QLabel *login_label = new QLabel("РРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ: "); 
  login_edit = new QLineEdit;
 
- QLabel *password_label = new QLabel("Пароль: ");
+ QLabel *password_label = new QLabel("РџР°СЂРѕР»СЊ: ");
  login_password_edit = new QLineEdit; 
  login_password_edit->setEchoMode(QLineEdit::Password);
 
  message_label = new QLabel(login_message);
  message_label->setWordWrap(true);
 
- QPushButton *ok_butt = new QPushButton("Да");
- QPushButton *cancel_butt = new QPushButton("Отмена");
+ QPushButton *ok_butt = new QPushButton("Р”Р°");
+ QPushButton *cancel_butt = new QPushButton("РћС‚РјРµРЅР°");
  
- //=============== Размещение объектов на форме ===================
+ //=============== Р Р°Р·РјРµС‰РµРЅРёРµ РѕР±СЉРµРєС‚РѕРІ РЅР° С„РѕСЂРјРµ ===================
  QGridLayout *g_layout = new QGridLayout;
  g_layout->addWidget(login_label,0,0);
  g_layout->addWidget(login_edit,0,1);
@@ -464,7 +463,7 @@ void Mainform::show_login_form()
 	QString password =	login_password_edit->text();
 	if(!login(login_name,password))
 	{
-		login_message = "<p align = 'center'><font color='red'>Неверный логин или пароль пользователя.</font></p>";
+		login_message = "<p align = 'center'><font color='red'>РќРµРІРµСЂРЅС‹Р№ Р»РѕРіРёРЅ РёР»Рё РїР°СЂРѕР»СЊ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.</font></p>";
 		message_label->setText(login_message);
 		delete login_form;	 
 		reopen_login();
@@ -472,7 +471,7 @@ void Mainform::show_login_form()
 	}
 	else
 	{
-		valid_user(id_user);  // сигнал входа легального пользователя
+		valid_user(id_user);  // СЃРёРіРЅР°Р» РІС…РѕРґР° Р»РµРіР°Р»СЊРЅРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 	}
  }
  delete login_form;
@@ -481,12 +480,12 @@ void Mainform::show_login_form()
 }
 
 
-//============== Функция проверки логина и пароля пользователя в БД ======================
+//============== Р¤СѓРЅРєС†РёСЏ РїСЂРѕРІРµСЂРєРё Р»РѕРіРёРЅР° Рё РїР°СЂРѕР»СЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РІ Р‘Р” ======================
 int Mainform::login(QString login_name,QString password)
 {
 	if (login_name == "") return false;
 	QString table_password;
- //==== проверка логина ====================
+ //==== РїСЂРѕРІРµСЂРєР° Р»РѕРіРёРЅР° ====================
 	QSqlQuery query;
 	QString str = QString("SELECT id_user from users where login_name = '%1'").arg(login_name);
 	if(!query.exec(str))
@@ -503,7 +502,7 @@ int Mainform::login(QString login_name,QString password)
 	if (id_user == 0) return 0;
 	else
 	{
-	//======= проверка пароля в БД ========
+	//======= РїСЂРѕРІРµСЂРєР° РїР°СЂРѕР»СЏ РІ Р‘Р” ========
 		str = QString("SELECT passwd from users_passwd where id_user = '%1'").arg(id_user);
 		if(!query.exec(str))
 		{
@@ -531,22 +530,22 @@ int Mainform::login(QString login_name,QString password)
 
 
 
-//============== Шифрование строки по алгоритму md5 ====================
+//============== РЁРёС„СЂРѕРІР°РЅРёРµ СЃС‚СЂРѕРєРё РїРѕ Р°Р»РіРѕСЂРёС‚РјСѓ md5 ====================
 QString Mainform::str_to_md5(QString str)
 {
 	QCryptographicHash hash(QCryptographicHash::Md5);
-	hash.addData(str.toAscii()); 
+    hash.addData(str.toLatin1());
 	QString md5_str(hash.result().toHex());
 	
 	return md5_str;
 }
 
-//====================== Формирование меню в зависимости от статуса пользователя ====================================
+//====================== Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ РјРµРЅСЋ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ СЃС‚Р°С‚СѓСЃР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ ====================================
 void Mainform::create_user_menu(int id_user)
 {
-	if (!connection_flag) return; //== проверка, есть ли соединение с БД 
+	if (!connection_flag) return; //== РїСЂРѕРІРµСЂРєР°, РµСЃС‚СЊ Р»Рё СЃРѕРµРґРёРЅРµРЅРёРµ СЃ Р‘Р” 
 	
-	//=========== Проверка статуса пользователя по его id_user ============ 
+	//=========== РџСЂРѕРІРµСЂРєР° СЃС‚Р°С‚СѓСЃР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РїРѕ РµРіРѕ id_user ============ 
 	QSqlQuery query;
 	QString str = QString("SELECT id_group from users where id_user = '%1'").arg(id_user);
 	if(!query.exec(str))
@@ -559,7 +558,7 @@ void Mainform::create_user_menu(int id_user)
 	{	
 		id_user_group = query.value(rec.indexOf("id_group")).toInt();
 	}	
-	//===== Формирование меню в зависимости от статуса пользователя ========
+	//===== Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ РјРµРЅСЋ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ СЃС‚Р°С‚СѓСЃР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ ========
 	init_menu(id_user_group);
    
 	return;
@@ -568,9 +567,9 @@ void Mainform::create_user_menu(int id_user)
 
 
 
-//================ Форма ввода и редактирования информации ========
+//================ Р¤РѕСЂРјР° РІРІРѕРґР° Рё СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ РёРЅС„РѕСЂРјР°С†РёРё ========
 
-//============= Открытие формы работы с картой ==============
+//============= РћС‚РєСЂС‹С‚РёРµ С„РѕСЂРјС‹ СЂР°Р±РѕС‚С‹ СЃ РєР°СЂС‚РѕР№ ==============
 void Mainform::show_map_form()
 {
 	QList< MapView* > list = m_mdiArea->findChildren< MapView* >();
@@ -583,7 +582,7 @@ void Mainform::show_map_form()
 		MapView *map_view = new MapView;
 
 		
-		map_view->setWindowTitle("Работа с картой");
+		map_view->setWindowTitle("Р Р°Р±РѕС‚Р° СЃ РєР°СЂС‚РѕР№");
         map_window = m_mdiArea->addSubWindow(map_view);
 		map_view->showMaximized();
 
@@ -595,7 +594,7 @@ void Mainform::show_map_form()
 		return;
 }
 
-//============= Открытие формы работы с событиями ==============
+//============= РћС‚РєСЂС‹С‚РёРµ С„РѕСЂРјС‹ СЂР°Р±РѕС‚С‹ СЃ СЃРѕР±С‹С‚РёСЏРјРё ==============
 void Mainform::slotOpenEventManagerForm()
 {
 	QList<EventManager*> list = m_mdiArea->findChildren<EventManager*>();
@@ -612,7 +611,7 @@ void Mainform::slotOpenEventManagerForm()
     events_window->setAttribute(Qt::WA_DeleteOnClose);
 	events_window->setWindowIcon(QIcon(":/Resources/01.ico"));
    	 
-	eventManager->setWindowTitle("Управление событиями");
+	eventManager->setWindowTitle("РЈРїСЂР°РІР»РµРЅРёРµ СЃРѕР±С‹С‚РёСЏРјРё");
 	eventManager->showMaximized();
 
     m_mdiArea->setActiveSubWindow(events_window);
@@ -620,14 +619,14 @@ void Mainform::slotOpenEventManagerForm()
 }
 
 
-//================ Диалог редактирования вспомогательных таблиц =================
+//================ Р”РёР°Р»РѕРі СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹С… С‚Р°Р±Р»РёС† =================
 void Mainform::show_supporting_tables_form(){
 	  SupportingTables *supp = new SupportingTables();
-	  supp->setWindowTitle("Редактирование справочников");
+	  supp->setWindowTitle("Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ СЃРїСЂР°РІРѕС‡РЅРёРєРѕРІ");
 	  supp->setModal(true);
       supp->show();
 }
-//================ Открытие формы управления объектами =================
+//================ РћС‚РєСЂС‹С‚РёРµ С„РѕСЂРјС‹ СѓРїСЂР°РІР»РµРЅРёСЏ РѕР±СЉРµРєС‚Р°РјРё =================
 void Mainform::show_object_manager_form(){
 	
 	QList<Objectmanager*> lst = m_mdiArea->findChildren<Objectmanager*>();
@@ -640,7 +639,7 @@ void Mainform::show_object_manager_form(){
 	Objectmanager *obman = new Objectmanager();
 	obmanager = m_mdiArea->addSubWindow (obman,Qt::SubWindow);
 	obmanager->setAttribute (Qt::WA_DeleteOnClose);
-	obman->setWindowTitle("Управление объектами");
+	obman->setWindowTitle("РЈРїСЂР°РІР»РµРЅРёРµ РѕР±СЉРµРєС‚Р°РјРё");
 	obmanager->setWindowIcon(QIcon(":/Resources/change_user.png"));
 	obman->showMaximized();
     m_mdiArea->setActiveSubWindow(obmanager);
@@ -648,7 +647,7 @@ void Mainform::show_object_manager_form(){
 }
 
 /*!
-Открытие окна управления знаками типов объектов отображаемых на карте
+РћС‚РєСЂС‹С‚РёРµ РѕРєРЅР° СѓРїСЂР°РІР»РµРЅРёСЏ Р·РЅР°РєР°РјРё С‚РёРїРѕРІ РѕР±СЉРµРєС‚РѕРІ РѕС‚РѕР±СЂР°Р¶Р°РµРјС‹С… РЅР° РєР°СЂС‚Рµ
 void Mainform::show_signs_edit()
 */
 void Mainform::show_signs_edit(){
@@ -663,7 +662,7 @@ void Mainform::show_signs_edit(){
 	SignsEdit *signs = new SignsEdit();
 	signs_window = m_mdiArea->addSubWindow (signs,Qt::SubWindow);
     signs_window->setAttribute (Qt::WA_DeleteOnClose);
-    signs->setWindowTitle("Управление знаками типов объектов");
+    signs->setWindowTitle("РЈРїСЂР°РІР»РµРЅРёРµ Р·РЅР°РєР°РјРё С‚РёРїРѕРІ РѕР±СЉРµРєС‚РѕРІ");
 	signs_window->setWindowIcon(QIcon(":/Resources/user_config.png"));
     signs->showMaximized();
     m_mdiArea->setActiveSubWindow(signs_window);

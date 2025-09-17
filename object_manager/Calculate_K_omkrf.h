@@ -5,9 +5,10 @@
 #include <QList.h>
 #include <QTextcodec.h>
 #include <QSqlquery.h>
-#include <QSql.h>
-#include <QVariant.h>
-#include <QChar.h>
+#include <QSqlDatabase>
+#include <QSqlDriver>
+#include <qvariant.h>
+#include <qchar.h>
 #include <qstandarditemmodel.h>
 
 class Calculate_K_omkrf

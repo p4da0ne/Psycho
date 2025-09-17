@@ -12,7 +12,7 @@
 
 #include <my_mapaccess.h>
 
-// Окно для отображения карты
+// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 class MapScroll : public QScrollArea
 {
     Q_OBJECT
@@ -26,7 +26,7 @@ public:
 	void			changeFrame(int pixels=50);
 	HSITE			openSit(HMAP hMap, const char * mapname, const char * rscname);
 	long int		appendData(const char* sitname);
-	long int		createObject(long int hSit,  QList<Coord*> *coordinates, const char * rscKey, QMap<long int,QString> *semantics=0);
+    long int		createObject(long int hSit,  QList<Coord*> &coordinates, const char * rscKey, QMap<long int,QString> semantics);
 	void			setMapCenter();
 	long int		getScale();
 	long int		IsActive(HMAP hMap);
@@ -42,7 +42,7 @@ public:
 	long int		setObjectNoScale(HOBJ hobj);
 	long int		setObjectTopScale(HOBJ hobj,int scale = 15000000);
 	QStringList		getObjectIdAndTypeInfo(double *x, double *y);
-	QList<QStringList>	getAllObjectsIdAndTypeInfo(double *x, double *y);  //поиск всех объектов в заданной точке
+	QList<QStringList>	getAllObjectsIdAndTypeInfo(double *x, double *y);  //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	int				HScrollBarValue();
 	int				VScrollBarValue();
 	long int		getLayerCount();
@@ -63,14 +63,14 @@ public:
 	long int		planeToGeoWGS843D(double *Bx,  double *Ly,  double *H);
 	GEODEGREEXY		pictureToWGS(double * X, double * Y, double * H);
 	void			paintInDevice(HDC hdc, RECT * rect);
-		// Изменить значение семантической характеристики объекта
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	long int		changeSemanticValue(HOBJ info, long int number, char * place, long int maxsize);
-	//РАСТР
+	//пїЅпїЅпїЅпїЅпїЅ
 	long int		openRstOnMap(const char * rstname);
 	long int		closeRstForMap(long int number);
 	long int		setRstOnMap(long int number);
 signals:
-	//------ Сигналы для обработки нажатий кнопок мыши --------------
+	//------ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ --------------
 	void cursorIsMoved(QPointF xyCoord);
 	void selectedPoint(double X, double Y);
 	void leftButtonClicked(QPoint pe, QList<QStringList> objectsList);
@@ -85,12 +85,12 @@ public:
 	enum ReservedSemantics {ID_OBJECT = 17501, OBJECT_TYPE = 17502};
 	bool moveFlag;
 	MyMapAccess						* map;
-	HMAP							hMap;  // Идентификатор карты
+	HMAP							hMap;  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	CREATESITE						createsite;
 	QTextCodec						* MainCodec;
 	DFRAME							dframe;
 	MAPDFRAME						frame;
-    RECT							RectDraw;          // Область отрисовки карты
+    RECT							RectDraw;          // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
     QWidget							*MyViewport;
 	QRect							rect;
 	HOBJ							info;

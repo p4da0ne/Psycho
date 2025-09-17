@@ -1,6 +1,7 @@
 #include "user_data_dialog.h"
 #include <QSqlQuery>
 #include <QSqlRecord>
+#include <QtWidgets/QWidget>
 
 
 UserDataDialog::UserDataDialog(int idUser, QWidget *parent) :
@@ -16,31 +17,31 @@ UserDataDialog::UserDataDialog(int idUser, QWidget *parent) :
 
 	if(idUser == 0)
 	{
-		setWindowTitle("Добавление нового пользователя");
+        setWindowTitle("Р”РѕР±Р°РІР»РµРЅРёРµ РЅРѕРІРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ");
 	}
 	else
 	{
-		setWindowTitle("Редактирование данных пользователя");
+		setWindowTitle("Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ РґР°РЅРЅС‹С… РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ");
 		fillUserData(idUser);
 	}
 
 
-	formLay.addRow("Фамилия:",&surnameLineEdit);
-	formLay.addRow("Имя:",&nameLineEdit);
-	formLay.addRow("Отчество:",&patronLineEdit);
-	formLay.addRow("Воинское звание:",&rankCombo);
-	formLay.addRow("Группа:",&groupCombo);
-	formLay.addRow("Логин:",&loginLineEdit);
+	formLay.addRow("Р¤Р°РјРёР»РёСЏ:",&surnameLineEdit);
+	formLay.addRow("РРјСЏ:",&nameLineEdit);
+	formLay.addRow("РћС‚С‡РµСЃС‚РІРѕ:",&patronLineEdit);
+	formLay.addRow("Р’РѕРёРЅСЃРєРѕРµ Р·РІР°РЅРёРµ:",&rankCombo);
+	formLay.addRow("Р“СЂСѓРїРїР°:",&groupCombo);
+	formLay.addRow("Р›РѕРіРёРЅ:",&loginLineEdit);
 	
 	if(this->idUser == 0)
 	{
-		formLay.addRow("Пароль:",&passwordLineEdit);
+		formLay.addRow("РџР°СЂРѕР»СЊ:",&passwordLineEdit);
 		passwordLineEdit.setEchoMode(QLineEdit::Password);
 	}
 	formLay.setVerticalSpacing(10);
 
-	okButton.setText("Сохранить");
-	cancelButton.setText("Отмена");
+	okButton.setText("РЎРѕС…СЂР°РЅРёС‚СЊ");
+	cancelButton.setText("РћС‚РјРµРЅР°");
 	buttonLay.addWidget(&okButton);
 	buttonLay.addStretch();
 	buttonLay.addWidget(&cancelButton);
@@ -57,35 +58,35 @@ UserDataDialog::UserDataDialog(int idUser, QWidget *parent) :
 }
 
 
-//== Слот валидации заполненных данных =======
+//== РЎР»РѕС‚ РІР°Р»РёРґР°С†РёРё Р·Р°РїРѕР»РЅРµРЅРЅС‹С… РґР°РЅРЅС‹С… =======
 void UserDataDialog::slotAccepted()
 {
     QString mess;
 
 	if(surnameLineEdit.text() == "")
     {
-		mess.append("Вы не ввели фамилию пользователя.\n");
+		mess.append("Р’С‹ РЅРµ РІРІРµР»Рё С„Р°РјРёР»РёСЋ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.\n");
     }
 	if(nameLineEdit.text() == "")
     {
-		mess.append("Вы не ввели имя пользователя.\n");
+		mess.append("Р’С‹ РЅРµ РІРІРµР»Рё РёРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.\n");
     }
 	if(patronLineEdit.text() == "")
     {
-		mess.append("Вы не ввели отчество пользователя.\n");
+		mess.append("Р’С‹ РЅРµ РІРІРµР»Рё РѕС‚С‡РµСЃС‚РІРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.\n");
     }
 	if(loginLineEdit.text() == "")
     {
-		mess.append("Вы не ввели логин пользователя.\n");
+		mess.append("Р’С‹ РЅРµ РІРІРµР»Рё Р»РѕРіРёРЅ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.\n");
     }
 	if((this->idUser == 0)&& (passwordLineEdit.text() == ""))
     {
-		mess.append("Вы не ввели пароль пользователя.\n");
+		mess.append("Р’С‹ РЅРµ РІРІРµР»Рё РїР°СЂРѕР»СЊ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.\n");
     }
 
 	if(!isUniqueLogin(loginLineEdit.text()) && (this->idUser == 0))
 	{
-		mess = "Пользователь таким логином уже зарегистрирован.";
+		mess = "РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ С‚Р°РєРёРј Р»РѕРіРёРЅРѕРј СѓР¶Рµ Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅ.";
 		loginLineEdit.setFocus();
 	}
 
@@ -102,7 +103,7 @@ void UserDataDialog::messageToUser(QString message)
 {
     QMessageBox msgBox;
 
-    msgBox.setWindowTitle("Сообщение");
+    msgBox.setWindowTitle("РЎРѕРѕР±С‰РµРЅРёРµ");
     msgBox.setText(message);
     msgBox.setIcon(QMessageBox::Information);
     msgBox.exec();
@@ -110,7 +111,7 @@ void UserDataDialog::messageToUser(QString message)
 
 
 //==================================================================
-//======= Метод возвращает список воинских званий из БД ============
+//======= РњРµС‚РѕРґ РІРѕР·РІСЂР°С‰Р°РµС‚ СЃРїРёСЃРѕРє РІРѕРёРЅСЃРєРёС… Р·РІР°РЅРёР№ РёР· Р‘Р” ============
 //==================================================================
 QStandardItemModel* UserDataDialog::getRankList()
 {
@@ -137,7 +138,7 @@ QStandardItemModel* UserDataDialog::getRankList()
 
 
 //==================================================================
-//======= Метод возвращает список групп пользователей из БД ============
+//======= РњРµС‚РѕРґ РІРѕР·РІСЂР°С‰Р°РµС‚ СЃРїРёСЃРѕРє РіСЂСѓРїРї РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ РёР· Р‘Р” ============
 //==================================================================
 QStandardItemModel* UserDataDialog::getGroupList()
 {
@@ -164,7 +165,7 @@ QStandardItemModel* UserDataDialog::getGroupList()
 
 
 //============================================================================
-//======= Метод возвращает воинское звание пользователя из БД ================
+//======= РњРµС‚РѕРґ РІРѕР·РІСЂР°С‰Р°РµС‚ РІРѕРёРЅСЃРєРѕРµ Р·РІР°РЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РёР· Р‘Р” ================
 //============================================================================
 QString UserDataDialog::getUserRank(int idUser)
 {
@@ -185,7 +186,7 @@ QString UserDataDialog::getUserRank(int idUser)
 
 
 //============================================================================
-//======= Метод возвращает имя группы пользователя из БД ================
+//======= РњРµС‚РѕРґ РІРѕР·РІСЂР°С‰Р°РµС‚ РёРјСЏ РіСЂСѓРїРїС‹ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РёР· Р‘Р” ================
 //============================================================================
 QString UserDataDialog::getUserGroupName(int idUser)
 {
@@ -206,7 +207,7 @@ QString UserDataDialog::getUserGroupName(int idUser)
 
 	
 //============================================================================
-//======= Метод заполняет поля диалога данными пользователя из БД ============
+//======= РњРµС‚РѕРґ Р·Р°РїРѕР»РЅСЏРµС‚ РїРѕР»СЏ РґРёР°Р»РѕРіР° РґР°РЅРЅС‹РјРё РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РёР· Р‘Р” ============
 //============================================================================
 void UserDataDialog::fillUserData(int idUser)
 {
@@ -245,7 +246,7 @@ void UserDataDialog::fillUserData(int idUser)
 
 
 //===================================================================
-//====== Метод проверки уникальности логина в БД ====================
+//====== РњРµС‚РѕРґ РїСЂРѕРІРµСЂРєРё СѓРЅРёРєР°Р»СЊРЅРѕСЃС‚Рё Р»РѕРіРёРЅР° РІ Р‘Р” ====================
 //===================================================================
 bool UserDataDialog::isUniqueLogin(QString login)
 {

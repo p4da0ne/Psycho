@@ -5,7 +5,8 @@
 #include <QList.h>
 #include <QTextcodec.h>
 #include <QSqlquery.h>
-#include <QSql.h>
+#include <QSqlDatabase>
+#include <QSqlDriver>
 #include <QVariant.h>
 #include <QChar.h>
 #include <qstandarditemmodel.h>

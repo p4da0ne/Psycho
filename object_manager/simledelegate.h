@@ -10,7 +10,7 @@ class simleDelegate : public QSqlRelationalDelegate
 	Q_OBJECT
 
 public:
-	simleDelegate(QObject *parent);
+    simleDelegate(QObject *parent){};
 	~simleDelegate();
 
 	void paint ( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index )const;

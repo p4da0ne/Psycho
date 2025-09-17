@@ -1,7 +1,14 @@
 #include <QtGui>
 #include "add_elements_dialog.h"
 #include "mylabel.h"
+#include "qboxlayout.h"
+#include "qcheckbox.h"
+#include "qlineedit.h"
+#include "qmessagebox.h"
+#include "qpushbutton.h"
+#include "qtextedit.h"
 #include "reports.h"
+#include <QFileDialog>
 
 Add_elements_dialog::Add_elements_dialog(int type_element,int id_object,QWidget *parent)
 	: QDialog(parent)
@@ -9,19 +16,19 @@ Add_elements_dialog::Add_elements_dialog(int type_element,int id_object,QWidget 
 	in_id_object=id_object;
 	switch(type_element)
 	{
-	case 1:// ============ СМИ ================================================
+	case 1:// ============ РЎРњР ================================================
 	{
 	QMessageBox msgBox;
-	msgBox.setWindowTitle("Предупреждение");
+	msgBox.setWindowTitle("РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ");
     msgBox.setWindowIcon(QIcon("./icons/chast.ico"));
-	msgBox.setText("Выбрать СМИ из имеющихся в базе?"); 
+	msgBox.setText("Р’С‹Р±СЂР°С‚СЊ РЎРњР РёР· РёРјРµСЋС‰РёС…СЃСЏ РІ Р±Р°Р·Рµ?"); 
 	
 	msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-	msgBox.setButtonText(QMessageBox::Yes, "Да");
-	msgBox.setButtonText(QMessageBox::No, "Нет");
+	msgBox.setButtonText(QMessageBox::Yes, "Р”Р°");
+	msgBox.setButtonText(QMessageBox::No, "РќРµС‚");
 		switch (msgBox.exec()){ 
 		  case QMessageBox::Yes:{
-			 label_16 = new QLabel("Наименование СМИ:");
+			 label_16 = new QLabel("РќР°РёРјРµРЅРѕРІР°РЅРёРµ РЎРњР:");
 			 comboBox_10 = new QComboBox();
 			 comboBox_10->setFixedWidth(200);
 			 label_16->setBuddy(comboBox_10);
@@ -30,10 +37,10 @@ Add_elements_dialog::Add_elements_dialog(int type_element,int id_object,QWidget 
 			 column_9<<"name_smi";
 			 fill_combobox(comboBox_10,"smi",column_9);
 			 
-			 addButton = new QPushButton("Добавить");
+			 addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 			 addButton->setDefault(true);
 			 connect(addButton,SIGNAL(clicked()),this,SLOT(add_name_smi()));
-			 cancelButton = new QPushButton("Отмена");
+			 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 			 connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
 
 			 QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -57,16 +64,16 @@ Add_elements_dialog::Add_elements_dialog(int type_element,int id_object,QWidget 
 			 mainLayout->addLayout(leftLayout_32, 0, 1);
 			 mainLayout->addLayout(buttonsLayout, 1, 0, 1, 2);
 			 setLayout(mainLayout);
-			 setWindowTitle("Добавить СМИ");
+			 setWindowTitle("Р”РѕР±Р°РІРёС‚СЊ РЎРњР");
              setWindowIcon(QIcon(":/Resources/book.png"));
 			 break;
 			 }  
 	 case QMessageBox::No:{
-			 label = new QLabel("Наименование СМИ:");
+			 label = new QLabel("РќР°РёРјРµРЅРѕРІР°РЅРёРµ РЎРњР:");
 			 lineEdit_name = new QLineEdit;
 			 label->setBuddy(lineEdit_name);
 			 
-			 label_2 = new QLabel("Тип СМИ:");
+			 label_2 = new QLabel("РўРёРї РЎРњР:");
 			 comboBox = new QComboBox();
 			 label_2->setBuddy(comboBox);
 			 QStringList column;
@@ -74,35 +81,35 @@ Add_elements_dialog::Add_elements_dialog(int type_element,int id_object,QWidget 
 			 column<<"nametype_smi";
 			 fill_combobox(comboBox,"type_smi",column);
 		//	 connect(comboBox,SIGNAL(currentIndexChanged ( int )),this,SLOT(software_combobox_index_changed ( int )));
-			 label_3 = new QLabel("Представительство СМИ:");
+			 label_3 = new QLabel("РџСЂРµРґСЃС‚Р°РІРёС‚РµР»СЊСЃС‚РІРѕ РЎРњР:");
 			 comboBox_2 = new QComboBox();
 			 label_3->setBuddy(comboBox_2);
 			 QStringList column_1;
 			 column_1.clear();
 			 column_1<<"name_type_office_smi";
 			 fill_combobox(comboBox_2,"type_office_smi",column_1);
-			 label_4 = new QLabel("Способ вещания:");
+			 label_4 = new QLabel("РЎРїРѕСЃРѕР± РІРµС‰Р°РЅРёСЏ:");
 			 comboBox_3 = new QComboBox();
 			 label_3->setBuddy(comboBox_3);
 			 QStringList column_2;
 			 column_2.clear();
 			 column_2<<"name_type_broadcast_smi";
 			 fill_combobox(comboBox_3,"type_broadcast_smi",column_2);
-			 label_5 = new QLabel("Направленность СМИ:");
+			 label_5 = new QLabel("РќР°РїСЂР°РІР»РµРЅРЅРѕСЃС‚СЊ РЎРњР:");
 			 comboBox_4 = new QComboBox();
 			 label_5->setBuddy(comboBox_4);
 			 QStringList column_3;
 			 column_3.clear();
 			 column_3<<"name_position_smi";
 			 fill_combobox(comboBox_4,"position_smi",column_3);
-			 label_6 = new QLabel("Уровень вещания:");
+			 label_6 = new QLabel("РЈСЂРѕРІРµРЅСЊ РІРµС‰Р°РЅРёСЏ:");
 			 comboBox_5 = new QComboBox();
 			 label_6->setBuddy(comboBox_5);
 			 QStringList column_4;
 			 column_4.clear();
 			 column_4<<"name_level_smi";
 			 fill_combobox(comboBox_5,"level_smi",column_4);
-			 label_7 = new QLabel("Тематика СМИ:");
+			 label_7 = new QLabel("РўРµРјР°С‚РёРєР° РЎРњР:");
 			 comboBox_6 = new QComboBox();
 			 label_7->setBuddy(comboBox_6);
 			 QStringList column_5;
@@ -110,31 +117,31 @@ Add_elements_dialog::Add_elements_dialog(int type_element,int id_object,QWidget 
 			 column_5<<"name_theme_smi";
 			 fill_combobox(comboBox_6,"theme_smi",column_5);
 			 			
-			 label_8 = new QLabel("Аудитория СМИ:");
+			 label_8 = new QLabel("РђСѓРґРёС‚РѕСЂРёСЏ РЎРњР:");
 			 lineEdit_aud = new QLineEdit;
 
 			 label_8->setBuddy(lineEdit_aud);
-			 label_9 = new QLabel("Тираж СМИ:");
+			 label_9 = new QLabel("РўРёСЂР°Р¶ РЎРњР:");
 			 lineEdit_tirag = new QLineEdit;
 			 label_9->setBuddy(lineEdit_tirag);
-			 label_11 = new QLabel("Мощность сигнала:");
+			 label_11 = new QLabel("РњРѕС‰РЅРѕСЃС‚СЊ СЃРёРіРЅР°Р»Р°:");
 			 lineEdit_broad = new QLineEdit;
 			 label_11->setBuddy(lineEdit_broad);
-			 label_12 = new QLabel("Сайт СМИ:");
+			 label_12 = new QLabel("РЎР°Р№С‚ РЎРњР:");
 			 lineEdit_site = new QLineEdit;
 			 label_12->setBuddy(lineEdit_site);
-			 label_13 = new QLabel("Описание СМИ:");
+			 label_13 = new QLabel("РћРїРёСЃР°РЅРёРµ РЎРњР:");
 			 textEdit_desc = new QTextEdit;
 			 textEdit_desc->setFixedHeight(50);
 			 label_13->setBuddy(textEdit_desc);
-			 label_14 = new QLabel("Частоты вещания:");
+			 label_14 = new QLabel("Р§Р°СЃС‚РѕС‚С‹ РІРµС‰Р°РЅРёСЏ:");
 			 lineEdit_freq = new QLineEdit;
 			 label_14->setBuddy(lineEdit_freq);
 			 			 
-			 addButton = new QPushButton("Добавить");
+			 addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 			 addButton->setDefault(true);
 			 connect(addButton,SIGNAL(clicked()),this,SLOT(add_smi()));
-			 cancelButton = new QPushButton("Отмена");
+			 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 			 connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
 
 			 QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -282,7 +289,7 @@ Add_elements_dialog::Add_elements_dialog(int type_element,int id_object,QWidget 
 
 			 mainLayout->addLayout(buttonsLayout, 16, 0, 1, 2);
 			 setLayout(mainLayout);
-			 setWindowTitle("Добавить СМИ");
+			 setWindowTitle("Р”РѕР±Р°РІРёС‚СЊ РЎРњР");
              setWindowIcon(QIcon(":/Resources/book.png"));
 			break;
 			}
@@ -292,30 +299,30 @@ Add_elements_dialog::Add_elements_dialog(int type_element,int id_object,QWidget 
 	}
 break;	
 }
-	case 2:{ //========== Воинские формирования ====================================
+	case 2:{ //========== Р’РѕРёРЅСЃРєРёРµ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ ====================================
 		 
-		 label = new QLabel("Наименование подразделения:");
+		 label = new QLabel("РќР°РёРјРµРЅРѕРІР°РЅРёРµ РїРѕРґСЂР°Р·РґРµР»РµРЅРёСЏ:");
 		 lineEdit_name = new QLineEdit;
 		 label->setBuddy(lineEdit_name);
 		 
-		 label_2 = new QLabel("Тип подразделения:");
+		 label_2 = new QLabel("РўРёРї РїРѕРґСЂР°Р·РґРµР»РµРЅРёСЏ:");
 		 comboBox = new QComboBox();
 		 label_2->setBuddy(comboBox);
 		 QStringList column;
 		 column.clear();
 		 column<<"name_type_ls";
 		 fill_combobox(comboBox,"type_ls",column);
-		 label_3 = new QLabel("Общая численность личного состава:");
+		 label_3 = new QLabel("РћР±С‰Р°СЏ С‡РёСЃР»РµРЅРЅРѕСЃС‚СЊ Р»РёС‡РЅРѕРіРѕ СЃРѕСЃС‚Р°РІР°:");
 		 lineEdit_counte_ls = new QLineEdit;
 		 label_3->setBuddy(lineEdit_counte_ls);
-		 label_4 = new QLabel("Общая численность личного состава,\n участвующего в БД:");
+		 label_4 = new QLabel("РћР±С‰Р°СЏ С‡РёСЃР»РµРЅРЅРѕСЃС‚СЊ Р»РёС‡РЅРѕРіРѕ СЃРѕСЃС‚Р°РІР°,\n СѓС‡Р°СЃС‚РІСѓСЋС‰РµРіРѕ РІ Р‘Р”:");
 		 lineEdit_counte_ls_bd = new QLineEdit;
 		 label_4->setBuddy(lineEdit_counte_ls_bd);
-		 label_5 = new QLabel("Враждебность подразделения:");
-		 checkbox_enemy = new QCheckBox(" [-V- враждебное]", this);
+		 label_5 = new QLabel("Р’СЂР°Р¶РґРµР±РЅРѕСЃС‚СЊ РїРѕРґСЂР°Р·РґРµР»РµРЅРёСЏ:");
+		 checkbox_enemy = new QCheckBox(" [-V- РІСЂР°Р¶РґРµР±РЅРѕРµ]", this);
 		 label_5->setBuddy(checkbox_enemy);
 		 
-////	     QGroupBox *configGroup = new QGroupBox("Прямоугольные координаты объекта:");
+////	     QGroupBox *configGroup = new QGroupBox("РџСЂСЏРјРѕСѓРіРѕР»СЊРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ РѕР±СЉРµРєС‚Р°:");
 ////		 QLabel *x_label = new QLabel("X:");
 ////		 lineEdit_x = new QLineEdit();
 ////		 QLabel *y_label = new QLabel("Y:");
@@ -331,10 +338,10 @@ break;
 //		 configLayout->addLayout(coord_Layout);
 //		 configGroup->setLayout(configLayout);
 
-		 addButton = new QPushButton("Добавить");
+		 addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 		 addButton->setDefault(true);
 		 connect(addButton,SIGNAL(clicked()),this,SLOT(add_ls()));
-		 cancelButton = new QPushButton("Отмена");
+		 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 		 connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
 
 		 QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -402,68 +409,68 @@ break;
 //		 mainLayout->addWidget(configGroup, 5, 0, 1, 2);
          mainLayout->addLayout(buttonsLayout, 5, 0, 1, 2);
 		 setLayout(mainLayout);
-		 setWindowTitle("Добавить воинское формирование");
+		 setWindowTitle("Р”РѕР±Р°РІРёС‚СЊ РІРѕРёРЅСЃРєРѕРµ С„РѕСЂРјРёСЂРѕРІР°РЅРёРµ");
          setWindowIcon(QIcon(":/Resources/weapon.png"));
 		 break;
 		}
-	case 3://=============== Организации ============================================
+	case 3://=============== РћСЂРіР°РЅРёР·Р°С†РёРё ============================================
 		{
-		 label = new QLabel("Наименование организации:");
+		 label = new QLabel("РќР°РёРјРµРЅРѕРІР°РЅРёРµ РѕСЂРіР°РЅРёР·Р°С†РёРё:");
 		 lineEdit_name = new QLineEdit;
 		 label->setBuddy(lineEdit_name);
 		 
-		 label_2 = new QLabel("Направленность");
+		 label_2 = new QLabel("РќР°РїСЂР°РІР»РµРЅРЅРѕСЃС‚СЊ");
 		 comboBox = new QComboBox();
 		 label_2->setBuddy(comboBox);
 		 QStringList column;
 		 column.clear();
 		 column<<"name_trend_groups";
 		 fill_combobox(comboBox,"trend_groups",column);
-		 label_3 = new QLabel("Сфера деятельности:");
+		 label_3 = new QLabel("РЎС„РµСЂР° РґРµСЏС‚РµР»СЊРЅРѕСЃС‚Рё:");
 		 comboBox_2 = new QComboBox();
 		 label_3->setBuddy(comboBox_2);
 		 QStringList column_1;
 		 column_1.clear();
 		 column_1<<"name_sphere_groups";
 		 fill_combobox(comboBox_2,"sphere_groups",column_1);
-		 label_4 = new QLabel("Форма организации:");
+		 label_4 = new QLabel("Р¤РѕСЂРјР° РѕСЂРіР°РЅРёР·Р°С†РёРё:");
 		 comboBox_3 = new QComboBox();
 		 label_4->setBuddy(comboBox_3);
 		 QStringList column_2;
 		 column_2.clear();
 		 column_2<<"name_form_groups";
 		 fill_combobox(comboBox_3,"form_groups",column_2);
-		 label_5 = new QLabel("Информационные органы:");
+		 label_5 = new QLabel("РРЅС„РѕСЂРјР°С†РёРѕРЅРЅС‹Рµ РѕСЂРіР°РЅС‹:");
 		 textEdit_propa = new QTextEdit;
 		 label_5->setBuddy(textEdit_propa);
 		 textEdit_propa->setFixedHeight(50);
-		 label_6 = new QLabel("Численность организации:");
+		 label_6 = new QLabel("Р§РёСЃР»РµРЅРЅРѕСЃС‚СЊ РѕСЂРіР°РЅРёР·Р°С†РёРё:");
 		 lineEdit_counte = new QLineEdit;
 		 label_6->setBuddy(lineEdit_counte);
-		 label_7 = new QLabel("Учредители организации:");
+		 label_7 = new QLabel("РЈС‡СЂРµРґРёС‚РµР»Рё РѕСЂРіР°РЅРёР·Р°С†РёРё:");
 		 textEdit_founder = new QTextEdit;
 		 textEdit_founder->setFixedHeight(50);
 		 label_7->setBuddy(textEdit_founder);
-		 label_8 = new QLabel("Руководство организации:");
+		 label_8 = new QLabel("Р СѓРєРѕРІРѕРґСЃС‚РІРѕ РѕСЂРіР°РЅРёР·Р°С†РёРё:");
 		 textEdit_menegm = new QTextEdit;
 		 textEdit_menegm->setFixedHeight(50);
 		 label_8->setBuddy(textEdit_menegm);
-		 label_9 = new QLabel("Представительство организации:");
+		 label_9 = new QLabel("РџСЂРµРґСЃС‚Р°РІРёС‚РµР»СЊСЃС‚РІРѕ РѕСЂРіР°РЅРёР·Р°С†РёРё:");
 		 textEdit_office = new QTextEdit;
 		 textEdit_office->setFixedHeight(50);
 		 label_9->setBuddy(textEdit_office);
-		 label_10 = new QLabel("Описание организации:");
+		 label_10 = new QLabel("РћРїРёСЃР°РЅРёРµ РѕСЂРіР°РЅРёР·Р°С†РёРё:");
 		 textEdit_descr = new QTextEdit;
 		 textEdit_descr->setFixedHeight(50);
 		 label_10->setBuddy(textEdit_descr);
 
-		 addButton = new QPushButton("Добавить");
+		 addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 		 addButton->setDefault(true);
 		 connect(addButton,SIGNAL(clicked()),this,SLOT(add_groups()));
-		 cancelButton = new QPushButton("Отмена");
+		 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 		 connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
 
-//		 QGroupBox *configGroup = new QGroupBox("Прямоугольные координаты объекта:");
+//		 QGroupBox *configGroup = new QGroupBox("РџСЂСЏРјРѕСѓРіРѕР»СЊРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ РѕР±СЉРµРєС‚Р°:");
 //		 QLabel *x_label = new QLabel("X:");
 //		 lineEdit_x = new QLineEdit();
 //		 QLabel *y_label = new QLabel("Y:");
@@ -594,19 +601,19 @@ break;
 
 
 		 setLayout(mainLayout);
-		 setWindowTitle("Добавить организацию");
+		 setWindowTitle("Р”РѕР±Р°РІРёС‚СЊ РѕСЂРіР°РЅРёР·Р°С†РёСЋ");
          setWindowIcon(QIcon(":/Resources/group.png"));
 		 break;
 		}
-case 4:// ============ Национальность ================================================
+case 4:// ============ РќР°С†РёРѕРЅР°Р»СЊРЅРѕСЃС‚СЊ ================================================
 	{
 		 directs_view = new QTableWidget;
 		 directs_view->setFixedSize(600,300);
 
-		addButton = new QPushButton("Добавить");
+		addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 		addButton->setDefault(true);
 		connect(addButton,SIGNAL(clicked()),this,SLOT(add_nations_table_dlg()));
-		cancelButton = new QPushButton("Выход");
+		cancelButton = new QPushButton("Р’С‹С…РѕРґ");
 		connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
 
 		QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -624,7 +631,7 @@ case 4:// ============ Национальность ==========================================
 		 mainLayout->addLayout(h_lay, 1, 0);
 		 mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		 this->setLayout(mainLayout);
-		 setWindowTitle("Национальный состав");
+		 setWindowTitle("РќР°С†РёРѕРЅР°Р»СЊРЅС‹Р№ СЃРѕСЃС‚Р°РІ");
          setWindowIcon(QIcon(":/Resources/user_config.png"));
 	//==========================================
 	 table_nations();
@@ -633,30 +640,30 @@ case 4:// ============ Национальность ==========================================
 
 	 break;
 		} 
-case 5:{ //========== Воинские формирования ====================================
+case 5:{ //========== Р’РѕРёРЅСЃРєРёРµ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ ====================================
 		 
-		 label = new QLabel("Наименование подразделения:");
+		 label = new QLabel("РќР°РёРјРµРЅРѕРІР°РЅРёРµ РїРѕРґСЂР°Р·РґРµР»РµРЅРёСЏ:");
 		 lineEdit_name = new QLineEdit;
 		 label->setBuddy(lineEdit_name);
 		 
-		 label_2 = new QLabel("Тип подразделения:");
+		 label_2 = new QLabel("РўРёРї РїРѕРґСЂР°Р·РґРµР»РµРЅРёСЏ:");
 		 comboBox = new QComboBox();
 		 label_2->setBuddy(comboBox);
 		 QStringList column;
 		 column.clear();
 		 column<<"name_type_ls";
 		 fill_combobox(comboBox,"type_ls",column);
-		 label_3 = new QLabel("Общая численность личного состава:");
+		 label_3 = new QLabel("РћР±С‰Р°СЏ С‡РёСЃР»РµРЅРЅРѕСЃС‚СЊ Р»РёС‡РЅРѕРіРѕ СЃРѕСЃС‚Р°РІР°:");
 		 lineEdit_counte_ls = new QLineEdit;
 		 label_3->setBuddy(lineEdit_counte_ls);
-		 label_4 = new QLabel("Общая численность личного состава,\n участвующего в БД:");
+		 label_4 = new QLabel("РћР±С‰Р°СЏ С‡РёСЃР»РµРЅРЅРѕСЃС‚СЊ Р»РёС‡РЅРѕРіРѕ СЃРѕСЃС‚Р°РІР°,\n СѓС‡Р°СЃС‚РІСѓСЋС‰РµРіРѕ РІ Р‘Р”:");
 		 lineEdit_counte_ls_bd = new QLineEdit;
 		 label_4->setBuddy(lineEdit_counte_ls_bd);
-		 label_5 = new QLabel("Враждебность подразделения:");
-		 checkbox_enemy = new QCheckBox(" [-V- враждебное]", this);
+		 label_5 = new QLabel("Р’СЂР°Р¶РґРµР±РЅРѕСЃС‚СЊ РїРѕРґСЂР°Р·РґРµР»РµРЅРёСЏ:");
+		 checkbox_enemy = new QCheckBox(" [-V- РІСЂР°Р¶РґРµР±РЅРѕРµ]", this);
 		 label_5->setBuddy(checkbox_enemy);
 		 
-//	     QGroupBox *configGroup = new QGroupBox("Прямоугольные координаты объекта:");
+//	     QGroupBox *configGroup = new QGroupBox("РџСЂСЏРјРѕСѓРіРѕР»СЊРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ РѕР±СЉРµРєС‚Р°:");
 //		 QLabel *x_label = new QLabel("X:");
 //		 lineEdit_x = new QLineEdit();
 //		 QLabel *y_label = new QLabel("Y:");
@@ -672,10 +679,10 @@ case 5:{ //========== Воинские формирования ====================================
 //		 configLayout->addLayout(coord_Layout);
 //		 configGroup->setLayout(configLayout);
 
-		 addButton = new QPushButton("Добавить");
+		 addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 		 addButton->setDefault(true);
 		 connect(addButton,SIGNAL(clicked()),this,SLOT(add_ls_parent()));
-		 cancelButton = new QPushButton("Отмена");
+		 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 		 connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
 
 		 QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -742,19 +749,19 @@ case 5:{ //========== Воинские формирования ====================================
 //		 mainLayout->addWidget(configGroup, 5, 0, 1, 2);
          mainLayout->addLayout(buttonsLayout, 5, 0, 1, 2);
 		 setLayout(mainLayout);
-		 setWindowTitle("Добавить воинское формирование");
+		 setWindowTitle("Р”РѕР±Р°РІРёС‚СЊ РІРѕРёРЅСЃРєРѕРµ С„РѕСЂРјРёСЂРѕРІР°РЅРёРµ");
          setWindowIcon(QIcon(":/Resources/weapon.png"));
 		 break;
 		}
-case 6:{// ============ Религия ================================================
+case 6:{// ============ Р РµР»РёРіРёСЏ ================================================
 
 		confess_view = new QTableWidget;
 		confess_view->setFixedSize(400,300);
 
-		addButton = new QPushButton("Добавить");
+		addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 		addButton->setDefault(true);
 		connect(addButton,SIGNAL(clicked()),this,SLOT(add_confess_table_dlg()));
-		cancelButton = new QPushButton("Выход");
+		cancelButton = new QPushButton("Р’С‹С…РѕРґ");
 		connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
 
 		QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -771,7 +778,7 @@ case 6:{// ============ Религия ================================================
 		mainLayout->addLayout(h_lay, 1, 0);
 		mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		this->setLayout(mainLayout);
-		setWindowTitle("Религиозный состав");
+		setWindowTitle("Р РµР»РёРіРёРѕР·РЅС‹Р№ СЃРѕСЃС‚Р°РІ");
         setWindowIcon(QIcon(":/Resources/change_user.png"));
 	//==========================================
 	 table_confess();
@@ -780,15 +787,15 @@ case 6:{// ============ Религия ================================================
 
 	 break;
 		} 
-case 7:{// ============ Профессиональный состав ================================================
+case 7:{// ============ РџСЂРѕС„РµСЃСЃРёРѕРЅР°Р»СЊРЅС‹Р№ СЃРѕСЃС‚Р°РІ ================================================
 
 		prof_view = new QTableWidget;
 		prof_view->setFixedSize(400,300);
 
-		addButton = new QPushButton("Добавить");
+		addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 		addButton->setDefault(true);
 		connect(addButton,SIGNAL(clicked()),this,SLOT(add_prof_table_dlg()));
-		cancelButton = new QPushButton("Выход");
+		cancelButton = new QPushButton("Р’С‹С…РѕРґ");
 		connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
 
 		QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -804,7 +811,7 @@ case 7:{// ============ Профессиональный состав ================================
 		mainLayout->addLayout(h_lay, 1, 0);
 		mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		this->setLayout(mainLayout);
-		setWindowTitle("Профессиональный состав");
+		setWindowTitle("РџСЂРѕС„РµСЃСЃРёРѕРЅР°Р»СЊРЅС‹Р№ СЃРѕСЃС‚Р°РІ");
         setWindowIcon(QIcon(":/Resources/change_user.png"));
 	//==========================================
 	 table_prof();
@@ -813,15 +820,15 @@ case 7:{// ============ Профессиональный состав ================================
 
 	 break;
 		} 	
-case 8:{// ============ Возрастной состав ================================================
+case 8:{// ============ Р’РѕР·СЂР°СЃС‚РЅРѕР№ СЃРѕСЃС‚Р°РІ ================================================
 
 		age_view = new QTableWidget;
       //  age_view->resizeColumnToContents(3);
 
-		addButton = new QPushButton("Добавить");
+		addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 		addButton->setDefault(true);
 		connect(addButton,SIGNAL(clicked()),this,SLOT(add_age_table_dlg()));
-		cancelButton = new QPushButton("Выход");
+		cancelButton = new QPushButton("Р’С‹С…РѕРґ");
 		connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
 
 		QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -837,7 +844,7 @@ case 8:{// ============ Возрастной состав ======================================
 		mainLayout->addLayout(h_lay, 1, 0);
 		mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		this->setLayout(mainLayout);
-		setWindowTitle("Возрастной состав");
+		setWindowTitle("Р’РѕР·СЂР°СЃС‚РЅРѕР№ СЃРѕСЃС‚Р°РІ");
         setWindowIcon(QIcon(":/Resources/change_user.png"));
 	//==========================================
 	 table_age();
@@ -846,15 +853,15 @@ case 8:{// ============ Возрастной состав ======================================
 
 	 break;
 		} 	
-case 9:{// ============ половой состав ================================================
+case 9:{// ============ РїРѕР»РѕРІРѕР№ СЃРѕСЃС‚Р°РІ ================================================
 
 		sex_view = new QTableWidget;
 		sex_view->setFixedSize(520,100);
 
-		addButtonn = new QPushButton("Добавить");
+		addButtonn = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 		addButtonn->setDefault(true);
 		connect(addButtonn,SIGNAL(clicked()),this,SLOT(add_sex_table_dlg()));
-		cancelButton = new QPushButton("Выход");
+		cancelButton = new QPushButton("Р’С‹С…РѕРґ");
 		connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
 
 		QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -870,7 +877,7 @@ case 9:{// ============ половой состав =========================================
 		mainLayout->addLayout(h_lay, 1, 0);
 		mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		this->setLayout(mainLayout);
-		setWindowTitle("Половой состав");
+		setWindowTitle("РџРѕР»РѕРІРѕР№ СЃРѕСЃС‚Р°РІ");
         setWindowIcon(QIcon(":/Resources/change_user.png"));
 	//==========================================
 	 table_sex();
@@ -881,15 +888,15 @@ case 9:{// ============ половой состав =========================================
 
 	 break;
 		} 	
-case 10:// ============ Национальность для ВФ================================================
+case 10:// ============ РќР°С†РёРѕРЅР°Р»СЊРЅРѕСЃС‚СЊ РґР»СЏ Р’Р¤================================================
 	{
 		 directs_view = new QTableWidget;
 		 directs_view->setFixedSize(600,300);
 
-		addButton = new QPushButton("Добавить");
+		addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 		addButton->setDefault(true);
 		connect(addButton,SIGNAL(clicked()),this,SLOT(add_nations_table_dlg_vf()));
-		cancelButton = new QPushButton("Выход");
+		cancelButton = new QPushButton("Р’С‹С…РѕРґ");
 		connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
 
 		QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -907,7 +914,7 @@ case 10:// ============ Национальность для ВФ===================================
 		 mainLayout->addLayout(h_lay, 1, 0);
 		 mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		 this->setLayout(mainLayout);
-		 setWindowTitle("Национальный состав");
+		 setWindowTitle("РќР°С†РёРѕРЅР°Р»СЊРЅС‹Р№ СЃРѕСЃС‚Р°РІ");
          setWindowIcon(QIcon(":/Resources/change_user.png"));
 	//==========================================
 	 table_nations_vf();
@@ -916,15 +923,15 @@ case 10:// ============ Национальность для ВФ===================================
 
 	 break;
 		} 
-case 11:{// ============ Религия для ВФ ================================================
+case 11:{// ============ Р РµР»РёРіРёСЏ РґР»СЏ Р’Р¤ ================================================
 
 		confess_view = new QTableWidget;
 		confess_view->setFixedSize(400,300);
 
-		addButton = new QPushButton("Добавить");
+		addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 		addButton->setDefault(true);
 		connect(addButton,SIGNAL(clicked()),this,SLOT(add_confess_table_dlg_conf()));
-		cancelButton = new QPushButton("Выход");
+		cancelButton = new QPushButton("Р’С‹С…РѕРґ");
 		connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
 
 		QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -941,7 +948,7 @@ case 11:{// ============ Религия для ВФ ========================================
 		mainLayout->addLayout(h_lay, 1, 0);
 		mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		this->setLayout(mainLayout);
-		setWindowTitle("Религиозный состав");
+		setWindowTitle("Р РµР»РёРіРёРѕР·РЅС‹Р№ СЃРѕСЃС‚Р°РІ");
         setWindowIcon(QIcon(":/Resources/change_user.png"));
 	//==========================================
 	 table_confess_conf();
@@ -950,15 +957,15 @@ case 11:{// ============ Религия для ВФ ========================================
 
 	 break;
 	   } 
-case 12:{// ============ Штатка ================================================
+case 12:{// ============ РЁС‚Р°С‚РєР° ================================================
 
 		rank_view = new QTableWidget;
 		rank_view->setFixedSize(400,300);
 
-		addButton = new QPushButton("Добавить");
+		addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 		addButton->setDefault(true);
 		connect(addButton,SIGNAL(clicked()),this,SLOT(add_rank_table_dlg()));
-		cancelButton = new QPushButton("Выход");
+		cancelButton = new QPushButton("Р’С‹С…РѕРґ");
 		connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
 
 		QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -975,7 +982,7 @@ case 12:{// ============ Штатка ================================================
 		mainLayout->addLayout(h_lay, 1, 0);
 		mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		this->setLayout(mainLayout);
-		setWindowTitle("Штатно-должностной состав");
+		setWindowTitle("РЁС‚Р°С‚РЅРѕ-РґРѕР»Р¶РЅРѕСЃС‚РЅРѕР№ СЃРѕСЃС‚Р°РІ");
         setWindowIcon(QIcon(":/Resources/change_user.png"));
 	//==========================================
 	 table_rank();
@@ -984,12 +991,12 @@ case 12:{// ============ Штатка ================================================
 
 	 break;
 		} 
-case 13: { //=========================== средства =========================================
-		 label = new QLabel("Наименование средства:");
+case 13: { //=========================== СЃСЂРµРґСЃС‚РІР° =========================================
+		 label = new QLabel("РќР°РёРјРµРЅРѕРІР°РЅРёРµ СЃСЂРµРґСЃС‚РІР°:");
 		 lineEdit_name = new QLineEdit;
 		 label->setBuddy(lineEdit_name);
 		 
-		 label_2 = new QLabel("Тип средства:");
+		 label_2 = new QLabel("РўРёРї СЃСЂРµРґСЃС‚РІР°:");
 		 comboBox = new QComboBox();
 		 label_2->setBuddy(comboBox);
 		 QStringList column;
@@ -997,25 +1004,25 @@ case 13: { //=========================== средства ==============================
 		 column<<"name_type_mpo_pso";
 		 fill_combobox(comboBox,"type_mpo_pso",column);
 		 			
-		 label_3 = new QLabel("количество средств:");
+		 label_3 = new QLabel("РєРѕР»РёС‡РµСЃС‚РІРѕ СЃСЂРµРґСЃС‚РІ:");
 		 lineEdit_counte_mpo_pso = new QLineEdit;
 		 label_3->setBuddy(lineEdit_counte_mpo_pso);
-		 label_4 = new QLabel("Описание средства:");
+		 label_4 = new QLabel("РћРїРёСЃР°РЅРёРµ СЃСЂРµРґСЃС‚РІР°:");
 		 textEdit_desc = new QTextEdit;
 		 textEdit_desc->setFixedHeight(50);
 		 label_4->setBuddy(textEdit_desc);
 
-         QLabel *label_f = new QLabel("Фото средства:");
+         QLabel *label_f = new QLabel("Р¤РѕС‚Рѕ СЃСЂРµРґСЃС‚РІР°:");
          lineEdit_name_f = new QLineEdit;
          label_f->setBuddy(lineEdit_name_f);
 
 
-		 addButton = new QPushButton("Добавить");
+		 addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 		 addButton->setDefault(true);
 		 connect(addButton,SIGNAL(clicked()),this,SLOT(add_mpo_pso()));
-		 cancelButton = new QPushButton("Отмена");
+		 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 		 connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
-         QPushButton *openButton = new QPushButton("открыть");
+         QPushButton *openButton = new QPushButton("РѕС‚РєСЂС‹С‚СЊ");
          openButton->setText("...");
          openButton->setFixedSize(30,20);
          connect(openButton,SIGNAL(clicked()),this,SLOT(open_file()));
@@ -1086,17 +1093,17 @@ case 13: { //=========================== средства ==============================
 
          mainLayout->addLayout(buttonsLayout, 6, 0, 1, 2);
 		 setLayout(mainLayout);
-		 setWindowTitle("Добавить средства");
+		 setWindowTitle("Р”РѕР±Р°РІРёС‚СЊ СЃСЂРµРґСЃС‚РІР°");
          setWindowIcon(QIcon(":/Resources/connect_saturn.png"));
 		 break;
 		 
 		 }
- case 14: { //=========================== средства организаций =========================================
-		 label = new QLabel("Наименование средства:");
+ case 14: { //=========================== СЃСЂРµРґСЃС‚РІР° РѕСЂРіР°РЅРёР·Р°С†РёР№ =========================================
+		 label = new QLabel("РќР°РёРјРµРЅРѕРІР°РЅРёРµ СЃСЂРµРґСЃС‚РІР°:");
 		 lineEdit_name = new QLineEdit;
 		 label->setBuddy(lineEdit_name);
 		 
-		 label_2 = new QLabel("Тип средства:");
+		 label_2 = new QLabel("РўРёРї СЃСЂРµРґСЃС‚РІР°:");
 		 comboBox = new QComboBox();
 		 label_2->setBuddy(comboBox);
 		 QStringList column;
@@ -1104,24 +1111,24 @@ case 13: { //=========================== средства ==============================
 		 column<<"name_type_mpo_pso";
 		 fill_combobox(comboBox,"type_mpo_pso",column);
 		 			
-		 label_3 = new QLabel("количество средств:");
+		 label_3 = new QLabel("РєРѕР»РёС‡РµСЃС‚РІРѕ СЃСЂРµРґСЃС‚РІ:");
 		 lineEdit_counte_mpo_pso = new QLineEdit;
 		 label_3->setBuddy(lineEdit_counte_mpo_pso);
-		 label_4 = new QLabel("Описание средства:");
+		 label_4 = new QLabel("РћРїРёСЃР°РЅРёРµ СЃСЂРµРґСЃС‚РІР°:");
 		 textEdit_desc = new QTextEdit;
 		 textEdit_desc->setFixedHeight(50);
 		 label_4->setBuddy(textEdit_desc);
 
-         QLabel *label_f = new QLabel("Фото средства:");
+         QLabel *label_f = new QLabel("Р¤РѕС‚Рѕ СЃСЂРµРґСЃС‚РІР°:");
          lineEdit_name_f = new QLineEdit;
          label_f->setBuddy(lineEdit_name_f);
 				 			 
-		 addButton = new QPushButton("Добавить");
+		 addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 		 addButton->setDefault(true);
 		 connect(addButton,SIGNAL(clicked()),this,SLOT(add_mpo_pso_groups()));
-		 cancelButton = new QPushButton("Отмена");
+		 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 		 connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
-         QPushButton *openButton = new QPushButton("открыть");
+         QPushButton *openButton = new QPushButton("РѕС‚РєСЂС‹С‚СЊ");
          openButton->setText("...");
          openButton->setFixedSize(30,20);
          connect(openButton,SIGNAL(clicked()),this,SLOT(open_file()));
@@ -1193,17 +1200,17 @@ case 13: { //=========================== средства ==============================
 	
          mainLayout->addLayout(buttonsLayout, 6, 0, 1, 2);
 		 setLayout(mainLayout);
-		 setWindowTitle("Добавить средства");
+		 setWindowTitle("Р”РѕР±Р°РІРёС‚СЊ СЃСЂРµРґСЃС‚РІР°");
          setWindowIcon(QIcon(":/Resources/connect_saturn.png"));
 		 break;
 		 
 		 }
-case 15: { //=========================== средства СМИ =========================================
-		 label = new QLabel("Наименование средства:");
+case 15: { //=========================== СЃСЂРµРґСЃС‚РІР° РЎРњР =========================================
+		 label = new QLabel("РќР°РёРјРµРЅРѕРІР°РЅРёРµ СЃСЂРµРґСЃС‚РІР°:");
 		 lineEdit_name = new QLineEdit;
 		 label->setBuddy(lineEdit_name);
 		 
-		 label_2 = new QLabel("Тип средства:");
+		 label_2 = new QLabel("РўРёРї СЃСЂРµРґСЃС‚РІР°:");
 		 comboBox = new QComboBox();
 		 label_2->setBuddy(comboBox);
 		 QStringList column;
@@ -1211,24 +1218,24 @@ case 15: { //=========================== средства СМИ ==========================
 		 column<<"name_type_mpo_pso";
 		 fill_combobox(comboBox,"type_mpo_pso",column);
 		 			
-		 label_3 = new QLabel("количество средств:");
+		 label_3 = new QLabel("РєРѕР»РёС‡РµСЃС‚РІРѕ СЃСЂРµРґСЃС‚РІ:");
 		 lineEdit_counte_mpo_pso = new QLineEdit;
 		 label_3->setBuddy(lineEdit_counte_mpo_pso);
-		 label_4 = new QLabel("Описание средства:");
+		 label_4 = new QLabel("РћРїРёСЃР°РЅРёРµ СЃСЂРµРґСЃС‚РІР°:");
 		 textEdit_desc = new QTextEdit;
 		 textEdit_desc->setFixedHeight(50);
 		 label_4->setBuddy(textEdit_desc);
 
-         QLabel *label_f = new QLabel("Фото средства:");
+         QLabel *label_f = new QLabel("Р¤РѕС‚Рѕ СЃСЂРµРґСЃС‚РІР°:");
          lineEdit_name_f = new QLineEdit;
          label_f->setBuddy(lineEdit_name_f);
 				 			 
-		 addButton = new QPushButton("Добавить");
+		 addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 		 addButton->setDefault(true);
 		 connect(addButton,SIGNAL(clicked()),this,SLOT(add_mpo_pso_smi()));
-		 cancelButton = new QPushButton("Отмена");
+		 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 		 connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
-         QPushButton *openButton = new QPushButton("открыть");
+         QPushButton *openButton = new QPushButton("РѕС‚РєСЂС‹С‚СЊ");
          openButton->setText("...");
          openButton->setFixedSize(30,20);
          connect(openButton,SIGNAL(clicked()),this,SLOT(open_file()));
@@ -1302,22 +1309,22 @@ case 15: { //=========================== средства СМИ ==========================
 	
          mainLayout->addLayout(buttonsLayout, 6, 0, 1, 2);
 		 setLayout(mainLayout);
-		 setWindowTitle("Добавить средства");
+		 setWindowTitle("Р”РѕР±Р°РІРёС‚СЊ СЃСЂРµРґСЃС‚РІР°");
          setWindowIcon(QIcon(":/Resources/connect_saturn.png"));
 		 break;
 		 
 		 }
-case 16://=============== Условия ============================================
+case 16://=============== РЈСЃР»РѕРІРёСЏ ============================================
 		{
-		 label = new QLabel("Наименование особого условия:");
+		 label = new QLabel("РќР°РёРјРµРЅРѕРІР°РЅРёРµ РѕСЃРѕР±РѕРіРѕ СѓСЃР»РѕРІРёСЏ:");
 		 lineEdit_name = new QLineEdit;
 		 label->setBuddy(lineEdit_name);
 
-		 QLabel *label_f = new QLabel("Фото особого условия:");
+		 QLabel *label_f = new QLabel("Р¤РѕС‚Рѕ РѕСЃРѕР±РѕРіРѕ СѓСЃР»РѕРІРёСЏ:");
          lineEdit_name_f = new QLineEdit;
          label_f->setBuddy(lineEdit_name_f);
 		 
-		 label_2 = new QLabel("Тип особого условия");
+		 label_2 = new QLabel("РўРёРї РѕСЃРѕР±РѕРіРѕ СѓСЃР»РѕРІРёСЏ");
 		 comboBox = new QComboBox();
 		 comboBox->setFixedWidth(270);
 		 label_2->setBuddy(comboBox);
@@ -1326,26 +1333,26 @@ case 16://=============== Условия ============================================
 		 column<<"name_type_special_conditions";
 		 fill_combobox(comboBox,"type_special_conditions",column);
 		
-		 label_3 = new QLabel("Описание особого условия:");
+		 label_3 = new QLabel("РћРїРёСЃР°РЅРёРµ РѕСЃРѕР±РѕРіРѕ СѓСЃР»РѕРІРёСЏ:");
 		 textEdit_propa = new QTextEdit;
 		 label_3->setBuddy(textEdit_propa);
 		 textEdit_propa->setFixedHeight(50);
 		
-		 label_4 = new QLabel("Семантика_1:");
+		 label_4 = new QLabel("РЎРµРјР°РЅС‚РёРєР°_1:");
 		 lineEdit_sem_1 = new QLineEdit;
 		 label_4->setBuddy(lineEdit_sem_1);
-		 label_5 = new QLabel("Семантика_2:");
+		 label_5 = new QLabel("РЎРµРјР°РЅС‚РёРєР°_2:");
 		 lineEdit_sem_2 = new QLineEdit;
 		 label_5->setBuddy(lineEdit_sem_2);
 		
 
-		 addButton = new QPushButton("Добавить");
+		 addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 		 addButton->setDefault(true);
 		 connect(addButton,SIGNAL(clicked()),this,SLOT(add_special_cond()));
-		 cancelButton = new QPushButton("Отмена");
+		 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 		 connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
 
-         QPushButton *openButton = new QPushButton("открыть");
+         QPushButton *openButton = new QPushButton("РѕС‚РєСЂС‹С‚СЊ");
          openButton->setText("...");
          openButton->setFixedSize(30,20);
          connect(openButton,SIGNAL(clicked()),this,SLOT(open_file()));
@@ -1426,20 +1433,20 @@ case 16://=============== Условия ============================================
          mainLayout->addLayout(buttonsLayout, 6, 0, 1, 2);
 
 		 setLayout(mainLayout);
-		 setWindowTitle("Добавить особое условие");
+		 setWindowTitle("Р”РѕР±Р°РІРёС‚СЊ РѕСЃРѕР±РѕРµ СѓСЃР»РѕРІРёРµ");
          setWindowIcon(QIcon(":/Resources/Stop2.png"));
 
 		 break;
 		}
-case 17:// ============ Национальность для Организаций ================================================
+case 17:// ============ РќР°С†РёРѕРЅР°Р»СЊРЅРѕСЃС‚СЊ РґР»СЏ РћСЂРіР°РЅРёР·Р°С†РёР№ ================================================
 	{
 		 directs_view = new QTableWidget;
 		 directs_view->setFixedSize(600,300);
 
-		addButton = new QPushButton("Добавить");
+		addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 		addButton->setDefault(true);
 		connect(addButton,SIGNAL(clicked()),this,SLOT(add_nations_table_dlg_gr()));
-		cancelButton = new QPushButton("Выход");
+		cancelButton = new QPushButton("Р’С‹С…РѕРґ");
 		connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
 
 		QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -1457,7 +1464,7 @@ case 17:// ============ Национальность для Организаций =========================
 		 mainLayout->addLayout(h_lay, 1, 0);
 		 mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		 this->setLayout(mainLayout);
-		 setWindowTitle("Национальный состав");
+		 setWindowTitle("РќР°С†РёРѕРЅР°Р»СЊРЅС‹Р№ СЃРѕСЃС‚Р°РІ");
 
 	//==========================================
 	 table_nations_gr();
@@ -1466,15 +1473,15 @@ case 17:// ============ Национальность для Организаций =========================
 
 	 break;
 		} 
-case 18:{// ============ Религия для Организаций ================================================
+case 18:{// ============ Р РµР»РёРіРёСЏ РґР»СЏ РћСЂРіР°РЅРёР·Р°С†РёР№ ================================================
 
 		confess_view = new QTableWidget;
 		confess_view->setFixedSize(400,300);
 
-		addButton = new QPushButton("Добавить");
+		addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 		addButton->setDefault(true);
 		connect(addButton,SIGNAL(clicked()),this,SLOT(add_confess_table_dlg_gr()));
-		cancelButton = new QPushButton("Выход");
+		cancelButton = new QPushButton("Р’С‹С…РѕРґ");
 		connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
 
 		QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -1491,7 +1498,7 @@ case 18:{// ============ Религия для Организаций ===============================
 		mainLayout->addLayout(h_lay, 1, 0);
 		mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		this->setLayout(mainLayout);
-		setWindowTitle("Религиозный состав");
+		setWindowTitle("Р РµР»РёРіРёРѕР·РЅС‹Р№ СЃРѕСЃС‚Р°РІ");
 
 	//==========================================
 	 table_confess_gr();
@@ -1500,15 +1507,15 @@ case 18:{// ============ Религия для Организаций ===============================
 
 	 break;
 	   } 
-case 19:{// ============ Профессиональный состав Организаций ================================================
+case 19:{// ============ РџСЂРѕС„РµСЃСЃРёРѕРЅР°Р»СЊРЅС‹Р№ СЃРѕСЃС‚Р°РІ РћСЂРіР°РЅРёР·Р°С†РёР№ ================================================
 
 		prof_view = new QTableWidget;
 		prof_view->setFixedSize(400,300);
 
-		addButton = new QPushButton("Добавить");
+		addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 		addButton->setDefault(true);
 		connect(addButton,SIGNAL(clicked()),this,SLOT(add_prof_table_dlg_gr()));
-		cancelButton = new QPushButton("Выход");
+		cancelButton = new QPushButton("Р’С‹С…РѕРґ");
 		connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
 
 		QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -1524,7 +1531,7 @@ case 19:{// ============ Профессиональный состав Организаций ===================
 		mainLayout->addLayout(h_lay, 1, 0);
 		mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		this->setLayout(mainLayout);
-		setWindowTitle("Профессиональный состав");
+		setWindowTitle("РџСЂРѕС„РµСЃСЃРёРѕРЅР°Р»СЊРЅС‹Р№ СЃРѕСЃС‚Р°РІ");
 
 	//==========================================
 	 table_prof_gr();
@@ -1533,15 +1540,15 @@ case 19:{// ============ Профессиональный состав Организаций ===================
 
 	 break;
 		} 	
-case 20:{// ============ Возрастной состав для организаций ================================================
+case 20:{// ============ Р’РѕР·СЂР°СЃС‚РЅРѕР№ СЃРѕСЃС‚Р°РІ РґР»СЏ РѕСЂРіР°РЅРёР·Р°С†РёР№ ================================================
 
 		age_view = new QTableWidget;
         //setFixedSize(400,500);
 
-		addButton = new QPushButton("Добавить");
+		addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 		addButton->setDefault(true);
 		connect(addButton,SIGNAL(clicked()),this,SLOT(add_age_table_dlg_gr()));
-		cancelButton = new QPushButton("Выход");
+		cancelButton = new QPushButton("Р’С‹С…РѕРґ");
 		connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
 
 		QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -1557,7 +1564,7 @@ case 20:{// ============ Возрастной состав для организаций =====================
 		mainLayout->addLayout(h_lay, 1, 0);
 		mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		this->setLayout(mainLayout);
-		setWindowTitle("Возрастной состав");
+		setWindowTitle("Р’РѕР·СЂР°СЃС‚РЅРѕР№ СЃРѕСЃС‚Р°РІ");
 
 	//==========================================
 	 table_age_gr();
@@ -1566,15 +1573,15 @@ case 20:{// ============ Возрастной состав для организаций =====================
 
 	 break;
 		} 	
-case 21:{// ============ половой состав для организаций ================================================
+case 21:{// ============ РїРѕР»РѕРІРѕР№ СЃРѕСЃС‚Р°РІ РґР»СЏ РѕСЂРіР°РЅРёР·Р°С†РёР№ ================================================
 
 		sex_view = new QTableWidget;
 		sex_view->setFixedSize(520,100);
 
-		addButtonn = new QPushButton("Добавить");
+		addButtonn = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 		addButtonn->setDefault(true);
 		connect(addButtonn,SIGNAL(clicked()),this,SLOT(add_sex_table_dlg_gr()));
-		cancelButton = new QPushButton("Выход");
+		cancelButton = new QPushButton("Р’С‹С…РѕРґ");
 		connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
 
 		QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -1590,7 +1597,7 @@ case 21:{// ============ половой состав для организаций ========================
 		mainLayout->addLayout(h_lay, 1, 0);
 		mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		this->setLayout(mainLayout);
-		setWindowTitle("Половой состав");
+		setWindowTitle("РџРѕР»РѕРІРѕР№ СЃРѕСЃС‚Р°РІ");
 
 	//==========================================
 	 table_sex_gr();
@@ -1601,15 +1608,15 @@ case 21:{// ============ половой состав для организаций ========================
 
 	 break;
 		} 	
-case 22:{// ============ Штатка для организаций ================================================
+case 22:{// ============ РЁС‚Р°С‚РєР° РґР»СЏ РѕСЂРіР°РЅРёР·Р°С†РёР№ ================================================
 
 		rank_view = new QTableWidget;
 		rank_view->setFixedSize(400,300);
 
-		addButton = new QPushButton("Добавить");
+		addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 		addButton->setDefault(true);
 		connect(addButton,SIGNAL(clicked()),this,SLOT(add_rank_table_dlg_gr()));
-		cancelButton = new QPushButton("Выход");
+		cancelButton = new QPushButton("Р’С‹С…РѕРґ");
 		connect(cancelButton,SIGNAL(clicked()),this,SLOT(close()));
 
 		QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -1626,7 +1633,7 @@ case 22:{// ============ Штатка для организаций ================================
 		mainLayout->addLayout(h_lay, 1, 0);
 		mainLayout->addLayout(buttonsLayout, 3, 0, 3, 1);
 		this->setLayout(mainLayout);
-		setWindowTitle("Штатно-должностной состав");
+		setWindowTitle("РЁС‚Р°С‚РЅРѕ-РґРѕР»Р¶РЅРѕСЃС‚РЅРѕР№ СЃРѕСЃС‚Р°РІ");
 
 	//==========================================
 	 table_rank_gr();
@@ -1635,20 +1642,20 @@ case 22:{// ============ Штатка для организаций ================================
 
 	 break;
 		} 
-case 23:{ //========== Персонал для групп ====================================
+case 23:{ //========== РџРµСЂСЃРѕРЅР°Р» РґР»СЏ РіСЂСѓРїРї ====================================
 		 
 
 		 break;
 		}
-case 24:{ //========== Персонал данные ====================================
+case 24:{ //========== РџРµСЂСЃРѕРЅР°Р» РґР°РЅРЅС‹Рµ ====================================
 
      break;
 	 }
-case 25:{ //=========== Персонал данные ====================================
+case 25:{ //=========== РџРµСЂСЃРѕРЅР°Р» РґР°РЅРЅС‹Рµ ====================================
 
 		 break;
         }
- case 26:{ //========== Персонал для СМИ ====================================
+ case 26:{ //========== РџРµСЂСЃРѕРЅР°Р» РґР»СЏ РЎРњР ====================================
 
           break;
          }
@@ -1710,7 +1717,7 @@ columns_values += "'" + i.value() + "',";
 		}
 	}
 
-//======================== добавление нового сми ============================
+//======================== РґРѕР±Р°РІР»РµРЅРёРµ РЅРѕРІРѕРіРѕ СЃРјРё ============================
 void Add_elements_dialog::add_smi()
 {
 		int id_type_smi=comboBox->itemData(comboBox->currentIndex()).toInt();
@@ -1728,23 +1735,23 @@ void Add_elements_dialog::add_smi()
 		QString freq_smi = lineEdit_freq->text();
 		
 
-//        if(comboBox->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Выберите тип СМИ "),QMessageBox::Ok );return;}
-//        else if(comboBox_2->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Выберите представительство СМИ "),QMessageBox::Ok );return;}
-//        else if(comboBox_3->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Выберите способ вещания "),QMessageBox::Ok );return;}
+//        if(comboBox->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’С‹Р±РµСЂРёС‚Рµ С‚РёРї РЎРњР "),QMessageBox::Ok );return;}
+//        else if(comboBox_2->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’С‹Р±РµСЂРёС‚Рµ РїСЂРµРґСЃС‚Р°РІРёС‚РµР»СЊСЃС‚РІРѕ РЎРњР "),QMessageBox::Ok );return;}
+//        else if(comboBox_3->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’С‹Р±РµСЂРёС‚Рµ СЃРїРѕСЃРѕР± РІРµС‰Р°РЅРёСЏ "),QMessageBox::Ok );return;}
 //        else if (lineEdit_name->text() == "")
-//        {QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите наименование СМИ "),QMessageBox::Ok );return;}
+//        {QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ РЅР°РёРјРµРЅРѕРІР°РЅРёРµ РЎРњР "),QMessageBox::Ok );return;}
 //        else if (lineEdit_broad->text() == "")
-//        {QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите мощность сигнала "),QMessageBox::Ok );return;}
+//        {QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ РјРѕС‰РЅРѕСЃС‚СЊ СЃРёРіРЅР°Р»Р° "),QMessageBox::Ok );return;}
 //        else if (textEdit_desc->toPlainText() == "")
-//        {QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите описание СМИ "),QMessageBox::Ok );return;}
+//        {QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ РѕРїРёСЃР°РЅРёРµ РЎРњР "),QMessageBox::Ok );return;}
 //        else if (lineEdit_site->text() == "")
-//        {QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите сайт СМИ "),QMessageBox::Ok );return;}
+//        {QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ СЃР°Р№С‚ РЎРњР "),QMessageBox::Ok );return;}
 //        else if (lineEdit_aud->text() == "")
-//        {QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите аудиторию СМИ "),QMessageBox::Ok );return;}
+//        {QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ Р°СѓРґРёС‚РѕСЂРёСЋ РЎРњР "),QMessageBox::Ok );return;}
 //        else if (lineEdit_tirag->text() == "")
-//        {QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите тираж СМИ "),QMessageBox::Ok );return;}
+//        {QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ С‚РёСЂР°Р¶ РЎРњР "),QMessageBox::Ok );return;}
 //        else if (lineEdit_freq->text() == "")
-//        {QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите частоту вещания СМИ "),QMessageBox::Ok );return;}
+//        {QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ С‡Р°СЃС‚РѕС‚Сѓ РІРµС‰Р°РЅРёСЏ РЎРњР "),QMessageBox::Ok );return;}
 
 
 
@@ -1779,10 +1786,10 @@ void Add_elements_dialog::add_smi()
 			}
 		}
 }
- // ===================== добавление существующего сми =========================
+ // ===================== РґРѕР±Р°РІР»РµРЅРёРµ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РµРіРѕ СЃРјРё =========================
 void Add_elements_dialog::add_name_smi(){
 	int id_smi=comboBox_10->itemData(comboBox_10->currentIndex()).toInt();
-	if(comboBox_10->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Выберите СМИ "),QMessageBox::Ok );return;}
+	if(comboBox_10->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’С‹Р±РµСЂРёС‚Рµ РЎРњР "),QMessageBox::Ok );return;}
 	if (in_id_object<1) return;
 	QMap<QString,QString> map;
 	map.clear();
@@ -1798,7 +1805,7 @@ void Add_elements_dialog::add_name_smi(){
 		}
 	}
 }
-//=============== добавление организации ===============================================
+//=============== РґРѕР±Р°РІР»РµРЅРёРµ РѕСЂРіР°РЅРёР·Р°С†РёРё ===============================================
 void Add_elements_dialog::add_groups(){
 
 	int id_trend=comboBox->itemData(comboBox->currentIndex()).toInt();
@@ -1846,7 +1853,7 @@ void Add_elements_dialog::add_groups(){
 		}
 	
 }
-//================================= добавление ВФ ===========================
+//================================= РґРѕР±Р°РІР»РµРЅРёРµ Р’Р¤ ===========================
 void Add_elements_dialog::add_ls(){
 
 	int id_type_ls=comboBox->itemData(comboBox->currentIndex()).toInt();
@@ -1935,7 +1942,7 @@ void Add_elements_dialog::add_ls_parent(){
 		
 }
 
-//================================ для национального состава ===================================
+//================================ РґР»СЏ РЅР°С†РёРѕРЅР°Р»СЊРЅРѕРіРѕ СЃРѕСЃС‚Р°РІР° ===================================
 void Add_elements_dialog::show_redaktor(int row,int column){
 	QSqlQuery query;
 	if((column!=0) && (column!=5)){
@@ -1959,20 +1966,20 @@ void Add_elements_dialog::show_redaktor(int row,int column){
 void Add_elements_dialog::pravka_nations (int id_ls_nations){
 		
 	edit_dlg = new QDialog;
-	edit_dlg->setWindowTitle("Редактирование национального состава");
+	edit_dlg->setWindowTitle("Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ РЅР°С†РёРѕРЅР°Р»СЊРЅРѕРіРѕ СЃРѕСЃС‚Р°РІР°");
 	edit_dlg->setMinimumSize(QSize(600,400));
 
-	label = new QLabel("Национальность:");
+	label = new QLabel("РќР°С†РёРѕРЅР°Р»СЊРЅРѕСЃС‚СЊ:");
 	comboBox = new QComboBox();
 	comboBox->setFixedWidth(200);
     label->setBuddy(comboBox);
 	
-	label_2 = new QLabel("Процент:");
+	label_2 = new QLabel("РџСЂРѕС†РµРЅС‚:");
 	lineEdit_counte = new QLineEdit;
 	label_2->setBuddy(lineEdit_counte);
 
-	label_3 = new QLabel("Коренное население:");
-	QCheckBox *checkbox = new QCheckBox(" [-V- коренное население]", this);
+	label_3 = new QLabel("РљРѕСЂРµРЅРЅРѕРµ РЅР°СЃРµР»РµРЅРёРµ:");
+	QCheckBox *checkbox = new QCheckBox(" [-V- РєРѕСЂРµРЅРЅРѕРµ РЅР°СЃРµР»РµРЅРёРµ]", this);
 	label_3->setBuddy(checkbox);
 	 
 	QSqlQuery query;
@@ -1998,10 +2005,10 @@ void Add_elements_dialog::pravka_nations (int id_ls_nations){
 		checkbox->setChecked(root);
 	}
 		 
-	 addButton = new QPushButton("Сохранить");
+	 addButton = new QPushButton("РЎРѕС…СЂР°РЅРёС‚СЊ");
 	 addButton->setDefault(true);
 	 connect(addButton,SIGNAL(clicked()),edit_dlg,SLOT(accept()));
-	 cancelButton = new QPushButton("Отмена");
+	 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 	 connect(cancelButton,SIGNAL(clicked()),edit_dlg,SLOT(close()));
 
 	 QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -2070,14 +2077,14 @@ void Add_elements_dialog::pravka_nations (int id_ls_nations){
   }
 	return; 
 }
-//================== заполнение таблицы национальность ==============================
+//================== Р·Р°РїРѕР»РЅРµРЅРёРµ С‚Р°Р±Р»РёС†С‹ РЅР°С†РёРѕРЅР°Р»СЊРЅРѕСЃС‚СЊ ==============================
 void Add_elements_dialog::table_nations() {
 directs_view->setColumnCount(6);
 	directs_view->hideColumn(1);
 	directs_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	
 	QStringList header_list;
-	header_list<<" "<<" "<<"Национальность"<<"Процент"<<"Коренное население"<<" ";
+	header_list<<" "<<" "<<"РќР°С†РёРѕРЅР°Р»СЊРЅРѕСЃС‚СЊ"<<"РџСЂРѕС†РµРЅС‚"<<"РљРѕСЂРµРЅРЅРѕРµ РЅР°СЃРµР»РµРЅРёРµ"<<" ";
 	
 	directs_view->setHorizontalHeaderLabels(header_list);
 	
@@ -2104,12 +2111,12 @@ directs_view->setColumnCount(6);
 		short_name = query.value(rec.indexOf("persent_nations")).toString().toFloat();
 		code = query.value(rec.indexOf("root")).toBool();
 		
-		if (code == true) nat_view = "коренное население";
+		if (code == true) nat_view = "РєРѕСЂРµРЅРЅРѕРµ РЅР°СЃРµР»РµРЅРёРµ";
 		else nat_view = " ";
 	
 		directs_view->insertRow(row);
 
-		item = new QTableWidgetItem(icon," Редактировать",0);
+		item = new QTableWidgetItem(icon," Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ",0);
 		directs_view->setItem(row,0,item);
 
 		item = new QTableWidgetItem(QString::number(id_ls_nations));
@@ -2126,7 +2133,7 @@ directs_view->setColumnCount(6);
 		directs_view->setItem(row,4,item);
 
 		QIcon icon2(QString(":/Resources/saturn_delete.png"));
-		item = new QTableWidgetItem(icon2," Удалить",0);
+		item = new QTableWidgetItem(icon2," РЈРґР°Р»РёС‚СЊ",0);
 		directs_view->setItem(row,5,item);
 	}	
 	
@@ -2140,7 +2147,7 @@ directs_view->setColumnCount(6);
 	directs_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	
 	QStringList header_list;
-	header_list<<" "<<" "<<"Национальность"<<"Процент"<<"Коренное население"<<" ";
+	header_list<<" "<<" "<<"РќР°С†РёРѕРЅР°Р»СЊРЅРѕСЃС‚СЊ"<<"РџСЂРѕС†РµРЅС‚"<<"РљРѕСЂРµРЅРЅРѕРµ РЅР°СЃРµР»РµРЅРёРµ"<<" ";
 	
 	directs_view->setHorizontalHeaderLabels(header_list);
 	
@@ -2166,12 +2173,12 @@ directs_view->setColumnCount(6);
 		short_name = query.value(rec.indexOf("persent_nations")).toString().toFloat();
 		code = query.value(rec.indexOf("root")).toBool();
 		
-		if (code == true) nat_view = "коренное население";
+		if (code == true) nat_view = "РєРѕСЂРµРЅРЅРѕРµ РЅР°СЃРµР»РµРЅРёРµ";
 		else nat_view = " ";
 	
 		directs_view->insertRow(row);
 
-		item = new QTableWidgetItem(icon," Редактировать",0);
+		item = new QTableWidgetItem(icon," Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ",0);
 		directs_view->setItem(row,0,item);
 
 		item = new QTableWidgetItem(QString::number(id_ls_nations));
@@ -2188,7 +2195,7 @@ directs_view->setColumnCount(6);
 		directs_view->setItem(row,4,item);
 
 		QIcon icon2(QString(":/Resources/saturn_delete.png"));
-		item = new QTableWidgetItem(icon2," Удалить",0);
+		item = new QTableWidgetItem(icon2," РЈРґР°Р»РёС‚СЊ",0);
 		directs_view->setItem(row,5,item);
 	}	
    row++;
@@ -2200,7 +2207,7 @@ void Add_elements_dialog::table_nations_gr() {
 	directs_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	
 	QStringList header_list;
-	header_list<<" "<<" "<<"Национальность"<<"Процент"<<"Коренное население"<<" ";
+	header_list<<" "<<" "<<"РќР°С†РёРѕРЅР°Р»СЊРЅРѕСЃС‚СЊ"<<"РџСЂРѕС†РµРЅС‚"<<"РљРѕСЂРµРЅРЅРѕРµ РЅР°СЃРµР»РµРЅРёРµ"<<" ";
 	
 	directs_view->setHorizontalHeaderLabels(header_list);
 	
@@ -2226,12 +2233,12 @@ void Add_elements_dialog::table_nations_gr() {
 		short_name = query.value(rec.indexOf("persent_nations")).toString().toFloat();
 		code = query.value(rec.indexOf("root")).toBool();
 		
-		if (code == true) nat_view = "коренное население";
+		if (code == true) nat_view = "РєРѕСЂРµРЅРЅРѕРµ РЅР°СЃРµР»РµРЅРёРµ";
 		else nat_view = " ";
 	
 		directs_view->insertRow(row);
 
-		item = new QTableWidgetItem(icon," Редактировать",0);
+		item = new QTableWidgetItem(icon," Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ",0);
 		directs_view->setItem(row,0,item);
 
 		item = new QTableWidgetItem(QString::number(id_ls_nations));
@@ -2248,20 +2255,20 @@ void Add_elements_dialog::table_nations_gr() {
 		directs_view->setItem(row,4,item);
 
 		QIcon icon2(QString(":/Resources/saturn_delete.png"));
-		item = new QTableWidgetItem(icon2," Удалить",0);
+		item = new QTableWidgetItem(icon2," РЈРґР°Р»РёС‚СЊ",0);
 		directs_view->setItem(row,5,item);
 	}	
    row++;
    directs_view->resizeColumnsToContents();
 }
-//======================= диалог добавления нации =====================
+//======================= РґРёР°Р»РѕРі РґРѕР±Р°РІР»РµРЅРёСЏ РЅР°С†РёРё =====================
 void Add_elements_dialog::add_nations_table_dlg()
 {
 	add_dlg = new QDialog;
-	add_dlg->setWindowTitle("Добавлении нации");
+	add_dlg->setWindowTitle("Р”РѕР±Р°РІР»РµРЅРёРё РЅР°С†РёРё");
 	add_dlg->setMinimumSize(QSize(600,400));
 
-	label = new QLabel("Национальность:");
+	label = new QLabel("РќР°С†РёРѕРЅР°Р»СЊРЅРѕСЃС‚СЊ:");
 	 comboBox = new QComboBox();
 	 comboBox->setFixedWidth(200);
 	 label->setBuddy(comboBox);
@@ -2272,18 +2279,18 @@ void Add_elements_dialog::add_nations_table_dlg()
 	 column<<"name_nations";
      fill_combobox(comboBox,"nations",column);
 
-	 label_2 = new QLabel("Процент:");
+	 label_2 = new QLabel("РџСЂРѕС†РµРЅС‚:");
 	 lineEdit_counte = new QLineEdit;
 	 label_2->setBuddy(lineEdit_counte);
 
-	 label_3 = new QLabel("Коренное население:");
-	 checkbox = new QCheckBox(" [-V- коренное население]",this);
+	 label_3 = new QLabel("РљРѕСЂРµРЅРЅРѕРµ РЅР°СЃРµР»РµРЅРёРµ:");
+	 checkbox = new QCheckBox(" [-V- РєРѕСЂРµРЅРЅРѕРµ РЅР°СЃРµР»РµРЅРёРµ]",this);
 	 label_3->setBuddy(checkbox);
 
-	 addButton = new QPushButton("Добавить");
+	 addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 	 addButton->setDefault(true);
 	 connect(addButton,SIGNAL(clicked()),this,SLOT(add_nations()));
-	 cancelButton = new QPushButton("Отмена");
+	 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 	 connect(cancelButton,SIGNAL(clicked()),add_dlg,SLOT(accept()));
 
 	 QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -2340,8 +2347,8 @@ void Add_elements_dialog::add_nations()
 		float counte_ls = lineEdit_counte->text().toFloat();
 		bool root = checkbox->isChecked();	
 			
-		if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Национальность не выбрана "),QMessageBox::Ok);return;}
-		else if (lineEdit_counte->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Введите процент населения "),QMessageBox::Ok);return;}
+		if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("РќР°С†РёРѕРЅР°Р»СЊРЅРѕСЃС‚СЊ РЅРµ РІС‹Р±СЂР°РЅР° "),QMessageBox::Ok);return;}
+		else if (lineEdit_counte->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ РїСЂРѕС†РµРЅС‚ РЅР°СЃРµР»РµРЅРёСЏ "),QMessageBox::Ok);return;}
 		
 		int id_reg = in_id_object;
 
@@ -2365,10 +2372,10 @@ void Add_elements_dialog::add_nations()
 void Add_elements_dialog::add_nations_table_dlg_vf()
 {
 	add_dlg = new QDialog;
-	add_dlg->setWindowTitle("Добавлении нации");
+	add_dlg->setWindowTitle("Р”РѕР±Р°РІР»РµРЅРёРё РЅР°С†РёРё");
 	add_dlg->setMinimumSize(QSize(600,400));
 
-	label = new QLabel("Национальность:");
+	label = new QLabel("РќР°С†РёРѕРЅР°Р»СЊРЅРѕСЃС‚СЊ:");
 	 comboBox = new QComboBox();
 	 comboBox->setFixedWidth(200);
 	 label->setBuddy(comboBox);
@@ -2379,18 +2386,18 @@ void Add_elements_dialog::add_nations_table_dlg_vf()
 	 column<<"name_nations";
      fill_combobox(comboBox,"nations",column);
 
-	 label_2 = new QLabel("Процент:");
+	 label_2 = new QLabel("РџСЂРѕС†РµРЅС‚:");
 	 lineEdit_counte = new QLineEdit;
 	 label_2->setBuddy(lineEdit_counte);
 
-	 label_3 = new QLabel("Коренное население:");
-	 checkbox = new QCheckBox(" [-V- коренное население]",this);
+	 label_3 = new QLabel("РљРѕСЂРµРЅРЅРѕРµ РЅР°СЃРµР»РµРЅРёРµ:");
+	 checkbox = new QCheckBox(" [-V- РєРѕСЂРµРЅРЅРѕРµ РЅР°СЃРµР»РµРЅРёРµ]",this);
 	 label_3->setBuddy(checkbox);
 
-	 addButton = new QPushButton("Добавить");
+	 addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 	 addButton->setDefault(true);
 	 connect(addButton,SIGNAL(clicked()),this,SLOT(add_nations_vf()));
-	 cancelButton = new QPushButton("Отмена");
+	 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 	 connect(cancelButton,SIGNAL(clicked()),add_dlg,SLOT(accept()));
 
 	 QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -2447,8 +2454,8 @@ void Add_elements_dialog::add_nations_vf()
 		float counte_ls = lineEdit_counte->text().toFloat();
 		bool root = checkbox->isChecked();	
 			
-		if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Национальность не выбрана "),QMessageBox::Ok);return;}
-		else if (lineEdit_counte->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Введите процент населения "),QMessageBox::Ok);return;}
+		if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("РќР°С†РёРѕРЅР°Р»СЊРЅРѕСЃС‚СЊ РЅРµ РІС‹Р±СЂР°РЅР° "),QMessageBox::Ok);return;}
+		else if (lineEdit_counte->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ РїСЂРѕС†РµРЅС‚ РЅР°СЃРµР»РµРЅРёСЏ "),QMessageBox::Ok);return;}
 		
 		int id_ls = in_id_object;
 
@@ -2472,10 +2479,10 @@ void Add_elements_dialog::add_nations_vf()
 void Add_elements_dialog::add_nations_table_dlg_gr()
 {
 	add_dlg = new QDialog;
-	add_dlg->setWindowTitle("Добавлении нации");
+	add_dlg->setWindowTitle("Р”РѕР±Р°РІР»РµРЅРёРё РЅР°С†РёРё");
 	add_dlg->setMinimumSize(QSize(600,400));
 
-	label = new QLabel("Национальность:");
+	label = new QLabel("РќР°С†РёРѕРЅР°Р»СЊРЅРѕСЃС‚СЊ:");
 	 comboBox = new QComboBox();
 	 comboBox->setFixedWidth(200);
 	 label->setBuddy(comboBox);
@@ -2486,18 +2493,18 @@ void Add_elements_dialog::add_nations_table_dlg_gr()
 	 column<<"name_nations";
      fill_combobox(comboBox,"nations",column);
 
-	 label_2 = new QLabel("Процент:");
+	 label_2 = new QLabel("РџСЂРѕС†РµРЅС‚:");
 	 lineEdit_counte = new QLineEdit;
 	 label_2->setBuddy(lineEdit_counte);
 
-	 label_3 = new QLabel("Коренное население:");
-	 checkbox = new QCheckBox(" [-V- коренное население]",this);
+	 label_3 = new QLabel("РљРѕСЂРµРЅРЅРѕРµ РЅР°СЃРµР»РµРЅРёРµ:");
+	 checkbox = new QCheckBox(" [-V- РєРѕСЂРµРЅРЅРѕРµ РЅР°СЃРµР»РµРЅРёРµ]",this);
 	 label_3->setBuddy(checkbox);
 
-	 addButton = new QPushButton("Добавить");
+	 addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 	 addButton->setDefault(true);
 	 connect(addButton,SIGNAL(clicked()),this,SLOT(add_nations_gr()));
-	 cancelButton = new QPushButton("Отмена");
+	 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 	 connect(cancelButton,SIGNAL(clicked()),add_dlg,SLOT(accept()));
 
 	 QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -2554,8 +2561,8 @@ void Add_elements_dialog::add_nations_gr()
 		float counte_ls = lineEdit_counte->text().toFloat();
 		bool root = checkbox->isChecked();	
 			
-		if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Национальность не выбрана "),QMessageBox::Ok);return;}
-		else if (lineEdit_counte->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Введите процент населения "),QMessageBox::Ok);return;}
+		if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("РќР°С†РёРѕРЅР°Р»СЊРЅРѕСЃС‚СЊ РЅРµ РІС‹Р±СЂР°РЅР° "),QMessageBox::Ok);return;}
+		else if (lineEdit_counte->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ РїСЂРѕС†РµРЅС‚ РЅР°СЃРµР»РµРЅРёСЏ "),QMessageBox::Ok);return;}
 		
 		int id_gr = in_id_object;
 
@@ -2575,7 +2582,7 @@ void Add_elements_dialog::add_nations_gr()
 		add_dlg->close();
 		
 }
-//================================== очистка таблицы ===================================
+//================================== РѕС‡РёСЃС‚РєР° С‚Р°Р±Р»РёС†С‹ ===================================
 void Add_elements_dialog::clear_table(QTableWidget *table)
 {
 	int row_count = table->rowCount();
@@ -2603,14 +2610,14 @@ void Add_elements_dialog::fill_combobox_nations(QComboBox *comboBox,int current_
 
 	comboBox->setCurrentIndex(ci_3);
 }
-//================== заполнение таблицы религия ==============================
+//================== Р·Р°РїРѕР»РЅРµРЅРёРµ С‚Р°Р±Р»РёС†С‹ СЂРµР»РёРіРёСЏ ==============================
 void Add_elements_dialog::table_confess() {
 	confess_view->setColumnCount(5);
 	confess_view->hideColumn(1);
 	confess_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	
 	QStringList header_list;
-	header_list<<" "<<" "<<"Религия"<<"Процент"<<" ";
+	header_list<<" "<<" "<<"Р РµР»РёРіРёСЏ"<<"РџСЂРѕС†РµРЅС‚"<<" ";
 	confess_view->setHorizontalHeaderLabels(header_list);
 	
 	QSqlQuery query;
@@ -2636,7 +2643,7 @@ void Add_elements_dialog::table_confess() {
 			
 		confess_view->insertRow(row);
 
-		item = new QTableWidgetItem(icon," Редактировать",0);
+		item = new QTableWidgetItem(icon," Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ",0);
 		confess_view->setItem(row,0,item);
 
 		item = new QTableWidgetItem(QString::number(id_ls_conf));
@@ -2650,7 +2657,7 @@ void Add_elements_dialog::table_confess() {
 	//	confess_view->sortItems(3,Qt::DescendingOrder);
 
 		QIcon icon2(QString(":/Resources/saturn_delete.png"));
-		item = new QTableWidgetItem(icon2," Удалить",0);
+		item = new QTableWidgetItem(icon2," РЈРґР°Р»РёС‚СЊ",0);
 		confess_view->setItem(row,4,item);
 	}	
    row++;
@@ -2662,7 +2669,7 @@ void Add_elements_dialog::table_confess_conf() {
 	confess_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	
 	QStringList header_list;
-	header_list<<" "<<" "<<"Религия"<<"Процент"<<" ";
+	header_list<<" "<<" "<<"Р РµР»РёРіРёСЏ"<<"РџСЂРѕС†РµРЅС‚"<<" ";
 	confess_view->setHorizontalHeaderLabels(header_list);
 	
 	QSqlQuery query;
@@ -2688,7 +2695,7 @@ void Add_elements_dialog::table_confess_conf() {
 			
 		confess_view->insertRow(row);
 
-		item = new QTableWidgetItem(icon," Редактировать",0);
+		item = new QTableWidgetItem(icon," Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ",0);
 		confess_view->setItem(row,0,item);
 
 		item = new QTableWidgetItem(QString::number(id_ls_conf));
@@ -2702,7 +2709,7 @@ void Add_elements_dialog::table_confess_conf() {
 	//	confess_view->sortItems(3,Qt::DescendingOrder);
 
 		QIcon icon2(QString(":/Resources/saturn_delete.png"));
-		item = new QTableWidgetItem(icon2," Удалить",0);
+		item = new QTableWidgetItem(icon2," РЈРґР°Р»РёС‚СЊ",0);
 		confess_view->setItem(row,4,item);
 	}	
    row++;
@@ -2714,7 +2721,7 @@ void Add_elements_dialog::table_confess_gr() {
 	confess_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	
 	QStringList header_list;
-	header_list<<" "<<" "<<"Религия"<<"Процент"<<" ";
+	header_list<<" "<<" "<<"Р РµР»РёРіРёСЏ"<<"РџСЂРѕС†РµРЅС‚"<<" ";
 	confess_view->setHorizontalHeaderLabels(header_list);
 	
 	QSqlQuery query;
@@ -2740,7 +2747,7 @@ void Add_elements_dialog::table_confess_gr() {
 			
 		confess_view->insertRow(row);
 
-		item = new QTableWidgetItem(icon," Редактировать",0);
+		item = new QTableWidgetItem(icon," Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ",0);
 		confess_view->setItem(row,0,item);
 
 		item = new QTableWidgetItem(QString::number(id_ls_conf));
@@ -2754,20 +2761,20 @@ void Add_elements_dialog::table_confess_gr() {
 	//	confess_view->sortItems(3,Qt::DescendingOrder);
 
 		QIcon icon2(QString(":/Resources/saturn_delete.png"));
-		item = new QTableWidgetItem(icon2," Удалить",0);
+		item = new QTableWidgetItem(icon2," РЈРґР°Р»РёС‚СЊ",0);
 		confess_view->setItem(row,4,item);
 	}	
    row++;
    confess_view->resizeColumnsToContents();
 }
-//======================= диалог добавления религии =====================
+//======================= РґРёР°Р»РѕРі РґРѕР±Р°РІР»РµРЅРёСЏ СЂРµР»РёРіРёРё =====================
 void Add_elements_dialog::add_confess_table_dlg()
 {
 	add_dlg = new QDialog;
-	add_dlg->setWindowTitle("Добавлении религии");
+	add_dlg->setWindowTitle("Р”РѕР±Р°РІР»РµРЅРёРё СЂРµР»РёРіРёРё");
 	add_dlg->setMinimumSize(QSize(600,400));
 
-	label = new QLabel("Религия:");
+	label = new QLabel("Р РµР»РёРіРёСЏ:");
 	 comboBox = new QComboBox();
 	 comboBox->setFixedWidth(200);
 	 label->setBuddy(comboBox);
@@ -2778,14 +2785,14 @@ void Add_elements_dialog::add_confess_table_dlg()
 	 column<<"name_confessions";
      fill_combobox(comboBox,"confessions",column);
 
-	 label_2 = new QLabel("Процент:");
+	 label_2 = new QLabel("РџСЂРѕС†РµРЅС‚:");
 	 lineEdit_counte = new QLineEdit;
 	 label_2->setBuddy(lineEdit_counte);
 
-	 addButton = new QPushButton("Добавить");
+	 addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 	 addButton->setDefault(true);
 	 connect(addButton,SIGNAL(clicked()),this,SLOT(add_confess()));
-	 cancelButton = new QPushButton("Отмена");
+	 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 	 connect(cancelButton,SIGNAL(clicked()),add_dlg,SLOT(accept()));
 
 	 QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -2831,8 +2838,8 @@ void Add_elements_dialog::add_confess()
 		int id_conf=comboBox->itemData(comboBox->currentIndex()).toInt();
 		float counte_conf = lineEdit_counte->text().toFloat();
 			
-		if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Религия не выбрана "),QMessageBox::Ok);return;}
-		else if (lineEdit_counte->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Введите процент "),QMessageBox::Ok);return;}
+		if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("Р РµР»РёРіРёСЏ РЅРµ РІС‹Р±СЂР°РЅР° "),QMessageBox::Ok);return;}
+		else if (lineEdit_counte->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ РїСЂРѕС†РµРЅС‚ "),QMessageBox::Ok);return;}
 		
 		int id_reg = in_id_object;
 
@@ -2854,10 +2861,10 @@ void Add_elements_dialog::add_confess()
 void Add_elements_dialog::add_confess_table_dlg_gr()
 {
 	add_dlg = new QDialog;
-	add_dlg->setWindowTitle("Добавлении религии");
+	add_dlg->setWindowTitle("Р”РѕР±Р°РІР»РµРЅРёРё СЂРµР»РёРіРёРё");
 	add_dlg->setMinimumSize(QSize(600,400));
 
-	label = new QLabel("Религия:");
+	label = new QLabel("Р РµР»РёРіРёСЏ:");
 	 comboBox = new QComboBox();
 	 comboBox->setFixedWidth(200);
 	 label->setBuddy(comboBox);
@@ -2868,14 +2875,14 @@ void Add_elements_dialog::add_confess_table_dlg_gr()
 	 column<<"name_confessions";
      fill_combobox(comboBox,"confessions",column);
 
-	 label_2 = new QLabel("Процент:");
+	 label_2 = new QLabel("РџСЂРѕС†РµРЅС‚:");
 	 lineEdit_counte = new QLineEdit;
 	 label_2->setBuddy(lineEdit_counte);
 
-	 addButton = new QPushButton("Добавить");
+	 addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 	 addButton->setDefault(true);
 	 connect(addButton,SIGNAL(clicked()),this,SLOT(add_confess_gr()));
-	 cancelButton = new QPushButton("Отмена");
+	 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 	 connect(cancelButton,SIGNAL(clicked()),add_dlg,SLOT(accept()));
 
 	 QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -2921,8 +2928,8 @@ void Add_elements_dialog::add_confess_gr()
 		int id_conf=comboBox->itemData(comboBox->currentIndex()).toInt();
 		float counte_conf = lineEdit_counte->text().toFloat();
 			
-		if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Религия не выбрана "),QMessageBox::Ok);return;}
-		else if (lineEdit_counte->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Введите процент "),QMessageBox::Ok);return;}
+		if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("Р РµР»РёРіРёСЏ РЅРµ РІС‹Р±СЂР°РЅР° "),QMessageBox::Ok);return;}
+		else if (lineEdit_counte->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ РїСЂРѕС†РµРЅС‚ "),QMessageBox::Ok);return;}
 		
 		int id_gr = in_id_object;
 
@@ -2944,10 +2951,10 @@ void Add_elements_dialog::add_confess_gr()
 void Add_elements_dialog::add_confess_table_dlg_conf()
 {
 	add_dlg = new QDialog;
-	add_dlg->setWindowTitle("Добавлении религии");
+	add_dlg->setWindowTitle("Р”РѕР±Р°РІР»РµРЅРёРё СЂРµР»РёРіРёРё");
 	add_dlg->setMinimumSize(QSize(600,400));
 
-	label = new QLabel("Религия:");
+	label = new QLabel("Р РµР»РёРіРёСЏ:");
 	 comboBox = new QComboBox();
 	 comboBox->setFixedWidth(200);
 	 label->setBuddy(comboBox);
@@ -2958,14 +2965,14 @@ void Add_elements_dialog::add_confess_table_dlg_conf()
 	 column<<"name_confessions";
      fill_combobox(comboBox,"confessions",column);
 
-	 label_2 = new QLabel("Процент:");
+	 label_2 = new QLabel("РџСЂРѕС†РµРЅС‚:");
 	 lineEdit_counte = new QLineEdit;
 	 label_2->setBuddy(lineEdit_counte);
 
-	 addButton = new QPushButton("Добавить");
+	 addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 	 addButton->setDefault(true);
 	 connect(addButton,SIGNAL(clicked()),this,SLOT(add_confess_conf()));
-	 cancelButton = new QPushButton("Отмена");
+	 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 	 connect(cancelButton,SIGNAL(clicked()),add_dlg,SLOT(accept()));
 
 	 QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -3011,8 +3018,8 @@ void Add_elements_dialog::add_confess_conf()
 		int id_conf=comboBox->itemData(comboBox->currentIndex()).toInt();
 		float counte_conf = lineEdit_counte->text().toFloat();
 			
-		if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Религия не выбрана "),QMessageBox::Ok);return;}
-		else if (lineEdit_counte->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Введите процент "),QMessageBox::Ok);return;}
+		if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("Р РµР»РёРіРёСЏ РЅРµ РІС‹Р±СЂР°РЅР° "),QMessageBox::Ok);return;}
+		else if (lineEdit_counte->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ РїСЂРѕС†РµРЅС‚ "),QMessageBox::Ok);return;}
 		
 		int id_ls = in_id_object;
 
@@ -3030,7 +3037,7 @@ void Add_elements_dialog::add_confess_conf()
 		table_confess_conf();
 		add_dlg->close();
 }
-//=========================== правка религия =====================================
+//=========================== РїСЂР°РІРєР° СЂРµР»РёРіРёСЏ =====================================
 void Add_elements_dialog::show_redaktor_conf(int row,int column){
 	QSqlQuery query;
 	if((column!=0) && (column!=4)){
@@ -3053,15 +3060,15 @@ void Add_elements_dialog::show_redaktor_conf(int row,int column){
 void Add_elements_dialog::pravka_conf (int id_ls_conf){
 		
 	edit_dlg = new QDialog;
-	edit_dlg->setWindowTitle("Редактирование данных Религия");
+	edit_dlg->setWindowTitle("Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ РґР°РЅРЅС‹С… Р РµР»РёРіРёСЏ");
 	edit_dlg->setMinimumSize(QSize(600,400));
 
-	label = new QLabel("Религия:");
+	label = new QLabel("Р РµР»РёРіРёСЏ:");
 	comboBox = new QComboBox();
 	comboBox->setFixedWidth(200);
     label->setBuddy(comboBox);
 	
-	label_2 = new QLabel("Процент:");
+	label_2 = new QLabel("РџСЂРѕС†РµРЅС‚:");
 	lineEdit_counte = new QLineEdit;
 	label_2->setBuddy(lineEdit_counte);
 
@@ -3085,10 +3092,10 @@ void Add_elements_dialog::pravka_conf (int id_ls_conf){
 		lineEdit_counte->setText(QString::number(persent));	
 	}
 		 
-	 addButton = new QPushButton("Сохранить");
+	 addButton = new QPushButton("РЎРѕС…СЂР°РЅРёС‚СЊ");
 	 addButton->setDefault(true);
 	 connect(addButton,SIGNAL(clicked()),edit_dlg,SLOT(accept()));
-	 cancelButton = new QPushButton("Отмена");
+	 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 	 connect(cancelButton,SIGNAL(clicked()),edit_dlg,SLOT(close()));
 
 	 QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -3160,14 +3167,14 @@ void Add_elements_dialog::fill_combobox_conf(QComboBox *comboBox,int current_ind
 
 	comboBox->setCurrentIndex(ci_3);
 }
-//================== заполнение таблицы prof ==============================================
+//================== Р·Р°РїРѕР»РЅРµРЅРёРµ С‚Р°Р±Р»РёС†С‹ prof ==============================================
 void Add_elements_dialog::table_prof() {
 	prof_view->setColumnCount(5);
 	prof_view->hideColumn(1);
 	prof_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	
 	QStringList header_list;
-	header_list<<" "<<" "<<"Профессия"<<"Процент"<<" ";
+	header_list<<" "<<" "<<"РџСЂРѕС„РµСЃСЃРёСЏ"<<"РџСЂРѕС†РµРЅС‚"<<" ";
 	prof_view->setHorizontalHeaderLabels(header_list);
 	
 	QSqlQuery query;
@@ -3192,7 +3199,7 @@ void Add_elements_dialog::table_prof() {
 			
 		prof_view->insertRow(row);
 
-		item = new QTableWidgetItem(icon," Редактировать",0);
+		item = new QTableWidgetItem(icon," Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ",0);
 		prof_view->setItem(row,0,item);
 
 		item = new QTableWidgetItem(QString::number(id_pop_prof));
@@ -3206,7 +3213,7 @@ void Add_elements_dialog::table_prof() {
 	//	prof_view->sortItems(3,Qt::DescendingOrder);
 
 		QIcon icon2(QString(":/Resources/saturn_delete.png"));
-		item = new QTableWidgetItem(icon2," Удалить",0);
+		item = new QTableWidgetItem(icon2," РЈРґР°Р»РёС‚СЊ",0);
 		prof_view->setItem(row,4,item);
 	}	
    row++;
@@ -3218,7 +3225,7 @@ void Add_elements_dialog::table_prof_gr() {
 	prof_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	
 	QStringList header_list;
-	header_list<<" "<<" "<<"Профессия"<<"Процент"<<" ";
+	header_list<<" "<<" "<<"РџСЂРѕС„РµСЃСЃРёСЏ"<<"РџСЂРѕС†РµРЅС‚"<<" ";
 	prof_view->setHorizontalHeaderLabels(header_list);
 	
 	QSqlQuery query;
@@ -3243,7 +3250,7 @@ void Add_elements_dialog::table_prof_gr() {
 			
 		prof_view->insertRow(row);
 
-		item = new QTableWidgetItem(icon," Редактировать",0);
+		item = new QTableWidgetItem(icon," Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ",0);
 		prof_view->setItem(row,0,item);
 
 		item = new QTableWidgetItem(QString::number(id_pop_prof));
@@ -3257,20 +3264,20 @@ void Add_elements_dialog::table_prof_gr() {
 	//	prof_view->sortItems(3,Qt::DescendingOrder);
 
 		QIcon icon2(QString(":/Resources/saturn_delete.png"));
-		item = new QTableWidgetItem(icon2," Удалить",0);
+		item = new QTableWidgetItem(icon2," РЈРґР°Р»РёС‚СЊ",0);
 		prof_view->setItem(row,4,item);
 	}	
    row++;
    prof_view->resizeColumnsToContents();
 }
-//======================= диалог добавления профессии =====================================
+//======================= РґРёР°Р»РѕРі РґРѕР±Р°РІР»РµРЅРёСЏ РїСЂРѕС„РµСЃСЃРёРё =====================================
 void Add_elements_dialog::add_prof_table_dlg()
 {
 	add_dlg = new QDialog;
-	add_dlg->setWindowTitle("Добавлении професии");
+	add_dlg->setWindowTitle("Р”РѕР±Р°РІР»РµРЅРёРё РїСЂРѕС„РµСЃРёРё");
 	add_dlg->setMinimumSize(QSize(600,400));
 
-	label = new QLabel("Профессия:");
+	label = new QLabel("РџСЂРѕС„РµСЃСЃРёСЏ:");
 	 comboBox = new QComboBox();
 	 comboBox->setFixedWidth(200);
 	 label->setBuddy(comboBox);
@@ -3281,14 +3288,14 @@ void Add_elements_dialog::add_prof_table_dlg()
 	 column<<"name_profession";
      fill_combobox(comboBox,"profession",column);
 
-	 label_2 = new QLabel("Процент:");
+	 label_2 = new QLabel("РџСЂРѕС†РµРЅС‚:");
 	 lineEdit_counte = new QLineEdit;
 	 label_2->setBuddy(lineEdit_counte);
 
-	 addButton = new QPushButton("Добавить");
+	 addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 	 addButton->setDefault(true);
 	 connect(addButton,SIGNAL(clicked()),this,SLOT(add_prof()));
-	 cancelButton = new QPushButton("Отмена");
+	 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 	 connect(cancelButton,SIGNAL(clicked()),add_dlg,SLOT(accept()));
 
 	 QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -3334,8 +3341,8 @@ void Add_elements_dialog::add_prof()
 		int id_prof=comboBox->itemData(comboBox->currentIndex()).toInt();
 		float counte_prof = lineEdit_counte->text().toFloat();
 			
-		if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Профессия не выбрана "),QMessageBox::Ok);return;}
-		else if (lineEdit_counte->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Введите процент "),QMessageBox::Ok);return;}
+		if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("РџСЂРѕС„РµСЃСЃРёСЏ РЅРµ РІС‹Р±СЂР°РЅР° "),QMessageBox::Ok);return;}
+		else if (lineEdit_counte->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ РїСЂРѕС†РµРЅС‚ "),QMessageBox::Ok);return;}
 		
 		int id_reg = in_id_object;
 
@@ -3357,10 +3364,10 @@ void Add_elements_dialog::add_prof()
 void Add_elements_dialog::add_prof_table_dlg_gr()
 {
 	add_dlg = new QDialog;
-	add_dlg->setWindowTitle("Добавлении професии");
+	add_dlg->setWindowTitle("Р”РѕР±Р°РІР»РµРЅРёРё РїСЂРѕС„РµСЃРёРё");
 	add_dlg->setMinimumSize(QSize(600,400));
 
-	label = new QLabel("Профессия:");
+	label = new QLabel("РџСЂРѕС„РµСЃСЃРёСЏ:");
 	 comboBox = new QComboBox();
 	 comboBox->setFixedWidth(200);
 	 label->setBuddy(comboBox);
@@ -3371,14 +3378,14 @@ void Add_elements_dialog::add_prof_table_dlg_gr()
 	 column<<"name_profession";
      fill_combobox(comboBox,"profession",column);
 
-	 label_2 = new QLabel("Процент:");
+	 label_2 = new QLabel("РџСЂРѕС†РµРЅС‚:");
 	 lineEdit_counte = new QLineEdit;
 	 label_2->setBuddy(lineEdit_counte);
 
-	 addButton = new QPushButton("Добавить");
+	 addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 	 addButton->setDefault(true);
 	 connect(addButton,SIGNAL(clicked()),this,SLOT(add_prof_gr()));
-	 cancelButton = new QPushButton("Отмена");
+	 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 	 connect(cancelButton,SIGNAL(clicked()),add_dlg,SLOT(accept()));
 
 	 QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -3424,8 +3431,8 @@ void Add_elements_dialog::add_prof_gr()
 		int id_prof=comboBox->itemData(comboBox->currentIndex()).toInt();
 		float counte_prof = lineEdit_counte->text().toFloat();
 			
-		if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Профессия не выбрана "),QMessageBox::Ok);return;}
-		else if (lineEdit_counte->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Введите процент "),QMessageBox::Ok);return;}
+		if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("РџСЂРѕС„РµСЃСЃРёСЏ РЅРµ РІС‹Р±СЂР°РЅР° "),QMessageBox::Ok);return;}
+		else if (lineEdit_counte->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ РїСЂРѕС†РµРЅС‚ "),QMessageBox::Ok);return;}
 		
 		int id_gr = in_id_object;
 
@@ -3443,7 +3450,7 @@ void Add_elements_dialog::add_prof_gr()
 		table_prof_gr();
 		add_dlg->close();
 }
-//=========================== правка профессии ============================================
+//=========================== РїСЂР°РІРєР° РїСЂРѕС„РµСЃСЃРёРё ============================================
 void Add_elements_dialog::show_redaktor_prof(int row,int column){
 	QSqlQuery query;
 	if((column!=0) && (column!=4)){
@@ -3466,15 +3473,15 @@ void Add_elements_dialog::show_redaktor_prof(int row,int column){
 void Add_elements_dialog::pravka_prof (int id_ls_prof){
 		
 	edit_dlg = new QDialog;
-	edit_dlg->setWindowTitle("Редактирование данных профессия");
+	edit_dlg->setWindowTitle("Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ РґР°РЅРЅС‹С… РїСЂРѕС„РµСЃСЃРёСЏ");
 	edit_dlg->setMinimumSize(QSize(600,400));
 
-	label = new QLabel("Профессия:");
+	label = new QLabel("РџСЂРѕС„РµСЃСЃРёСЏ:");
 	comboBox = new QComboBox();
 	comboBox->setFixedWidth(200);
     label->setBuddy(comboBox);
 	
-	label_2 = new QLabel("Процент:");
+	label_2 = new QLabel("РџСЂРѕС†РµРЅС‚:");
 	lineEdit_counte = new QLineEdit;
 	label_2->setBuddy(lineEdit_counte);
 
@@ -3498,10 +3505,10 @@ void Add_elements_dialog::pravka_prof (int id_ls_prof){
 		lineEdit_counte->setText(QString::number(persent));	
 	}
 		 
-	 addButton = new QPushButton("Сохранить");
+	 addButton = new QPushButton("РЎРѕС…СЂР°РЅРёС‚СЊ");
 	 addButton->setDefault(true);
 	 connect(addButton,SIGNAL(clicked()),edit_dlg,SLOT(accept()));
-	 cancelButton = new QPushButton("Отмена");
+	 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 	 connect(cancelButton,SIGNAL(clicked()),edit_dlg,SLOT(close()));
 
 	 QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -3572,14 +3579,14 @@ void Add_elements_dialog::fill_combobox_prof(QComboBox *comboBox,int current_ind
 
 	comboBox->setCurrentIndex(ci_3);
 }
-//================== заполнение таблицы возраст ==============================================
+//================== Р·Р°РїРѕР»РЅРµРЅРёРµ С‚Р°Р±Р»РёС†С‹ РІРѕР·СЂР°СЃС‚ ==============================================
 void Add_elements_dialog::table_age() {
 	age_view->setColumnCount(5);
 	age_view->hideColumn(1);
 	age_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	
 	QStringList header_list;
-	header_list<<" "<<" "<<"Возраст"<<"Процент"<<" ";
+	header_list<<" "<<" "<<"Р’РѕР·СЂР°СЃС‚"<<"РџСЂРѕС†РµРЅС‚"<<" ";
 	age_view->setHorizontalHeaderLabels(header_list);
 	
 	QSqlQuery query;
@@ -3604,7 +3611,7 @@ void Add_elements_dialog::table_age() {
 			
 		age_view->insertRow(row);
 
-		item = new QTableWidgetItem(icon," Редактировать",0);
+		item = new QTableWidgetItem(icon," Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ",0);
 		age_view->setItem(row,0,item);
 
 		item = new QTableWidgetItem(QString::number(id_pop_age));
@@ -3618,7 +3625,7 @@ void Add_elements_dialog::table_age() {
 	//	age_view->sortItems(3,Qt::DescendingOrder);
 
 		QIcon icon2(QString(":/Resources/saturn_delete.png"));
-		item = new QTableWidgetItem(icon2," Удалить",0);
+		item = new QTableWidgetItem(icon2," РЈРґР°Р»РёС‚СЊ",0);
 		age_view->setItem(row,4,item);
 	}	
    row++;
@@ -3630,7 +3637,7 @@ void Add_elements_dialog::table_age_gr() {
 	age_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	
 	QStringList header_list;
-	header_list<<" "<<" "<<"Возраст"<<"Процент"<<" ";
+	header_list<<" "<<" "<<"Р’РѕР·СЂР°СЃС‚"<<"РџСЂРѕС†РµРЅС‚"<<" ";
 	age_view->setHorizontalHeaderLabels(header_list);
 	
 	QSqlQuery query;
@@ -3655,7 +3662,7 @@ void Add_elements_dialog::table_age_gr() {
 			
 		age_view->insertRow(row);
 
-		item = new QTableWidgetItem(icon," Редактировать",0);
+		item = new QTableWidgetItem(icon," Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ",0);
 		age_view->setItem(row,0,item);
 
 		item = new QTableWidgetItem(QString::number(id_pop_age));
@@ -3669,20 +3676,20 @@ void Add_elements_dialog::table_age_gr() {
 	//	age_view->sortItems(3,Qt::DescendingOrder);
 
 		QIcon icon2(QString(":/Resources/saturn_delete.png"));
-		item = new QTableWidgetItem(icon2," Удалить",0);
+		item = new QTableWidgetItem(icon2," РЈРґР°Р»РёС‚СЊ",0);
 		age_view->setItem(row,4,item);
 	}	
    row++;
    age_view->resizeColumnsToContents();
 }
-//======================= диалог добавления возраста =====================================
+//======================= РґРёР°Р»РѕРі РґРѕР±Р°РІР»РµРЅРёСЏ РІРѕР·СЂР°СЃС‚Р° =====================================
 void Add_elements_dialog::add_age_table_dlg()
 {
 	add_dlg = new QDialog;
-	add_dlg->setWindowTitle("Добавлении возраста");
+	add_dlg->setWindowTitle("Р”РѕР±Р°РІР»РµРЅРёРё РІРѕР·СЂР°СЃС‚Р°");
 	add_dlg->setMinimumSize(QSize(600,400));
 
-	label = new QLabel("Возраст:");
+	label = new QLabel("Р’РѕР·СЂР°СЃС‚:");
 	 comboBox = new QComboBox();
 	 comboBox->setFixedWidth(200);
 	 label->setBuddy(comboBox);
@@ -3693,14 +3700,14 @@ void Add_elements_dialog::add_age_table_dlg()
 	 column<<"name_age";
      fill_combobox(comboBox,"age",column);
 
-	 label_2 = new QLabel("Процент:");
+	 label_2 = new QLabel("РџСЂРѕС†РµРЅС‚:");
 	 lineEdit_counte = new QLineEdit;
 	 label_2->setBuddy(lineEdit_counte);
 
-	 addButton = new QPushButton("Добавить");
+	 addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 	 addButton->setDefault(true);
 	 connect(addButton,SIGNAL(clicked()),this,SLOT(add_age()));
-	 cancelButton = new QPushButton("Отмена");
+	 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 	 connect(cancelButton,SIGNAL(clicked()),add_dlg,SLOT(accept()));
 
 	 QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -3746,8 +3753,8 @@ void Add_elements_dialog::add_age()
 		int id_age=comboBox->itemData(comboBox->currentIndex()).toInt();
 		float counte_age = lineEdit_counte->text().toFloat();
 			
-		if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Возраст не выбран "),QMessageBox::Ok);return;}
-		else if (lineEdit_counte->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Введите процент "),QMessageBox::Ok);return;}
+		if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("Р’РѕР·СЂР°СЃС‚ РЅРµ РІС‹Р±СЂР°РЅ "),QMessageBox::Ok);return;}
+		else if (lineEdit_counte->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ РїСЂРѕС†РµРЅС‚ "),QMessageBox::Ok);return;}
 		
 		int id_reg = in_id_object;
 
@@ -3769,10 +3776,10 @@ void Add_elements_dialog::add_age()
 void Add_elements_dialog::add_age_table_dlg_gr()
 {
 	add_dlg = new QDialog;
-	add_dlg->setWindowTitle("Добавлении возраста");
+	add_dlg->setWindowTitle("Р”РѕР±Р°РІР»РµРЅРёРё РІРѕР·СЂР°СЃС‚Р°");
 	add_dlg->setMinimumSize(QSize(600,400));
 
-	label = new QLabel("Возраст:");
+	label = new QLabel("Р’РѕР·СЂР°СЃС‚:");
 	 comboBox = new QComboBox();
 	 comboBox->setFixedWidth(200);
 	 label->setBuddy(comboBox);
@@ -3783,14 +3790,14 @@ void Add_elements_dialog::add_age_table_dlg_gr()
 	 column<<"name_age";
      fill_combobox(comboBox,"age",column);
 
-	 label_2 = new QLabel("Процент:");
+	 label_2 = new QLabel("РџСЂРѕС†РµРЅС‚:");
 	 lineEdit_counte = new QLineEdit;
 	 label_2->setBuddy(lineEdit_counte);
 
-	 addButton = new QPushButton("Добавить");
+	 addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 	 addButton->setDefault(true);
 	 connect(addButton,SIGNAL(clicked()),this,SLOT(add_age_gr()));
-	 cancelButton = new QPushButton("Отмена");
+	 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 	 connect(cancelButton,SIGNAL(clicked()),add_dlg,SLOT(accept()));
 
 	 QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -3836,8 +3843,8 @@ void Add_elements_dialog::add_age_gr()
 		int id_age=comboBox->itemData(comboBox->currentIndex()).toInt();
 		float counte_age = lineEdit_counte->text().toFloat();
 			
-		if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Возраст не выбран "),QMessageBox::Ok);return;}
-		else if (lineEdit_counte->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Введите процент "),QMessageBox::Ok);return;}
+		if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("Р’РѕР·СЂР°СЃС‚ РЅРµ РІС‹Р±СЂР°РЅ "),QMessageBox::Ok);return;}
+		else if (lineEdit_counte->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ РїСЂРѕС†РµРЅС‚ "),QMessageBox::Ok);return;}
 		
 		int id_gr = in_id_object;
 
@@ -3855,7 +3862,7 @@ void Add_elements_dialog::add_age_gr()
 		table_age_gr();
 		add_dlg->close();
 }
-//=========================== правка возраста ============================================
+//=========================== РїСЂР°РІРєР° РІРѕР·СЂР°СЃС‚Р° ============================================
 void Add_elements_dialog::show_redaktor_age(int row,int column){
 	QSqlQuery query;
 	if((column!=0) && (column!=4)){
@@ -3878,15 +3885,15 @@ void Add_elements_dialog::show_redaktor_age(int row,int column){
 void Add_elements_dialog::pravka_age (int id_ls_age){
 		
 	edit_dlg = new QDialog;
-	edit_dlg->setWindowTitle("Редактирование данных возраст");
+	edit_dlg->setWindowTitle("Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ РґР°РЅРЅС‹С… РІРѕР·СЂР°СЃС‚");
 	edit_dlg->setMinimumSize(QSize(600,400));
 
-	label = new QLabel("Возраст:");
+	label = new QLabel("Р’РѕР·СЂР°СЃС‚:");
 	comboBox = new QComboBox();
 	comboBox->setFixedWidth(200);
     label->setBuddy(comboBox);
 	
-	label_2 = new QLabel("Процент:");
+	label_2 = new QLabel("РџСЂРѕС†РµРЅС‚:");
 	lineEdit_counte = new QLineEdit;
 	label_2->setBuddy(lineEdit_counte);
 
@@ -3910,10 +3917,10 @@ void Add_elements_dialog::pravka_age (int id_ls_age){
 		lineEdit_counte->setText(QString::number(persent));	
 	}
 		 
-	 addButton = new QPushButton("Сохранить");
+	 addButton = new QPushButton("РЎРѕС…СЂР°РЅРёС‚СЊ");
 	 addButton->setDefault(true);
 	 connect(addButton,SIGNAL(clicked()),edit_dlg,SLOT(accept()));
-	 cancelButton = new QPushButton("Отмена");
+	 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 	 connect(cancelButton,SIGNAL(clicked()),edit_dlg,SLOT(close()));
 
 	 QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -3986,7 +3993,7 @@ void Add_elements_dialog::fill_combobox_age(QComboBox *comboBox,int current_inde
 	comboBox->setCurrentIndex(ci_3);
 }
 //==========================================================================================
-//================== заполнение таблицы пол ==============================================
+//================== Р·Р°РїРѕР»РЅРµРЅРёРµ С‚Р°Р±Р»РёС†С‹ РїРѕР» ==============================================
 void Add_elements_dialog::table_sex() {
 	
 	sex_view->setColumnCount(5);
@@ -4000,8 +4007,8 @@ void Add_elements_dialog::table_sex() {
 
 	QStringList header_list;
 	QStringList header_list_1;
-	header_list<<" "<<" "<<"Мужское население \n (процент)"<<"Женское население \n (процент)"<<" ";
-	//header_list_1<<"Процент";
+	header_list<<" "<<" "<<"РњСѓР¶СЃРєРѕРµ РЅР°СЃРµР»РµРЅРёРµ \n (РїСЂРѕС†РµРЅС‚)"<<"Р–РµРЅСЃРєРѕРµ РЅР°СЃРµР»РµРЅРёРµ \n (РїСЂРѕС†РµРЅС‚)"<<" ";
+	//header_list_1<<"РџСЂРѕС†РµРЅС‚";
 	sex_view->setHorizontalHeaderLabels(header_list);
 //	sex_view->setVerticalHeaderLabels(header_list_1);
 
@@ -4026,7 +4033,7 @@ void Add_elements_dialog::table_sex() {
 			
 		sex_view->insertRow(row);
 
-		item = new QTableWidgetItem(icon," Редактировать",0);
+		item = new QTableWidgetItem(icon," Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ",0);
 		sex_view->setItem(row,0,item);
 
 		item = new QTableWidgetItem(QString::number(id_pop_sex));
@@ -4039,7 +4046,7 @@ void Add_elements_dialog::table_sex() {
 		sex_view->setItem(row,3,item);
 
 		QIcon icon2(QString(":/Resources/saturn_delete.png"));
-		item = new QTableWidgetItem(icon2," Удалить",0);
+		item = new QTableWidgetItem(icon2," РЈРґР°Р»РёС‚СЊ",0);
 		sex_view->setItem(row,4,item);
 	}	
 	if (sex_view->rowCount()>0) addButtonn->setDisabled(true);
@@ -4060,8 +4067,8 @@ void Add_elements_dialog::table_sex_gr() {
 
 	QStringList header_list;
 	QStringList header_list_1;
-	header_list<<" "<<" "<<"Мужское население \n (процент)"<<"Женское население \n (процент)"<<" ";
-	//header_list_1<<"Процент";
+	header_list<<" "<<" "<<"РњСѓР¶СЃРєРѕРµ РЅР°СЃРµР»РµРЅРёРµ \n (РїСЂРѕС†РµРЅС‚)"<<"Р–РµРЅСЃРєРѕРµ РЅР°СЃРµР»РµРЅРёРµ \n (РїСЂРѕС†РµРЅС‚)"<<" ";
+	//header_list_1<<"РџСЂРѕС†РµРЅС‚";
 	sex_view->setHorizontalHeaderLabels(header_list);
 //	sex_view->setVerticalHeaderLabels(header_list_1);
 
@@ -4086,7 +4093,7 @@ void Add_elements_dialog::table_sex_gr() {
 			
 		sex_view->insertRow(row);
 
-		item = new QTableWidgetItem(icon," Редактировать",0);
+		item = new QTableWidgetItem(icon," Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ",0);
 		sex_view->setItem(row,0,item);
 
 		item = new QTableWidgetItem(QString::number(id_pop_sex));
@@ -4099,7 +4106,7 @@ void Add_elements_dialog::table_sex_gr() {
 		sex_view->setItem(row,3,item);
 
 		QIcon icon2(QString(":/Resources/saturn_delete.png"));
-		item = new QTableWidgetItem(icon2," Удалить",0);
+		item = new QTableWidgetItem(icon2," РЈРґР°Р»РёС‚СЊ",0);
 		sex_view->setItem(row,4,item);
 	}	
 	if (sex_view->rowCount()>0) addButtonn->setDisabled(true);
@@ -4107,25 +4114,25 @@ void Add_elements_dialog::table_sex_gr() {
 	
     
 }
-//======================= диалог добавления пол =====================================
+//======================= РґРёР°Р»РѕРі РґРѕР±Р°РІР»РµРЅРёСЏ РїРѕР» =====================================
 void Add_elements_dialog::add_sex_table_dlg()
 {
 	add_dlg = new QDialog;
-	add_dlg->setWindowTitle("Добавлении Пол");
+	add_dlg->setWindowTitle("Р”РѕР±Р°РІР»РµРЅРёРё РџРѕР»");
 	add_dlg->setMinimumSize(QSize(600,400));
 
-	 label = new QLabel("Процент мужского населения:");
+	 label = new QLabel("РџСЂРѕС†РµРЅС‚ РјСѓР¶СЃРєРѕРіРѕ РЅР°СЃРµР»РµРЅРёСЏ:");
 	 lineEdit_counte_m = new QLineEdit;
 	 label->setBuddy(lineEdit_counte_m);
 	 
-	 label_2 = new QLabel("Процент женского населения:");
+	 label_2 = new QLabel("РџСЂРѕС†РµРЅС‚ Р¶РµРЅСЃРєРѕРіРѕ РЅР°СЃРµР»РµРЅРёСЏ:");
 	 lineEdit_counte_w = new QLineEdit;
 	 label_2->setBuddy(lineEdit_counte_w);
 
-	 addButton = new QPushButton("Добавить");
+	 addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 	 addButton->setDefault(true);
 	 connect(addButton,SIGNAL(clicked()),this,SLOT(add_sex()));
-	 cancelButton = new QPushButton("Отмена");
+	 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 	 connect(cancelButton,SIGNAL(clicked()),add_dlg,SLOT(accept()));
 
 	 QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -4191,21 +4198,21 @@ void Add_elements_dialog::add_sex()
 void Add_elements_dialog::add_sex_table_dlg_gr()
 {
 	add_dlg = new QDialog;
-	add_dlg->setWindowTitle("Добавлении Пол");
+	add_dlg->setWindowTitle("Р”РѕР±Р°РІР»РµРЅРёРё РџРѕР»");
 	add_dlg->setMinimumSize(QSize(600,400));
 
-	 label = new QLabel("Процент мужского населения:");
+	 label = new QLabel("РџСЂРѕС†РµРЅС‚ РјСѓР¶СЃРєРѕРіРѕ РЅР°СЃРµР»РµРЅРёСЏ:");
 	 lineEdit_counte_m = new QLineEdit;
 	 label->setBuddy(lineEdit_counte_m);
 	 
-	 label_2 = new QLabel("Процент женского населения:");
+	 label_2 = new QLabel("РџСЂРѕС†РµРЅС‚ Р¶РµРЅСЃРєРѕРіРѕ РЅР°СЃРµР»РµРЅРёСЏ:");
 	 lineEdit_counte_w = new QLineEdit;
 	 label_2->setBuddy(lineEdit_counte_w);
 
-	 addButton = new QPushButton("Добавить");
+	 addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 	 addButton->setDefault(true);
 	 connect(addButton,SIGNAL(clicked()),this,SLOT(add_sex_gr()));
-	 cancelButton = new QPushButton("Отмена");
+	 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 	 connect(cancelButton,SIGNAL(clicked()),add_dlg,SLOT(accept()));
 
 	 QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -4267,7 +4274,7 @@ void Add_elements_dialog::add_sex_gr()
 		table_sex_gr();
 		add_dlg->close();
 }
-//=========================== правка пол ============================================
+//=========================== РїСЂР°РІРєР° РїРѕР» ============================================
 void Add_elements_dialog::show_redaktor_sex(int row,int column){
 	QSqlQuery query;
 	if((column!=0) && (column!=4)){
@@ -4291,14 +4298,14 @@ void Add_elements_dialog::show_redaktor_sex(int row,int column){
 void Add_elements_dialog::pravka_sex (int id_ls_sex){
 		
 	edit_dlg = new QDialog;
-	edit_dlg->setWindowTitle("Редактирование данных");
+	edit_dlg->setWindowTitle("Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ РґР°РЅРЅС‹С…");
 	edit_dlg->setMinimumSize(QSize(600,400));
 
-	label = new QLabel("Процент мужского населения:");
+	label = new QLabel("РџСЂРѕС†РµРЅС‚ РјСѓР¶СЃРєРѕРіРѕ РЅР°СЃРµР»РµРЅРёСЏ:");
 	 lineEdit_counte_m = new QLineEdit;
 	 label->setBuddy(lineEdit_counte_m);
 	 
-	 label_2 = new QLabel("Процент женского населения:");
+	 label_2 = new QLabel("РџСЂРѕС†РµРЅС‚ Р¶РµРЅСЃРєРѕРіРѕ РЅР°СЃРµР»РµРЅРёСЏ:");
 	 lineEdit_counte_w = new QLineEdit;
 	 label_2->setBuddy(lineEdit_counte_w);
 
@@ -4321,10 +4328,10 @@ void Add_elements_dialog::pravka_sex (int id_ls_sex){
 		lineEdit_counte_w->setText(QString::number(persent_w));	
 	}
 		 
-	 addButton = new QPushButton("Сохранить");
+	 addButton = new QPushButton("РЎРѕС…СЂР°РЅРёС‚СЊ");
 	 addButton->setDefault(true);
 	 connect(addButton,SIGNAL(clicked()),edit_dlg,SLOT(accept()));
-	 cancelButton = new QPushButton("Отмена");
+	 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 	 connect(cancelButton,SIGNAL(clicked()),edit_dlg,SLOT(close()));
 
 	 QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -4380,14 +4387,14 @@ void Add_elements_dialog::pravka_sex (int id_ls_sex){
   }
 	return; 
 } //================================================================================
-//================== заполнение таблицы штатка ======================================================
+//================== Р·Р°РїРѕР»РЅРµРЅРёРµ С‚Р°Р±Р»РёС†С‹ С€С‚Р°С‚РєР° ======================================================
 void Add_elements_dialog::table_rank() {
 	rank_view->setColumnCount(5);
 	rank_view->hideColumn(1);
 	rank_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	
 	QStringList header_list;
-	header_list<<" "<<" "<<"Штатно-должностной \n состав"<<"Процент"<<" ";
+	header_list<<" "<<" "<<"РЁС‚Р°С‚РЅРѕ-РґРѕР»Р¶РЅРѕСЃС‚РЅРѕР№ \n СЃРѕСЃС‚Р°РІ"<<"РџСЂРѕС†РµРЅС‚"<<" ";
 	rank_view->setHorizontalHeaderLabels(header_list);
 	
 	QSqlQuery query;
@@ -4412,7 +4419,7 @@ void Add_elements_dialog::table_rank() {
 			
 		rank_view->insertRow(row);
 
-		item = new QTableWidgetItem(icon," Редактировать",0);
+		item = new QTableWidgetItem(icon," Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ",0);
 		rank_view->setItem(row,0,item);
 
 		item = new QTableWidgetItem(QString::number(id_ls_rank));
@@ -4426,7 +4433,7 @@ void Add_elements_dialog::table_rank() {
 	//	rank_view->sortItems(3,Qt::DescendingOrder);
 
 		QIcon icon2(QString(":/Resources/saturn_delete.png"));
-		item = new QTableWidgetItem(icon2," Удалить",0);
+		item = new QTableWidgetItem(icon2," РЈРґР°Р»РёС‚СЊ",0);
 		rank_view->setItem(row,4,item);
 	}	
    row++;
@@ -4439,7 +4446,7 @@ void Add_elements_dialog::table_rank_gr() {
 	rank_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	
 	QStringList header_list;
-	header_list<<" "<<" "<<"Штатно-должностной \n состав"<<"Процент"<<" ";
+	header_list<<" "<<" "<<"РЁС‚Р°С‚РЅРѕ-РґРѕР»Р¶РЅРѕСЃС‚РЅРѕР№ \n СЃРѕСЃС‚Р°РІ"<<"РџСЂРѕС†РµРЅС‚"<<" ";
 	rank_view->setHorizontalHeaderLabels(header_list);
 	
 	QSqlQuery query;
@@ -4464,7 +4471,7 @@ void Add_elements_dialog::table_rank_gr() {
 			
 		rank_view->insertRow(row);
 
-		item = new QTableWidgetItem(icon," Редактировать",0);
+		item = new QTableWidgetItem(icon," Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ",0);
 		rank_view->setItem(row,0,item);
 
 		item = new QTableWidgetItem(QString::number(id_ls_rank));
@@ -4478,20 +4485,20 @@ void Add_elements_dialog::table_rank_gr() {
 	//	rank_view->sortItems(3,Qt::DescendingOrder);
 
 		QIcon icon2(QString(":/Resources/saturn_delete.png"));
-		item = new QTableWidgetItem(icon2," Удалить",0);
+		item = new QTableWidgetItem(icon2," РЈРґР°Р»РёС‚СЊ",0);
 		rank_view->setItem(row,4,item);
 	}	
    row++;
    rank_view->resizeColumnsToContents();
 }
-//======================= диалог добавления штатка ===================================================
+//======================= РґРёР°Р»РѕРі РґРѕР±Р°РІР»РµРЅРёСЏ С€С‚Р°С‚РєР° ===================================================
 void Add_elements_dialog::add_rank_table_dlg()
 {
 	add_dlg = new QDialog;
-	add_dlg->setWindowTitle("Добавлении ШДС");
+	add_dlg->setWindowTitle("Р”РѕР±Р°РІР»РµРЅРёРё РЁР”РЎ");
 	add_dlg->setMinimumSize(QSize(600,400));
 
-	label = new QLabel("Штатно-должностной состав:");
+	label = new QLabel("РЁС‚Р°С‚РЅРѕ-РґРѕР»Р¶РЅРѕСЃС‚РЅРѕР№ СЃРѕСЃС‚Р°РІ:");
 	 comboBox = new QComboBox();
 	 comboBox->setFixedWidth(200);
 	 label->setBuddy(comboBox);
@@ -4502,14 +4509,14 @@ void Add_elements_dialog::add_rank_table_dlg()
 	 column<<"name_rank";
      fill_combobox(comboBox,"rank",column);
 
-	 label_2 = new QLabel("Процент:");
+	 label_2 = new QLabel("РџСЂРѕС†РµРЅС‚:");
 	 lineEdit_counte = new QLineEdit;
 	 label_2->setBuddy(lineEdit_counte);
 
-	 addButton = new QPushButton("Добавить");
+	 addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 	 addButton->setDefault(true);
 	 connect(addButton,SIGNAL(clicked()),this,SLOT(add_rank()));
-	 cancelButton = new QPushButton("Отмена");
+	 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 	 connect(cancelButton,SIGNAL(clicked()),add_dlg,SLOT(accept()));
 
 	 QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -4555,8 +4562,8 @@ void Add_elements_dialog::add_rank()
 		int id_rank=comboBox->itemData(comboBox->currentIndex()).toInt();
 		float counte_rank = lineEdit_counte->text().toFloat();
 			
-		if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Штатно-должностной состав не выбран "),QMessageBox::Ok);return;}
-		else if (lineEdit_counte->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Введите процент "),QMessageBox::Ok);return;}
+		if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("РЁС‚Р°С‚РЅРѕ-РґРѕР»Р¶РЅРѕСЃС‚РЅРѕР№ СЃРѕСЃС‚Р°РІ РЅРµ РІС‹Р±СЂР°РЅ "),QMessageBox::Ok);return;}
+		else if (lineEdit_counte->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ РїСЂРѕС†РµРЅС‚ "),QMessageBox::Ok);return;}
 		
 		int id_ls = in_id_object;
 
@@ -4577,10 +4584,10 @@ void Add_elements_dialog::add_rank()
 void Add_elements_dialog::add_rank_table_dlg_gr()
 {
 	add_dlg = new QDialog;
-	add_dlg->setWindowTitle("Добавлении ШДС");
+	add_dlg->setWindowTitle("Р”РѕР±Р°РІР»РµРЅРёРё РЁР”РЎ");
 	add_dlg->setMinimumSize(QSize(600,400));
 
-	label = new QLabel("Штатно-должностной состав:");
+	label = new QLabel("РЁС‚Р°С‚РЅРѕ-РґРѕР»Р¶РЅРѕСЃС‚РЅРѕР№ СЃРѕСЃС‚Р°РІ:");
 	 comboBox = new QComboBox();
 	 comboBox->setFixedWidth(200);
 	 label->setBuddy(comboBox);
@@ -4591,14 +4598,14 @@ void Add_elements_dialog::add_rank_table_dlg_gr()
 	 column<<"name_rank";
      fill_combobox(comboBox,"rank",column);
 
-	 label_2 = new QLabel("Процент:");
+	 label_2 = new QLabel("РџСЂРѕС†РµРЅС‚:");
 	 lineEdit_counte = new QLineEdit;
 	 label_2->setBuddy(lineEdit_counte);
 
-	 addButton = new QPushButton("Добавить");
+	 addButton = new QPushButton("Р”РѕР±Р°РІРёС‚СЊ");
 	 addButton->setDefault(true);
 	 connect(addButton,SIGNAL(clicked()),this,SLOT(add_rank_gr()));
-	 cancelButton = new QPushButton("Отмена");
+	 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 	 connect(cancelButton,SIGNAL(clicked()),add_dlg,SLOT(accept()));
 
 	 QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -4644,8 +4651,8 @@ void Add_elements_dialog::add_rank_gr()
 		int id_rank=comboBox->itemData(comboBox->currentIndex()).toInt();
 		float counte_rank = lineEdit_counte->text().toFloat();
 			
-		if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Штатно-должностной состав не выбран "),QMessageBox::Ok);return;}
-		else if (lineEdit_counte->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Введите процент "),QMessageBox::Ok);return;}
+		if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("РЁС‚Р°С‚РЅРѕ-РґРѕР»Р¶РЅРѕСЃС‚РЅРѕР№ СЃРѕСЃС‚Р°РІ РЅРµ РІС‹Р±СЂР°РЅ "),QMessageBox::Ok);return;}
+		else if (lineEdit_counte->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ РїСЂРѕС†РµРЅС‚ "),QMessageBox::Ok);return;}
 		
 		int id_gr = in_id_object;
 
@@ -4663,7 +4670,7 @@ void Add_elements_dialog::add_rank_gr()
 		table_rank_gr();
 		add_dlg->close();
 }
-//============================= правка штатка ========================================================
+//============================= РїСЂР°РІРєР° С€С‚Р°С‚РєР° ========================================================
 void Add_elements_dialog::show_redaktor_rank (int row,int column){
 	QSqlQuery query;
 	if((column!=0) && (column!=4)){
@@ -4686,15 +4693,15 @@ void Add_elements_dialog::show_redaktor_rank (int row,int column){
 void Add_elements_dialog::pravka_rank(int id_ls_rank){
 		
 	edit_dlg = new QDialog;
-	edit_dlg->setWindowTitle("Редактирование данных ШДС");
+	edit_dlg->setWindowTitle("Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ РґР°РЅРЅС‹С… РЁР”РЎ");
 	edit_dlg->setMinimumSize(QSize(600,400));
 
-	label = new QLabel("Штатно-должностной состав:");
+	label = new QLabel("РЁС‚Р°С‚РЅРѕ-РґРѕР»Р¶РЅРѕСЃС‚РЅРѕР№ СЃРѕСЃС‚Р°РІ:");
 	comboBox = new QComboBox();
 	comboBox->setFixedWidth(200);
     label->setBuddy(comboBox);
 	
-	label_2 = new QLabel("Процент:");
+	label_2 = new QLabel("РџСЂРѕС†РµРЅС‚:");
 	lineEdit_counte = new QLineEdit;
 	label_2->setBuddy(lineEdit_counte);
 
@@ -4718,10 +4725,10 @@ void Add_elements_dialog::pravka_rank(int id_ls_rank){
 		lineEdit_counte->setText(QString::number(persent));	
 	}
 		 
-	 addButton = new QPushButton("Сохранить");
+	 addButton = new QPushButton("РЎРѕС…СЂР°РЅРёС‚СЊ");
 	 addButton->setDefault(true);
 	 connect(addButton,SIGNAL(clicked()),edit_dlg,SLOT(accept()));
-	 cancelButton = new QPushButton("Отмена");
+	 cancelButton = new QPushButton("РћС‚РјРµРЅР°");
 	 connect(cancelButton,SIGNAL(clicked()),edit_dlg,SLOT(close()));
 
 	 QHBoxLayout *buttonsLayout = new QHBoxLayout;
@@ -4791,7 +4798,7 @@ void Add_elements_dialog::fill_combobox_rank(QComboBox *comboBox,int current_ind
    	}
 	comboBox->setCurrentIndex(ci_3);
 }
-//======================== добавление средства для ВФ, Организаций и СМИ ============================
+//======================== РґРѕР±Р°РІР»РµРЅРёРµ СЃСЂРµРґСЃС‚РІР° РґР»СЏ Р’Р¤, РћСЂРіР°РЅРёР·Р°С†РёР№ Рё РЎРњР ============================
 void Add_elements_dialog::add_mpo_pso()
 {
 		int id_type_mpo_pso = comboBox->itemData(comboBox->currentIndex()).toInt();
@@ -4799,17 +4806,17 @@ void Add_elements_dialog::add_mpo_pso()
 		QString counte_mpo = lineEdit_counte_mpo_pso->text();
 		QString desc_mpo = textEdit_desc->toPlainText();
 
-/*		if(pavComboBox->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Выберите тип программно-аппаратного воздействия "),QMessageBox::Ok );return;}
-		else if(vul_pavComboBox->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Выберите уязвимость "),QMessageBox::Ok );return;}
-		else if(itv_pavComboBox->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Выберите воздействие "),QMessageBox::Ok );return;}
+/*		if(pavComboBox->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’С‹Р±РµСЂРёС‚Рµ С‚РёРї РїСЂРѕРіСЂР°РјРјРЅРѕ-Р°РїРїР°СЂР°С‚РЅРѕРіРѕ РІРѕР·РґРµР№СЃС‚РІРёСЏ "),QMessageBox::Ok );return;}
+		else if(vul_pavComboBox->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’С‹Р±РµСЂРёС‚Рµ СѓСЏР·РІРёРјРѕСЃС‚СЊ "),QMessageBox::Ok );return;}
+		else if(itv_pavComboBox->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’С‹Р±РµСЂРёС‚Рµ РІРѕР·РґРµР№СЃС‚РІРёРµ "),QMessageBox::Ok );return;}
 		else if (lineEdit->text() == "")
-		{QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите наименование программно-аппаратного воздействия "),QMessageBox::Ok );return;}
+		{QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ РЅР°РёРјРµРЅРѕРІР°РЅРёРµ РїСЂРѕРіСЂР°РјРјРЅРѕ-Р°РїРїР°СЂР°С‚РЅРѕРіРѕ РІРѕР·РґРµР№СЃС‚РІРёСЏ "),QMessageBox::Ok );return;}
 		else if (lineEdit_2->text() == "")
-		{QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите нарушаемые ТО "),QMessageBox::Ok );return;}
+		{QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ РЅР°СЂСѓС€Р°РµРјС‹Рµ РўРћ "),QMessageBox::Ok );return;}
 		else if (textEdit->toPlainText() == "")
-		{QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите характеристику нарушения "),QMessageBox::Ok );return;}
+		{QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ С…Р°СЂР°РєС‚РµСЂРёСЃС‚РёРєСѓ РЅР°СЂСѓС€РµРЅРёСЏ "),QMessageBox::Ok );return;}
 		else if (textEdit_2->toPlainText() == "")
-		{QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите нанесенный(планируемый) ущерб "),QMessageBox::Ok );return;} */	
+		{QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ РЅР°РЅРµСЃРµРЅРЅС‹Р№(РїР»Р°РЅРёСЂСѓРµРјС‹Р№) СѓС‰РµСЂР± "),QMessageBox::Ok );return;} */	
 
 		QMap<QString,QString> map;
 	
@@ -4823,16 +4830,16 @@ void Add_elements_dialog::add_mpo_pso()
 	
 		int id_mpo_pso=insert_in_table("mpo_pso",map,"id_mpo_pso");
 
- //======================= для картинки ===================================
+ //======================= РґР»СЏ РєР°СЂС‚РёРЅРєРё ===================================
        QFile file(lineEdit_name_f->text());
        if(!file.open(QIODevice::ReadOnly))
        {
             QMessageBox msgBox;
-            msgBox.setWindowTitle("Внимание");
-            msgBox.setText("Изображение отсутствует.Нажмите ДА, чтобы продолжить");
+            msgBox.setWindowTitle("Р’РЅРёРјР°РЅРёРµ");
+            msgBox.setText("РР·РѕР±СЂР°Р¶РµРЅРёРµ РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚.РќР°Р¶РјРёС‚Рµ Р”Рђ, С‡С‚РѕР±С‹ РїСЂРѕРґРѕР»Р¶РёС‚СЊ");
             msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-            msgBox.setButtonText(QMessageBox::Yes, "Да");
-            msgBox.setButtonText(QMessageBox::No, "Нет");
+            msgBox.setButtonText(QMessageBox::Yes, "Р”Р°");
+            msgBox.setButtonText(QMessageBox::No, "РќРµС‚");
             if (msgBox.exec()== QMessageBox::Yes){
 
                 if(id_mpo_pso>0){
@@ -4883,16 +4890,16 @@ void Add_elements_dialog::add_mpo_pso_groups()
 		map.insert("id_groups",QString::number(in_id_object));
 	
 		int id_mpo_pso=insert_in_table("mpo_pso",map,"id_mpo_pso");
- //======================= для картинки ===================================
+ //======================= РґР»СЏ РєР°СЂС‚РёРЅРєРё ===================================
         QFile file(lineEdit_name_f->text());
         if(!file.open(QIODevice::ReadOnly))
        {
             QMessageBox msgBox;
-            msgBox.setWindowTitle("Внимание");
-            msgBox.setText("Изображение отсутствует.Нажмите ДА, чтобы продолжить");
+            msgBox.setWindowTitle("Р’РЅРёРјР°РЅРёРµ");
+            msgBox.setText("РР·РѕР±СЂР°Р¶РµРЅРёРµ РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚.РќР°Р¶РјРёС‚Рµ Р”Рђ, С‡С‚РѕР±С‹ РїСЂРѕРґРѕР»Р¶РёС‚СЊ");
             msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-            msgBox.setButtonText(QMessageBox::Yes, "Да");
-            msgBox.setButtonText(QMessageBox::No, "Нет");
+            msgBox.setButtonText(QMessageBox::Yes, "Р”Р°");
+            msgBox.setButtonText(QMessageBox::No, "РќРµС‚");
             if (msgBox.exec()== QMessageBox::Yes){
 
                 if(id_mpo_pso>0){
@@ -4933,17 +4940,17 @@ void Add_elements_dialog::add_mpo_pso_smi()
 		QString counte_mpo = lineEdit_counte_mpo_pso->text();
 		QString desc_mpo = textEdit_desc->toPlainText();
 
-/*		if(pavComboBox->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Выберите тип программно-аппаратного воздействия "),QMessageBox::Ok );return;}
-		else if(vul_pavComboBox->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Выберите уязвимость "),QMessageBox::Ok );return;}
-		else if(itv_pavComboBox->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Выберите воздействие "),QMessageBox::Ok );return;}
+/*		if(pavComboBox->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’С‹Р±РµСЂРёС‚Рµ С‚РёРї РїСЂРѕРіСЂР°РјРјРЅРѕ-Р°РїРїР°СЂР°С‚РЅРѕРіРѕ РІРѕР·РґРµР№СЃС‚РІРёСЏ "),QMessageBox::Ok );return;}
+		else if(vul_pavComboBox->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’С‹Р±РµСЂРёС‚Рµ СѓСЏР·РІРёРјРѕСЃС‚СЊ "),QMessageBox::Ok );return;}
+		else if(itv_pavComboBox->currentIndex()==0){QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’С‹Р±РµСЂРёС‚Рµ РІРѕР·РґРµР№СЃС‚РІРёРµ "),QMessageBox::Ok );return;}
 		else if (lineEdit->text() == "")
-		{QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите наименование программно-аппаратного воздействия "),QMessageBox::Ok );return;}
+		{QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ РЅР°РёРјРµРЅРѕРІР°РЅРёРµ РїСЂРѕРіСЂР°РјРјРЅРѕ-Р°РїРїР°СЂР°С‚РЅРѕРіРѕ РІРѕР·РґРµР№СЃС‚РІРёСЏ "),QMessageBox::Ok );return;}
 		else if (lineEdit_2->text() == "")
-		{QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите нарушаемые ТО "),QMessageBox::Ok );return;}
+		{QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ РЅР°СЂСѓС€Р°РµРјС‹Рµ РўРћ "),QMessageBox::Ok );return;}
 		else if (textEdit->toPlainText() == "")
-		{QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите характеристику нарушения "),QMessageBox::Ok );return;}
+		{QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ С…Р°СЂР°РєС‚РµСЂРёСЃС‚РёРєСѓ РЅР°СЂСѓС€РµРЅРёСЏ "),QMessageBox::Ok );return;}
 		else if (textEdit_2->toPlainText() == "")
-		{QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"Ошибка",("Введите нанесенный(планируемый) ущерб "),QMessageBox::Ok );return;} */	
+		{QMessageBox::StandardButton ret; ret = QMessageBox::critical (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ РЅР°РЅРµСЃРµРЅРЅС‹Р№(РїР»Р°РЅРёСЂСѓРµРјС‹Р№) СѓС‰РµСЂР± "),QMessageBox::Ok );return;} */	
 
 		QMap<QString,QString> map;
 	
@@ -4958,17 +4965,17 @@ void Add_elements_dialog::add_mpo_pso_smi()
 
         int id_mpo_pso=insert_in_table("mpo_pso",map,"id_mpo_pso");
 
-        //======================= для картинки ===================================
+        //======================= РґР»СЏ РєР°СЂС‚РёРЅРєРё ===================================
 
          QFile file(lineEdit_name_f->text());
          if(!file.open(QIODevice::ReadOnly))
         {
              QMessageBox msgBox;
-             msgBox.setWindowTitle("Внимание");
-             msgBox.setText("Изображение отсутствует.Нажмите ДА, чтобы продолжить");
+             msgBox.setWindowTitle("Р’РЅРёРјР°РЅРёРµ");
+             msgBox.setText("РР·РѕР±СЂР°Р¶РµРЅРёРµ РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚.РќР°Р¶РјРёС‚Рµ Р”Рђ, С‡С‚РѕР±С‹ РїСЂРѕРґРѕР»Р¶РёС‚СЊ");
              msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-             msgBox.setButtonText(QMessageBox::Yes, "Да");
-             msgBox.setButtonText(QMessageBox::No, "Нет");
+             msgBox.setButtonText(QMessageBox::Yes, "Р”Р°");
+             msgBox.setButtonText(QMessageBox::No, "РќРµС‚");
              if (msgBox.exec()== QMessageBox::Yes){
 
                  if(id_mpo_pso>0){
@@ -5003,7 +5010,7 @@ void Add_elements_dialog::add_mpo_pso_smi()
 
 }
 
-//================================ добавление условия ================================================
+//================================ РґРѕР±Р°РІР»РµРЅРёРµ СѓСЃР»РѕРІРёСЏ ================================================
 void Add_elements_dialog::add_special_cond(){
 
 	int id_type_sc=comboBox->itemData(comboBox->currentIndex()).toInt();
@@ -5013,11 +5020,11 @@ void Add_elements_dialog::add_special_cond(){
 	QString name_sem_1 = lineEdit_sem_1->text();
 	QString name_sem_2 = lineEdit_sem_2->text();
 
-	if (lineEdit_name->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Введите наименование особого условия "),QMessageBox::Ok);return;}
-	else if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Тип особого условия не выбран "),QMessageBox::Ok);return;}
-	//else if (lineEdit_sem_1->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Введите семантику_1 "),QMessageBox::Ok);return;}
-	//else if (lineEdit_sem_2->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Введите семантику_2 "),QMessageBox::Ok);return;}
-	else if (textEdit_propa->toPlainText() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Ошибка",("Введите описание особого условия "),QMessageBox::Ok);return;}
+	if (lineEdit_name->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ РЅР°РёРјРµРЅРѕРІР°РЅРёРµ РѕСЃРѕР±РѕРіРѕ СѓСЃР»РѕРІРёСЏ "),QMessageBox::Ok);return;}
+	else if(comboBox->currentIndex()== 0){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("РўРёРї РѕСЃРѕР±РѕРіРѕ СѓСЃР»РѕРІРёСЏ РЅРµ РІС‹Р±СЂР°РЅ "),QMessageBox::Ok);return;}
+	//else if (lineEdit_sem_1->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ СЃРµРјР°РЅС‚РёРєСѓ_1 "),QMessageBox::Ok);return;}
+	//else if (lineEdit_sem_2->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ СЃРµРјР°РЅС‚РёРєСѓ_2 "),QMessageBox::Ok);return;}
+	else if (textEdit_propa->toPlainText() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"РћС€РёР±РєР°",("Р’РІРµРґРёС‚Рµ РѕРїРёСЃР°РЅРёРµ РѕСЃРѕР±РѕРіРѕ СѓСЃР»РѕРІРёСЏ "),QMessageBox::Ok);return;}
 
 	int id_reg = in_id_object;
 
@@ -5034,16 +5041,16 @@ void Add_elements_dialog::add_special_cond(){
 			
 		int id_sc=insert_in_table("special_conditions",map,"id_special_conditions");
 		
-//======================= для картинки ===================================
+//======================= РґР»СЏ РєР°СЂС‚РёРЅРєРё ===================================
         QFile file(lineEdit_name_f->text());
         if(!file.open(QIODevice::ReadOnly))
        {
             QMessageBox msgBox;
-            msgBox.setWindowTitle("Внимание");
-            msgBox.setText("Изображение отсутствует.Нажмите ДА, чтобы продолжить");
+            msgBox.setWindowTitle("Р’РЅРёРјР°РЅРёРµ");
+            msgBox.setText("РР·РѕР±СЂР°Р¶РµРЅРёРµ РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚.РќР°Р¶РјРёС‚Рµ Р”Рђ, С‡С‚РѕР±С‹ РїСЂРѕРґРѕР»Р¶РёС‚СЊ");
             msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-            msgBox.setButtonText(QMessageBox::Yes, "Да");
-            msgBox.setButtonText(QMessageBox::No, "Нет");
+            msgBox.setButtonText(QMessageBox::Yes, "Р”Р°");
+            msgBox.setButtonText(QMessageBox::No, "РќРµС‚");
             if (msgBox.exec()== QMessageBox::Yes){
 
                 if(id_sc>0){
@@ -5080,7 +5087,7 @@ void Add_elements_dialog::add_special_cond(){
 
 void Add_elements_dialog::open_file()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, "Выбор фотографии", "",
+    QString fileName = QFileDialog::getOpenFileName(this, "Р’С‹Р±РѕСЂ С„РѕС‚РѕРіСЂР°С„РёРё", "",
                                                     "Images (*.jpg *.png)");
     if (fileName.isEmpty()) return;
     lineEdit_name_f->setText(fileName);

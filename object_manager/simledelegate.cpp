@@ -2,12 +2,6 @@
 #include <QDoubleSpinBox>
 
 
-simleDelegate::simleDelegate(QObject *parent=0)
-    : QSqlRelationalDelegate(parent)
-{
-
-
-}
 
 simleDelegate::~simleDelegate()
 {
@@ -82,7 +76,7 @@ QWidget * simleDelegate::createEditor ( QWidget * parent, const QStyleOptionView
 //    return editor;
 
 
-    QWidget *w = QItemDelegate::createEditor(parent,option,index);
+    QWidget *w = QSqlRelationalDelegate::createEditor(parent,option,index);
     if (QDoubleSpinBox *sb = qobject_cast<QDoubleSpinBox *>(w)){
         sb->setDecimals(4);
         sb->setSingleStep(0.01);

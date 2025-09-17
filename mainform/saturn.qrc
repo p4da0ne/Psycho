@@ -12,5 +12,6 @@
         <file>Resources/saturn.png</file>
         <file>Resources/user_config.png</file>
 		<file>Resources/01.ico</file>
+        <file>Resources/RedStar.ico</file>
     </qresource>
 </RCC>

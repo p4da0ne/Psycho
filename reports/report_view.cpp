@@ -14,19 +14,19 @@ ReportView::~ReportView()
 {
     
 }
-//=========== вывод формуляра на экран (предпросмотр)=============
+//=========== пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)=============
 void ReportView::preview_dialog(QString html)
 {
-    QString title = "Формуляр";
+    QString title = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
     textedit = new TextEdit(html,title);
     /*
 	preview_dlg = new QDialog;
-    preview_dlg->setWindowTitle(tr("Вывод формуляра"));
+    preview_dlg->setWindowTitle(tr("пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
     preview_dlg-> setFixedSize(800,600);
 	report_window = new QTextBrowser;
 	report_window->setHtml(html);
 
-    QPushButton *printButton = new QPushButton("Печать");
+    QPushButton *printButton = new QPushButton("пїЅпїЅпїЅпїЅпїЅпїЅ");
     connect(printButton, SIGNAL(clicked()), this, SLOT(slot_print_formul()));
 
     QPushButton *PDFButton = new QPushButton("PDF");
@@ -62,12 +62,12 @@ void ReportView::slot_print_pdf_formul()
 void ReportView::print_formul(QString html)
 {
     preview_dlg = new QDialog;
-    preview_dlg->setWindowTitle(tr("Вывод формуляра"));
+    preview_dlg->setWindowTitle(tr("пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
 
     report_window1->setHtml(html);
 
-    textprinter_->setOrientation(QPrinter::Portrait);
-    textprinter_->print(report_window1, tr("Печать документа"));
+    textprinter_->setOrientation(QPageLayout::Portrait);
+    textprinter_->print(report_window1, tr("пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
 }
 
 void ReportView::print_pdf_formul(QString html)
@@ -75,16 +75,16 @@ void ReportView::print_pdf_formul(QString html)
     QFile filepdf;
     QString filename;
         //fd = new QFileDialog;
-        //filename = fd -> getSaveFileName(this, tr("Сохранить"),"c:/test/test.pdf", tr("PDF (*.pdf)"));
+        //filename = fd -> getSaveFileName(this, tr("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"),"c:/test/test.pdf", tr("PDF (*.pdf)"));
 
     preview_dlg = new QDialog;
-    preview_dlg->setWindowTitle(tr("Вывод формуляра"));
+    preview_dlg->setWindowTitle(tr("пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
     report_window1->setHtml(html);
 
     filepdf.setFileName(filename);
     filepdf.open(QIODevice::WriteOnly);
     filepdf.close();
 
-    textprinter_->setOrientation(QPrinter::Portrait);
-    textprinter_->exportPdf(report_window1,"Сохранить",filename);
+    textprinter_->setOrientation(QPageLayout::Portrait);
+    textprinter_->exportPdf(report_window1,"пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",filename);
 }

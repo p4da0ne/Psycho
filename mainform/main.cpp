@@ -1,10 +1,12 @@
 #include <QtGui>
 #include "mainform.h"
+#include "qapplication.h"
+#include "qstylefactory.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    QApplication::setStyle(QStyleFactory::create("Cleanlooks"));
+    QApplication::setStyle(QStyleFactory::create("Fusion"));
     QApplication::setPalette(QApplication::style()->standardPalette());
     QTranslator translator;
     translator.load("akcopp_ru.qm",".");
@@ -13,7 +15,7 @@ int main(int argc, char *argv[])
     Mainform w;
 
     w.setBackgroundRole(QPalette::Shadow);
-	
+    w.setWindowIcon(QIcon(":Resources/RedStar.ico"));
     w.showMaximized();
     return a.exec();
 }

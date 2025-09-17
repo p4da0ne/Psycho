@@ -2,7 +2,7 @@ TEMPLATE        = app
 TARGET          = saturn
 DESTDIR         = ../build
 
-QT              += sql network
+QT              += sql network widgets core5compat printsupport axcontainer
 
 RESOURCES       += saturn.qrc
 
@@ -51,3 +51,4 @@ INCLUDEPATH += . \
 		../event_manager
 }
 
+RC_FILE = saturn.rc
