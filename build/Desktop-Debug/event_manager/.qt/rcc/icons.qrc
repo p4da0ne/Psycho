@@ -1,0 +1,13 @@
+<RCC>
+  <qresource prefix="/icons">
+    <file alias="icons/add_but.png">C:/Qt/repos/saturn_new_map_engine/event_manager/icons/add_but.png</file>
+    <file alias="icons/close.png">C:/Qt/repos/saturn_new_map_engine/event_manager/icons/close.png</file>
+    <file alias="icons/grey.ico">C:/Qt/repos/saturn_new_map_engine/event_manager/icons/grey.ico</file>
+    <file alias="icons/magenta.ico">C:/Qt/repos/saturn_new_map_engine/event_manager/icons/magenta.ico</file>
+    <file alias="icons/no_photo.png">C:/Qt/repos/saturn_new_map_engine/event_manager/icons/no_photo.png</file>
+    <file alias="icons/red.ico">C:/Qt/repos/saturn_new_map_engine/event_manager/icons/red.ico</file>
+    <file alias="icons/sync.ico">C:/Qt/repos/saturn_new_map_engine/event_manager/icons/sync.ico</file>
+    <file alias="icons/yellow.ico">C:/Qt/repos/saturn_new_map_engine/event_manager/icons/yellow.ico</file>
+  </qresource>
+</RCC>
+

@@ -1,0 +1,26 @@
+<RCC>
+  <qresource prefix="/">
+    <file alias="Resources/0.png">C:/Qt/repos/saturn_new_map_engine/object_manager/Resources/0.png</file>
+    <file alias="Resources/01.png">C:/Qt/repos/saturn_new_map_engine/object_manager/Resources/01.png</file>
+    <file alias="Resources/02.png">C:/Qt/repos/saturn_new_map_engine/object_manager/Resources/02.png</file>
+    <file alias="Resources/03.png">C:/Qt/repos/saturn_new_map_engine/object_manager/Resources/03.png</file>
+    <file alias="Resources/Stop2.png">C:/Qt/repos/saturn_new_map_engine/object_manager/Resources/Stop2.png</file>
+    <file alias="Resources/add.png">C:/Qt/repos/saturn_new_map_engine/object_manager/Resources/add.png</file>
+    <file alias="Resources/add_but.png">C:/Qt/repos/saturn_new_map_engine/object_manager/Resources/add_but.png</file>
+    <file alias="Resources/book.png">C:/Qt/repos/saturn_new_map_engine/object_manager/Resources/book.png</file>
+    <file alias="Resources/change_user.png">C:/Qt/repos/saturn_new_map_engine/object_manager/Resources/change_user.png</file>
+    <file alias="Resources/close.png">C:/Qt/repos/saturn_new_map_engine/object_manager/Resources/close.png</file>
+    <file alias="Resources/connect_saturn.png">C:/Qt/repos/saturn_new_map_engine/object_manager/Resources/connect_saturn.png</file>
+    <file alias="Resources/delete_but.png">C:/Qt/repos/saturn_new_map_engine/object_manager/Resources/delete_but.png</file>
+    <file alias="Resources/edit_1.png">C:/Qt/repos/saturn_new_map_engine/object_manager/Resources/edit_1.png</file>
+    <file alias="Resources/edit_but.png">C:/Qt/repos/saturn_new_map_engine/object_manager/Resources/edit_but.png</file>
+    <file alias="Resources/group.png">C:/Qt/repos/saturn_new_map_engine/object_manager/Resources/group.png</file>
+    <file alias="Resources/open.png">C:/Qt/repos/saturn_new_map_engine/object_manager/Resources/open.png</file>
+    <file alias="Resources/planet.png">C:/Qt/repos/saturn_new_map_engine/object_manager/Resources/planet.png</file>
+    <file alias="Resources/printer.png">C:/Qt/repos/saturn_new_map_engine/object_manager/Resources/printer.png</file>
+    <file alias="Resources/saturn_delete.png">C:/Qt/repos/saturn_new_map_engine/object_manager/Resources/saturn_delete.png</file>
+    <file alias="Resources/user_config.png">C:/Qt/repos/saturn_new_map_engine/object_manager/Resources/user_config.png</file>
+    <file alias="Resources/weapon.png">C:/Qt/repos/saturn_new_map_engine/object_manager/Resources/weapon.png</file>
+  </qresource>
+</RCC>
+
