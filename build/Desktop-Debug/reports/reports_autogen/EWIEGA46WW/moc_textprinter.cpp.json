@@ -1,0 +1,32 @@
+{
+    "classes": [
+        {
+            "className": "TextPrinter",
+            "lineNumber": 16,
+            "object": true,
+            "qualifiedClassName": "TextPrinter",
+            "slots": [
+                {
+                    "access": "private",
+                    "arguments": [
+                        {
+                            "name": "printer",
+                            "type": "QPrinter*"
+                        }
+                    ],
+                    "index": 0,
+                    "name": "print",
+                    "returnType": "void"
+                }
+            ],
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QObject"
+                }
+            ]
+        }
+    ],
+    "inputFile": "textprinter.h",
+    "outputRevision": 69
+}

@@ -1,0 +1,102 @@
+[
+    {
+        "classes": [
+            {
+                "className": "ReportData",
+                "lineNumber": 10,
+                "object": true,
+                "qualifiedClassName": "ReportData",
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "report_data.h",
+        "outputRevision": 69
+    },
+    {
+        "classes": [
+            {
+                "className": "ReportView",
+                "lineNumber": 14,
+                "object": true,
+                "qualifiedClassName": "ReportView",
+                "slots": [
+                    {
+                        "access": "public",
+                        "index": 0,
+                        "name": "slot_print_formul",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "index": 1,
+                        "name": "slot_print_pdf_formul",
+                        "returnType": "void"
+                    }
+                ],
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "report_view.h",
+        "outputRevision": 69
+    },
+    {
+        "classes": [
+            {
+                "className": "Reports",
+                "lineNumber": 9,
+                "object": true,
+                "qualifiedClassName": "Reports",
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "reports.h",
+        "outputRevision": 69
+    },
+    {
+        "classes": [
+            {
+                "className": "TextPrinter",
+                "lineNumber": 16,
+                "object": true,
+                "qualifiedClassName": "TextPrinter",
+                "slots": [
+                    {
+                        "access": "private",
+                        "arguments": [
+                            {
+                                "name": "printer",
+                                "type": "QPrinter*"
+                            }
+                        ],
+                        "index": 0,
+                        "name": "print",
+                        "returnType": "void"
+                    }
+                ],
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "textprinter.h",
+        "outputRevision": 69
+    }
+]

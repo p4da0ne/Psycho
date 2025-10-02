@@ -4,6 +4,7 @@
 *.pdsyncu
 ui_*.h
 *.vcproj
+*.vcxproj*
 *.sln
 *.ncb
 *.user

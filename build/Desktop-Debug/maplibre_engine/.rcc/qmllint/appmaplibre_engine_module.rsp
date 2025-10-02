@@ -1,0 +1,10 @@
+-I
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug
+-I
+C:/Qt/versions/6.9.0/qml
+--resource
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/maplibre_engine/.qt/rcc/qmake_maplibre_engine.qrc
+--resource
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/maplibre_engine/.qt/rcc/appmaplibre_engine_raw_qml_0.qrc
+--module
+maplibre_engine

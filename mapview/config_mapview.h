@@ -1,4 +1,4 @@
-#if !defined(__GUI_config_mapview_h)
+﻿#if !defined(__GUI_config_mapview_h)
 #define __GUI_config_mapview_h
 /* ==================================================================== */
 /*      We will use WIN32 as a standard windows define.                 */
@@ -19,9 +19,11 @@
 #pragma warning (disable:4530)
 #ifdef __USE_DLL_XXXXX
 
-	#define __EXPORT_MAPVIEW __declspec(dllexport)
+    #define __EXPORT_MAPVIEW __declspec(dllexport)
+    #define __EXPORT_MAPVIEWNEW __declspec(dllexport)
 #else
-	#define __EXPORT_MAPVIEW __declspec(dllimport)
+    #define __EXPORT_MAPVIEW __declspec(dllimport)
+    #define __EXPORT_MAPVIEW __declspec(dllimport)
 #endif
 #else
 	#define __EXPORT_MAPVIEW

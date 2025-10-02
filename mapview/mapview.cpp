@@ -1,4 +1,4 @@
-#include <QLayout>
+﻿#include <QLayout>
 #include <QMenuBar>
 #include <QFileDialog>
 #include <QDialog>
@@ -15,7 +15,7 @@
 #include <QDialog>
 #include <QWidget>
 #include <QPushButton>
-#include <QtSql>
+#include <QSql>
 #include <QSqlError>
 #include <QMessageBox>
 #include <QComboBox>

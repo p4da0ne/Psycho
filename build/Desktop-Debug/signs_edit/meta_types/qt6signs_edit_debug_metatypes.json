@@ -1,0 +1,98 @@
+[
+    {
+        "classes": [
+            {
+                "className": "SignsEdit",
+                "lineNumber": 25,
+                "object": true,
+                "qualifiedClassName": "SignsEdit",
+                "slots": [
+                    {
+                        "access": "public",
+                        "index": 0,
+                        "name": "show_object_types",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "index",
+                                "type": "QModelIndex"
+                            }
+                        ],
+                        "index": 1,
+                        "name": "show_signs_table",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "index",
+                                "type": "QModelIndex"
+                            }
+                        ],
+                        "index": 2,
+                        "name": "create_signs_table",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "table",
+                                "type": "QTableWidget*"
+                            }
+                        ],
+                        "index": 3,
+                        "name": "clear_tableWidget",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "index": 4,
+                        "name": "get_path",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "index": 5,
+                        "name": "add_new_sign",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "row",
+                                "type": "int"
+                            },
+                            {
+                                "name": "column",
+                                "type": "int"
+                            }
+                        ],
+                        "index": 6,
+                        "name": "delete_sign",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "index": 7,
+                        "name": "save_changes",
+                        "returnType": "void"
+                    }
+                ],
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QDialog"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "signs_edit.h",
+        "outputRevision": 69
+    }
+]

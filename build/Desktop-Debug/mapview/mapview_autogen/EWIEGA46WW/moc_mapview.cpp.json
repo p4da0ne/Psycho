@@ -1,0 +1,302 @@
+{
+    "classes": [
+        {
+            "className": "MapView",
+            "lineNumber": 23,
+            "object": true,
+            "qualifiedClassName": "MapView",
+            "slots": [
+                {
+                    "access": "private",
+                    "index": 0,
+                    "name": "openNewMap",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 1,
+                    "name": "openMapFromSettings",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 2,
+                    "name": "openRST",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 3,
+                    "name": "closeRST",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 4,
+                    "name": "closeSelectedRST",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 5,
+                    "name": "closeAllRST",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 6,
+                    "name": "lessScale",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 7,
+                    "name": "greateScale",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 8,
+                    "name": "closeMap",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 9,
+                    "name": "changeBrihgtUp",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 10,
+                    "name": "changeBrihgtDown",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 11,
+                    "name": "changeContrastUp",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 12,
+                    "name": "changeContrastDown",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "arguments": [
+                        {
+                            "name": "xyCoord",
+                            "type": "QPointF"
+                        }
+                    ],
+                    "index": 13,
+                    "name": "showCoordinates",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 14,
+                    "name": "slotObjectInfo",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 15,
+                    "name": "slotObjectReport",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 16,
+                    "name": "slotFormationPsiLooses",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 17,
+                    "name": "slotRegionMpos",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 18,
+                    "name": "slotMoveObject",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "arguments": [
+                        {
+                            "name": "x",
+                            "type": "double"
+                        },
+                        {
+                            "name": "y",
+                            "type": "double"
+                        }
+                    ],
+                    "index": 19,
+                    "name": "changeObjectCoordInDB",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "arguments": [
+                        {
+                            "name": "pe",
+                            "type": "QPoint"
+                        },
+                        {
+                            "name": "objectsList",
+                            "type": "QList<QStringList>"
+                        }
+                    ],
+                    "index": 20,
+                    "name": "slotMouseLeftButtonClicked",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "arguments": [
+                        {
+                            "name": "pe",
+                            "type": "QPoint"
+                        },
+                        {
+                            "name": "objectsList",
+                            "type": "QList<QStringList>"
+                        }
+                    ],
+                    "index": 21,
+                    "name": "slotMouseRightButtonClicked",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "arguments": [
+                        {
+                            "name": "pe",
+                            "type": "QPoint"
+                        }
+                    ],
+                    "index": 22,
+                    "name": "mouseRightSimpleMenu",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 23,
+                    "name": "addEvent",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 24,
+                    "name": "slotEventMedia",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 25,
+                    "name": "slotDeleteEvent",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 26,
+                    "name": "showCheckedObjects",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 27,
+                    "name": "showCheckedCalcResults",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 28,
+                    "name": "showCheckedEvents",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 29,
+                    "name": "PrintMapSlot",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 30,
+                    "name": "PrintScreenSlot",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "arguments": [
+                        {
+                            "name": "checked",
+                            "type": "bool"
+                        }
+                    ],
+                    "index": 31,
+                    "name": "slotSelectButtonToggled",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 32,
+                    "name": "slotSearchObject",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 33,
+                    "name": "chooseSelectedObjects",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 34,
+                    "name": "chooseAllObjects",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "arguments": [
+                        {
+                            "name": "pe",
+                            "type": "QPoint"
+                        }
+                    ],
+                    "index": 35,
+                    "name": "slotSelectedObjectsListViewCustomMenu",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 36,
+                    "name": "slotRemoveOneObject",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 37,
+                    "name": "slotClearSelectedList",
+                    "returnType": "void"
+                }
+            ],
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QWidget"
+                }
+            ]
+        }
+    ],
+    "inputFile": "mapview.h",
+    "outputRevision": 69
+}

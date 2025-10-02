@@ -1,0 +1,272 @@
+{
+    "classes": [
+        {
+            "className": "Event",
+            "lineNumber": 26,
+            "object": true,
+            "qualifiedClassName": "Event",
+            "signals": [
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "id_media_event",
+                            "type": "int"
+                        }
+                    ],
+                    "index": 0,
+                    "name": "MediaContentInserted",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "error",
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 1,
+                    "name": "ErrorMediaContentInsert",
+                    "returnType": "void"
+                }
+            ],
+            "slots": [
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "path",
+                            "type": "QString"
+                        },
+                        {
+                            "name": "idMediaType",
+                            "type": "int"
+                        },
+                        {
+                            "name": "name_event_media",
+                            "type": "QString"
+                        },
+                        {
+                            "name": "description",
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 2,
+                    "name": "InsertMediaItems",
+                    "returnType": "int"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "path",
+                            "type": "QString"
+                        },
+                        {
+                            "name": "idMediaType",
+                            "type": "int"
+                        },
+                        {
+                            "name": "name_event_media",
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 3,
+                    "isCloned": true,
+                    "name": "InsertMediaItems",
+                    "returnType": "int"
+                },
+                {
+                    "access": "public",
+                    "index": 4,
+                    "name": "insertEventToDB",
+                    "returnType": "bool"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "id_event",
+                            "type": "int"
+                        }
+                    ],
+                    "index": 5,
+                    "name": "DeleteEvent",
+                    "returnType": "bool"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "id_event_media",
+                            "type": "int"
+                        }
+                    ],
+                    "index": 6,
+                    "name": "DeleteEventMedia",
+                    "returnType": "bool"
+                },
+                {
+                    "access": "public",
+                    "index": 7,
+                    "name": "DeleteThisEventFromDB",
+                    "returnType": "bool"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "index",
+                            "type": "QModelIndex"
+                        }
+                    ],
+                    "index": 8,
+                    "name": "openMediaContent",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "index": 9,
+                    "name": "getMediaEvents",
+                    "returnType": "QStandardItemModel*"
+                },
+                {
+                    "access": "public",
+                    "index": 10,
+                    "name": "updateMediaEvents",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "index": 11,
+                    "name": "getEventsStatus",
+                    "returnType": "QMap<int,QString>"
+                },
+                {
+                    "access": "public",
+                    "index": 12,
+                    "name": "getEventsTypes",
+                    "returnType": "QMap<int,QMap<QString,int>>"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "name",
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 13,
+                    "name": "setName",
+                    "returnType": "bool"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "description",
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 14,
+                    "name": "setDescription",
+                    "returnType": "bool"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "resume",
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 15,
+                    "name": "setResume",
+                    "returnType": "bool"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "start_date",
+                            "type": "QDateTime"
+                        }
+                    ],
+                    "index": 16,
+                    "name": "setStartDate",
+                    "returnType": "bool"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "end_date",
+                            "type": "QDateTime"
+                        }
+                    ],
+                    "index": 17,
+                    "name": "setEndDate",
+                    "returnType": "bool"
+                }
+            ],
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QObject"
+                }
+            ]
+        },
+        {
+            "className": "MediaInsertThread",
+            "lineNumber": 113,
+            "object": true,
+            "qualifiedClassName": "MediaInsertThread",
+            "signals": [
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "id_event_media",
+                            "type": "int"
+                        }
+                    ],
+                    "index": 0,
+                    "name": "MediaInserted",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "id_event_media",
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 1,
+                    "name": "ErrorMediaInsert",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 2,
+                    "name": "BigFile",
+                    "returnType": "void"
+                }
+            ],
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QThread"
+                }
+            ]
+        }
+    ],
+    "inputFile": "event.h",
+    "outputRevision": 69
+}

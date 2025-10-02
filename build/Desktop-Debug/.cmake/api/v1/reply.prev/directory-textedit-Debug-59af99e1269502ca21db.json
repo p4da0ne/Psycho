@@ -1,0 +1,45 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"textedit/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 59,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "bin",
+			"paths" : 
+			[
+				"textedit.dll"
+			],
+			"targetId" : "textedit::@61f6f3802b02f363331d",
+			"targetIndex" : 61,
+			"type" : "target"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "textedit",
+		"source" : "textedit"
+	}
+}

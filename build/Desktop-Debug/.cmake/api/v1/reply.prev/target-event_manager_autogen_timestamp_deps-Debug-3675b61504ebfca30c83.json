@@ -1,0 +1,42 @@
+{
+	"backtrace" : 0,
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : 
+		[
+			"event_manager/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 0,
+			"id" : "coord::@356b0069df567383f17f"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "eventsmodel::@c80786215755d517d6bd"
+		}
+	],
+	"folder" : 
+	{
+		"name" : "QtInternalTargets"
+	},
+	"id" : "event_manager_autogen_timestamp_deps::@78026df069471fe31900",
+	"isGeneratorProvided" : true,
+	"name" : "event_manager_autogen_timestamp_deps",
+	"paths" : 
+	{
+		"build" : "event_manager",
+		"source" : "event_manager"
+	},
+	"sources" : [],
+	"type" : "UTILITY"
+}

@@ -1,0 +1,18 @@
+{
+    "classes": [
+        {
+            "className": "MyMapAccess",
+            "lineNumber": 15,
+            "object": true,
+            "qualifiedClassName": "MyMapAccess",
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QObject"
+                }
+            ]
+        }
+    ],
+    "inputFile": "my_mapaccess.h",
+    "outputRevision": 69
+}

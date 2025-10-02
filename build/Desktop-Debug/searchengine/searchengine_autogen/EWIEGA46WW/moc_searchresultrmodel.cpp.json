@@ -1,0 +1,18 @@
+{
+    "classes": [
+        {
+            "className": "SearchResultModel",
+            "lineNumber": 8,
+            "object": true,
+            "qualifiedClassName": "SearchResultModel",
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QStandardItemModel"
+                }
+            ]
+        }
+    ],
+    "inputFile": "searchresultrmodel.h",
+    "outputRevision": 69
+}

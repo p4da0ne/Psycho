@@ -1,10 +1,11 @@
-#include "mainform.h"
+﻿#include "mainform.h"
 #include "ui_main_form.h"
 
 #include <signs_edit.h>
 #include <event_manager.h>
 #include <mapview.h>
 #include <object_manager.h>
+#include <MapBridge.h>
 
 
 #if defined Q_OS_WIN
@@ -245,12 +246,16 @@ bool Mainform::close_connection()
 //=============== Инициализация меню главной формы ==========================
 void Mainform::init_menu(int id_user_group)
 {
+    QAction* open_map;
+
 	QString mess;
 	QString wTitle;
     switch(id_user_group)
 	{
 	 case 0:	  //==== Незарегистрированный пользователь (вошел без логина и пароля)или нет соединения с БД ====
 		    UI->menuBar->clear();
+            open_map = new QAction("Открыть карту");// <--------------------------------------------------
+
 			menu = new QMenu("Файл");
             if(connection_flag == false)
 			{
@@ -263,6 +268,7 @@ void Mainform::init_menu(int id_user_group)
 			}
 			add_menu_exit(menu);
 			UI->menuBar->addMenu(menu);
+            UI->menuBar->addAction(open_map);
 
 			settings_menu = new QMenu("Настройки");
 			add_menu_db_connection(settings_menu);			

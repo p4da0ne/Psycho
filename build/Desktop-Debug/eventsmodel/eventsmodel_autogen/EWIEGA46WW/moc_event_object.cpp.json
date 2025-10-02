@@ -1,0 +1,18 @@
+{
+    "classes": [
+        {
+            "className": "EventObject",
+            "lineNumber": 11,
+            "object": true,
+            "qualifiedClassName": "EventObject",
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QObject"
+                }
+            ]
+        }
+    ],
+    "inputFile": "event_object.h",
+    "outputRevision": 69
+}

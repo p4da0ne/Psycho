@@ -1,0 +1,2 @@
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/db_saturn/db_saturn_autogen/include/../EWIEGA46WW/moc_db_saturn.cpp.json
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/db_saturn/db_saturn_autogen/include/../EWIEGA46WW/moc_db_struct.cpp.json

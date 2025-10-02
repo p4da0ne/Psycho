@@ -1,0 +1,11 @@
+-rootPath
+C:/Qt/repos/saturn_new_map_engine/mainform
+-cmake-output
+-output-file
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/mainform/.qt/qml_imports/saturn_build.cmake
+-importPath
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/mainform
+-importPath
+C:/Qt/versions/6.9.0/qml
+-qrcFiles
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/mainform/.qt/rcc/saturn.qrc

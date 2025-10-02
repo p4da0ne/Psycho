@@ -1,0 +1,10 @@
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/object_manager/object_manager_autogen/include/../EWIEGA46WW/moc_add_elements_dialog.cpp.json
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/object_manager/object_manager_autogen/include/../EWIEGA46WW/moc_add_object.cpp.json
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/object_manager/object_manager_autogen/include/../EWIEGA46WW/moc_comboboxdelegat.cpp.json
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/object_manager/object_manager_autogen/include/../EWIEGA46WW/moc_mylabel.cpp.json
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/object_manager/object_manager_autogen/include/../EWIEGA46WW/moc_mysqlrelationaldelegate.cpp.json
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/object_manager/object_manager_autogen/include/../EWIEGA46WW/moc_object_manager.cpp.json
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/object_manager/object_manager_autogen/include/../EWIEGA46WW/moc_persones_info.cpp.json
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/object_manager/object_manager_autogen/include/../EWIEGA46WW/moc_personesdata.cpp.json
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/object_manager/object_manager_autogen/include/../EWIEGA46WW/moc_simledelegate.cpp.json
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/object_manager/object_manager_autogen/include/../EWIEGA46WW/moc_textprinter.cpp.json

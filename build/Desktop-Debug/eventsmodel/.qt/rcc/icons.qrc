@@ -1,0 +1,9 @@
+<RCC>
+  <qresource prefix="/icons">
+    <file alias="icons/grey.ico">C:/Qt/repos/saturn_new_map_engine/eventsmodel/icons/grey.ico</file>
+    <file alias="icons/magenta.ico">C:/Qt/repos/saturn_new_map_engine/eventsmodel/icons/magenta.ico</file>
+    <file alias="icons/red.ico">C:/Qt/repos/saturn_new_map_engine/eventsmodel/icons/red.ico</file>
+    <file alias="icons/yellow.ico">C:/Qt/repos/saturn_new_map_engine/eventsmodel/icons/yellow.ico</file>
+  </qresource>
+</RCC>
+

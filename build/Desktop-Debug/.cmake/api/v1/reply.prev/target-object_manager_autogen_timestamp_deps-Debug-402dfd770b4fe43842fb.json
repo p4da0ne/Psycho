@@ -1,0 +1,46 @@
+{
+	"backtrace" : 0,
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : 
+		[
+			"object_manager/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 0,
+			"id" : "my_mapaccess::@387d44e0fefdffc57f61"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "output::@5b5608eb28142aacc1b4"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "reports::@b02191c7ff8e1f5e097b"
+		}
+	],
+	"folder" : 
+	{
+		"name" : "QtInternalTargets"
+	},
+	"id" : "object_manager_autogen_timestamp_deps::@ec6db8713e917b2ca389",
+	"isGeneratorProvided" : true,
+	"name" : "object_manager_autogen_timestamp_deps",
+	"paths" : 
+	{
+		"build" : "object_manager",
+		"source" : "object_manager"
+	},
+	"sources" : [],
+	"type" : "UTILITY"
+}

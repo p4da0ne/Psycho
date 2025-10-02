@@ -1,0 +1,18 @@
+{
+    "classes": [
+        {
+            "className": "simleDelegate",
+            "lineNumber": 8,
+            "object": true,
+            "qualifiedClassName": "simleDelegate",
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QSqlRelationalDelegate"
+                }
+            ]
+        }
+    ],
+    "inputFile": "simledelegate.h",
+    "outputRevision": 69
+}

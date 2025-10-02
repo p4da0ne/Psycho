@@ -1,0 +1,18 @@
+{
+    "classes": [
+        {
+            "className": "db_saturn",
+            "lineNumber": 12,
+            "object": true,
+            "qualifiedClassName": "db_saturn",
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "DataAccess"
+                }
+            ]
+        }
+    ],
+    "inputFile": "db_saturn.h",
+    "outputRevision": 69
+}

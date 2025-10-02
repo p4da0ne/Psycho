@@ -1,0 +1,70 @@
+{
+    "classes": [
+        {
+            "className": "EventsModel",
+            "lineNumber": 19,
+            "object": true,
+            "qualifiedClassName": "EventsModel",
+            "signals": [
+                {
+                    "access": "public",
+                    "index": 0,
+                    "name": "eventInserted",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "event",
+                            "type": "Event*"
+                        }
+                    ],
+                    "index": 1,
+                    "name": "currentEventChenge",
+                    "returnType": "void"
+                }
+            ],
+            "slots": [
+                {
+                    "access": "public",
+                    "index": 2,
+                    "name": "UpdateModel",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "item",
+                            "type": "QStandardItem&"
+                        }
+                    ],
+                    "index": 3,
+                    "name": "UpdateItem",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "index",
+                            "type": "QModelIndex"
+                        }
+                    ],
+                    "index": 4,
+                    "name": "rowClicked",
+                    "returnType": "void"
+                }
+            ],
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QStandardItemModel"
+                }
+            ]
+        }
+    ],
+    "inputFile": "eventsmodel.h",
+    "outputRevision": 69
+}

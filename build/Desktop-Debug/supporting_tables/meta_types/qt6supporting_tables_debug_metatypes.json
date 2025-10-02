@@ -1,0 +1,62 @@
+[
+    {
+        "classes": [
+            {
+                "className": "SupportingTables",
+                "lineNumber": 23,
+                "object": true,
+                "qualifiedClassName": "SupportingTables",
+                "slots": [
+                    {
+                        "access": "private",
+                        "arguments": [
+                            {
+                                "name": "item",
+                                "type": "QTreeWidgetItem*"
+                            },
+                            {
+                                "name": "column",
+                                "type": "int"
+                            }
+                        ],
+                        "index": 0,
+                        "name": "fill_supp_table",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "private",
+                        "index": 1,
+                        "name": "add_supp_table_row",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "private",
+                        "index": 2,
+                        "name": "save_supp_table_data",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "private",
+                        "index": 3,
+                        "name": "del_supp_table_data",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "private",
+                        "index": 4,
+                        "name": "ok_slot",
+                        "returnType": "void"
+                    }
+                ],
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QDialog"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "supporting_tables.h",
+        "outputRevision": 69
+    }
+]

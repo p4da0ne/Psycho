@@ -1,0 +1,45 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"supporting_tables/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 41,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "bin",
+			"paths" : 
+			[
+				"supporting_tables.dll"
+			],
+			"targetId" : "supporting_tables::@da6419ef896533b95098",
+			"targetIndex" : 56,
+			"type" : "target"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "supporting_tables",
+		"source" : "supporting_tables"
+	}
+}
