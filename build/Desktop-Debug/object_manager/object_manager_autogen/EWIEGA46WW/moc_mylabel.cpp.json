@@ -1,0 +1,26 @@
+{
+    "classes": [
+        {
+            "className": "MyLabel",
+            "lineNumber": 7,
+            "object": true,
+            "qualifiedClassName": "MyLabel",
+            "signals": [
+                {
+                    "access": "public",
+                    "index": 0,
+                    "name": "label_clicked",
+                    "returnType": "void"
+                }
+            ],
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QLabel"
+                }
+            ]
+        }
+    ],
+    "inputFile": "mylabel.h",
+    "outputRevision": 69
+}

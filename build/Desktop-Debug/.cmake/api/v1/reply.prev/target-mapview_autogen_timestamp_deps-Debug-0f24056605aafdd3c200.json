@@ -1,0 +1,58 @@
+{
+	"backtrace" : 0,
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : 
+		[
+			"mapview/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 0,
+			"id" : "coord::@356b0069df567383f17f"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "my_mapaccess::@387d44e0fefdffc57f61"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "reports::@b02191c7ff8e1f5e097b"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "eventsmodel::@c80786215755d517d6bd"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "searchengine::@258c396da3c9eedb6872"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "event_manager::@78026df069471fe31900"
+		}
+	],
+	"folder" : 
+	{
+		"name" : "QtInternalTargets"
+	},
+	"id" : "mapview_autogen_timestamp_deps::@540d94a72bbfa1647c2d",
+	"isGeneratorProvided" : true,
+	"name" : "mapview_autogen_timestamp_deps",
+	"paths" : 
+	{
+		"build" : "mapview",
+		"source" : "mapview"
+	},
+	"sources" : [],
+	"type" : "UTILITY"
+}

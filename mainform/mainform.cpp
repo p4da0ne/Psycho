@@ -5,6 +5,7 @@
 #include <event_manager.h>
 #include <mapview.h>
 #include <object_manager.h>
+#include <MapBridge.h>
 
 
 #if defined Q_OS_WIN

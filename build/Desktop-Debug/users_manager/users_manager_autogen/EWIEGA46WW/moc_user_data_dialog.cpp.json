@@ -1,0 +1,26 @@
+{
+    "classes": [
+        {
+            "className": "UserDataDialog",
+            "lineNumber": 13,
+            "object": true,
+            "qualifiedClassName": "UserDataDialog",
+            "slots": [
+                {
+                    "access": "private",
+                    "index": 0,
+                    "name": "slotAccepted",
+                    "returnType": "void"
+                }
+            ],
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QDialog"
+                }
+            ]
+        }
+    ],
+    "inputFile": "user_data_dialog.h",
+    "outputRevision": 69
+}

@@ -1,0 +1,1080 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						32
+					]
+				},
+				{
+					"build" : "my_mapaccess",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-my_mapaccess-Debug-999bbad2c3d2efb0b8b4.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "my_mapaccess",
+					"targetIndexes" : 
+					[
+						33,
+						34,
+						35
+					]
+				},
+				{
+					"build" : "coord",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-coord-Debug-2e4150e69589491262af.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 2,
+					"source" : "coord",
+					"targetIndexes" : 
+					[
+						5,
+						6,
+						7
+					]
+				},
+				{
+					"build" : "users_manager",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-users_manager-Debug-09a61f232db8cffafbcc.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 3,
+					"source" : "users_manager",
+					"targetIndexes" : 
+					[
+						62,
+						63,
+						64
+					]
+				},
+				{
+					"build" : "output",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-output-Debug-fc6275381efea5c43c83.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 4,
+					"source" : "output",
+					"targetIndexes" : 
+					[
+						39,
+						40,
+						41
+					]
+				},
+				{
+					"build" : "textedit",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-textedit-Debug-ceb5b7180decc049aecf.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 5,
+					"source" : "textedit",
+					"targetIndexes" : 
+					[
+						59,
+						60,
+						61
+					]
+				},
+				{
+					"build" : "reports",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-reports-Debug-0305a5d8998b308a9aed.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 6,
+					"source" : "reports",
+					"targetIndexes" : 
+					[
+						43,
+						44,
+						45
+					]
+				},
+				{
+					"build" : "dataaccess",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-dataaccess-Debug-178645ac9dd74017b6f7.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 7,
+					"source" : "dataaccess",
+					"targetIndexes" : 
+					[
+						8,
+						9,
+						10
+					]
+				},
+				{
+					"build" : "db_saturn",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-db_saturn-Debug-eda56ec8482b8e29faa3.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 8,
+					"source" : "db_saturn",
+					"targetIndexes" : 
+					[
+						11,
+						12,
+						13
+					]
+				},
+				{
+					"build" : "supporting_tables",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-supporting_tables-Debug-3cf535803824faa8545d.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 9,
+					"source" : "supporting_tables",
+					"targetIndexes" : 
+					[
+						56,
+						57,
+						58
+					]
+				},
+				{
+					"build" : "object_manager",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-object_manager-Debug-7746fa4ae0ccebc2d74c.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 10,
+					"source" : "object_manager",
+					"targetIndexes" : 
+					[
+						36,
+						37,
+						38
+					]
+				},
+				{
+					"build" : "signs_edit",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-signs_edit-Debug-39736e0d198545c4031f.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 11,
+					"source" : "signs_edit",
+					"targetIndexes" : 
+					[
+						53,
+						54,
+						55
+					]
+				},
+				{
+					"build" : "eventsmodel",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-eventsmodel-Debug-d7ded4721fa42b2c4658.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 12,
+					"source" : "eventsmodel",
+					"targetIndexes" : 
+					[
+						17,
+						18,
+						19
+					]
+				},
+				{
+					"build" : "searchengine",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-searchengine-Debug-6121400f9e793f0452b9.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 13,
+					"source" : "searchengine",
+					"targetIndexes" : 
+					[
+						50,
+						51,
+						52
+					]
+				},
+				{
+					"build" : "mapview",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-mapview-Debug-e7c83b7517c2a0f6e334.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 14,
+					"source" : "mapview",
+					"targetIndexes" : 
+					[
+						1,
+						2,
+						3,
+						4,
+						20,
+						21,
+						22,
+						23,
+						24,
+						25,
+						26,
+						27,
+						28,
+						29,
+						30,
+						31,
+						42
+					]
+				},
+				{
+					"build" : "event_manager",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-event_manager-Debug-81cd2dc5c37dfbc1a6cb.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 15,
+					"source" : "event_manager",
+					"targetIndexes" : 
+					[
+						14,
+						15,
+						16
+					]
+				},
+				{
+					"build" : "mainform",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-mainform-Debug-927c7280a637ba7f6840.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "mainform",
+					"targetIndexes" : 
+					[
+						46,
+						47,
+						48,
+						49
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15
+					],
+					"directoryIndexes" : 
+					[
+						0,
+						16
+					],
+					"name" : "saturn",
+					"targetIndexes" : 
+					[
+						0,
+						32,
+						46,
+						47,
+						48,
+						49
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "my_mapaccess",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						33,
+						34,
+						35
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						2
+					],
+					"name" : "coord",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						5,
+						6,
+						7
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						3
+					],
+					"name" : "users_manager",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						62,
+						63,
+						64
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						4
+					],
+					"name" : "output",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						39,
+						40,
+						41
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						5
+					],
+					"name" : "textedit",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						59,
+						60,
+						61
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						6
+					],
+					"name" : "reports",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						43,
+						44,
+						45
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						7
+					],
+					"name" : "dataaccess",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						8,
+						9,
+						10
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						8
+					],
+					"name" : "db_saturn",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						11,
+						12,
+						13
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						9
+					],
+					"name" : "supporting_tables",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						56,
+						57,
+						58
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						10
+					],
+					"name" : "object_manager",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						36,
+						37,
+						38
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						11
+					],
+					"name" : "signs_edit",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						53,
+						54,
+						55
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						12
+					],
+					"name" : "eventsmodel",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						17,
+						18,
+						19
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						13
+					],
+					"name" : "searchengine",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						50,
+						51,
+						52
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						14
+					],
+					"name" : "mapview",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						1,
+						2,
+						3,
+						4,
+						20,
+						21,
+						22,
+						23,
+						24,
+						25,
+						26,
+						27,
+						28,
+						29,
+						30,
+						31,
+						42
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						15
+					],
+					"name" : "event_manager",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						14,
+						15,
+						16
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "all_aotstats::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_aotstats-Debug-daf41f9d341af893ac48.json",
+					"name" : "all_aotstats",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 14,
+					"id" : "all_qmllint::@540d94a72bbfa1647c2d",
+					"jsonFile" : "target-all_qmllint-Debug-6bd1ccb6e12f99bc1c7c.json",
+					"name" : "all_qmllint",
+					"projectIndex" : 14
+				},
+				{
+					"directoryIndex" : 14,
+					"id" : "all_qmllint_json::@540d94a72bbfa1647c2d",
+					"jsonFile" : "target-all_qmllint_json-Debug-1637a3b0819da1ce2c83.json",
+					"name" : "all_qmllint_json",
+					"projectIndex" : 14
+				},
+				{
+					"directoryIndex" : 14,
+					"id" : "all_qmllint_module::@540d94a72bbfa1647c2d",
+					"jsonFile" : "target-all_qmllint_module-Debug-dcc9f38eb9ee427ad8b8.json",
+					"name" : "all_qmllint_module",
+					"projectIndex" : 14
+				},
+				{
+					"directoryIndex" : 14,
+					"id" : "all_qmltyperegistrations::@540d94a72bbfa1647c2d",
+					"jsonFile" : "target-all_qmltyperegistrations-Debug-7b34bec15daa0731c6f6.json",
+					"name" : "all_qmltyperegistrations",
+					"projectIndex" : 14
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "coord::@356b0069df567383f17f",
+					"jsonFile" : "target-coord-Debug-605cdaf2fe0e70b79d54.json",
+					"name" : "coord",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "coord_autogen::@356b0069df567383f17f",
+					"jsonFile" : "target-coord_autogen-Debug-b4590565c7ac00b6c1c2.json",
+					"name" : "coord_autogen",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "coord_autogen_timestamp_deps::@356b0069df567383f17f",
+					"jsonFile" : "target-coord_autogen_timestamp_deps-Debug-f3f441855fdded3cc022.json",
+					"name" : "coord_autogen_timestamp_deps",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 7,
+					"id" : "dataaccess::@17c3bfb7657a56f7ad57",
+					"jsonFile" : "target-dataaccess-Debug-bd7acb75647aa97d2574.json",
+					"name" : "dataaccess",
+					"projectIndex" : 7
+				},
+				{
+					"directoryIndex" : 7,
+					"id" : "dataaccess_autogen::@17c3bfb7657a56f7ad57",
+					"jsonFile" : "target-dataaccess_autogen-Debug-068d2d99ff4ae5a23365.json",
+					"name" : "dataaccess_autogen",
+					"projectIndex" : 7
+				},
+				{
+					"directoryIndex" : 7,
+					"id" : "dataaccess_autogen_timestamp_deps::@17c3bfb7657a56f7ad57",
+					"jsonFile" : "target-dataaccess_autogen_timestamp_deps-Debug-71d0850de8c1057ab437.json",
+					"name" : "dataaccess_autogen_timestamp_deps",
+					"projectIndex" : 7
+				},
+				{
+					"directoryIndex" : 8,
+					"id" : "db_saturn::@8d792285eb2943823af4",
+					"jsonFile" : "target-db_saturn-Debug-f269e71a01704b39502e.json",
+					"name" : "db_saturn",
+					"projectIndex" : 8
+				},
+				{
+					"directoryIndex" : 8,
+					"id" : "db_saturn_autogen::@8d792285eb2943823af4",
+					"jsonFile" : "target-db_saturn_autogen-Debug-f1b44473d5f97f3c35e1.json",
+					"name" : "db_saturn_autogen",
+					"projectIndex" : 8
+				},
+				{
+					"directoryIndex" : 8,
+					"id" : "db_saturn_autogen_timestamp_deps::@8d792285eb2943823af4",
+					"jsonFile" : "target-db_saturn_autogen_timestamp_deps-Debug-7f4ad41c872308b94742.json",
+					"name" : "db_saturn_autogen_timestamp_deps",
+					"projectIndex" : 8
+				},
+				{
+					"directoryIndex" : 15,
+					"id" : "event_manager::@78026df069471fe31900",
+					"jsonFile" : "target-event_manager-Debug-ccf88867e98df900f657.json",
+					"name" : "event_manager",
+					"projectIndex" : 15
+				},
+				{
+					"directoryIndex" : 15,
+					"id" : "event_manager_autogen::@78026df069471fe31900",
+					"jsonFile" : "target-event_manager_autogen-Debug-278800e0bd9987fc8296.json",
+					"name" : "event_manager_autogen",
+					"projectIndex" : 15
+				},
+				{
+					"directoryIndex" : 15,
+					"id" : "event_manager_autogen_timestamp_deps::@78026df069471fe31900",
+					"jsonFile" : "target-event_manager_autogen_timestamp_deps-Debug-3675b61504ebfca30c83.json",
+					"name" : "event_manager_autogen_timestamp_deps",
+					"projectIndex" : 15
+				},
+				{
+					"directoryIndex" : 12,
+					"id" : "eventsmodel::@c80786215755d517d6bd",
+					"jsonFile" : "target-eventsmodel-Debug-7cdbed2d5aaa2a397036.json",
+					"name" : "eventsmodel",
+					"projectIndex" : 12
+				},
+				{
+					"directoryIndex" : 12,
+					"id" : "eventsmodel_autogen::@c80786215755d517d6bd",
+					"jsonFile" : "target-eventsmodel_autogen-Debug-bd7dbbe0690614133661.json",
+					"name" : "eventsmodel_autogen",
+					"projectIndex" : 12
+				},
+				{
+					"directoryIndex" : 12,
+					"id" : "eventsmodel_autogen_timestamp_deps::@c80786215755d517d6bd",
+					"jsonFile" : "target-eventsmodel_autogen_timestamp_deps-Debug-ebeefcbbfafa43fa57b8.json",
+					"name" : "eventsmodel_autogen_timestamp_deps",
+					"projectIndex" : 12
+				},
+				{
+					"directoryIndex" : 14,
+					"id" : "mapview::@540d94a72bbfa1647c2d",
+					"jsonFile" : "target-mapview-Debug-f78e3ab2106ee3bec9c1.json",
+					"name" : "mapview",
+					"projectIndex" : 14
+				},
+				{
+					"directoryIndex" : 14,
+					"id" : "mapview_autogen::@540d94a72bbfa1647c2d",
+					"jsonFile" : "target-mapview_autogen-Debug-1dc313e3055b41569fa3.json",
+					"name" : "mapview_autogen",
+					"projectIndex" : 14
+				},
+				{
+					"directoryIndex" : 14,
+					"id" : "mapview_autogen_timestamp_deps::@540d94a72bbfa1647c2d",
+					"jsonFile" : "target-mapview_autogen_timestamp_deps-Debug-5808a7c5866a789a4642.json",
+					"name" : "mapview_autogen_timestamp_deps",
+					"projectIndex" : 14
+				},
+				{
+					"directoryIndex" : 14,
+					"id" : "mapview_copy_qml::@540d94a72bbfa1647c2d",
+					"jsonFile" : "target-mapview_copy_qml-Debug-668cd3c8884d745d9089.json",
+					"name" : "mapview_copy_qml",
+					"projectIndex" : 14
+				},
+				{
+					"directoryIndex" : 14,
+					"id" : "mapview_copy_res::@540d94a72bbfa1647c2d",
+					"jsonFile" : "target-mapview_copy_res-Debug-6eb46f01b7ac0476fbf4.json",
+					"name" : "mapview_copy_res",
+					"projectIndex" : 14
+				},
+				{
+					"directoryIndex" : 14,
+					"id" : "mapview_qmllint::@540d94a72bbfa1647c2d",
+					"jsonFile" : "target-mapview_qmllint-Debug-fc5589cad945bf9d7995.json",
+					"name" : "mapview_qmllint",
+					"projectIndex" : 14
+				},
+				{
+					"directoryIndex" : 14,
+					"id" : "mapview_qmllint_json::@540d94a72bbfa1647c2d",
+					"jsonFile" : "target-mapview_qmllint_json-Debug-692f722c3ce0a4c46ee7.json",
+					"name" : "mapview_qmllint_json",
+					"projectIndex" : 14
+				},
+				{
+					"directoryIndex" : 14,
+					"id" : "mapview_qmllint_module::@540d94a72bbfa1647c2d",
+					"jsonFile" : "target-mapview_qmllint_module-Debug-8b29e2d33292de982bc4.json",
+					"name" : "mapview_qmllint_module",
+					"projectIndex" : 14
+				},
+				{
+					"directoryIndex" : 14,
+					"id" : "mapview_qmltyperegistration::@540d94a72bbfa1647c2d",
+					"jsonFile" : "target-mapview_qmltyperegistration-Debug-b459b7a80e3334567444.json",
+					"name" : "mapview_qmltyperegistration",
+					"projectIndex" : 14
+				},
+				{
+					"directoryIndex" : 14,
+					"id" : "mapviewplugin::@540d94a72bbfa1647c2d",
+					"jsonFile" : "target-mapviewplugin-Debug-a233b97e985d5c743947.json",
+					"name" : "mapviewplugin",
+					"projectIndex" : 14
+				},
+				{
+					"directoryIndex" : 14,
+					"id" : "mapviewplugin_autogen::@540d94a72bbfa1647c2d",
+					"jsonFile" : "target-mapviewplugin_autogen-Debug-4a22efc7c91e775e8aba.json",
+					"name" : "mapviewplugin_autogen",
+					"projectIndex" : 14
+				},
+				{
+					"directoryIndex" : 14,
+					"id" : "mapviewplugin_autogen_timestamp_deps::@540d94a72bbfa1647c2d",
+					"jsonFile" : "target-mapviewplugin_autogen_timestamp_deps-Debug-1bc907d84e15d3a689de.json",
+					"name" : "mapviewplugin_autogen_timestamp_deps",
+					"projectIndex" : 14
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "module_mapview_aotstats_target::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-module_mapview_aotstats_target-Debug-d3653ca7ff04fea4182f.json",
+					"name" : "module_mapview_aotstats_target",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "my_mapaccess::@387d44e0fefdffc57f61",
+					"jsonFile" : "target-my_mapaccess-Debug-4715f86e9d719cc8afd0.json",
+					"name" : "my_mapaccess",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "my_mapaccess_autogen::@387d44e0fefdffc57f61",
+					"jsonFile" : "target-my_mapaccess_autogen-Debug-a31e722b5b7e21385801.json",
+					"name" : "my_mapaccess_autogen",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "my_mapaccess_autogen_timestamp_deps::@387d44e0fefdffc57f61",
+					"jsonFile" : "target-my_mapaccess_autogen_timestamp_deps-Debug-a5c8e34d08eae0b43470.json",
+					"name" : "my_mapaccess_autogen_timestamp_deps",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 10,
+					"id" : "object_manager::@ec6db8713e917b2ca389",
+					"jsonFile" : "target-object_manager-Debug-52861156b23cceef2876.json",
+					"name" : "object_manager",
+					"projectIndex" : 10
+				},
+				{
+					"directoryIndex" : 10,
+					"id" : "object_manager_autogen::@ec6db8713e917b2ca389",
+					"jsonFile" : "target-object_manager_autogen-Debug-2d3325abf1bced3b95d4.json",
+					"name" : "object_manager_autogen",
+					"projectIndex" : 10
+				},
+				{
+					"directoryIndex" : 10,
+					"id" : "object_manager_autogen_timestamp_deps::@ec6db8713e917b2ca389",
+					"jsonFile" : "target-object_manager_autogen_timestamp_deps-Debug-402dfd770b4fe43842fb.json",
+					"name" : "object_manager_autogen_timestamp_deps",
+					"projectIndex" : 10
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "output::@5b5608eb28142aacc1b4",
+					"jsonFile" : "target-output-Debug-b5db09322621addb770c.json",
+					"name" : "output",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "output_autogen::@5b5608eb28142aacc1b4",
+					"jsonFile" : "target-output_autogen-Debug-4d3cde05e83a6c9de9a2.json",
+					"name" : "output_autogen",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "output_autogen_timestamp_deps::@5b5608eb28142aacc1b4",
+					"jsonFile" : "target-output_autogen_timestamp_deps-Debug-23ce3b0eea9b586d4761.json",
+					"name" : "output_autogen_timestamp_deps",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 14,
+					"id" : "qt_internal_plugins::@540d94a72bbfa1647c2d",
+					"jsonFile" : "target-qt_internal_plugins-Debug-e9c165f5026146b18a7b.json",
+					"name" : "qt_internal_plugins",
+					"projectIndex" : 14
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "reports::@b02191c7ff8e1f5e097b",
+					"jsonFile" : "target-reports-Debug-020e40eeb207897226ab.json",
+					"name" : "reports",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "reports_autogen::@b02191c7ff8e1f5e097b",
+					"jsonFile" : "target-reports_autogen-Debug-533c2633bd0694cc17f0.json",
+					"name" : "reports_autogen",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "reports_autogen_timestamp_deps::@b02191c7ff8e1f5e097b",
+					"jsonFile" : "target-reports_autogen_timestamp_deps-Debug-5be9828f596abbbc36f5.json",
+					"name" : "reports_autogen_timestamp_deps",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 16,
+					"id" : "saturn::@698716cc6283c356b7c5",
+					"jsonFile" : "target-saturn-Debug-e9d78b249556b227d8dc.json",
+					"name" : "saturn",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 16,
+					"id" : "saturn_autogen::@698716cc6283c356b7c5",
+					"jsonFile" : "target-saturn_autogen-Debug-3354e78d51bae76dd4b1.json",
+					"name" : "saturn_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 16,
+					"id" : "saturn_autogen_timestamp_deps::@698716cc6283c356b7c5",
+					"jsonFile" : "target-saturn_autogen_timestamp_deps-Debug-02cbc336f4854ea1d10e.json",
+					"name" : "saturn_autogen_timestamp_deps",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 16,
+					"id" : "saturn_qmlimportscan::@698716cc6283c356b7c5",
+					"jsonFile" : "target-saturn_qmlimportscan-Debug-7b59c630fa19fa806414.json",
+					"name" : "saturn_qmlimportscan",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 13,
+					"id" : "searchengine::@258c396da3c9eedb6872",
+					"jsonFile" : "target-searchengine-Debug-ab9fe85482df1c1024d4.json",
+					"name" : "searchengine",
+					"projectIndex" : 13
+				},
+				{
+					"directoryIndex" : 13,
+					"id" : "searchengine_autogen::@258c396da3c9eedb6872",
+					"jsonFile" : "target-searchengine_autogen-Debug-0b68c49ffbac27a05f15.json",
+					"name" : "searchengine_autogen",
+					"projectIndex" : 13
+				},
+				{
+					"directoryIndex" : 13,
+					"id" : "searchengine_autogen_timestamp_deps::@258c396da3c9eedb6872",
+					"jsonFile" : "target-searchengine_autogen_timestamp_deps-Debug-48415e474a981a214375.json",
+					"name" : "searchengine_autogen_timestamp_deps",
+					"projectIndex" : 13
+				},
+				{
+					"directoryIndex" : 11,
+					"id" : "signs_edit::@3a078f2c786656173dfc",
+					"jsonFile" : "target-signs_edit-Debug-8bd77492472494dcca29.json",
+					"name" : "signs_edit",
+					"projectIndex" : 11
+				},
+				{
+					"directoryIndex" : 11,
+					"id" : "signs_edit_autogen::@3a078f2c786656173dfc",
+					"jsonFile" : "target-signs_edit_autogen-Debug-3f95c4cd31f56472f1e1.json",
+					"name" : "signs_edit_autogen",
+					"projectIndex" : 11
+				},
+				{
+					"directoryIndex" : 11,
+					"id" : "signs_edit_autogen_timestamp_deps::@3a078f2c786656173dfc",
+					"jsonFile" : "target-signs_edit_autogen_timestamp_deps-Debug-780537a981610cc156e0.json",
+					"name" : "signs_edit_autogen_timestamp_deps",
+					"projectIndex" : 11
+				},
+				{
+					"directoryIndex" : 9,
+					"id" : "supporting_tables::@da6419ef896533b95098",
+					"jsonFile" : "target-supporting_tables-Debug-6ab379105cb92bf55261.json",
+					"name" : "supporting_tables",
+					"projectIndex" : 9
+				},
+				{
+					"directoryIndex" : 9,
+					"id" : "supporting_tables_autogen::@da6419ef896533b95098",
+					"jsonFile" : "target-supporting_tables_autogen-Debug-d5af869d949fd29342db.json",
+					"name" : "supporting_tables_autogen",
+					"projectIndex" : 9
+				},
+				{
+					"directoryIndex" : 9,
+					"id" : "supporting_tables_autogen_timestamp_deps::@da6419ef896533b95098",
+					"jsonFile" : "target-supporting_tables_autogen_timestamp_deps-Debug-8580239211e9dafa77b4.json",
+					"name" : "supporting_tables_autogen_timestamp_deps",
+					"projectIndex" : 9
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "textedit::@61f6f3802b02f363331d",
+					"jsonFile" : "target-textedit-Debug-c84eabb6fe687f242fb4.json",
+					"name" : "textedit",
+					"projectIndex" : 5
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "textedit_autogen::@61f6f3802b02f363331d",
+					"jsonFile" : "target-textedit_autogen-Debug-9bfc7b9b2748ad515c86.json",
+					"name" : "textedit_autogen",
+					"projectIndex" : 5
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "textedit_autogen_timestamp_deps::@61f6f3802b02f363331d",
+					"jsonFile" : "target-textedit_autogen_timestamp_deps-Debug-4bbef7dfa33c589c1feb.json",
+					"name" : "textedit_autogen_timestamp_deps",
+					"projectIndex" : 5
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "users_manager::@af45544dec71d91583b7",
+					"jsonFile" : "target-users_manager-Debug-8a7400c107ea4b96fa3d.json",
+					"name" : "users_manager",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "users_manager_autogen::@af45544dec71d91583b7",
+					"jsonFile" : "target-users_manager_autogen-Debug-f1ada0dcbf7bc2514fea.json",
+					"name" : "users_manager_autogen",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "users_manager_autogen_timestamp_deps::@af45544dec71d91583b7",
+					"jsonFile" : "target-users_manager_autogen_timestamp_deps-Debug-40f8393f9ebbcde2dc7e.json",
+					"name" : "users_manager_autogen_timestamp_deps",
+					"projectIndex" : 3
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug",
+		"source" : "C:/Qt/repos/saturn_new_map_engine"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 8
+	}
+}

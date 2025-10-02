@@ -1,0 +1,200 @@
+{
+    "classes": [
+        {
+            "className": "PersonesData",
+            "lineNumber": 16,
+            "object": true,
+            "qualifiedClassName": "PersonesData",
+            "slots": [
+                {
+                    "access": "private",
+                    "index": 0,
+                    "name": "add_rank_history_row",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 1,
+                    "name": "del_rank_history_rows",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 2,
+                    "name": "add_educ_history_row",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 3,
+                    "name": "del_educ_history_rows",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 4,
+                    "name": "add_mil_educ_row",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 5,
+                    "name": "del_mil_educ_row",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 6,
+                    "name": "add_work_hist_row",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 7,
+                    "name": "del_work_hist_row",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 8,
+                    "name": "add_sc_rank_row",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 9,
+                    "name": "del_sc_rank_row",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 10,
+                    "name": "add_sc_rank_row_",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 11,
+                    "name": "del_sc_rank_row_",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 12,
+                    "name": "add_serv_row_",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 13,
+                    "name": "del_serv_row_",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 14,
+                    "name": "add_war_row_",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 15,
+                    "name": "del_war_row_",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 16,
+                    "name": "add_travma_row_",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 17,
+                    "name": "del_travma_row_",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 18,
+                    "name": "add_medal_row",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 19,
+                    "name": "del_medal_row",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 20,
+                    "name": "add_plen_row",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 21,
+                    "name": "del_plen_row",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 22,
+                    "name": "add_komp_row",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 23,
+                    "name": "del_komp_row",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 24,
+                    "name": "add_fam_row",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 25,
+                    "name": "del_fam_row",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 26,
+                    "name": "save_persones",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "index": 27,
+                    "name": "open_file",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "arguments": [
+                        {
+                            "name": "fio",
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 28,
+                    "name": "add_label_fio",
+                    "returnType": "void"
+                }
+            ],
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QDialog"
+                }
+            ]
+        }
+    ],
+    "inputFile": "personesdata.h",
+    "outputRevision": 69
+}

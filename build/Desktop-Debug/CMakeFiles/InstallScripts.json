@@ -1,0 +1,23 @@
+{
+	"InstallScripts" : 
+	[
+		"C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/cmake_install.cmake",
+		"C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/my_mapaccess/cmake_install.cmake",
+		"C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/coord/cmake_install.cmake",
+		"C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/users_manager/cmake_install.cmake",
+		"C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/output/cmake_install.cmake",
+		"C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/textedit/cmake_install.cmake",
+		"C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/reports/cmake_install.cmake",
+		"C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/dataaccess/cmake_install.cmake",
+		"C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/db_saturn/cmake_install.cmake",
+		"C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/supporting_tables/cmake_install.cmake",
+		"C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/object_manager/cmake_install.cmake",
+		"C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/signs_edit/cmake_install.cmake",
+		"C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/eventsmodel/cmake_install.cmake",
+		"C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/searchengine/cmake_install.cmake",
+		"C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/mapview/cmake_install.cmake",
+		"C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/event_manager/cmake_install.cmake",
+		"C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/mainform/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

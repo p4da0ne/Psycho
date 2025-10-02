@@ -1,0 +1,14 @@
+-rootPath
+C:/Qt/repos/saturn_new_map_engine/maplibre_engine
+-cmake-output
+-output-file
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/maplibre_engine/.qt/qml_imports/appmaplibre_engine_build.cmake
+-importPath
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/maplibre_engine/maplibre_engine
+-importPath
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/maplibre_engine
+-importPath
+C:/Qt/versions/6.9.0/qml
+-qrcFiles
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/maplibre_engine/.qt/rcc/qmake_maplibre_engine.qrc
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/maplibre_engine/.qt/rcc/appmaplibre_engine_raw_qml_0.qrc

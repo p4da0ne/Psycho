@@ -1,0 +1,26 @@
+{
+    "classes": [
+        {
+            "className": "add_object",
+            "lineNumber": 13,
+            "object": true,
+            "qualifiedClassName": "add_object",
+            "slots": [
+                {
+                    "access": "private",
+                    "index": 0,
+                    "name": "add_new_object",
+                    "returnType": "void"
+                }
+            ],
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QDialog"
+                }
+            ]
+        }
+    ],
+    "inputFile": "add_object.h",
+    "outputRevision": 69
+}

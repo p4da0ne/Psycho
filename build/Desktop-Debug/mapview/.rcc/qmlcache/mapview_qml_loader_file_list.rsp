@@ -1,0 +1,7 @@
+--resource
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/mapview/.qt/rcc/qmake_mapview.qrc
+--resource
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/mapview/.qt/rcc/mapview_raw_qml_0.qrc
+--resource
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/mapview/.qt/rcc/mapview.qrc
+/mapview/MapView.qml

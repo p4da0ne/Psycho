@@ -1,0 +1,32 @@
+{
+    "classes": [
+        {
+            "className": "ReportView",
+            "lineNumber": 14,
+            "object": true,
+            "qualifiedClassName": "ReportView",
+            "slots": [
+                {
+                    "access": "public",
+                    "index": 0,
+                    "name": "slot_print_formul",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "index": 1,
+                    "name": "slot_print_pdf_formul",
+                    "returnType": "void"
+                }
+            ],
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QObject"
+                }
+            ]
+        }
+    ],
+    "inputFile": "report_view.h",
+    "outputRevision": 69
+}

@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/">
+    <file alias="/mapview">C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/mapview</file>
+
+  </qresource>
+</RCC>

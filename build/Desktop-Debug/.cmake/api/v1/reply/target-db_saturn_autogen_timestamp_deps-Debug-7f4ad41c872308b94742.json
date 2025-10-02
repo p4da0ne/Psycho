@@ -1,0 +1,38 @@
+{
+	"backtrace" : 0,
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : 
+		[
+			"db_saturn/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 0,
+			"id" : "dataaccess::@17c3bfb7657a56f7ad57"
+		}
+	],
+	"folder" : 
+	{
+		"name" : "QtInternalTargets"
+	},
+	"id" : "db_saturn_autogen_timestamp_deps::@8d792285eb2943823af4",
+	"isGeneratorProvided" : true,
+	"name" : "db_saturn_autogen_timestamp_deps",
+	"paths" : 
+	{
+		"build" : "db_saturn",
+		"source" : "db_saturn"
+	},
+	"sources" : [],
+	"type" : "UTILITY"
+}

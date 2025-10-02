@@ -1,0 +1,46 @@
+{
+	"backtrace" : 0,
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : 
+		[
+			"supporting_tables/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 0,
+			"id" : "my_mapaccess::@387d44e0fefdffc57f61"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "db_saturn::@8d792285eb2943823af4"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "dataaccess::@17c3bfb7657a56f7ad57"
+		}
+	],
+	"folder" : 
+	{
+		"name" : "QtInternalTargets"
+	},
+	"id" : "supporting_tables_autogen_timestamp_deps::@da6419ef896533b95098",
+	"isGeneratorProvided" : true,
+	"name" : "supporting_tables_autogen_timestamp_deps",
+	"paths" : 
+	{
+		"build" : "supporting_tables",
+		"source" : "supporting_tables"
+	},
+	"sources" : [],
+	"type" : "UTILITY"
+}

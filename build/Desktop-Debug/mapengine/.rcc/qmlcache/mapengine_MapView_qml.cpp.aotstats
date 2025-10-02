@@ -1,0 +1,12 @@
+[
+    {
+        "moduleFiles": [
+            {
+                "entries": [
+                ],
+                "filepath": "C:/Qt/repos/saturn_new_map_engine/mapengine/MapView.qml"
+            }
+        ],
+        "moduleId": "mapengine(mapengine)"
+    }
+]

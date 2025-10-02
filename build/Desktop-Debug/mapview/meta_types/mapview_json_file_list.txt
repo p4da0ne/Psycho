@@ -1,0 +1,3 @@
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/mapview/mapview_autogen/include/../EWIEGA46WW/moc_change_coord_dialog.cpp.json
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/mapview/mapview_autogen/include/../EWIEGA46WW/moc_mapscroll.cpp.json
+C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/mapview/mapview_autogen/include/../EWIEGA46WW/moc_mapview.cpp.json

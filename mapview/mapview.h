@@ -1,7 +1,7 @@
-#ifndef MAPVIEW_H
+﻿#ifndef MAPVIEW_H
 #define MAPVIEW_H
 
-#include <QtGui>
+#include <QGui>
 #include <QObject>
 #include <QLineEdit>
 #include <QDialog>

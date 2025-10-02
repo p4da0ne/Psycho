@@ -1,0 +1,8 @@
+module maplibre_engine
+linktarget appmaplibre_engineplugin
+optional plugin appmaplibre_engineplugin
+classname maplibre_enginePlugin
+typeinfo appmaplibre_engine.qmltypes
+prefer :/maplibre_engine/
+Main 1.0 Main.qml
+

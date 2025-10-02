@@ -1,6 +1,6 @@
 <RCC>
   <qresource prefix="/qt/qml/mapengine">
-    <file alias="qmldir">C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/mapengine/mapengine/qmldir</file>
+    <file alias="qmldir">C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/mapengine/qmldir</file>
   </qresource>
 </RCC>
 

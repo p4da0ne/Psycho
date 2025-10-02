@@ -1,0 +1,18 @@
+{
+    "classes": [
+        {
+            "className": "SearchEngine",
+            "lineNumber": 11,
+            "object": true,
+            "qualifiedClassName": "SearchEngine",
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QObject"
+                }
+            ]
+        }
+    ],
+    "inputFile": "searchengine.h",
+    "outputRevision": 69
+}

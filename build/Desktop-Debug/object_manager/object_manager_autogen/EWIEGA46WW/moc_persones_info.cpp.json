@@ -1,0 +1,18 @@
+{
+    "classes": [
+        {
+            "className": "Persones_info",
+            "lineNumber": 12,
+            "object": true,
+            "qualifiedClassName": "Persones_info",
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QDialog"
+                }
+            ]
+        }
+    ],
+    "inputFile": "persones_info.h",
+    "outputRevision": 69
+}

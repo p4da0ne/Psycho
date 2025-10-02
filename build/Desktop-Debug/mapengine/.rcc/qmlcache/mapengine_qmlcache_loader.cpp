@@ -5,7 +5,7 @@
 #include <QtCore/qstring.h>
 
 namespace QmlCacheGeneratedCode {
-namespace _qt_qml_mapengine_Main_qml { 
+namespace _qt_qml_mapengine_MapView_qml { 
     extern const unsigned char qmlData[];
     extern const QQmlPrivate::AOTCompiledFunction aotBuiltFunctions[];
     const QQmlPrivate::CachedQmlUnit unit = {
@@ -26,7 +26,7 @@ Q_GLOBAL_STATIC(Registry, unitRegistry)
 
 
 Registry::Registry() {
-    resourcePathToCachedUnit.insert(QStringLiteral("/qt/qml/mapengine/Main.qml"), &QmlCacheGeneratedCode::_qt_qml_mapengine_Main_qml::unit);
+    resourcePathToCachedUnit.insert(QStringLiteral("/qt/qml/mapengine/MapView.qml"), &QmlCacheGeneratedCode::_qt_qml_mapengine_MapView_qml::unit);
     QQmlPrivate::RegisterQmlUnitCacheHook registration;
     registration.structVersion = 0;
     registration.lookupCachedQmlUnit = &lookupCachedUnit;

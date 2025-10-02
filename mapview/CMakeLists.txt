@@ -4,6 +4,7 @@ project(mapview VERSION 1.0 LANGUAGES C CXX)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core5Compat Gui PrintSupport Sql Widgets)
+find_package(QMapLibre REQUIRED COMPONENTS Core Location)
 
 qt_standard_project_setup()
 
@@ -22,7 +23,16 @@ qt_add_library(mapview
     move_model.cpp move_model.h
     signdata.cpp signdata.h
     view_manage.cpp view_manage.h
+    MapViewNew.cpp MapViewNew.h
 )
+
+qt_add_qml_module(mapview
+    URI mapview
+    VERSION 1.0
+    QML_FILES
+        MapView.qml
+)
+
 target_include_directories(mapview PUBLIC
     ../coord
     ../event_manager
@@ -47,6 +57,12 @@ target_link_libraries(mapview PUBLIC
     Qt::PrintSupport
     Qt::Sql
     Qt::Widgets
+    Qt6::Qml
+    Qt6::Quick
+    Qt6::Location
+    Qt6::Positioning
+    QMapLibre::Core
+    QMapLibre::Location
     coord
     event_manager
     eventsmodel
@@ -55,6 +71,7 @@ target_link_libraries(mapview PUBLIC
     searchengine
 )
 
+qmaplibre_location_setup_plugins(mapview)
 
 # Resources:
 set(mapview_resource_files
