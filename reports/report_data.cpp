@@ -19,7 +19,7 @@ ReportData::~ReportData()
     
 }
 
-//========== Получение данных об объекте по его id ===========
+//========== РџРѕР»СѓС‡РµРЅРёРµ РґР°РЅРЅС‹С… РѕР± РѕР±СЉРµРєС‚Рµ РїРѕ РµРіРѕ id ===========
 
 QMap <int, QMap< QString,QString> > ReportData::get_obj_info(int id_object)
 {
@@ -42,37 +42,37 @@ QMap <int, QMap< QString,QString> > ReportData::get_obj_info(int id_object)
     QMap<QString, QString> map;
     query.next();
         map.clear();
-        map.insert("1. Наименование региона:",query.value(rec.indexOf("name_region")).toString());
+        map.insert("1. РќР°РёРјРµРЅРѕРІР°РЅРёРµ СЂРµРіРёРѕРЅР°:",query.value(rec.indexOf("name_region")).toString());
         obj_info->insert(1,map);
         map.clear();
-        map.insert("2. Наименование организации:",query.value(rec.indexOf("name_groups")).toString());
+        map.insert("2. РќР°РёРјРµРЅРѕРІР°РЅРёРµ РѕСЂРіР°РЅРёР·Р°С†РёРё:",query.value(rec.indexOf("name_groups")).toString());
         obj_info->insert(2,map);
         map.clear();
-        map.insert("3. Руководитель организации:",query.value(rec.indexOf("founder_group")).toString());
+        map.insert("3. Р СѓРєРѕРІРѕРґРёС‚РµР»СЊ РѕСЂРіР°РЅРёР·Р°С†РёРё:",query.value(rec.indexOf("founder_group")).toString());
         obj_info->insert(3,map);
         map.clear();
-        map.insert("4. Численность организации:",query.value(rec.indexOf("counte_groups")).toString());
+        map.insert("4. Р§РёСЃР»РµРЅРЅРѕСЃС‚СЊ РѕСЂРіР°РЅРёР·Р°С†РёРё:",query.value(rec.indexOf("counte_groups")).toString());
         obj_info->insert(4,map);
         map.clear();
-        map.insert("5. Описание организации:",query.value(rec.indexOf("description_groups")).toString());
+        map.insert("5. РћРїРёСЃР°РЅРёРµ РѕСЂРіР°РЅРёР·Р°С†РёРё:",query.value(rec.indexOf("description_groups")).toString());
         obj_info->insert(5,map);
         map.clear();
-        map.insert("6. Руководство организации:",query.value(rec.indexOf("menegement_groups")).toString());
+        map.insert("6. Р СѓРєРѕРІРѕРґСЃС‚РІРѕ РѕСЂРіР°РЅРёР·Р°С†РёРё:",query.value(rec.indexOf("menegement_groups")).toString());
         obj_info->insert(6,map);
         map.clear();
-        map.insert("7. Представительство:",query.value(rec.indexOf("officce_groups")).toString());
+        map.insert("7. РџСЂРµРґСЃС‚Р°РІРёС‚РµР»СЊСЃС‚РІРѕ:",query.value(rec.indexOf("officce_groups")).toString());
         obj_info->insert(7,map);
         map.clear();
-        map.insert("8. Информационные органы организации:",query.value(rec.indexOf("propaganda_groups")).toString());
+        map.insert("8. РРЅС„РѕСЂРјР°С†РёРѕРЅРЅС‹Рµ РѕСЂРіР°РЅС‹ РѕСЂРіР°РЅРёР·Р°С†РёРё:",query.value(rec.indexOf("propaganda_groups")).toString());
         obj_info->insert(8,map);
         map.clear();
-        map.insert("9. Направленость организации:",query.value(rec.indexOf("name_trend_groups")).toString());
+        map.insert("9. РќР°РїСЂР°РІР»РµРЅРѕСЃС‚СЊ РѕСЂРіР°РЅРёР·Р°С†РёРё:",query.value(rec.indexOf("name_trend_groups")).toString());
         obj_info->insert(9,map);
         map.clear();
-        map.insert("10. Сфера деятельности:",query.value(rec.indexOf("name_sphere_groups")).toString());
+        map.insert("10. РЎС„РµСЂР° РґРµСЏС‚РµР»СЊРЅРѕСЃС‚Рё:",query.value(rec.indexOf("name_sphere_groups")).toString());
         obj_info->insert(10,map);
         map.clear();
-        map.insert("11. Форма организации:",query.value(rec.indexOf("name_form_groups")).toString());
+        map.insert("11. Р¤РѕСЂРјР° РѕСЂРіР°РЅРёР·Р°С†РёРё:",query.value(rec.indexOf("name_form_groups")).toString());
         obj_info->insert(11,map);
         map.clear();
 
@@ -101,28 +101,28 @@ QMap<QString, QMap<QString, QString> > ReportData::obj_info_coord(int id_object)
 
            QMap<QString, QString> map;
            query.next();
-           name_obj="12. Координаты организации:";
+           name_obj="12. РљРѕРѕСЂРґРёРЅР°С‚С‹ РѕСЂРіР°РЅРёР·Р°С†РёРё:";
                        map.clear();
                        QString w = "X= ";
                        w.append(query.value(rec.indexOf("x_coordinates")).toString());
                        w.append("<br>Y= ");
                        w.append(query.value(rec.indexOf("y_coordinates")).toString());
-                       map.insert("Прямоугольные координаты",w);
+                       map.insert("РџСЂСЏРјРѕСѓРіРѕР»СЊРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹",w);
 
-                       QString q = "Широта: ";
+                       QString q = "РЁРёСЂРѕС‚Р°: ";
                        q.append(query.value(rec.indexOf("latitude_wgs_84_g")).toString());
                        q.append("-");
                        q.append(query.value(rec.indexOf("latitude_wgs_84_m")).toString());
                        q.append("-");
                        q.append(query.value(rec.indexOf("latitude_wgs_84_s")).toString());
-                       q.append("<br>Долгота: ");
+                       q.append("<br>Р”РѕР»РіРѕС‚Р°: ");
                        q.append(query.value(rec.indexOf("longitude_wgs_84_g")).toString());
                        q.append("-");
                        q.append(query.value(rec.indexOf("longitude_wgs_84_m")).toString());
                        q.append("-");
                        q.append(query.value(rec.indexOf("longitude_wgs_84_s")).toString());
 
-                       map.insert("Геодезические координаты",q);
+                       map.insert("Р“РµРѕРґРµР·РёС‡РµСЃРєРёРµ РєРѕРѕСЂРґРёРЅР°С‚С‹",q);
                        obj_elem_obj->insert(name_obj,map);
 
             return *obj_elem_obj;
@@ -153,7 +153,7 @@ QMap<QString, QString> ReportData::pers_info_foto(int id_object)
        return *pers_info_date_foto;
 }
 
-//=================== инфо о персоналии ==========================================================
+//=================== РёРЅС„Рѕ Рѕ РїРµСЂСЃРѕРЅР°Р»РёРё ==========================================================
 QMap<int, QMap<QString, QString> > ReportData::pers_info(int id_object)
 {
     pers_info_date = new QMap<int, QMap<QString, QString> >;
@@ -184,51 +184,51 @@ QMap<int, QMap<QString, QString> > ReportData::pers_info(int id_object)
 	//----------------------------------
 
         map.clear();
-        map.insert("1. Число, месяц, год рождения:",birth_date);
+        map.insert("1. Р§РёСЃР»Рѕ, РјРµСЃСЏС†, РіРѕРґ СЂРѕР¶РґРµРЅРёСЏ:",birth_date);
         pers_info_date->insert(1,map);
         map.clear();
-        map.insert("2. Место рождения:",birth_place);
+        map.insert("2. РњРµСЃС‚Рѕ СЂРѕР¶РґРµРЅРёСЏ:",birth_place);
         pers_info_date->insert(2,map);
         map.clear();
-        map.insert("3. Национальность:",nationality);
+        map.insert("3. РќР°С†РёРѕРЅР°Р»СЊРЅРѕСЃС‚СЊ:",nationality);
         pers_info_date->insert(3,map);
         map.clear();
-        map.insert("4. Паспорт гражданина (серия, номер, кем и когда выдан) или иной документ удостоверяющий его личность:",getDocumentInfo(id_object,1));
+        map.insert("4. РџР°СЃРїРѕСЂС‚ РіСЂР°Р¶РґР°РЅРёРЅР° (СЃРµСЂРёСЏ, РЅРѕРјРµСЂ, РєРµРј Рё РєРѕРіРґР° РІС‹РґР°РЅ) РёР»Рё РёРЅРѕР№ РґРѕРєСѓРјРµРЅС‚ СѓРґРѕСЃС‚РѕРІРµСЂСЏСЋС‰РёР№ РµРіРѕ Р»РёС‡РЅРѕСЃС‚СЊ:",getDocumentInfo(id_object,1));
         pers_info_date->insert(4,map);
         map.clear();
-        map.insert("5. Удостоверение личности (серия, номер, кем и когда выдано):",getDocumentInfo(id_object,2));
+        map.insert("5. РЈРґРѕСЃС‚РѕРІРµСЂРµРЅРёРµ Р»РёС‡РЅРѕСЃС‚Рё (СЃРµСЂРёСЏ, РЅРѕРјРµСЂ, РєРµРј Рё РєРѕРіРґР° РІС‹РґР°РЅРѕ):",getDocumentInfo(id_object,2));
         pers_info_date->insert(5,map);
         map.clear();
-        map.insert("6. Дактилоскопия:",finger_foto);
+        map.insert("6. Р”Р°РєС‚РёР»РѕСЃРєРѕРїРёСЏ:",finger_foto);
         pers_info_date->insert(6,map);
         map.clear();
         
-		QString eiInfo = "а) " + getEducOrganizationsInfo(id_object,1) + "б) " + getEducOrganizationsInfo(id_object,2);
+		QString eiInfo = "Р°) " + getEducOrganizationsInfo(id_object,1) + "Р±) " + getEducOrganizationsInfo(id_object,2);
 
 		map.insert("<table><tr> \
-								<td rowspan=2> 7. Какие образовательные учреждения окончил: </td> \
-								<td> а) общеобразовательные учреждения, образовательные учреждения профессионального образования: </td> \
+								<td rowspan=2> 7. РљР°РєРёРµ РѕР±СЂР°Р·РѕРІР°С‚РµР»СЊРЅС‹Рµ СѓС‡СЂРµР¶РґРµРЅРёСЏ РѕРєРѕРЅС‡РёР»: </td> \
+								<td> Р°) РѕР±С‰РµРѕР±СЂР°Р·РѕРІР°С‚РµР»СЊРЅС‹Рµ СѓС‡СЂРµР¶РґРµРЅРёСЏ, РѕР±СЂР°Р·РѕРІР°С‚РµР»СЊРЅС‹Рµ СѓС‡СЂРµР¶РґРµРЅРёСЏ РїСЂРѕС„РµСЃСЃРёРѕРЅР°Р»СЊРЅРѕРіРѕ РѕР±СЂР°Р·РѕРІР°РЅРёСЏ: </td> \
 							</tr> \
 							<tr> \
-								<td> б) военные образовательние учреждения профессионального образования:</td> \
+								<td> Р±) РІРѕРµРЅРЅС‹Рµ РѕР±СЂР°Р·РѕРІР°С‚РµР»СЊРЅРёРµ СѓС‡СЂРµР¶РґРµРЅРёСЏ РїСЂРѕС„РµСЃСЃРёРѕРЅР°Р»СЊРЅРѕРіРѕ РѕР±СЂР°Р·РѕРІР°РЅРёСЏ:</td> \
 							</tr> \
 					</table>",eiInfo);
         pers_info_date->insert(7,map);
         map.clear();
-        map.insert("8. Какими иностранными языками и языками народов РФ владеет:",languages);
+        map.insert("8. РљР°РєРёРјРё РёРЅРѕСЃС‚СЂР°РЅРЅС‹РјРё СЏР·С‹РєР°РјРё Рё СЏР·С‹РєР°РјРё РЅР°СЂРѕРґРѕРІ Р Р¤ РІР»Р°РґРµРµС‚:",languages);
         pers_info_date->insert(8,map);
         map.clear();
-        map.insert("9. Ученая степень, ученое звание, дата присвоения:",getScienceRankInfo(id_object));
+        map.insert("9. РЈС‡РµРЅР°СЏ СЃС‚РµРїРµРЅСЊ, СѓС‡РµРЅРѕРµ Р·РІР°РЅРёРµ, РґР°С‚Р° РїСЂРёСЃРІРѕРµРЅРёСЏ:",getScienceRankInfo(id_object));
         pers_info_date->insert(9,map);
         map.clear();
-        map.insert("10. Какие имеет научные труды и изобретения:",science_public);
+        map.insert("10. РљР°РєРёРµ РёРјРµРµС‚ РЅР°СѓС‡РЅС‹Рµ С‚СЂСѓРґС‹ Рё РёР·РѕР±СЂРµС‚РµРЅРёСЏ:",science_public);
         pers_info_date->insert(10,map);
 
        return *pers_info_date;
 }
 
 //===============================================================================================
-//====== Метод возвращает информацию о документе (паспорте, уд. личности, свид. о браке) ========
+//====== РњРµС‚РѕРґ РІРѕР·РІСЂР°С‰Р°РµС‚ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ РґРѕРєСѓРјРµРЅС‚Рµ (РїР°СЃРїРѕСЂС‚Рµ, СѓРґ. Р»РёС‡РЅРѕСЃС‚Рё, СЃРІРёРґ. Рѕ Р±СЂР°РєРµ) ========
 //===============================================================================================
 QString ReportData::getDocumentInfo(int idPersones, int idDocType)
 {
@@ -264,8 +264,8 @@ QString ReportData::getDocumentInfo(int idPersones, int idDocType)
 }
 
 //===============================================================================================
-//====== Метод возвращает информацию об образовательных учреждениях =============================
-//====== idEducType: 1 - гражданские, 2 - военные ===============================================
+//====== РњРµС‚РѕРґ РІРѕР·РІСЂР°С‰Р°РµС‚ РёРЅС„РѕСЂРјР°С†РёСЋ РѕР± РѕР±СЂР°Р·РѕРІР°С‚РµР»СЊРЅС‹С… СѓС‡СЂРµР¶РґРµРЅРёСЏС… =============================
+//====== idEducType: 1 - РіСЂР°Р¶РґР°РЅСЃРєРёРµ, 2 - РІРѕРµРЅРЅС‹Рµ ===============================================
 //===============================================================================================
 QString ReportData::getEducOrganizationsInfo(int idPersones, int idEducType)
 {
@@ -295,7 +295,7 @@ QString ReportData::getEducOrganizationsInfo(int idPersones, int idEducType)
 
 
 //===============================================================================================
-//====== Метод возвращает информацию ученой степени и звании персоналии =========================
+//====== РњРµС‚РѕРґ РІРѕР·РІСЂР°С‰Р°РµС‚ РёРЅС„РѕСЂРјР°С†РёСЋ СѓС‡РµРЅРѕР№ СЃС‚РµРїРµРЅРё Рё Р·РІР°РЅРёРё РїРµСЂСЃРѕРЅР°Р»РёРё =========================
 //===============================================================================================
 QString ReportData::getScienceRankInfo(int idPersones)
 {
@@ -363,7 +363,7 @@ QMap<QString,QString> ReportData::get_person_ranks_data(int id_persones)
 }
 
 //======================================================================
-//======= Метод формирует данные о трудовой деятельности персоналии ====
+//======= РњРµС‚РѕРґ С„РѕСЂРјРёСЂСѓРµС‚ РґР°РЅРЅС‹Рµ Рѕ С‚СЂСѓРґРѕРІРѕР№ РґРµСЏС‚РµР»СЊРЅРѕСЃС‚Рё РїРµСЂСЃРѕРЅР°Р»РёРё ====
 //======================================================================
 QList<QStringList> ReportData::get_work_history(int id_persones)
 {
@@ -400,7 +400,7 @@ QList<QStringList> ReportData::get_work_history(int id_persones)
 
 
 //===================================================================================
-//======= Метод формирует данные о прохождении государственной службы персоналии ====
+//======= РњРµС‚РѕРґ С„РѕСЂРјРёСЂСѓРµС‚ РґР°РЅРЅС‹Рµ Рѕ РїСЂРѕС…РѕР¶РґРµРЅРёРё РіРѕСЃСѓРґР°СЂСЃС‚РІРµРЅРЅРѕР№ СЃР»СѓР¶Р±С‹ РїРµСЂСЃРѕРЅР°Р»РёРё ====
 //===================================================================================
 QList<QStringList> ReportData::get_service_history(int id_persones)
 {
@@ -438,7 +438,7 @@ QList<QStringList> ReportData::get_service_history(int id_persones)
 
 
 //===================================================================================
-//======= Метод формирует данные об участии в боевых действиях ======================
+//======= РњРµС‚РѕРґ С„РѕСЂРјРёСЂСѓРµС‚ РґР°РЅРЅС‹Рµ РѕР± СѓС‡Р°СЃС‚РёРё РІ Р±РѕРµРІС‹С… РґРµР№СЃС‚РІРёСЏС… ======================
 //===================================================================================
 QList<QStringList> ReportData::get_war_history(int id_persones)
 {
@@ -473,7 +473,7 @@ QList<QStringList> ReportData::get_war_history(int id_persones)
 }
 
 //===================================================================================
-//======= Метод формирует данные о полученных травмах, увечьях и др. ================
+//======= РњРµС‚РѕРґ С„РѕСЂРјРёСЂСѓРµС‚ РґР°РЅРЅС‹Рµ Рѕ РїРѕР»СѓС‡РµРЅРЅС‹С… С‚СЂР°РІРјР°С…, СѓРІРµС‡СЊСЏС… Рё РґСЂ. ================
 //===================================================================================
 QList<QStringList> ReportData::get_travm_history(int id_persones)
 {
@@ -507,7 +507,7 @@ QList<QStringList> ReportData::get_travm_history(int id_persones)
 }
 
 //===================================================================================
-//======= Метод формирует данные о полученных наградах ==============================
+//======= РњРµС‚РѕРґ С„РѕСЂРјРёСЂСѓРµС‚ РґР°РЅРЅС‹Рµ Рѕ РїРѕР»СѓС‡РµРЅРЅС‹С… РЅР°РіСЂР°РґР°С… ==============================
 //===================================================================================
 QList<QStringList> ReportData::get_medal_history(int id_persones)
 {
@@ -543,7 +543,7 @@ QList<QStringList> ReportData::get_medal_history(int id_persones)
 
 
 //===================================================================================
-//======= Метод формирует данные о нахождении в плену ===============================
+//======= РњРµС‚РѕРґ С„РѕСЂРјРёСЂСѓРµС‚ РґР°РЅРЅС‹Рµ Рѕ РЅР°С…РѕР¶РґРµРЅРёРё РІ РїР»РµРЅСѓ ===============================
 //===================================================================================
 QList<QStringList> ReportData::get_prison_history(int id_persones)
 {
@@ -574,7 +574,7 @@ QList<QStringList> ReportData::get_prison_history(int id_persones)
 
 
 //===================================================================================
-//======= Метод формирует данные о компромате ===============================
+//======= РњРµС‚РѕРґ С„РѕСЂРјРёСЂСѓРµС‚ РґР°РЅРЅС‹Рµ Рѕ РєРѕРјРїСЂРѕРјР°С‚Рµ ===============================
 //===================================================================================
 QList<QStringList> ReportData::get_compromat(int id_persones)
 {
@@ -630,14 +630,14 @@ QMap<int, QMap<QString, QString> > ReportData::pers_info_continue(int id_object)
     query.next();
 
         map.clear();
-		map.insert("17. Фамилия, имя отчество отца и матери, их место жительства:",getFamilyData(id_object,true));
+		map.insert("17. Р¤Р°РјРёР»РёСЏ, РёРјСЏ РѕС‚С‡РµСЃС‚РІРѕ РѕС‚С†Р° Рё РјР°С‚РµСЂРё, РёС… РјРµСЃС‚Рѕ Р¶РёС‚РµР»СЊСЃС‚РІР°:",getFamilyData(id_object,true));
         pers_info_date->insert(1,map);
         map.clear();
 		QString familyData = query.value(rec.indexOf("status_name")).toString() + "<br>" + getFamilyData(id_object,false);
-		map.insert("18. Семейное положение: ",familyData);
+		map.insert("18. РЎРµРјРµР№РЅРѕРµ РїРѕР»РѕР¶РµРЅРёРµ: ",familyData);
         pers_info_date->insert(2,map);
         map.clear();
-		map.insert("19. Домашний адрес семьи:",getFamilyAddress(id_object));
+		map.insert("19. Р”РѕРјР°С€РЅРёР№ Р°РґСЂРµСЃ СЃРµРјСЊРё:",getFamilyAddress(id_object));
         pers_info_date->insert(3,map);
 
        return *pers_info_date;
@@ -724,28 +724,28 @@ QMap<QString, QMap<QString, QString> > ReportData::pers_info_coord(int id_object
 
            QMap<QString, QString> map;
            query.next();
-           name_obj="10. Координаты персоны:";
+           name_obj="10. РљРѕРѕСЂРґРёРЅР°С‚С‹ РїРµСЂСЃРѕРЅС‹:";
                        map.clear();
                        QString w = "X= ";
                        w.append(query.value(rec.indexOf("x_coordinates")).toString());
                        w.append("<br>Y= ");
                        w.append(query.value(rec.indexOf("y_coordinates")).toString());
-                       map.insert("Прямоугольные координаты",w);
+                       map.insert("РџСЂСЏРјРѕСѓРіРѕР»СЊРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹",w);
 
-                       QString q = "Широта: ";
+                       QString q = "РЁРёСЂРѕС‚Р°: ";
                        q.append(query.value(rec.indexOf("latitude_wgs_84_g")).toString());
                        q.append("-");
                        q.append(query.value(rec.indexOf("latitude_wgs_84_m")).toString());
                        q.append("-");
                        q.append(query.value(rec.indexOf("latitude_wgs_84_s")).toString());
-                       q.append("<br>Долгота: ");
+                       q.append("<br>Р”РѕР»РіРѕС‚Р°: ");
                        q.append(query.value(rec.indexOf("longitude_wgs_84_g")).toString());
                        q.append("-");
                        q.append(query.value(rec.indexOf("longitude_wgs_84_m")).toString());
                        q.append("-");
                        q.append(query.value(rec.indexOf("longitude_wgs_84_s")).toString());
 
-                       map.insert("Геодезические координаты",q);
+                       map.insert("Р“РµРѕРґРµР·РёС‡РµСЃРєРёРµ РєРѕРѕСЂРґРёРЅР°С‚С‹",q);
                        obj_elem->insert(name_obj,map);
 
             return *obj_elem;
@@ -782,46 +782,46 @@ QMap<int, QMap<QString, QString> > ReportData::smi_info(int id_object)
     QSqlRecord rec = query.record();
     query.next();
 //        map.clear();
-//        map.insert("1. Регион СМИ",query.value(rec.indexOf("name_region")).toString());
+//        map.insert("1. Р РµРіРёРѕРЅ РЎРњР",query.value(rec.indexOf("name_region")).toString());
 //        smi_info_date->insert(1,map);
         map.clear();
-        map.insert("1. Наименование СМИ:",query.value(rec.indexOf("name_smi")).toString());
+        map.insert("1. РќР°РёРјРµРЅРѕРІР°РЅРёРµ РЎРњР:",query.value(rec.indexOf("name_smi")).toString());
         smi_info_date->insert(1,map);
         map.clear();
-        map.insert("2. Радиус действия:",query.value(rec.indexOf("power_broadcast_smi")).toString());
+        map.insert("2. Р Р°РґРёСѓСЃ РґРµР№СЃС‚РІРёСЏ:",query.value(rec.indexOf("power_broadcast_smi")).toString());
         smi_info_date->insert(2,map);
         map.clear();
-        map.insert("3. Сайт:",query.value(rec.indexOf("site_smi")).toString());
+        map.insert("3. РЎР°Р№С‚:",query.value(rec.indexOf("site_smi")).toString());
         smi_info_date->insert(3,map);
         map.clear();
-        map.insert("4. Описание СМИ:",query.value(rec.indexOf("description_smi")).toString());
+        map.insert("4. РћРїРёСЃР°РЅРёРµ РЎРњР:",query.value(rec.indexOf("description_smi")).toString());
         smi_info_date->insert(4,map);
         map.clear();
-        map.insert("5. Частота вещания:",query.value(rec.indexOf("frequency_smi")).toString());
+        map.insert("5. Р§Р°СЃС‚РѕС‚Р° РІРµС‰Р°РЅРёСЏ:",query.value(rec.indexOf("frequency_smi")).toString());
         smi_info_date->insert(5,map);
         map.clear();
-        map.insert("6. Аудитория:",query.value(rec.indexOf("auditoria")).toString());
+        map.insert("6. РђСѓРґРёС‚РѕСЂРёСЏ:",query.value(rec.indexOf("auditoria")).toString());
         smi_info_date->insert(6,map);
         map.clear();
-        map.insert("7. Тираж:",query.value(rec.indexOf("tirag")).toString());
+        map.insert("7. РўРёСЂР°Р¶:",query.value(rec.indexOf("tirag")).toString());
         smi_info_date->insert(7,map);
         map.clear();
-        map.insert("8. Тип СМИ:",query.value(rec.indexOf("nametype_smi")).toString());
+        map.insert("8. РўРёРї РЎРњР:",query.value(rec.indexOf("nametype_smi")).toString());
         smi_info_date->insert(8,map);
         map.clear();
-        map.insert("9. Представительство:",query.value(rec.indexOf("name_type_office_smi")).toString());
+        map.insert("9. РџСЂРµРґСЃС‚Р°РІРёС‚РµР»СЊСЃС‚РІРѕ:",query.value(rec.indexOf("name_type_office_smi")).toString());
         smi_info_date->insert(9,map);
         map.clear();
-        map.insert("10. Способ вещания:",query.value(rec.indexOf("name_type_broadcast_smi")).toString());
+        map.insert("10. РЎРїРѕСЃРѕР± РІРµС‰Р°РЅРёСЏ:",query.value(rec.indexOf("name_type_broadcast_smi")).toString());
         smi_info_date->insert(10,map);
         map.clear();
-        map.insert("11. Направленность:",query.value(rec.indexOf("name_position_smi")).toString());
+        map.insert("11. РќР°РїСЂР°РІР»РµРЅРЅРѕСЃС‚СЊ:",query.value(rec.indexOf("name_position_smi")).toString());
         smi_info_date->insert(11,map);
         map.clear();
-        map.insert("12. Уровень вещания:",query.value(rec.indexOf("name_level_smi")).toString());
+        map.insert("12. РЈСЂРѕРІРµРЅСЊ РІРµС‰Р°РЅРёСЏ:",query.value(rec.indexOf("name_level_smi")).toString());
         smi_info_date->insert(12,map);
         map.clear();
-        map.insert("13. Тематика:",query.value(rec.indexOf("name_theme_smi")).toString());
+        map.insert("13. РўРµРјР°С‚РёРєР°:",query.value(rec.indexOf("name_theme_smi")).toString());
         smi_info_date->insert(13,map);
 
         return *smi_info_date;
@@ -851,34 +851,34 @@ QMap<int, QMap<QString, QString> > ReportData::ls_info(int id_object)
     QSqlRecord rec = query.record();
     query.next();
         map.clear();
-        map.insert("1. Наименование воиснкого формирования:",query.value(rec.indexOf("name_ls")).toString());
+        map.insert("1. РќР°РёРјРµРЅРѕРІР°РЅРёРµ РІРѕРёСЃРЅРєРѕРіРѕ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ:",query.value(rec.indexOf("name_ls")).toString());
         ls_info_date->insert(1,map);
         map.clear();
-        map.insert("2. Дислокация:",query.value(rec.indexOf("name_region")).toString());
+        map.insert("2. Р”РёСЃР»РѕРєР°С†РёСЏ:",query.value(rec.indexOf("name_region")).toString());
         ls_info_date->insert(2,map);
         map.clear();
-        map.insert("3. Враждебность:",query.value(rec.indexOf("enimy_ls")).toString());
+        map.insert("3. Р’СЂР°Р¶РґРµР±РЅРѕСЃС‚СЊ:",query.value(rec.indexOf("enimy_ls")).toString());
         ls_info_date->insert(3,map);
         map.clear();
-        map.insert("4. Подразделение МПО:",query.value(rec.indexOf("mpo_ls")).toString());
+        map.insert("4. РџРѕРґСЂР°Р·РґРµР»РµРЅРёРµ РњРџРћ:",query.value(rec.indexOf("mpo_ls")).toString());
         ls_info_date->insert(4,map);
         map.clear();
-        map.insert("5. Численность личного состава:",query.value(rec.indexOf("counte_ls")).toString());
+        map.insert("5. Р§РёСЃР»РµРЅРЅРѕСЃС‚СЊ Р»РёС‡РЅРѕРіРѕ СЃРѕСЃС‚Р°РІР°:",query.value(rec.indexOf("counte_ls")).toString());
         ls_info_date->insert(5,map);
         map.clear();
-        map.insert("6. Количество учавствующих в боевых действиях:",query.value(rec.indexOf("counte_ls_bd")).toString());
+        map.insert("6. РљРѕР»РёС‡РµСЃС‚РІРѕ СѓС‡Р°РІСЃС‚РІСѓСЋС‰РёС… РІ Р±РѕРµРІС‹С… РґРµР№СЃС‚РІРёСЏС…:",query.value(rec.indexOf("counte_ls_bd")).toString());
         ls_info_date->insert(6,map);
         map.clear();
-        map.insert("7. МПС по призыву:",query.value(rec.indexOf("mps_priz_ls")).toString());
+        map.insert("7. РњРџРЎ РїРѕ РїСЂРёР·С‹РІСѓ:",query.value(rec.indexOf("mps_priz_ls")).toString());
         ls_info_date->insert(7,map);
         map.clear();
-        map.insert("8. МПС по контракту:",query.value(rec.indexOf("mps_konrt_ls")).toString());
+        map.insert("8. РњРџРЎ РїРѕ РєРѕРЅС‚СЂР°РєС‚Сѓ:",query.value(rec.indexOf("mps_konrt_ls")).toString());
         ls_info_date->insert(8,map);
         map.clear();
-        map.insert("9. МПС офицерского состава:",query.value(rec.indexOf("mps_of_ls")).toString());
+        map.insert("9. РњРџРЎ РѕС„РёС†РµСЂСЃРєРѕРіРѕ СЃРѕСЃС‚Р°РІР°:",query.value(rec.indexOf("mps_of_ls")).toString());
         ls_info_date->insert(9,map);
         map.clear();
-        map.insert("10. Краткое наименование формирования:",query.value(rec.indexOf("short_name_ls")).toString());
+        map.insert("10. РљСЂР°С‚РєРѕРµ РЅР°РёРјРµРЅРѕРІР°РЅРёРµ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ:",query.value(rec.indexOf("short_name_ls")).toString());
         ls_info_date->insert(10,map);
         map.clear();
         return *ls_info_date;
@@ -905,28 +905,28 @@ QMap<QString, QMap<QString, QString> > ReportData::ls_info_coord(int id_object)
 
            QMap<QString, QString> map;
            query.next();
-           name_obj="11. Координаты воинского формирования:";
+           name_obj="11. РљРѕРѕСЂРґРёРЅР°С‚С‹ РІРѕРёРЅСЃРєРѕРіРѕ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ:";
                        map.clear();
                        QString w = "X= ";
                        w.append(query.value(rec.indexOf("x_coordinates")).toString());
                        w.append("<br>Y= ");
                        w.append(query.value(rec.indexOf("y_coordinates")).toString());
-                       map.insert("Прямоугольные координаты",w);
+                       map.insert("РџСЂСЏРјРѕСѓРіРѕР»СЊРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹",w);
 
-                       QString q = "Широта: ";
+                       QString q = "РЁРёСЂРѕС‚Р°: ";
                        q.append(query.value(rec.indexOf("latitude_wgs_84_g")).toString());
                        q.append("-");
                        q.append(query.value(rec.indexOf("latitude_wgs_84_m")).toString());
                        q.append("-");
                        q.append(query.value(rec.indexOf("latitude_wgs_84_s")).toString());
-                       q.append("<br>Долгота: ");
+                       q.append("<br>Р”РѕР»РіРѕС‚Р°: ");
                        q.append(query.value(rec.indexOf("longitude_wgs_84_g")).toString());
                        q.append("-");
                        q.append(query.value(rec.indexOf("longitude_wgs_84_m")).toString());
                        q.append("-");
                        q.append(query.value(rec.indexOf("longitude_wgs_84_s")).toString());
 
-                       map.insert("Геодезические координаты",q);
+                       map.insert("Р“РµРѕРґРµР·РёС‡РµСЃРєРёРµ РєРѕРѕСЂРґРёРЅР°С‚С‹",q);
                        ls_elem_obj->insert(name_obj,map);
 
             return *ls_elem_obj;
@@ -957,19 +957,19 @@ QMap<int, QMap<QString, QString> > ReportData::sc_info(int id_object)
     QSqlRecord rec = query.record();
     query.next();
         map.clear();
-        map.insert("Фотография:","<CENTER><IMG BORDER=\"0\" SRC=\""+foto_name+"\" height=200> </CENTER>");
+        map.insert("Р¤РѕС‚РѕРіСЂР°С„РёСЏ:","<CENTER><IMG BORDER=\"0\" SRC=\""+foto_name+"\" height=200> </CENTER>");
         sc_info_date->insert(1,map);
         map.clear();
-        map.insert("1. Наименование особого условия:",query.value(rec.indexOf("name_special_conditions")).toString());
+        map.insert("1. РќР°РёРјРµРЅРѕРІР°РЅРёРµ РѕСЃРѕР±РѕРіРѕ СѓСЃР»РѕРІРёСЏ:",query.value(rec.indexOf("name_special_conditions")).toString());
         sc_info_date->insert(2,map);
         map.clear();
-        map.insert("2. Наименование региона:",query.value(rec.indexOf("name_region")).toString());
+        map.insert("2. РќР°РёРјРµРЅРѕРІР°РЅРёРµ СЂРµРіРёРѕРЅР°:",query.value(rec.indexOf("name_region")).toString());
         sc_info_date->insert(3,map);
         map.clear();
-        map.insert("3. Тип особого условия:",query.value(rec.indexOf("name_type_special_conditions")).toString());
+        map.insert("3. РўРёРї РѕСЃРѕР±РѕРіРѕ СѓСЃР»РѕРІРёСЏ:",query.value(rec.indexOf("name_type_special_conditions")).toString());
         sc_info_date->insert(4,map);
         map.clear();
-        map.insert("4. Описание особого условия:",query.value(rec.indexOf("description_special_conditions")).toString());
+        map.insert("4. РћРїРёСЃР°РЅРёРµ РѕСЃРѕР±РѕРіРѕ СѓСЃР»РѕРІРёСЏ:",query.value(rec.indexOf("description_special_conditions")).toString());
         sc_info_date->insert(5,map);
         map.clear();
         return *sc_info_date;
@@ -996,34 +996,34 @@ QMap<QString, QMap<QString, QString> > ReportData::sc_info_coord(int id_object)
 
            QMap<QString, QString> map;
            query.next();
-           name_obj="5. Координаты особого условия:";
+           name_obj="5. РљРѕРѕСЂРґРёРЅР°С‚С‹ РѕСЃРѕР±РѕРіРѕ СѓСЃР»РѕРІРёСЏ:";
                        map.clear();
                        QString w = "X= ";
                        w.append(query.value(rec.indexOf("x_coordinates")).toString());
                        w.append("<br>Y= ");
                        w.append(query.value(rec.indexOf("y_coordinates")).toString());
-                       map.insert("Прямоугольные координаты",w);
+                       map.insert("РџСЂСЏРјРѕСѓРіРѕР»СЊРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹",w);
 
-                       QString q = "Широта: ";
+                       QString q = "РЁРёСЂРѕС‚Р°: ";
                        q.append(query.value(rec.indexOf("latitude_wgs_84_g")).toString());
                        q.append("-");
                        q.append(query.value(rec.indexOf("latitude_wgs_84_m")).toString());
                        q.append("-");
                        q.append(query.value(rec.indexOf("latitude_wgs_84_s")).toString());
-                       q.append("<br>Долгота: ");
+                       q.append("<br>Р”РѕР»РіРѕС‚Р°: ");
                        q.append(query.value(rec.indexOf("longitude_wgs_84_g")).toString());
                        q.append("-");
                        q.append(query.value(rec.indexOf("longitude_wgs_84_m")).toString());
                        q.append("-");
                        q.append(query.value(rec.indexOf("longitude_wgs_84_s")).toString());
 
-                       map.insert("Геодезические координаты",q);
+                       map.insert("Р“РµРѕРґРµР·РёС‡РµСЃРєРёРµ РєРѕРѕСЂРґРёРЅР°С‚С‹",q);
                        sc_elem_obj->insert(name_obj,map);
 
             return *sc_elem_obj;
 }
 //***********************************************************************************************************
-//=============================== ОТЧЕТЫ РЕГИОНЫ ============================================================
+//=============================== РћРўР§Р•РўР« Р Р•Р“РРћРќР« ============================================================
 QMap<int, QMap<QString, QString> > ReportData::region_info(int id_object)
 {
     region_info_date = new QMap<int, QMap<QString, QString> >;
@@ -1047,13 +1047,13 @@ QMap<int, QMap<QString, QString> > ReportData::region_info(int id_object)
     QSqlRecord rec = query.record();
     query.next();
         map.clear();
-        map.insert("Наименование региона:",query.value(rec.indexOf("name_region")).toString());
+        map.insert("РќР°РёРјРµРЅРѕРІР°РЅРёРµ СЂРµРіРёРѕРЅР°:",query.value(rec.indexOf("name_region")).toString());
         region_info_date->insert(1,map);
         map.clear();
-        map.insert("Тип региона:",query.value(rec.indexOf("name_type_region")).toString());
+        map.insert("РўРёРї СЂРµРіРёРѕРЅР°:",query.value(rec.indexOf("name_type_region")).toString());
         region_info_date->insert(2,map);
         map.clear();
-        map.insert("Описание региона:",query.value(rec.indexOf("description_region")).toString());
+        map.insert("РћРїРёСЃР°РЅРёРµ СЂРµРіРёРѕРЅР°:",query.value(rec.indexOf("description_region")).toString());
         region_info_date->insert(3,map);
         map.clear();
 
@@ -1082,7 +1082,7 @@ QMap<int, QMap<QString, QString> > ReportData::region_info_pop(int id_object)
     QSqlRecord rec = query.record();
     query.next();
         map.clear();
-        map.insert("Население:",query.value(rec.indexOf("counte_population")).toString() + " чел.( " + query.value(rec.indexOf("density_population")).toString() + " чел на км<span style=' vertical-align:super;'>2</span>  плотность населения )");
+        map.insert("РќР°СЃРµР»РµРЅРёРµ:",query.value(rec.indexOf("counte_population")).toString() + " С‡РµР».( " + query.value(rec.indexOf("density_population")).toString() + " С‡РµР» РЅР° РєРј<span style=' vertical-align:super;'>2</span>  РїР»РѕС‚РЅРѕСЃС‚СЊ РЅР°СЃРµР»РµРЅРёСЏ )");
         reg_info_date->insert(1,map);
         map.clear();
 
@@ -1112,21 +1112,21 @@ QMap<int, QMap<QString, QString> > ReportData::region_info_pop(int id_object)
         q.append(QString("%1").arg(persent_nations).toLocal8Bit());
         q.append(" %, ");
         q.append(QString("%1").arg(number_nations).toLocal8Bit());
-        q.append(" чел)");
+        q.append(" С‡РµР»)");
     }
-    map.insert("Национальный состав:",q);
+    map.insert("РќР°С†РёРѕРЅР°Р»СЊРЅС‹Р№ СЃРѕСЃС‚Р°РІ:",q);
     reg_info_date->insert(2,map);
     map.clear();
-    map.insert("Уровень эммиграции:",query.value(rec.indexOf("emmigration_population")).toString());
+    map.insert("РЈСЂРѕРІРµРЅСЊ СЌРјРјРёРіСЂР°С†РёРё:",query.value(rec.indexOf("emmigration_population")).toString());
     reg_info_date->insert(3,map);
     map.clear();
-    map.insert("Уровень иммиграции:",query.value(rec.indexOf("immigration_population")).toString());
+    map.insert("РЈСЂРѕРІРµРЅСЊ РёРјРјРёРіСЂР°С†РёРё:",query.value(rec.indexOf("immigration_population")).toString());
     reg_info_date->insert(4,map);
     map.clear();
-    map.insert("Уровень рождаемости:",query.value(rec.indexOf("birth_population")).toString());
+    map.insert("РЈСЂРѕРІРµРЅСЊ СЂРѕР¶РґР°РµРјРѕСЃС‚Рё:",query.value(rec.indexOf("birth_population")).toString());
     reg_info_date->insert(5,map);
     map.clear();
-    map.insert("Уровень смертности:",query.value(rec.indexOf("dead_population")).toString());
+    map.insert("РЈСЂРѕРІРµРЅСЊ СЃРјРµСЂС‚РЅРѕСЃС‚Рё:",query.value(rec.indexOf("dead_population")).toString());
     reg_info_date->insert(6,map);
     map.clear();
 
@@ -1162,7 +1162,7 @@ QMap<int, QMap<QString, QString> > ReportData::region_info_pop(int id_object)
     }
     if(number_sex_m==0)
     {
-        map.insert("Половой состав:","Данных нет");
+        map.insert("РџРѕР»РѕРІРѕР№ СЃРѕСЃС‚Р°РІ:","Р”Р°РЅРЅС‹С… РЅРµС‚");
         reg_info_date->insert(7,map);
         map.clear();
     }
@@ -1172,12 +1172,12 @@ QMap<int, QMap<QString, QString> > ReportData::region_info_pop(int id_object)
         number_m = number_sex_m/100*number;
         number_w = number - number_m;
 
-        q_pol.append(" </P>  <P> Мужской пол: "); q_pol.append(QString("%1").arg(number_m).toLocal8Bit());
-        q_pol.append(" чел. (");q_pol.append(QString("%1").arg(number_sex_m).toLocal8Bit()); q_pol.append("%)");
-        q_pol.append(" </P> <P>  Женский пол: "); q_pol.append(QString("%1").arg(number_w).toLocal8Bit());
-        q_pol.append(" чел. (");q_pol.append(QString("%1").arg(number_sex_w).toLocal8Bit()); q_pol.append("%)");
+        q_pol.append(" </P>  <P> РњСѓР¶СЃРєРѕР№ РїРѕР»: "); q_pol.append(QString("%1").arg(number_m).toLocal8Bit());
+        q_pol.append(" С‡РµР». (");q_pol.append(QString("%1").arg(number_sex_m).toLocal8Bit()); q_pol.append("%)");
+        q_pol.append(" </P> <P>  Р–РµРЅСЃРєРёР№ РїРѕР»: "); q_pol.append(QString("%1").arg(number_w).toLocal8Bit());
+        q_pol.append(" С‡РµР». (");q_pol.append(QString("%1").arg(number_sex_w).toLocal8Bit()); q_pol.append("%)");
 
-        map.insert("Половой состав:",q_pol);
+        map.insert("РџРѕР»РѕРІРѕР№ СЃРѕСЃС‚Р°РІ:",q_pol);
         reg_info_date->insert(7,map);
         map.clear();
     }
@@ -1191,7 +1191,7 @@ QMap<int, QMap<QString, QString> > ReportData::region_info_pop(int id_object)
     data = query_age.record();
     if(query_age.size()==0)
     {
-        map.insert("Возрастной состав:","Данных нет");
+        map.insert("Р’РѕР·СЂР°СЃС‚РЅРѕР№ СЃРѕСЃС‚Р°РІ:","Р”Р°РЅРЅС‹С… РЅРµС‚");
         reg_info_date->insert(8,map);
         map.clear();
     }
@@ -1207,7 +1207,7 @@ QMap<int, QMap<QString, QString> > ReportData::region_info_pop(int id_object)
             q_age.append(persent_age_string.toLocal8Bit());
             q_age.append("%");
         }
-        map.insert("Возрастной состав:",q_age);
+        map.insert("Р’РѕР·СЂР°СЃС‚РЅРѕР№ СЃРѕСЃС‚Р°РІ:",q_age);
         reg_info_date->insert(8,map);
         map.clear();
     }
@@ -1219,7 +1219,7 @@ QMap<int, QMap<QString, QString> > ReportData::region_info_pop(int id_object)
     data = query_conf.record();
     if(query_conf.size()==0)
     {
-        map.insert("Религиозный состав:","Данных нет");
+        map.insert("Р РµР»РёРіРёРѕР·РЅС‹Р№ СЃРѕСЃС‚Р°РІ:","Р”Р°РЅРЅС‹С… РЅРµС‚");
         reg_info_date->insert(9,map);
         map.clear();
     }
@@ -1236,7 +1236,7 @@ QMap<int, QMap<QString, QString> > ReportData::region_info_pop(int id_object)
             q_conf.append(persent_confessions.toLocal8Bit());
             q_conf.append("%");
         }
-    map.insert("Религиозный состав:",q_conf);
+    map.insert("Р РµР»РёРіРёРѕР·РЅС‹Р№ СЃРѕСЃС‚Р°РІ:",q_conf);
     reg_info_date->insert(9,map);
     map.clear();
 
@@ -1309,7 +1309,7 @@ QMap<int, QMap<QString, QString> > ReportData::region_info_smi(int id_object)
                     q_pos.append("</P>  <P> - ");
                     q_pos.append(name_smi.toLocal8Bit());
 
-                    map.insert("Позиция СМИ:",q_pos);
+                    map.insert("РџРѕР·РёС†РёСЏ РЎРњР:",q_pos);
                     region_info_date->insert(1,map);
                     map.clear();
                 }
@@ -1319,7 +1319,7 @@ QMap<int, QMap<QString, QString> > ReportData::region_info_smi(int id_object)
     }
 
     if(d==0)
-    map.insert("Информация о CМИ:","Данных нет");
+    map.insert("РРЅС„РѕСЂРјР°С†РёСЏ Рѕ CРњР:","Р”Р°РЅРЅС‹С… РЅРµС‚");
     region_info_date->insert(2,map);
     map.clear();
 
@@ -1390,7 +1390,7 @@ QMap<int, QMap<QString, QString> > ReportData::region_info_group(int id_object){
                     q_pos.append("</P>  <P> - ");
                     q_pos.append(name_groups.toLocal8Bit());
 
-                    map.insert("Направленность организации:",q_pos);
+                    map.insert("РќР°РїСЂР°РІР»РµРЅРЅРѕСЃС‚СЊ РѕСЂРіР°РЅРёР·Р°С†РёРё:",q_pos);
                     region_info_date->insert(1,map);
                     map.clear();
                 }
@@ -1398,7 +1398,7 @@ QMap<int, QMap<QString, QString> > ReportData::region_info_group(int id_object){
         }
     }
     if(d==0)
-    map.insert("Информация о организации:","Данных нет");
+    map.insert("РРЅС„РѕСЂРјР°С†РёСЏ Рѕ РѕСЂРіР°РЅРёР·Р°С†РёРё:","Р”Р°РЅРЅС‹С… РЅРµС‚");
     region_info_date->insert(2,map);
     map.clear();
 
@@ -1462,43 +1462,43 @@ QMap<QString, QString> ReportData::region_info_factor(int id_object){
         factori[i] = query.value(data.indexOf("religion_ls_their")).toDouble();
 
     }
-    factor_text << "Высокий уровень бедности и доли населения с денежными доходами, ниже региональной величины прожиточного минимума"
-                << "Высокий уровень цен на продукты и услуги первой необходимости."
-                << "Низкий уровень образования населения, недостаточное количество высших учебных заведений."
-                << "Низкая степень доверия населения органам государственной власти, командованию Вооруженных Сил."
-                << "Низкая степень поддержки населением действий Вооруженных Сил."
-                << "Неспособность и отсутствие возможностей государственных (региональных) структур оказать содействие Вооружённым Силам в выполнении задач в период непосредственной угрозы агрессии и военное время."
-                << "Низкая степень влияния на общественное мнение населения основных политических партий, неправительственных, общественных и религиозных организаций, выступающих в поддержку государства и Вооруженных сил."
-                << "Наличие оппозиционных, радикальных политических движений и организаций (в том числе и молодежных) и достаточно высокий уровень их поддержки населением. "
-                << "Негативная позиция государственных (региональных) авторитетных деятелей политики, культуры, искусства по отношению к Вооруженным Силам."
-                << "Высокий уровень безработицы в регионе."
-                << "Наличие беженцев из других регионов Российской Федерации, сопредельных с ней территорий."
-                << "Сложная демографическая ситуация в регионе."
-                << "Низкий уровень информатизации региона и степень доступности средств массовой информации и коммуникации, затрудняющие ведение пропаганды и контрпропаганды."
-                << "Деструктивная направленность информации, публикуемой в региональных СМИ в отношении Вооруженных Сил."
-                << "Низкая степень защищенности объектов телерадиовещания, сотовой связи, инфо - и телекоммуникационной инфраструктуры региона."
-                << "Высокая степень активности неправительственных организаций и фондов деструктивной направленности."
-                << "Низкий уровень сформированности патриотического сознания населения."
-                << "Высокий уровень преступности в регионе."
-                << "Высокая степень коррумпированности органов власти."
-                << "Высокая степень влияния теневого сектора экономики и финансов региона на общественное мнение."
-                << "Наличие нелегальных миграционных потоков."
-                << "Наличие экстремистских проявлений и НВФ."
-                << "Большое количество исправительно-трудовых учреждений, и число осужденных."
-                << "Высокий уровень протестной активности населения."
-                << "Наличие организованных преступных группировок."
-                << "Наличие в peгионе путей незаконного экспорта (импорта) оружия и наркотиков."
-                << "Наличие межнациональных, межэтнических конфликтов.";
+    factor_text << "Р’С‹СЃРѕРєРёР№ СѓСЂРѕРІРµРЅСЊ Р±РµРґРЅРѕСЃС‚Рё Рё РґРѕР»Рё РЅР°СЃРµР»РµРЅРёСЏ СЃ РґРµРЅРµР¶РЅС‹РјРё РґРѕС…РѕРґР°РјРё, РЅРёР¶Рµ СЂРµРіРёРѕРЅР°Р»СЊРЅРѕР№ РІРµР»РёС‡РёРЅС‹ РїСЂРѕР¶РёС‚РѕС‡РЅРѕРіРѕ РјРёРЅРёРјСѓРјР°"
+                << "Р’С‹СЃРѕРєРёР№ СѓСЂРѕРІРµРЅСЊ С†РµРЅ РЅР° РїСЂРѕРґСѓРєС‚С‹ Рё СѓСЃР»СѓРіРё РїРµСЂРІРѕР№ РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё."
+                << "РќРёР·РєРёР№ СѓСЂРѕРІРµРЅСЊ РѕР±СЂР°Р·РѕРІР°РЅРёСЏ РЅР°СЃРµР»РµРЅРёСЏ, РЅРµРґРѕСЃС‚Р°С‚РѕС‡РЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РІС‹СЃС€РёС… СѓС‡РµР±РЅС‹С… Р·Р°РІРµРґРµРЅРёР№."
+                << "РќРёР·РєР°СЏ СЃС‚РµРїРµРЅСЊ РґРѕРІРµСЂРёСЏ РЅР°СЃРµР»РµРЅРёСЏ РѕСЂРіР°РЅР°Рј РіРѕСЃСѓРґР°СЂСЃС‚РІРµРЅРЅРѕР№ РІР»Р°СЃС‚Рё, РєРѕРјР°РЅРґРѕРІР°РЅРёСЋ Р’РѕРѕСЂСѓР¶РµРЅРЅС‹С… РЎРёР»."
+                << "РќРёР·РєР°СЏ СЃС‚РµРїРµРЅСЊ РїРѕРґРґРµСЂР¶РєРё РЅР°СЃРµР»РµРЅРёРµРј РґРµР№СЃС‚РІРёР№ Р’РѕРѕСЂСѓР¶РµРЅРЅС‹С… РЎРёР»."
+                << "РќРµСЃРїРѕСЃРѕР±РЅРѕСЃС‚СЊ Рё РѕС‚СЃСѓС‚СЃС‚РІРёРµ РІРѕР·РјРѕР¶РЅРѕСЃС‚РµР№ РіРѕСЃСѓРґР°СЂСЃС‚РІРµРЅРЅС‹С… (СЂРµРіРёРѕРЅР°Р»СЊРЅС‹С…) СЃС‚СЂСѓРєС‚СѓСЂ РѕРєР°Р·Р°С‚СЊ СЃРѕРґРµР№СЃС‚РІРёРµ Р’РѕРѕСЂСѓР¶С‘РЅРЅС‹Рј РЎРёР»Р°Рј РІ РІС‹РїРѕР»РЅРµРЅРёРё Р·Р°РґР°С‡ РІ РїРµСЂРёРѕРґ РЅРµРїРѕСЃСЂРµРґСЃС‚РІРµРЅРЅРѕР№ СѓРіСЂРѕР·С‹ Р°РіСЂРµСЃСЃРёРё Рё РІРѕРµРЅРЅРѕРµ РІСЂРµРјСЏ."
+                << "РќРёР·РєР°СЏ СЃС‚РµРїРµРЅСЊ РІР»РёСЏРЅРёСЏ РЅР° РѕР±С‰РµСЃС‚РІРµРЅРЅРѕРµ РјРЅРµРЅРёРµ РЅР°СЃРµР»РµРЅРёСЏ РѕСЃРЅРѕРІРЅС‹С… РїРѕР»РёС‚РёС‡РµСЃРєРёС… РїР°СЂС‚РёР№, РЅРµРїСЂР°РІРёС‚РµР»СЊСЃС‚РІРµРЅРЅС‹С…, РѕР±С‰РµСЃС‚РІРµРЅРЅС‹С… Рё СЂРµР»РёРіРёРѕР·РЅС‹С… РѕСЂРіР°РЅРёР·Р°С†РёР№, РІС‹СЃС‚СѓРїР°СЋС‰РёС… РІ РїРѕРґРґРµСЂР¶РєСѓ РіРѕСЃСѓРґР°СЂСЃС‚РІР° Рё Р’РѕРѕСЂСѓР¶РµРЅРЅС‹С… СЃРёР»."
+                << "РќР°Р»РёС‡РёРµ РѕРїРїРѕР·РёС†РёРѕРЅРЅС‹С…, СЂР°РґРёРєР°Р»СЊРЅС‹С… РїРѕР»РёС‚РёС‡РµСЃРєРёС… РґРІРёР¶РµРЅРёР№ Рё РѕСЂРіР°РЅРёР·Р°С†РёР№ (РІ С‚РѕРј С‡РёСЃР»Рµ Рё РјРѕР»РѕРґРµР¶РЅС‹С…) Рё РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РІС‹СЃРѕРєРёР№ СѓСЂРѕРІРµРЅСЊ РёС… РїРѕРґРґРµСЂР¶РєРё РЅР°СЃРµР»РµРЅРёРµРј. "
+                << "РќРµРіР°С‚РёРІРЅР°СЏ РїРѕР·РёС†РёСЏ РіРѕСЃСѓРґР°СЂСЃС‚РІРµРЅРЅС‹С… (СЂРµРіРёРѕРЅР°Р»СЊРЅС‹С…) Р°РІС‚РѕСЂРёС‚РµС‚РЅС‹С… РґРµСЏС‚РµР»РµР№ РїРѕР»РёС‚РёРєРё, РєСѓР»СЊС‚СѓСЂС‹, РёСЃРєСѓСЃСЃС‚РІР° РїРѕ РѕС‚РЅРѕС€РµРЅРёСЋ Рє Р’РѕРѕСЂСѓР¶РµРЅРЅС‹Рј РЎРёР»Р°Рј."
+                << "Р’С‹СЃРѕРєРёР№ СѓСЂРѕРІРµРЅСЊ Р±РµР·СЂР°Р±РѕС‚РёС†С‹ РІ СЂРµРіРёРѕРЅРµ."
+                << "РќР°Р»РёС‡РёРµ Р±РµР¶РµРЅС†РµРІ РёР· РґСЂСѓРіРёС… СЂРµРіРёРѕРЅРѕРІ Р РѕСЃСЃРёР№СЃРєРѕР№ Р¤РµРґРµСЂР°С†РёРё, СЃРѕРїСЂРµРґРµР»СЊРЅС‹С… СЃ РЅРµР№ С‚РµСЂСЂРёС‚РѕСЂРёР№."
+                << "РЎР»РѕР¶РЅР°СЏ РґРµРјРѕРіСЂР°С„РёС‡РµСЃРєР°СЏ СЃРёС‚СѓР°С†РёСЏ РІ СЂРµРіРёРѕРЅРµ."
+                << "РќРёР·РєРёР№ СѓСЂРѕРІРµРЅСЊ РёРЅС„РѕСЂРјР°С‚РёР·Р°С†РёРё СЂРµРіРёРѕРЅР° Рё СЃС‚РµРїРµРЅСЊ РґРѕСЃС‚СѓРїРЅРѕСЃС‚Рё СЃСЂРµРґСЃС‚РІ РјР°СЃСЃРѕРІРѕР№ РёРЅС„РѕСЂРјР°С†РёРё Рё РєРѕРјРјСѓРЅРёРєР°С†РёРё, Р·Р°С‚СЂСѓРґРЅСЏСЋС‰РёРµ РІРµРґРµРЅРёРµ РїСЂРѕРїР°РіР°РЅРґС‹ Рё РєРѕРЅС‚СЂРїСЂРѕРїР°РіР°РЅРґС‹."
+                << "Р”РµСЃС‚СЂСѓРєС‚РёРІРЅР°СЏ РЅР°РїСЂР°РІР»РµРЅРЅРѕСЃС‚СЊ РёРЅС„РѕСЂРјР°С†РёРё, РїСѓР±Р»РёРєСѓРµРјРѕР№ РІ СЂРµРіРёРѕРЅР°Р»СЊРЅС‹С… РЎРњР РІ РѕС‚РЅРѕС€РµРЅРёРё Р’РѕРѕСЂСѓР¶РµРЅРЅС‹С… РЎРёР»."
+                << "РќРёР·РєР°СЏ СЃС‚РµРїРµРЅСЊ Р·Р°С‰РёС‰РµРЅРЅРѕСЃС‚Рё РѕР±СЉРµРєС‚РѕРІ С‚РµР»РµСЂР°РґРёРѕРІРµС‰Р°РЅРёСЏ, СЃРѕС‚РѕРІРѕР№ СЃРІСЏР·Рё, РёРЅС„Рѕ - Рё С‚РµР»РµРєРѕРјРјСѓРЅРёРєР°С†РёРѕРЅРЅРѕР№ РёРЅС„СЂР°СЃС‚СЂСѓРєС‚СѓСЂС‹ СЂРµРіРёРѕРЅР°."
+                << "Р’С‹СЃРѕРєР°СЏ СЃС‚РµРїРµРЅСЊ Р°РєС‚РёРІРЅРѕСЃС‚Рё РЅРµРїСЂР°РІРёС‚РµР»СЊСЃС‚РІРµРЅРЅС‹С… РѕСЂРіР°РЅРёР·Р°С†РёР№ Рё С„РѕРЅРґРѕРІ РґРµСЃС‚СЂСѓРєС‚РёРІРЅРѕР№ РЅР°РїСЂР°РІР»РµРЅРЅРѕСЃС‚Рё."
+                << "РќРёР·РєРёР№ СѓСЂРѕРІРµРЅСЊ СЃС„РѕСЂРјРёСЂРѕРІР°РЅРЅРѕСЃС‚Рё РїР°С‚СЂРёРѕС‚РёС‡РµСЃРєРѕРіРѕ СЃРѕР·РЅР°РЅРёСЏ РЅР°СЃРµР»РµРЅРёСЏ."
+                << "Р’С‹СЃРѕРєРёР№ СѓСЂРѕРІРµРЅСЊ РїСЂРµСЃС‚СѓРїРЅРѕСЃС‚Рё РІ СЂРµРіРёРѕРЅРµ."
+                << "Р’С‹СЃРѕРєР°СЏ СЃС‚РµРїРµРЅСЊ РєРѕСЂСЂСѓРјРїРёСЂРѕРІР°РЅРЅРѕСЃС‚Рё РѕСЂРіР°РЅРѕРІ РІР»Р°СЃС‚Рё."
+                << "Р’С‹СЃРѕРєР°СЏ СЃС‚РµРїРµРЅСЊ РІР»РёСЏРЅРёСЏ С‚РµРЅРµРІРѕРіРѕ СЃРµРєС‚РѕСЂР° СЌРєРѕРЅРѕРјРёРєРё Рё С„РёРЅР°РЅСЃРѕРІ СЂРµРіРёРѕРЅР° РЅР° РѕР±С‰РµСЃС‚РІРµРЅРЅРѕРµ РјРЅРµРЅРёРµ."
+                << "РќР°Р»РёС‡РёРµ РЅРµР»РµРіР°Р»СЊРЅС‹С… РјРёРіСЂР°С†РёРѕРЅРЅС‹С… РїРѕС‚РѕРєРѕРІ."
+                << "РќР°Р»РёС‡РёРµ СЌРєСЃС‚СЂРµРјРёСЃС‚СЃРєРёС… РїСЂРѕСЏРІР»РµРЅРёР№ Рё РќР’Р¤."
+                << "Р‘РѕР»СЊС€РѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РёСЃРїСЂР°РІРёС‚РµР»СЊРЅРѕ-С‚СЂСѓРґРѕРІС‹С… СѓС‡СЂРµР¶РґРµРЅРёР№, Рё С‡РёСЃР»Рѕ РѕСЃСѓР¶РґРµРЅРЅС‹С…."
+                << "Р’С‹СЃРѕРєРёР№ СѓСЂРѕРІРµРЅСЊ РїСЂРѕС‚РµСЃС‚РЅРѕР№ Р°РєС‚РёРІРЅРѕСЃС‚Рё РЅР°СЃРµР»РµРЅРёСЏ."
+                << "РќР°Р»РёС‡РёРµ РѕСЂРіР°РЅРёР·РѕРІР°РЅРЅС‹С… РїСЂРµСЃС‚СѓРїРЅС‹С… РіСЂСѓРїРїРёСЂРѕРІРѕРє."
+                << "РќР°Р»РёС‡РёРµ РІ peРіРёРѕРЅРµ РїСѓС‚РµР№ РЅРµР·Р°РєРѕРЅРЅРѕРіРѕ СЌРєСЃРїРѕСЂС‚Р° (РёРјРїРѕСЂС‚Р°) РѕСЂСѓР¶РёСЏ Рё РЅР°СЂРєРѕС‚РёРєРѕРІ."
+                << "РќР°Р»РёС‡РёРµ РјРµР¶РЅР°С†РёРѕРЅР°Р»СЊРЅС‹С…, РјРµР¶СЌС‚РЅРёС‡РµСЃРєРёС… РєРѕРЅС„Р»РёРєС‚РѕРІ.";
 
     for(int i=0;i<33;i++) if(factori[i]>0 && factori[i]<=0.3) factorflag=1;
     if(factorflag == 0)
     {
-        q_pos.append("</P>  <P> <B> <CENTER> Факторы, дестабилизирующие моральную обстановку в регионе, отсутствуют, либо о них неизвестно. </CENTER></B>  ");
+        q_pos.append("</P>  <P> <B> <CENTER> Р¤Р°РєС‚РѕСЂС‹, РґРµСЃС‚Р°Р±РёР»РёР·РёСЂСѓСЋС‰РёРµ РјРѕСЂР°Р»СЊРЅСѓСЋ РѕР±СЃС‚Р°РЅРѕРІРєСѓ РІ СЂРµРіРёРѕРЅРµ, РѕС‚СЃСѓС‚СЃС‚РІСѓСЋС‚, Р»РёР±Рѕ Рѕ РЅРёС… РЅРµРёР·РІРµСЃС‚РЅРѕ. </CENTER></B>  ");
         info_date->insert("",q_pos);
      }
     else
     {
-        q_pos.append("</P>  <P> <B> <CENTER> Факторами, дестабилизирующими моральную обстановку в регионе, являются: </CENTER></B>  ");
+        q_pos.append("</P>  <P> <B> <CENTER> Р¤Р°РєС‚РѕСЂР°РјРё, РґРµСЃС‚Р°Р±РёР»РёР·РёСЂСѓСЋС‰РёРјРё РјРѕСЂР°Р»СЊРЅСѓСЋ РѕР±СЃС‚Р°РЅРѕРІРєСѓ РІ СЂРµРіРёРѕРЅРµ, СЏРІР»СЏСЋС‚СЃСЏ: </CENTER></B>  ");
 
 
         for(int i=0;i<26;i++)
@@ -1524,13 +1524,13 @@ QMap<QString, QString> ReportData::region_info_itog(float rez_){
     QString q_pos;
 
     if(rez_ < 0.3)
-        q_pos.append(" </P>  <P> <b> <CENTER> Обстановка затрудняет выполнение задач </CENTER> </b>");
+        q_pos.append(" </P>  <P> <b> <CENTER> РћР±СЃС‚Р°РЅРѕРІРєР° Р·Р°С‚СЂСѓРґРЅСЏРµС‚ РІС‹РїРѕР»РЅРµРЅРёРµ Р·Р°РґР°С‡ </CENTER> </b>");
     else
     {
         if(rez_ > 0.3 && rez_ <0.5)
-        q_pos.append(" </P>  <P> <b> <CENTER> Обстановка не оказывает существенного влияния на выполнение задач </CENTER> </b>");
+        q_pos.append(" </P>  <P> <b> <CENTER> РћР±СЃС‚Р°РЅРѕРІРєР° РЅРµ РѕРєР°Р·С‹РІР°РµС‚ СЃСѓС‰РµСЃС‚РІРµРЅРЅРѕРіРѕ РІР»РёСЏРЅРёСЏ РЅР° РІС‹РїРѕР»РЅРµРЅРёРµ Р·Р°РґР°С‡ </CENTER> </b>");
         else
-        q_pos.append(" </P>  <P> <b> <CENTER> Обстановка способствует выполнению задач </CENTER> </b>");
+        q_pos.append(" </P>  <P> <b> <CENTER> РћР±СЃС‚Р°РЅРѕРІРєР° СЃРїРѕСЃРѕР±СЃС‚РІСѓРµС‚ РІС‹РїРѕР»РЅРµРЅРёСЋ Р·Р°РґР°С‡ </CENTER> </b>");
 
     }
 
@@ -1540,7 +1540,7 @@ QMap<QString, QString> ReportData::region_info_itog(float rez_){
 }
 //****************************************************************************************************
 //****************************************************************************************************
-//============================== отчеты по средствам =================================================
+//============================== РѕС‚С‡РµС‚С‹ РїРѕ СЃСЂРµРґСЃС‚РІР°Рј =================================================
 
 QMap<int, QMap<QString, QString> > ReportData::mpo_pso_smi_info(int id_object)
 {
@@ -1571,22 +1571,22 @@ QMap<int, QMap<QString, QString> > ReportData::mpo_pso_smi_info(int id_object)
 
     query.next();
         map.clear();
-        map.insert("1. Наименование средства СМИ:",query.value(rec.indexOf("name_mpo_pso")).toString());
+        map.insert("1. РќР°РёРјРµРЅРѕРІР°РЅРёРµ СЃСЂРµРґСЃС‚РІР° РЎРњР:",query.value(rec.indexOf("name_mpo_pso")).toString());
         mpsmi_info_date->insert(1,map);
         map.clear();
-        map.insert("2. Фотография:","<CENTER><IMG BORDER=\"0\" SRC=\""+foto_name+"\" height=200> </CENTER>");
+        map.insert("2. Р¤РѕС‚РѕРіСЂР°С„РёСЏ:","<CENTER><IMG BORDER=\"0\" SRC=\""+foto_name+"\" height=200> </CENTER>");
         mpsmi_info_date->insert(2,map);
         map.clear();
-        map.insert("3. Подчиненность:",query.value(rec.indexOf("name_smi")).toString());
+        map.insert("3. РџРѕРґС‡РёРЅРµРЅРЅРѕСЃС‚СЊ:",query.value(rec.indexOf("name_smi")).toString());
         mpsmi_info_date->insert(3,map);
         map.clear();
-        map.insert("4. Количество средств:",query.value(rec.indexOf("counte_mpo_pso")).toString());
+        map.insert("4. РљРѕР»РёС‡РµСЃС‚РІРѕ СЃСЂРµРґСЃС‚РІ:",query.value(rec.indexOf("counte_mpo_pso")).toString());
         mpsmi_info_date->insert(4,map);
         map.clear();
-        map.insert("5. Тип средства СМИ:",query.value(rec.indexOf("name_type_mpo_pso")).toString());
+        map.insert("5. РўРёРї СЃСЂРµРґСЃС‚РІР° РЎРњР:",query.value(rec.indexOf("name_type_mpo_pso")).toString());
         mpsmi_info_date->insert(5,map);
         map.clear();
-        map.insert("6. Описание средства СМИ:",query.value(rec.indexOf("description_mpo_pso")).toString());
+        map.insert("6. РћРїРёСЃР°РЅРёРµ СЃСЂРµРґСЃС‚РІР° РЎРњР:",query.value(rec.indexOf("description_mpo_pso")).toString());
         mpsmi_info_date->insert(6,map);
         map.clear();
 
@@ -1620,22 +1620,22 @@ QMap<int, QMap<QString, QString> > ReportData::mpo_pso_ls_info(int id_object)
 
     query.next();
         map.clear();
-        map.insert("1. Наименование средства Воинского формирования:",query.value(rec.indexOf("name_mpo_pso")).toString());
+        map.insert("1. РќР°РёРјРµРЅРѕРІР°РЅРёРµ СЃСЂРµРґСЃС‚РІР° Р’РѕРёРЅСЃРєРѕРіРѕ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ:",query.value(rec.indexOf("name_mpo_pso")).toString());
         mpls_info_date->insert(1,map);
         map.clear();
-        map.insert("2. Фотография:","<CENTER><IMG BORDER=\"0\" SRC=\""+foto_name+"\" height=200> </CENTER>");
+        map.insert("2. Р¤РѕС‚РѕРіСЂР°С„РёСЏ:","<CENTER><IMG BORDER=\"0\" SRC=\""+foto_name+"\" height=200> </CENTER>");
         mpls_info_date->insert(2,map);
         map.clear();
-        map.insert("3. Подчиненность:",query.value(rec.indexOf("name_ls")).toString());
+        map.insert("3. РџРѕРґС‡РёРЅРµРЅРЅРѕСЃС‚СЊ:",query.value(rec.indexOf("name_ls")).toString());
         mpls_info_date->insert(3,map);
         map.clear();
-        map.insert("4. Количество средств:",query.value(rec.indexOf("counte_mpo_pso")).toString());
+        map.insert("4. РљРѕР»РёС‡РµСЃС‚РІРѕ СЃСЂРµРґСЃС‚РІ:",query.value(rec.indexOf("counte_mpo_pso")).toString());
         mpls_info_date->insert(4,map);
         map.clear();
-        map.insert("5. Тип средства Воинского формирования:",query.value(rec.indexOf("name_type_mpo_pso")).toString());
+        map.insert("5. РўРёРї СЃСЂРµРґСЃС‚РІР° Р’РѕРёРЅСЃРєРѕРіРѕ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ:",query.value(rec.indexOf("name_type_mpo_pso")).toString());
         mpls_info_date->insert(5,map);
         map.clear();
-        map.insert("6. Описание средства Воинского формирования:",query.value(rec.indexOf("description_mpo_pso")).toString());
+        map.insert("6. РћРїРёСЃР°РЅРёРµ СЃСЂРµРґСЃС‚РІР° Р’РѕРёРЅСЃРєРѕРіРѕ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ:",query.value(rec.indexOf("description_mpo_pso")).toString());
         mpls_info_date->insert(6,map);
         map.clear();
 
@@ -1669,22 +1669,22 @@ QMap<int, QMap<QString, QString> > ReportData::mpo_pso_gr_info(int id_object)
 
     query.next();
         map.clear();
-        map.insert("1. Наименование средства организации:",query.value(rec.indexOf("name_mpo_pso")).toString());
+        map.insert("1. РќР°РёРјРµРЅРѕРІР°РЅРёРµ СЃСЂРµРґСЃС‚РІР° РѕСЂРіР°РЅРёР·Р°С†РёРё:",query.value(rec.indexOf("name_mpo_pso")).toString());
         mpgr_info_date->insert(1,map);
         map.clear();
-        map.insert("2. Фотография:","<CENTER><IMG BORDER=\"0\" SRC=\""+foto_name+"\" height=200> </CENTER>");
+        map.insert("2. Р¤РѕС‚РѕРіСЂР°С„РёСЏ:","<CENTER><IMG BORDER=\"0\" SRC=\""+foto_name+"\" height=200> </CENTER>");
         mpgr_info_date->insert(2,map);
         map.clear();
-        map.insert("3. Подчиненность:",query.value(rec.indexOf("name_groups")).toString());
+        map.insert("3. РџРѕРґС‡РёРЅРµРЅРЅРѕСЃС‚СЊ:",query.value(rec.indexOf("name_groups")).toString());
         mpgr_info_date->insert(3,map);
         map.clear();
-        map.insert("4. Количество средств:",query.value(rec.indexOf("counte_mpo_pso")).toString());
+        map.insert("4. РљРѕР»РёС‡РµСЃС‚РІРѕ СЃСЂРµРґСЃС‚РІ:",query.value(rec.indexOf("counte_mpo_pso")).toString());
         mpgr_info_date->insert(4,map);
         map.clear();
-        map.insert("5. Тип средства организации:",query.value(rec.indexOf("name_type_mpo_pso")).toString());
+        map.insert("5. РўРёРї СЃСЂРµРґСЃС‚РІР° РѕСЂРіР°РЅРёР·Р°С†РёРё:",query.value(rec.indexOf("name_type_mpo_pso")).toString());
         mpgr_info_date->insert(5,map);
         map.clear();
-        map.insert("6. Описание средства организации:",query.value(rec.indexOf("description_mpo_pso")).toString());
+        map.insert("6. РћРїРёСЃР°РЅРёРµ СЃСЂРµРґСЃС‚РІР° РѕСЂРіР°РЅРёР·Р°С†РёРё:",query.value(rec.indexOf("description_mpo_pso")).toString());
         mpgr_info_date->insert(6,map);
         map.clear();
 
@@ -1712,36 +1712,36 @@ QMap<QString, QMap<QString, QString> > ReportData::mpo_pso_info_coord(int id_obj
 
            QMap<QString, QString> map;
            query.next();
-           name_obj="7. Координаты средства:";
+           name_obj="7. РљРѕРѕСЂРґРёРЅР°С‚С‹ СЃСЂРµРґСЃС‚РІР°:";
                        map.clear();
                        QString w = "X= ";
                        w.append(query.value(rec.indexOf("x_coordinates")).toString());
                        w.append("<br>Y= ");
                        w.append(query.value(rec.indexOf("y_coordinates")).toString());
-                       map.insert("Прямоугольные координаты",w);
+                       map.insert("РџСЂСЏРјРѕСѓРіРѕР»СЊРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹",w);
 
-                       QString q = "Широта: ";
+                       QString q = "РЁРёСЂРѕС‚Р°: ";
                        q.append(query.value(rec.indexOf("latitude_wgs_84_g")).toString());
                        q.append("-");
                        q.append(query.value(rec.indexOf("latitude_wgs_84_m")).toString());
                        q.append("-");
                        q.append(query.value(rec.indexOf("latitude_wgs_84_s")).toString());
-                       q.append("<br>Долгота: ");
+                       q.append("<br>Р”РѕР»РіРѕС‚Р°: ");
                        q.append(query.value(rec.indexOf("longitude_wgs_84_g")).toString());
                        q.append("-");
                        q.append(query.value(rec.indexOf("longitude_wgs_84_m")).toString());
                        q.append("-");
                        q.append(query.value(rec.indexOf("longitude_wgs_84_s")).toString());
 
-                       map.insert("Геодезические координаты",q);
+                       map.insert("Р“РµРѕРґРµР·РёС‡РµСЃРєРёРµ РєРѕРѕСЂРґРёРЅР°С‚С‹",q);
                        mpo_elem_obj->insert(name_obj,map);
 
             return *mpo_elem_obj;
   }
-//=========================== the end работа с report по срелствам =============================================
+//=========================== the end СЂР°Р±РѕС‚Р° СЃ report РїРѕ СЃСЂРµР»СЃС‚РІР°Рј =============================================
 //**************************************************************************************************************
 
-//=========================== методы работают с картинками из БД ===============================================
+//=========================== РјРµС‚РѕРґС‹ СЂР°Р±РѕС‚Р°СЋС‚ СЃ РєР°СЂС‚РёРЅРєР°РјРё РёР· Р‘Р” ===============================================
 QString ReportData::get_pers_foto_from_DB(int id_persones)
 {
         QDir dir;

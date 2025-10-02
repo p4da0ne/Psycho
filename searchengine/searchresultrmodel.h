@@ -11,7 +11,7 @@ class SearchResultModel : public QStandardItemModel
    
 public:
     SearchResultModel(QObject *parent = 0);
-	SearchResultModel(const SearchResultModel &model, QObject *parent = 0);  //конструктор копирования
+	SearchResultModel(const SearchResultModel &model, QObject *parent = 0);  //РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РєРѕРїРёСЂРѕРІР°РЅРёСЏ
     
 	SearchResultModel& operator += (SearchResultModel &model);
 };

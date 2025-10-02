@@ -6,7 +6,7 @@ CONFIG		+= qt warn_on
 
 DESTDIR = ../build
 
-QT += sql
+QT += gui sql widgets core5compat printsupport
 
 RESOURCES       += mapview.qrc
 

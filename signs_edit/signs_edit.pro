@@ -4,7 +4,7 @@ TARGET = signs_edit
 
 DESTDIR = ../build
 
-QT += sql
+QT += sql widgets gui
 
 INCLUDEPATH += . \
                 ../include \

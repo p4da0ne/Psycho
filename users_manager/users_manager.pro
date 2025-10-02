@@ -1,7 +1,7 @@
 TEMPLATE = lib
 TARGET = users_manager
 
-QT	+= gui sql
+QT	+= gui sql widgets
 
 DESTDIR = ../build
 

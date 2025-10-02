@@ -2,18 +2,17 @@
 #include <QSqlQuery>
 #include <QSqlRecord>
 #include <QCryptographicHash>
+#include <QtWidgets/QWidget>
 
 
 PasswordDialog::PasswordDialog(int idUser, QWidget *parent) :
    QDialog(parent),idUser(idUser)
 {
   	resize(300,250);
-
-	setWindowTitle("Смена пароля пользователя");
-	
-	formLay.addRow("Текущий пароль:",&oldPasswordLineEdit);
-	formLay.addRow("Новый пароль:",&newPasswordLineEdit);
-	formLay.addRow("Подтверждение пароля:",&confirmPasswordLineEdit);
+    setWindowTitle("РЎРјРµРЅР° РїР°СЂРѕР»СЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ");
+    formLay.addRow("РўРµРєСѓС‰РёР№ РїР°СЂРѕР»СЊ:",&oldPasswordLineEdit);
+	formLay.addRow("РќРѕРІС‹Р№ РїР°СЂРѕР»СЊ:",&newPasswordLineEdit);
+	formLay.addRow("РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ РїР°СЂРѕР»СЏ:",&confirmPasswordLineEdit);
 		
 	oldPasswordLineEdit.setEchoMode(QLineEdit::Password);
 	newPasswordLineEdit.setEchoMode(QLineEdit::Password);
@@ -21,8 +20,8 @@ PasswordDialog::PasswordDialog(int idUser, QWidget *parent) :
 	
 	formLay.setVerticalSpacing(10);
 
-	okButton.setText("Сменить пароль");
-	cancelButton.setText("Отмена");
+    okButton.setText("РЎРјРµРЅРёС‚СЊ РїР°СЂРѕР»СЊ");
+    cancelButton.setText("РћС‚РјРµРЅР°");
 	buttonLay.addWidget(&okButton);
 	buttonLay.addStretch();
 	buttonLay.addWidget(&cancelButton);
@@ -39,7 +38,7 @@ PasswordDialog::PasswordDialog(int idUser, QWidget *parent) :
 }
 
 
-//== Слот валидации заполненных данных =======
+//== РЎР»РѕС‚ РІР°Р»РёРґР°С†РёРё Р·Р°РїРѕР»РЅРµРЅРЅС‹С… РґР°РЅРЅС‹С… =======
 void PasswordDialog::slotAccepted()
 {
     QString mess;
@@ -48,11 +47,11 @@ void PasswordDialog::slotAccepted()
 
 	if(str_to_md5(oldPasswordLineEdit.text()) != userPassword)
     {
-		mess.append("Неверный текущий пароль пользователя.\n");
+        mess.append("РќРµРІРµСЂРЅС‹Р№ С‚РµРєСѓС‰РёР№ РїР°СЂРѕР»СЊ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.'\n'");
     }
 	if(newPasswordLineEdit.text() != confirmPasswordLineEdit.text())
     {
-		mess.append("Новый пароль и пароль для подтверждения не совпадают.\n");
+        mess.append("РќРѕРІС‹Р№ РїР°СЂРѕР»СЊ Рё РїР°СЂРѕР»СЊ РґР»СЏ РїРѕРґС‚РІРµСЂР¶РґРµРЅРёСЏ РЅРµ СЃРѕРІРїР°РґР°СЋС‚.'\n'");
     }
 	
 	if(mess != "")
@@ -68,7 +67,7 @@ void PasswordDialog::messageToUser(QString message)
 {
     QMessageBox msgBox;
 
-    msgBox.setWindowTitle("Сообщение");
+    msgBox.setWindowTitle("'РЎРѕРѕР±С‰РµРЅРёРµ'");
     msgBox.setText(message);
     msgBox.setIcon(QMessageBox::Information);
     msgBox.exec();
@@ -77,7 +76,7 @@ void PasswordDialog::messageToUser(QString message)
 
 
 //============================================================================
-//======= Метод возвращает воинское звание пользователя из БД ================
+//======= РњРµС‚РѕРґ РІРѕР·РІСЂР°С‰Р°РµС‚ РІРѕРёРЅСЃРєРѕРµ Р·РІР°РЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РёР· Р‘Р” ================
 //============================================================================
 QString PasswordDialog::getUserPassword(int idUser)
 {
@@ -96,12 +95,12 @@ QString PasswordDialog::getUserPassword(int idUser)
 }
 
 //====================================================================
-//===== Метод шифрования строки по методу MD5 ========================
+//===== РњРµС‚РѕРґ С€РёС„СЂРѕРІР°РЅРёСЏ СЃС‚СЂРѕРєРё РїРѕ РјРµС‚РѕРґСѓ MD5 ========================
 //====================================================================
 QString PasswordDialog::str_to_md5(QString str)
 {
 	QCryptographicHash hash(QCryptographicHash::Md5);
-	hash.addData(str.toAscii()); 
+    hash.addData(str.toLatin1());
 	QString md5_str(hash.result().toHex());
 	return md5_str;
 }

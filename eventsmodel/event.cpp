@@ -10,17 +10,17 @@ Event::Event(QString name, QString description, int id_status, int id_type_event
     this->id_status = id_status;
     this->id_type_event = id_type_event;
     mediaModel = new QStandardItemModel();
-    if(start_date > 0)
+    if(start_date)
         this->event_start_date = *start_date;
     else
         this->event_start_date = *new QDateTime();
 
-    if(end_date > 0)
+    if(end_date)
         this->event_end_date = *end_date;
     else
         this->event_end_date = *new QDateTime();
 
-    if(objects > 0)
+    if(objects)
         this->objects = objects;
     else
         this->objects = new QList<EventObject *>;
@@ -286,7 +286,7 @@ bool Event::DeleteThisEventFromDB()
 }
 
 /*!
-Открывает медиа файлы из БД средствами ОС
+РћС‚РєСЂС‹РІР°РµС‚ РјРµРґРёР° С„Р°Р№Р»С‹ РёР· Р‘Р” СЃСЂРµРґСЃС‚РІР°РјРё РћРЎ
 openMediaContent(int id_event_media)
 */
 void Event::openMediaContent(QModelIndex index){
@@ -321,7 +321,7 @@ void Event::updateMediaEvents(){
     int index_id_event_media = query.record().indexOf("id_event_media");
     int index_type_name = query.record().indexOf("type_name");
     QStringList header;
-    header << "Тип" << "Описание";
+    header << "РўРёРї" << "РћРїРёСЃР°РЅРёРµ";
     mediaModel->setHorizontalHeaderLabels(header);
     while (query.next())
     {
@@ -353,8 +353,8 @@ int Event::InsertMediaItems(QString path,int idMediaType, QString name_event_med
     MT->description = description;
     MT->start();
     QMessageBox msgBox;
-    msgBox.setWindowTitle("Предупреждение");
-    msgBox.setText("Не получается открыть файл. Проверте праильность пути к файлу.");
+    msgBox.setWindowTitle("РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ");
+    msgBox.setText("РќРµ РїРѕР»СѓС‡Р°РµС‚СЃСЏ РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р». РџСЂРѕРІРµСЂС‚Рµ РїСЂР°РёР»СЊРЅРѕСЃС‚СЊ РїСѓС‚Рё Рє С„Р°Р№Р»Сѓ.");
     msgBox.setStandardButtons(QMessageBox::Ok);
 
     connect(MT,SIGNAL(BigFile(QString)),&msgBox,SLOT(show()));
@@ -494,7 +494,7 @@ void MediaInsertThread::run()
     }
     if(file.size() > 30000000){
         qDebug() << "big file";
-        QString s = "Файл не должен превышать 30 МБ";
+        QString s = "Р¤Р°Р№Р» РЅРµ РґРѕР»Р¶РµРЅ РїСЂРµРІС‹С€Р°С‚СЊ 30 РњР‘";
         emit BigFile(s);
         return;
     }

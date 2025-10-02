@@ -36,6 +36,6 @@ QMap<int, QString> db_saturn::get_all_military_rank(){
 	//}
 	//return military_rang;
 	QMap<int, QString> map;
-	map[1]="один";
+	map[1]="РѕРґРёРЅ";
 	return map;
 }

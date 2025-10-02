@@ -8,6 +8,7 @@
 #include <QMdiSubWindow>
 
 #include "mymdiarea.h"
+#include "qmainwindow.h"
 #include "settings.h"
 #include "mapsettingsdialog.h"
 #include "dbbackup.h"
@@ -36,7 +37,7 @@ signals:
    void valid_user(int id_user);
 
 public:
-	Mainform(QMainWindow *parent = 0, Qt::WFlags flags = 0);
+    Mainform(QMainWindow *parent = 0, QFlag flags = 0);
 	virtual ~Mainform();
 	QString db_driver,message,login_message;
 	int id_user;

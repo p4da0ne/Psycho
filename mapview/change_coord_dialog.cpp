@@ -5,14 +5,14 @@ ChangeCoordDialog::ChangeCoordDialog(Coord *coord, int idObj,int objType,QWidget
    QDialog(parent), coordinates(coord), idObject(idObj), objectType(objType)
 {
     mouseFlag = false;
-	setWindowTitle("Перемещение объекта");
+	setWindowTitle("РџРµСЂРµРјРµС‰РµРЅРёРµ РѕР±СЉРµРєС‚Р°");
 
-	infoLabel.setText("Введите новые координаты (WGS-84):");
-	degreeLabel.setText("Градусы:");
-	minutesLabel.setText("Минуты:");
-	secondsLabel.setText("Секунды:");
-	latLabel.setText("Широта");
-	longLabel.setText("Долгота");
+	infoLabel.setText("Р’РІРµРґРёС‚Рµ РЅРѕРІС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ (WGS-84):");
+	degreeLabel.setText("Р“СЂР°РґСѓСЃС‹:");
+	minutesLabel.setText("РњРёРЅСѓС‚С‹:");
+	secondsLabel.setText("РЎРµРєСѓРЅРґС‹:");
+	latLabel.setText("РЁРёСЂРѕС‚Р°");
+	longLabel.setText("Р”РѕР»РіРѕС‚Р°");
 	
 	latDegreeLineEdit.setText(QString::number(coordinates->getLatDegrees()));
 	latMinutesLineEdit.setText(QString::number(coordinates->getLatMinutes()));
@@ -34,7 +34,7 @@ ChangeCoordDialog::ChangeCoordDialog(Coord *coord, int idObj,int objType,QWidget
 	coordLay.addWidget(&longSecondsLineEdit,3,2);
 
     okButton.setText("Ok");
-    mouseSelectButton.setText("Указать мышью");
+    mouseSelectButton.setText("РЈРєР°Р·Р°С‚СЊ РјС‹С€СЊСЋ");
     
 	buttonLay.addWidget(&mouseSelectButton);
 	buttonLay.addStretch();

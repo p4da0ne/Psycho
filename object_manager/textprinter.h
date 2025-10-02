@@ -38,13 +38,13 @@ public:
                  const QString &caption=QString());
 
     /// Get page size
-    QPrinter::PageSize pageSize() const;
+    QPageSize pageSize() const;
     /// Set page size
-    void setPageSize(QPrinter::PageSize size);
+    void setPageSize(QPageSize size);
     /// Get page orientation
-    QPrinter::Orientation orientation() const;
+    QPageLayout::Orientation orientation() const;
     /// Set page orientation
-    void setOrientation(QPrinter::Orientation orientation);
+    void setOrientation(QPageLayout::Orientation orientation);
 
     /// Get left margin width
     double leftMargin() const;

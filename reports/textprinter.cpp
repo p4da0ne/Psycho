@@ -12,6 +12,7 @@
 #include <QPrintDialog>
 #include <QTextDocument>
 #include <QTextFrame>
+#include <QPageLayout>
 
 #if (QT_VERSION >= QT_VERSION_CHECK(4, 4, 0))
 #include <QPrintPreviewDialog>
@@ -39,8 +40,8 @@ TextPrinter::TextPrinter(QObject *parent)
     if (parent) parent_ = qobject_cast<QWidget*>(parent);
 
     printer_->setFullPage(true);
-    printer_->setOrientation(QPrinter::Portrait);
-    printer_->setPageSize(QPrinter::A4); 
+    printer_->setPageOrientation(QPageLayout::Portrait);
+    printer_->setPageSize(QPageSize::A4);
     
 }
 
@@ -62,9 +63,9 @@ TextPrinter::~TextPrinter()
 /// enumeration.
 ///////////////////////////////////////////////////////////////////////////////
 
-QPrinter::PageSize TextPrinter::pageSize() const
+QPageSize TextPrinter::pageSize() const
 {
-    return printer_->pageSize(); 
+    return printer_->pageLayout().pageSize();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -75,7 +76,7 @@ QPrinter::PageSize TextPrinter::pageSize() const
 /// QPrinter::A4 in other locales.
 ///////////////////////////////////////////////////////////////////////////////
 
-void TextPrinter::setPageSize(QPrinter::PageSize size)
+void TextPrinter::setPageSize(QPageSize size)
 {
     printer_->setPageSize(size);
 }
@@ -87,9 +88,9 @@ void TextPrinter::setPageSize(QPrinter::PageSize size)
 /// enumeration.
 ///////////////////////////////////////////////////////////////////////////////
 
-QPrinter::Orientation TextPrinter::orientation() const
+QPageLayout::Orientation TextPrinter::orientation() const
 {
-    return printer_->orientation();
+    return printer_->pageLayout().orientation();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -100,9 +101,9 @@ QPrinter::Orientation TextPrinter::orientation() const
 /// default) or QPrinter::Landscape.
 ///////////////////////////////////////////////////////////////////////////////
 
-void TextPrinter::setOrientation(QPrinter::Orientation orientation)
+void TextPrinter::setOrientation(QPageLayout::Orientation orientation)
 {
-    printer_->setOrientation(orientation);
+    printer_->setPageOrientation(orientation);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -124,7 +125,7 @@ double TextPrinter::leftMargin() const
 
 void TextPrinter::setLeftMargin(double margin)
 {
-    if ((margin > 0) && (margin < printer_->paperRect().width() / 2)) {
+    if ((margin > 0) && (margin < printer_->paperRect(QPrinter::Point).width() / 2)) {
         leftmargin_ = margin;
     } else {
         leftmargin_ = 0;
@@ -150,7 +151,7 @@ double TextPrinter::rightMargin() const
 
 void TextPrinter::setRightMargin(double margin)
 {
-    if ((margin > 0) && (margin < printer_->paperRect().width() / 2)) {
+    if ((margin > 0) && (margin < printer_->paperRect(QPrinter::Point).width() / 2)) {
         rightmargin_ = margin;
     } else {
         rightmargin_ = 0;
@@ -176,7 +177,7 @@ double TextPrinter::topMargin() const
 
 void TextPrinter::setTopMargin(double margin)
 {
-    if ((margin > 0) && (margin < printer_->paperRect().height() / 4)) {
+    if ((margin > 0) && (margin < printer_->paperRect(QPrinter::Point).height() / 4)) {
         topmargin_ = margin;
     } else {
         topmargin_ = 0;
@@ -202,7 +203,7 @@ double TextPrinter::bottomMargin() const
 
 void TextPrinter::setBottomMargin(double margin)
 {
-    if ((margin > 0) && (margin < printer_->paperRect().height() / 4)) {
+    if ((margin > 0) && (margin < printer_->paperRect(QPrinter::Point).height() / 4)) {
         bottommargin_ = margin;
     } else {
         bottommargin_ = 0;
@@ -218,8 +219,8 @@ void TextPrinter::setBottomMargin(double margin)
 void TextPrinter::setMargins(double margin)
 {
     if ((margin > 0)
-        && (margin < printer_->paperRect().height() / 2)
-        && (margin < printer_->paperRect().width() / 2)) {
+        && (margin < printer_->paperRect(QPrinter::Point).height() / 2)
+        && (margin < printer_->paperRect(QPrinter::Point).width() / 2)) {
         leftmargin_ = rightmargin_ = topmargin_ = bottommargin_ = margin;
     } else {
         leftmargin_ = rightmargin_ = topmargin_ = bottommargin_ = 0;
@@ -247,7 +248,7 @@ double TextPrinter::spacing() const
 
 void TextPrinter::setSpacing(double spacing)
 {
-    if ((spacing > 0) && (spacing <= printer_->paperRect().height() / 8)) {
+    if ((spacing > 0) && (spacing <= printer_->paperRect(QPrinter::Point).height() / 8)) {
         spacing_ = spacing;
     } else {
         spacing_ = 0;
@@ -274,7 +275,7 @@ double TextPrinter::headerSize() const
 
 void TextPrinter::setHeaderSize(double size)
 {
-    if ((size > 0) && (size <= printer_->paperRect().height() / 8)) {
+    if ((size > 0) && (size <= printer_->paperRect(QPrinter::Point).height() / 8)) {
         headersize_ = size;
     } else {
         headersize_ = 0;
@@ -351,7 +352,7 @@ double TextPrinter::footerSize() const
 
 void TextPrinter::setFooterSize(double size)
 {
-    if ((size > 0) && (size <= printer_->paperRect().height() / 8)) {
+    if ((size > 0) && (size <= printer_->paperRect(QPrinter::Point).height() / 8)) {
         footersize_ = size;
     } else {
         footersize_ = 0;
@@ -544,7 +545,7 @@ void TextPrinter::preview(const QTextDocument *document,
 QRectF TextPrinter::paperRect(QPaintDevice *device)
 {
     // calculate size of paper
-    QRectF rect = printer_->paperRect();
+    QRectF rect = printer_->paperRect(QPrinter::Point);
     // adjust for DPI
     rect.setWidth(rect.width() *
                   device->logicalDpiX() / printer_->logicalDpiX());
@@ -638,9 +639,9 @@ void TextPrinter::print(QPrinter *printer)
     int pagecopies;
     if (printer->collateCopies()) {
         doccopies = 1;
-        pagecopies = printer->numCopies();
+        pagecopies = printer->copyCount();
     } else {
-        doccopies = printer->numCopies();
+        doccopies = printer->copyCount();
         pagecopies = 1;
     }
 

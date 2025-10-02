@@ -31,15 +31,15 @@ void EventManager::initUIX(){
     current_event = new Event();
     QGridLayout * grid = new QGridLayout(this);
     addNewEventPB = new QPushButton(QIcon(":/icons/icons/add_but.png"),"",this);
-    addNewEventPB->setToolTip("Добавить новое событие");
+    addNewEventPB->setToolTip("Р”РѕР±Р°РІРёС‚СЊ РЅРѕРІРѕРµ СЃРѕР±С‹С‚РёРµ");
     upDateModelButton = new QPushButton(QIcon(":/icons/icons/sync.ico"),"",this);
-    upDateModelButton->setToolTip("Обновить список событий");
+    upDateModelButton->setToolTip("РћР±РЅРѕРІРёС‚СЊ СЃРїРёСЃРѕРє СЃРѕР±С‹С‚РёР№");
     tableView = new QTableView(this);
 
-    filterGroupBox = new QGroupBox("Фильтр событий", this);
+    filterGroupBox = new QGroupBox("Р¤РёР»СЊС‚СЂ СЃРѕР±С‹С‚РёР№", this);
     filterName = new QLineEdit(this);
     QHBoxLayout * groupBoxLayout = new QHBoxLayout();
-    groupBoxLayout->addWidget(new QLabel("Имя:"));
+    groupBoxLayout->addWidget(new QLabel("РРјСЏ:"));
     groupBoxLayout->addWidget(filterName);
     filterGroupBox->setLayout(groupBoxLayout);
 
@@ -47,10 +47,10 @@ void EventManager::initUIX(){
     formLayoutECoord = new QFormLayout();
     nameLEE = new QLineEdit();
     statusCBE = new QComboBox();
-    statusCBE->addItem(QIcon(":/icons/icons/red.ico"),"Актуальное",1);
-    statusCBE->addItem(QIcon(":/icons/icons/grey.ico"),"Прошедшее",2);
-    statusCBE->addItem(QIcon(":/icons/icons/magenta.ico"),"Планируемое",3);
-    statusCBE->addItem(QIcon(":/icons/icons/yellow.ico"),"Не состоявшееся",4);
+    statusCBE->addItem(QIcon(":/icons/icons/red.ico"),"РђРєС‚СѓР°Р»СЊРЅРѕРµ",1);
+    statusCBE->addItem(QIcon(":/icons/icons/grey.ico"),"РџСЂРѕС€РµРґС€РµРµ",2);
+    statusCBE->addItem(QIcon(":/icons/icons/magenta.ico"),"РџР»Р°РЅРёСЂСѓРµРјРѕРµ",3);
+    statusCBE->addItem(QIcon(":/icons/icons/yellow.ico"),"РќРµ СЃРѕСЃС‚РѕСЏРІС€РµРµСЃСЏ",4);
 
     typeCBE = new QComboBox();
     QMap<int, QMap<QString,int > > types = current_event->getEventsTypes();
@@ -106,7 +106,7 @@ void EventManager::initUIX(){
     lomLEE->setValidator(new QIntValidator(0,60,lomLEE));
     losLEE = new QLineEdit();
     losLEE->setValidator(new QDoubleValidator(0.00,60.00,2,losLEE));
-    QPushButton * editCoordinates = new QPushButton("Изменить координаты");
+    QPushButton * editCoordinates = new QPushButton("РР·РјРµРЅРёС‚СЊ РєРѕРѕСЂРґРёРЅР°С‚С‹");
 
     this->suorceTypeObjectCBNEE = new QComboBox();
     this->suorceObjectCBNEE = new QComboBox();
@@ -117,25 +117,25 @@ void EventManager::initUIX(){
     eventMedia = new QTableView(this);
     eventMedia->setContextMenuPolicy(Qt::CustomContextMenu);
     addEventMedia = new QPushButton(QIcon(":/icons/icons/add_but.png"),"",this);
-    addEventMedia->setToolTip("Добавить контент");
+    addEventMedia->setToolTip("Р”РѕР±Р°РІРёС‚СЊ РєРѕРЅС‚РµРЅС‚");
 
-    formLayoutE->addRow("Наименование:",nameLEE);
-    formLayoutE->addRow("Статус события:",statusCBE);
-    formLayoutE->addRow("Тип события:",typeCBE);
-    formLayoutE->addRow("Время начала события:",DTSE);
-    formLayoutE->addRow("Время окончания события:",DTEE);
-    formLayoutE->addRow("Описание события:",descriptionTEE);
-    formLayoutE->addRow("Выводы по событию:",resumeTEE);
-    formLayoutECoord->addRow("Широта (градусы):",lagLEE);
-    formLayoutECoord->addRow("Широта (минуты):",lamLEE);
-    formLayoutECoord->addRow("Широта (секунды):",lasLEE);
-    formLayoutECoord->addRow("Долгота (градусы):",logLEE);
-    formLayoutECoord->addRow("Долгота (минуты):",lomLEE);
-    formLayoutECoord->addRow("Долгота (секунды):",losLEE);
-    formLayoutE->addRow("Тип объекта инициатора:",this->suorceTypeObjectCBNEE);
-    formLayoutE->addRow("Объект инициатор события:",suorceObjectCBNEE);
-    formLayoutE->addRow("Тип объекта события:",this->getTypeObjectCBNEE);
-    formLayoutE->addRow("Объект события:",getObjectCBNEE);
+    formLayoutE->addRow("РќР°РёРјРµРЅРѕРІР°РЅРёРµ:",nameLEE);
+    formLayoutE->addRow("РЎС‚Р°С‚СѓСЃ СЃРѕР±С‹С‚РёСЏ:",statusCBE);
+    formLayoutE->addRow("РўРёРї СЃРѕР±С‹С‚РёСЏ:",typeCBE);
+    formLayoutE->addRow("Р’СЂРµРјСЏ РЅР°С‡Р°Р»Р° СЃРѕР±С‹С‚РёСЏ:",DTSE);
+    formLayoutE->addRow("Р’СЂРµРјСЏ РѕРєРѕРЅС‡Р°РЅРёСЏ СЃРѕР±С‹С‚РёСЏ:",DTEE);
+    formLayoutE->addRow("РћРїРёСЃР°РЅРёРµ СЃРѕР±С‹С‚РёСЏ:",descriptionTEE);
+    formLayoutE->addRow("Р’С‹РІРѕРґС‹ РїРѕ СЃРѕР±С‹С‚РёСЋ:",resumeTEE);
+    formLayoutECoord->addRow("РЁРёСЂРѕС‚Р° (РіСЂР°РґСѓСЃС‹):",lagLEE);
+    formLayoutECoord->addRow("РЁРёСЂРѕС‚Р° (РјРёРЅСѓС‚С‹):",lamLEE);
+    formLayoutECoord->addRow("РЁРёСЂРѕС‚Р° (СЃРµРєСѓРЅРґС‹):",lasLEE);
+    formLayoutECoord->addRow("Р”РѕР»РіРѕС‚Р° (РіСЂР°РґСѓСЃС‹):",logLEE);
+    formLayoutECoord->addRow("Р”РѕР»РіРѕС‚Р° (РјРёРЅСѓС‚С‹):",lomLEE);
+    formLayoutECoord->addRow("Р”РѕР»РіРѕС‚Р° (СЃРµРєСѓРЅРґС‹):",losLEE);
+    formLayoutE->addRow("РўРёРї РѕР±СЉРµРєС‚Р° РёРЅРёС†РёР°С‚РѕСЂР°:",this->suorceTypeObjectCBNEE);
+    formLayoutE->addRow("РћР±СЉРµРєС‚ РёРЅРёС†РёР°С‚РѕСЂ СЃРѕР±С‹С‚РёСЏ:",suorceObjectCBNEE);
+    formLayoutE->addRow("РўРёРї РѕР±СЉРµРєС‚Р° СЃРѕР±С‹С‚РёСЏ:",this->getTypeObjectCBNEE);
+    formLayoutE->addRow("РћР±СЉРµРєС‚ СЃРѕР±С‹С‚РёСЏ:",getObjectCBNEE);
 
     connect(nameLEE,SIGNAL(textEdited(QString)),this,SLOT(nameLEEChanged(QString)));
     connect(statusCBE,SIGNAL(currentIndexChanged(int)),this,SLOT(statusCBEChanged(int)));
@@ -189,10 +189,8 @@ void EventManager::initUIX(){
 
 void EventManager::filterNameTextChanged(QString text){
     proxyModel->setFilterKeyColumn(0);
-    QRegExp::PatternSyntax syntax =QRegExp::FixedString;
-    Qt::CaseSensitivity caseSensitivity =Qt::CaseInsensitive;
-    QRegExp regExp(text, caseSensitivity, syntax);
-    proxyModel->setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    proxyModel->setFilterRegularExpression(regExp);
 }
 
 void EventManager::updateModel(){
@@ -227,13 +225,13 @@ void EventManager::newEventMediaDialog(){
     while(query.next()){
         mediaType->addItem(query.value(1).toString(),query.value(0));
     }
-    QPushButton * saveMedia = new QPushButton("Сохранить");
+    QPushButton * saveMedia = new QPushButton("РЎРѕС…СЂР°РЅРёС‚СЊ");
 
     mediaL->addWidget(mediaFilePath);
     mediaL->addWidget(OFD);
-    FML->addRow("Путь к файлу",mediaL);
-    FML->addRow("Тип медиа",mediaType);
-    FML->addRow("Описание файла",mediaDescription);
+    FML->addRow("РџСѓС‚СЊ Рє С„Р°Р№Р»Сѓ",mediaL);
+    FML->addRow("РўРёРї РјРµРґРёР°",mediaType);
+    FML->addRow("РћРїРёСЃР°РЅРёРµ С„Р°Р№Р»Р°",mediaDescription);
     FML->addWidget(saveMedia);
     mediaDialog->setLayout(FML);
     mediaDialog->show();
@@ -257,7 +255,7 @@ void EventManager::addNewEventMedia(){
         description=mediaDescription->toPlainText();
 
     QDialog * l = new QDialog(this,Qt::Popup);
-    l->setWindowTitle("Идет загрузка...");
+    l->setWindowTitle("РРґРµС‚ Р·Р°РіСЂСѓР·РєР°...");
     connect(current_event,SIGNAL(MediaContentInserted(int)),l,SLOT(close()));
     connect(current_event,SIGNAL(ErrorMediaContentInsert(QString)),l,SLOT(close()));
     current_event->InsertMediaItems(filePath,type,fileName,description);
@@ -268,7 +266,7 @@ void EventManager::addNewEventMedia(){
     QLabel lab;
     l->setBackgroundRole(QPalette::Light);
 
-    lab.setText("Подождите, идет загрузка данных в БД");
+    lab.setText("РџРѕРґРѕР¶РґРёС‚Рµ, РёРґРµС‚ Р·Р°РіСЂСѓР·РєР° РґР°РЅРЅС‹С… РІ Р‘Р”");
     la.addWidget(&lab);
     l->setModal(true);
     l->resize(300,100);
@@ -286,7 +284,7 @@ void EventManager::MediaContentInserted(int)
 
 void EventManager::ErrorDialog(QString error)
 {
-    QMessageBox::warning(this,"Ошибка",error);
+    QMessageBox::warning(this,"РћС€РёР±РєР°",error);
 }
 
 void EventManager::openFileDialog(){
@@ -302,12 +300,12 @@ void EventManager::viewMediaContentDialog(int id_event, QWidget *parent)
     proxy->setSourceModel(dialogEvent->getMediaEvents());
     tableMediaContent->setModel(proxy);
     QDialog * mediaContentDialog = new QDialog(parent);
-    mediaContentDialog->setWindowTitle("Просмотр медиа контента");
+    mediaContentDialog->setWindowTitle("РџСЂРѕСЃРјРѕС‚СЂ РјРµРґРёР° РєРѕРЅС‚РµРЅС‚Р°");
     QVBoxLayout * VBL = new QVBoxLayout();
     VBL->addWidget(tableMediaContent);
     mediaContentDialog->setLayout(VBL);
     mediaContentDialog->show();
-    tableMediaContent->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    tableMediaContent->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     tableMediaContent->setContextMenuPolicy(Qt::CustomContextMenu);
 
     connect(tableMediaContent, SIGNAL(customContextMenuRequested(const QPoint &)),this, SLOT(EventsMediaTableCustomMenu(const QPoint &)));
@@ -318,16 +316,16 @@ void EventManager::viewMediaContentDialog(int id_event, QWidget *parent)
 void EventManager::addNewEventDialog(QWidget *parent){
     newEvent = new Event();
     newEventDialog = new QDialog(parent);
-    newEventDialog->setWindowTitle("Добавление нового события");
+    newEventDialog->setWindowTitle("Р”РѕР±Р°РІР»РµРЅРёРµ РЅРѕРІРѕРіРѕ СЃРѕР±С‹С‚РёСЏ");
     QGridLayout * grLayout = new QGridLayout();
     QFormLayout * formLayout = new QFormLayout();
 
     nameLE = new QLineEdit();
     statusCB = new QComboBox();
-    statusCB->addItem(QIcon(":/icons/icons/red.ico"),"Актуальное",1);
-    statusCB->addItem(QIcon(":/icons/icons/grey.ico"),"Прошедшее",2);
-    statusCB->addItem(QIcon(":/icons/icons/magenta.ico"),"Планируемое",3);
-    statusCB->addItem(QIcon(":/icons/icons/yellow.ico"),"Не состоявшееся",4);
+    statusCB->addItem(QIcon(":/icons/icons/red.ico"),"РђРєС‚СѓР°Р»СЊРЅРѕРµ",1);
+    statusCB->addItem(QIcon(":/icons/icons/grey.ico"),"РџСЂРѕС€РµРґС€РµРµ",2);
+    statusCB->addItem(QIcon(":/icons/icons/magenta.ico"),"РџР»Р°РЅРёСЂСѓРµРјРѕРµ",3);
+    statusCB->addItem(QIcon(":/icons/icons/yellow.ico"),"РќРµ СЃРѕСЃС‚РѕСЏРІС€РµРµСЃСЏ",4);
 
     typeCB = new QComboBox();
     QMap<int, QMap<QString,int > > types = newEvent->getEventsTypes();
@@ -394,25 +392,25 @@ void EventManager::addNewEventDialog(QWidget *parent){
     this->getObjectCBNE = new QComboBox();
     this->getTypeObjectCB(this->suorceTypeObjectCBNE,this->getTypeObjectCBNE);
 
-    QPushButton *saveEvent = new QPushButton("Сохранить событие");
+    QPushButton *saveEvent = new QPushButton("РЎРѕС…СЂР°РЅРёС‚СЊ СЃРѕР±С‹С‚РёРµ");
 
-    formLayout->addRow("Наименование:",nameLE);
-    formLayout->addRow("Статус события:",statusCB);
-    formLayout->addRow("Тип события:",typeCB);
-    formLayout->addRow("Время начала события:",DTS);
-    formLayout->addRow("Время окончания события:",DTE);
-    formLayout->addRow("Описание события:",descriptionTE);
-    formLayout->addRow("Выводы по событию:",resumeTE);
-    formLayout->addRow("Широта (градусы):",lagLE);
-    formLayout->addRow("Широта (минуты):",lamLE);
-    formLayout->addRow("Широта (секунды):",lasLE);
-    formLayout->addRow("Долгота (градусы):",logLE);
-    formLayout->addRow("Долгота (минуты):",lomLE);
-    formLayout->addRow("Долгота (секунды):",losLE);
-    formLayout->addRow("Тип объекта инициатора:",this->suorceTypeObjectCBNE);
-    formLayout->addRow("Объект инициатор события:",suorceObjectCBNE);
-    formLayout->addRow("Тип объекта события:",this->getTypeObjectCBNE);
-    formLayout->addRow("Объект события:",getObjectCBNE);
+    formLayout->addRow("РќР°РёРјРµРЅРѕРІР°РЅРёРµ:",nameLE);
+    formLayout->addRow("РЎС‚Р°С‚СѓСЃ СЃРѕР±С‹С‚РёСЏ:",statusCB);
+    formLayout->addRow("РўРёРї СЃРѕР±С‹С‚РёСЏ:",typeCB);
+    formLayout->addRow("Р’СЂРµРјСЏ РЅР°С‡Р°Р»Р° СЃРѕР±С‹С‚РёСЏ:",DTS);
+    formLayout->addRow("Р’СЂРµРјСЏ РѕРєРѕРЅС‡Р°РЅРёСЏ СЃРѕР±С‹С‚РёСЏ:",DTE);
+    formLayout->addRow("РћРїРёСЃР°РЅРёРµ СЃРѕР±С‹С‚РёСЏ:",descriptionTE);
+    formLayout->addRow("Р’С‹РІРѕРґС‹ РїРѕ СЃРѕР±С‹С‚РёСЋ:",resumeTE);
+    formLayout->addRow("РЁРёСЂРѕС‚Р° (РіСЂР°РґСѓСЃС‹):",lagLE);
+    formLayout->addRow("РЁРёСЂРѕС‚Р° (РјРёРЅСѓС‚С‹):",lamLE);
+    formLayout->addRow("РЁРёСЂРѕС‚Р° (СЃРµРєСѓРЅРґС‹):",lasLE);
+    formLayout->addRow("Р”РѕР»РіРѕС‚Р° (РіСЂР°РґСѓСЃС‹):",logLE);
+    formLayout->addRow("Р”РѕР»РіРѕС‚Р° (РјРёРЅСѓС‚С‹):",lomLE);
+    formLayout->addRow("Р”РѕР»РіРѕС‚Р° (СЃРµРєСѓРЅРґС‹):",losLE);
+    formLayout->addRow("РўРёРї РѕР±СЉРµРєС‚Р° РёРЅРёС†РёР°С‚РѕСЂР°:",this->suorceTypeObjectCBNE);
+    formLayout->addRow("РћР±СЉРµРєС‚ РёРЅРёС†РёР°С‚РѕСЂ СЃРѕР±С‹С‚РёСЏ:",suorceObjectCBNE);
+    formLayout->addRow("РўРёРї РѕР±СЉРµРєС‚Р° СЃРѕР±С‹С‚РёСЏ:",this->getTypeObjectCBNE);
+    formLayout->addRow("РћР±СЉРµРєС‚ СЃРѕР±С‹С‚РёСЏ:",getObjectCBNE);
     formLayout->addWidget(saveEvent);
     qDebug()<<"Otkrita forma";
     grLayout->addLayout(formLayout,0,0,0,2);
@@ -489,11 +487,11 @@ void EventManager::mediaClick(QModelIndex index)
     PD->id_event_media = index.data(34).toInt();
     PD->start();
     QDialog * l = new QDialog(this,Qt::Popup);
-    l->setWindowTitle("Идет загрузка...");
+    l->setWindowTitle("РРґРµС‚ Р·Р°РіСЂСѓР·РєР°...");
     connect(PD,SIGNAL(finished()),l,SLOT(close()));
     QHBoxLayout la;
     QLabel lab;
-    lab.setText("Подождите, идет загрузка данных с сервера");
+    lab.setText("РџРѕРґРѕР¶РґРёС‚Рµ, РёРґРµС‚ Р·Р°РіСЂСѓР·РєР° РґР°РЅРЅС‹С… СЃ СЃРµСЂРІРµСЂР°");
     la.addWidget(&lab);
     l->setBackgroundRole(QPalette::Light);
     l->setModal(true);
@@ -506,7 +504,7 @@ void EventManager::sourceTypeChange(int index)
 {
     QSqlQuery query;
     this->suorceObjectCBNE->clear();
-    this->suorceObjectCBNE->addItem("Не выбран объект",0);
+    this->suorceObjectCBNE->addItem("РќРµ РІС‹Р±СЂР°РЅ РѕР±СЉРµРєС‚",0);
     QString table_name = this->suorceTypeObjectCBNE->itemData(index).toString();
     if(table_name == "not"){
         return;
@@ -524,7 +522,7 @@ void EventManager::sourceTypeChangeE(int index)
 {
     QSqlQuery query;
     this->suorceObjectCBNEE->clear();
-    this->suorceObjectCBNEE->addItem("Не выбран объект",0);
+    this->suorceObjectCBNEE->addItem("РќРµ РІС‹Р±СЂР°РЅ РѕР±СЉРµРєС‚",0);
     QString table_name = this->suorceTypeObjectCBNEE->itemData(index).toString();
     if(table_name == "not"){
         return;
@@ -543,7 +541,7 @@ void EventManager::getTypeChange(int index)
 {
     QSqlQuery query;
     this->getObjectCBNE->clear();
-    this->getObjectCBNE->addItem("Не выбран объект",0);
+    this->getObjectCBNE->addItem("РќРµ РІС‹Р±СЂР°РЅ РѕР±СЉРµРєС‚",0);
     QString table_name = this->getTypeObjectCBNE->itemData(index).toString();
     if(table_name == "not"){
         return;
@@ -561,7 +559,7 @@ void EventManager::getTypeChangeE(int index)
 {
     QSqlQuery query;
     this->getObjectCBNEE->clear();
-    this->getObjectCBNEE->addItem("Не выбран объект",0);
+    this->getObjectCBNEE->addItem("РќРµ РІС‹Р±СЂР°РЅ РѕР±СЉРµРєС‚",0);
     QString table_name = this->getTypeObjectCBNEE->itemData(index).toString();
     if(table_name == "not"){
         return;
@@ -635,8 +633,8 @@ void EventManager::getTypeObjectCB(QComboBox * suorce,QComboBox * get){
     QSqlQuery query;
     suorce->clear();
     get->clear();
-    suorce->addItem("Не выбран тип","not");
-    get->addItem("Не выбран тип","not");
+    suorce->addItem("РќРµ РІС‹Р±СЂР°РЅ С‚РёРї","not");
+    get->addItem("РќРµ РІС‹Р±СЂР°РЅ С‚РёРї","not");
     if(!query.exec(QString("SELECT name_type_event_object,\"table_name\" ,id_type_event_object  FROM type_event_object"))){
         qDebug() << query.lastError().text();
         return;
@@ -658,7 +656,7 @@ void EventManager::getObjectsCB()
 }
 
 /*!
-Слот контекстного меню для списка событий
+РЎР»РѕС‚ РєРѕРЅС‚РµРєСЃС‚РЅРѕРіРѕ РјРµРЅСЋ РґР»СЏ СЃРїРёСЃРєР° СЃРѕР±С‹С‚РёР№
 void EventManager::EventsTableCustomMenu(const QPoint &pe)
 */
 void EventManager::EventsTableCustomMenu(const QPoint &pe)
@@ -667,7 +665,7 @@ void EventManager::EventsTableCustomMenu(const QPoint &pe)
     {
         QPushButton *popupButton = new QPushButton;
         QMenu *menu = new QMenu(this);
-        QAction *removeOne = new QAction(QIcon(":/icons/icons/close.png"),"Удалить событие",this);
+        QAction *removeOne = new QAction(QIcon(":/icons/icons/close.png"),"РЈРґР°Р»РёС‚СЊ СЃРѕР±С‹С‚РёРµ",this);
         connect(removeOne,SIGNAL(triggered()),this,SLOT(slotRemoveEvent()));
 
         menu->addAction(removeOne);
@@ -677,7 +675,7 @@ void EventManager::EventsTableCustomMenu(const QPoint &pe)
 }
 
 /*!
-Слот удаления событияы
+РЎР»РѕС‚ СѓРґР°Р»РµРЅРёСЏ СЃРѕР±С‹С‚РёСЏС‹
 void EventManager::slotRemoveEvent()
 */
 void EventManager::slotRemoveEvent()
@@ -686,8 +684,8 @@ void EventManager::slotRemoveEvent()
     if(index.isValid())
     {
         QMessageBox msgBox;
-        msgBox.setWindowTitle("Предупреждение");
-        msgBox.setText("Вы уверены что хотите удалить данное событие?");
+        msgBox.setWindowTitle("РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ");
+        msgBox.setText("Р’С‹ СѓРІРµСЂРµРЅС‹ С‡С‚Рѕ С…РѕС‚РёС‚Рµ СѓРґР°Р»РёС‚СЊ РґР°РЅРЅРѕРµ СЃРѕР±С‹С‚РёРµ?");
         msgBox.setStandardButtons(QMessageBox::Yes);
         msgBox.addButton(QMessageBox::Cancel);
         switch (msgBox.exec()) {
@@ -706,7 +704,7 @@ void EventManager::slotRemoveEvent()
 }
 
 /*!
-Слот контекстного меню для списка медиа
+РЎР»РѕС‚ РєРѕРЅС‚РµРєСЃС‚РЅРѕРіРѕ РјРµРЅСЋ РґР»СЏ СЃРїРёСЃРєР° РјРµРґРёР°
 void EventManager::EventsMediaTableCustomMenu(const QPoint &pe)
 */
 void EventManager::EventsMediaTableCustomMenu(const QPoint &pe)
@@ -715,7 +713,7 @@ void EventManager::EventsMediaTableCustomMenu(const QPoint &pe)
     {
         QPushButton *popupButton = new QPushButton;
         QMenu *menu = new QMenu(this);
-        QAction *removeOne = new QAction(QIcon(":/icons/icons/close.png"),"Удалить",this);
+        QAction *removeOne = new QAction(QIcon(":/icons/icons/close.png"),"РЈРґР°Р»РёС‚СЊ",this);
         connect(removeOne,SIGNAL(triggered()),this,SLOT(slotRemoveEventMedia()));
 
         menu->addAction(removeOne);
@@ -725,7 +723,7 @@ void EventManager::EventsMediaTableCustomMenu(const QPoint &pe)
 }
 
 /*!
-Слот удаления медиа данного события
+РЎР»РѕС‚ СѓРґР°Р»РµРЅРёСЏ РјРµРґРёР° РґР°РЅРЅРѕРіРѕ СЃРѕР±С‹С‚РёСЏ
 void EventManager::slotRemoveEventMedia()
 */
 void EventManager::slotRemoveEventMedia()
@@ -735,8 +733,8 @@ void EventManager::slotRemoveEventMedia()
     if(index.isValid())
     {
         QMessageBox msgBox;
-        msgBox.setWindowTitle("Предупреждение");
-        msgBox.setText("Вы уверены что хотите удалить данный контент?");
+        msgBox.setWindowTitle("РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ");
+        msgBox.setText("Р’С‹ СѓРІРµСЂРµРЅС‹ С‡С‚Рѕ С…РѕС‚РёС‚Рµ СѓРґР°Р»РёС‚СЊ РґР°РЅРЅС‹Р№ РєРѕРЅС‚РµРЅС‚?");
         msgBox.setStandardButtons(QMessageBox::Yes);
         msgBox.addButton(QMessageBox::Cancel);
         switch (msgBox.exec()) {

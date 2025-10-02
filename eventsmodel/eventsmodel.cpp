@@ -8,7 +8,7 @@ EventsModel::EventsModel(QObject *parent)
 
 
 /*!
-Обновление модели на основании данных в БД (таблица events)
+РћР±РЅРѕРІР»РµРЅРёРµ РјРѕРґРµР»Рё РЅР° РѕСЃРЅРѕРІР°РЅРёРё РґР°РЅРЅС‹С… РІ Р‘Р” (С‚Р°Р±Р»РёС†Р° events)
 UpdateModel()
 */
 void EventsModel::UpdateModel(){
@@ -27,7 +27,7 @@ void EventsModel::UpdateModel(){
     int sign_key = query.record().indexOf("sign_key");
     int id_event_status_index = query.record().indexOf("id_event_status");
     QStringList headerLabels ;
-    headerLabels << "Наименование события" << "Статус события" << "Тип события" << "Начало" << "Окончание";
+    headerLabels << "РќР°РёРјРµРЅРѕРІР°РЅРёРµ СЃРѕР±С‹С‚РёСЏ" << "РЎС‚Р°С‚СѓСЃ СЃРѕР±С‹С‚РёСЏ" << "РўРёРї СЃРѕР±С‹С‚РёСЏ" << "РќР°С‡Р°Р»Рѕ" << "РћРєРѕРЅС‡Р°РЅРёРµ";
     this->setHorizontalHeaderLabels(headerLabels);
     while (query.next())
     {

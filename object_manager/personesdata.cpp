@@ -17,98 +17,98 @@ PersonesData::PersonesData(QString type_element,int id_object, int id_persones,Q
     UI->setupUi(this);
 	
 
-//============= в/звания ==================================================================
+//============= РІ/Р·РІР°РЅРёСЏ ==================================================================
     rank_model = new QStandardItemModel();
     UI->vzv_tableView->setModel(rank_model);
     QStringList header_rank_list;
-    header_rank_list <<"Воинские звания \n (специальные звания, \n классные чины )"<<"Дата и номер"<<"Правовой акт о присвоении \n воинского звания \n (специального звания, классного чина)";
+    header_rank_list <<"Р’РѕРёРЅСЃРєРёРµ Р·РІР°РЅРёСЏ \n (СЃРїРµС†РёР°Р»СЊРЅС‹Рµ Р·РІР°РЅРёСЏ, \n РєР»Р°СЃСЃРЅС‹Рµ С‡РёРЅС‹ )"<<"Р”Р°С‚Р° Рё РЅРѕРјРµСЂ"<<"РџСЂР°РІРѕРІРѕР№ Р°РєС‚ Рѕ РїСЂРёСЃРІРѕРµРЅРёРё \n РІРѕРёРЅСЃРєРѕРіРѕ Р·РІР°РЅРёСЏ \n (СЃРїРµС†РёР°Р»СЊРЅРѕРіРѕ Р·РІР°РЅРёСЏ, РєР»Р°СЃСЃРЅРѕРіРѕ С‡РёРЅР°)";
     rank_model->setHorizontalHeaderLabels(header_rank_list);
-    UI->vzv_tableView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
-//============= гражданское образование ==================================================================
+    UI->vzv_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+//============= РіСЂР°Р¶РґР°РЅСЃРєРѕРµ РѕР±СЂР°Р·РѕРІР°РЅРёРµ ==================================================================
     educ_model = new QStandardItemModel();
     UI->education_tableView->setModel(educ_model);
     QStringList educ_list;
-    educ_list <<"Общеобразовательные учреждения, образовательные учреждения профессионального образования \n (указать в последовательном порядке наименования учебных заведений и год их окончания; \n наименования факультетов вузов; при неполном образовании - сколько классов или курсов окончил";
+    educ_list <<"РћР±С‰РµРѕР±СЂР°Р·РѕРІР°С‚РµР»СЊРЅС‹Рµ СѓС‡СЂРµР¶РґРµРЅРёСЏ, РѕР±СЂР°Р·РѕРІР°С‚РµР»СЊРЅС‹Рµ СѓС‡СЂРµР¶РґРµРЅРёСЏ РїСЂРѕС„РµСЃСЃРёРѕРЅР°Р»СЊРЅРѕРіРѕ РѕР±СЂР°Р·РѕРІР°РЅРёСЏ \n (СѓРєР°Р·Р°С‚СЊ РІ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕРј РїРѕСЂСЏРґРєРµ РЅР°РёРјРµРЅРѕРІР°РЅРёСЏ СѓС‡РµР±РЅС‹С… Р·Р°РІРµРґРµРЅРёР№ Рё РіРѕРґ РёС… РѕРєРѕРЅС‡Р°РЅРёСЏ; \n РЅР°РёРјРµРЅРѕРІР°РЅРёСЏ С„Р°РєСѓР»СЊС‚РµС‚РѕРІ РІСѓР·РѕРІ; РїСЂРё РЅРµРїРѕР»РЅРѕРј РѕР±СЂР°Р·РѕРІР°РЅРёРё - СЃРєРѕР»СЊРєРѕ РєР»Р°СЃСЃРѕРІ РёР»Рё РєСѓСЂСЃРѕРІ РѕРєРѕРЅС‡РёР»";
     educ_model->setHorizontalHeaderLabels(educ_list);
-    UI->education_tableView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
-//============= военное образование ==================================================================
+    UI->education_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+//============= РІРѕРµРЅРЅРѕРµ РѕР±СЂР°Р·РѕРІР°РЅРёРµ ==================================================================
     mil_educ_model = new QStandardItemModel();
     UI->vvuz_tableView->setModel(mil_educ_model);
     QStringList mil_educ_list;
-    mil_educ_list <<"Военные образовательные учреждения профессионального образования \n (указать в последовательном порядке наименования военных образовательных учреждений профессионального образования \n и год их окончания; наименования факультетов и номера военно-учетных специальностей";
+    mil_educ_list <<"Р’РѕРµРЅРЅС‹Рµ РѕР±СЂР°Р·РѕРІР°С‚РµР»СЊРЅС‹Рµ СѓС‡СЂРµР¶РґРµРЅРёСЏ РїСЂРѕС„РµСЃСЃРёРѕРЅР°Р»СЊРЅРѕРіРѕ РѕР±СЂР°Р·РѕРІР°РЅРёСЏ \n (СѓРєР°Р·Р°С‚СЊ РІ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕРј РїРѕСЂСЏРґРєРµ РЅР°РёРјРµРЅРѕРІР°РЅРёСЏ РІРѕРµРЅРЅС‹С… РѕР±СЂР°Р·РѕРІР°С‚РµР»СЊРЅС‹С… СѓС‡СЂРµР¶РґРµРЅРёР№ РїСЂРѕС„РµСЃСЃРёРѕРЅР°Р»СЊРЅРѕРіРѕ РѕР±СЂР°Р·РѕРІР°РЅРёСЏ \n Рё РіРѕРґ РёС… РѕРєРѕРЅС‡Р°РЅРёСЏ; РЅР°РёРјРµРЅРѕРІР°РЅРёСЏ С„Р°РєСѓР»СЊС‚РµС‚РѕРІ Рё РЅРѕРјРµСЂР° РІРѕРµРЅРЅРѕ-СѓС‡РµС‚РЅС‹С… СЃРїРµС†РёР°Р»СЊРЅРѕСЃС‚РµР№";
     mil_educ_model->setHorizontalHeaderLabels(mil_educ_list);
-    UI->vvuz_tableView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
-//============= самостоятельная трудовая деятельность ==================================================================
+    UI->vvuz_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+//============= СЃР°РјРѕСЃС‚РѕСЏС‚РµР»СЊРЅР°СЏ С‚СЂСѓРґРѕРІР°СЏ РґРµСЏС‚РµР»СЊРЅРѕСЃС‚СЊ ==================================================================
     work_history_model = new QStandardItemModel();
     UI->sampo_tableView->setModel(work_history_model);
     QStringList work_hist_list;
-    work_hist_list <<"С какого времени (число,месяц,год)"<<"По какое время (число, месяц. год)"<<"Место работы, занимаемая должность"<<"Примечание";
+    work_hist_list <<"РЎ РєР°РєРѕРіРѕ РІСЂРµРјРµРЅРё (С‡РёСЃР»Рѕ,РјРµСЃСЏС†,РіРѕРґ)"<<"РџРѕ РєР°РєРѕРµ РІСЂРµРјСЏ (С‡РёСЃР»Рѕ, РјРµСЃСЏС†. РіРѕРґ)"<<"РњРµСЃС‚Рѕ СЂР°Р±РѕС‚С‹, Р·Р°РЅРёРјР°РµРјР°СЏ РґРѕР»Р¶РЅРѕСЃС‚СЊ"<<"РџСЂРёРјРµС‡Р°РЅРёРµ";
     work_history_model->setHorizontalHeaderLabels(work_hist_list);
-    UI->sampo_tableView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
-//============= степень и звания ==================================================================
+    UI->sampo_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+//============= СЃС‚РµРїРµРЅСЊ Рё Р·РІР°РЅРёСЏ ==================================================================
     science_rank_model = new QStandardItemModel();
     UI->science_tableView->setModel(science_rank_model);
     QStringList s_rank_list;
-    s_rank_list <<"Ученая степень"<<"Дата присвоения";
+    s_rank_list <<"РЈС‡РµРЅР°СЏ СЃС‚РµРїРµРЅСЊ"<<"Р”Р°С‚Р° РїСЂРёСЃРІРѕРµРЅРёСЏ";
     science_rank_model->setHorizontalHeaderLabels(s_rank_list);
-    UI->science_tableView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    UI->science_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     science_rank_model_2 = new QStandardItemModel();
     UI->science_2_tableView->setModel(science_rank_model_2);
     QStringList s_rank_list_2;
-    s_rank_list_2 <<"Ученое звание"<<"Дата присвоения";
+    s_rank_list_2 <<"РЈС‡РµРЅРѕРµ Р·РІР°РЅРёРµ"<<"Р”Р°С‚Р° РїСЂРёСЃРІРѕРµРЅРёСЏ";
     science_rank_model_2->setHorizontalHeaderLabels(s_rank_list_2);
-    UI->science_2_tableView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    UI->science_2_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 //=========================================================================================
     serv_history_model = new QStandardItemModel();
     UI->service_tableView->setModel(serv_history_model);
     QStringList serv_list;
-    serv_list <<"С какого времени \n (число, месяц, год)"<<"По какое время \n (число, месяц, год)"<<"Должность, номер ВУС \n (код специальности) \n воинское звание (специальное звание)\n по штату, тарифный разряд \n (должностной оклад)"<<"Воинская часть, орган управления, \n учреждение, заведение, соединение, \nармия, группа войск, фронт или \n военный округ, флот или флотилия"<<"Чей приказ, дата \n и номер приказа";
+    serv_list <<"РЎ РєР°РєРѕРіРѕ РІСЂРµРјРµРЅРё \n (С‡РёСЃР»Рѕ, РјРµСЃСЏС†, РіРѕРґ)"<<"РџРѕ РєР°РєРѕРµ РІСЂРµРјСЏ \n (С‡РёСЃР»Рѕ, РјРµСЃСЏС†, РіРѕРґ)"<<"Р”РѕР»Р¶РЅРѕСЃС‚СЊ, РЅРѕРјРµСЂ Р’РЈРЎ \n (РєРѕРґ СЃРїРµС†РёР°Р»СЊРЅРѕСЃС‚Рё) \n РІРѕРёРЅСЃРєРѕРµ Р·РІР°РЅРёРµ (СЃРїРµС†РёР°Р»СЊРЅРѕРµ Р·РІР°РЅРёРµ)\n РїРѕ С€С‚Р°С‚Сѓ, С‚Р°СЂРёС„РЅС‹Р№ СЂР°Р·СЂСЏРґ \n (РґРѕР»Р¶РЅРѕСЃС‚РЅРѕР№ РѕРєР»Р°Рґ)"<<"Р’РѕРёРЅСЃРєР°СЏ С‡Р°СЃС‚СЊ, РѕСЂРіР°РЅ СѓРїСЂР°РІР»РµРЅРёСЏ, \n СѓС‡СЂРµР¶РґРµРЅРёРµ, Р·Р°РІРµРґРµРЅРёРµ, СЃРѕРµРґРёРЅРµРЅРёРµ, \nР°СЂРјРёСЏ, РіСЂСѓРїРїР° РІРѕР№СЃРє, С„СЂРѕРЅС‚ РёР»Рё \n РІРѕРµРЅРЅС‹Р№ РѕРєСЂСѓРі, С„Р»РѕС‚ РёР»Рё С„Р»РѕС‚РёР»РёСЏ"<<"Р§РµР№ РїСЂРёРєР°Р·, РґР°С‚Р° \n Рё РЅРѕРјРµСЂ РїСЂРёРєР°Р·Р°";
     serv_history_model->setHorizontalHeaderLabels(serv_list);
-    UI->service_tableView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    UI->service_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 //=========================================================================================
     war_act_model = new QStandardItemModel();
     UI->bd_tableView->setModel(war_act_model);
     QStringList war_list;
-    war_list <<"Участие в войнах и других боевых действиях"<<"С какого времени \n (число, месяц, год)"<<"По какое время \n (число, месяц, год)";
+    war_list <<"РЈС‡Р°СЃС‚РёРµ РІ РІРѕР№РЅР°С… Рё РґСЂСѓРіРёС… Р±РѕРµРІС‹С… РґРµР№СЃС‚РІРёСЏС…"<<"РЎ РєР°РєРѕРіРѕ РІСЂРµРјРµРЅРё \n (С‡РёСЃР»Рѕ, РјРµСЃСЏС†, РіРѕРґ)"<<"РџРѕ РєР°РєРѕРµ РІСЂРµРјСЏ \n (С‡РёСЃР»Рѕ, РјРµСЃСЏС†, РіРѕРґ)";
     war_act_model->setHorizontalHeaderLabels(war_list);
-    UI->bd_tableView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    UI->bd_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 //=========================================================================================
     travma_model = new QStandardItemModel();
     UI->travm_tableView->setModel(travma_model);
     QStringList tr_list;
-    tr_list <<"Увечья (ранения, травмы, контузии) и другие боевые поражения, их характер"<<"Когда и где получены";
+    tr_list <<"РЈРІРµС‡СЊСЏ (СЂР°РЅРµРЅРёСЏ, С‚СЂР°РІРјС‹, РєРѕРЅС‚СѓР·РёРё) Рё РґСЂСѓРіРёРµ Р±РѕРµРІС‹Рµ РїРѕСЂР°Р¶РµРЅРёСЏ, РёС… С…Р°СЂР°РєС‚РµСЂ"<<"РљРѕРіРґР° Рё РіРґРµ РїРѕР»СѓС‡РµРЅС‹";
     travma_model->setHorizontalHeaderLabels(tr_list);
-    UI->travm_tableView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    UI->travm_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 //========================================================================================
     medal_model = new QStandardItemModel();
     UI->medal_tableView->setModel(medal_model);
     QStringList med_list;
-    med_list <<"Наименование нагрудного знака"<<"За что награжден"<<"Чей приказ, его дата и номер";
+    med_list <<"РќР°РёРјРµРЅРѕРІР°РЅРёРµ РЅР°РіСЂСѓРґРЅРѕРіРѕ Р·РЅР°РєР°"<<"Р—Р° С‡С‚Рѕ РЅР°РіСЂР°Р¶РґРµРЅ"<<"Р§РµР№ РїСЂРёРєР°Р·, РµРіРѕ РґР°С‚Р° Рё РЅРѕРјРµСЂ";
     medal_model->setHorizontalHeaderLabels(med_list);
-    UI->medal_tableView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    UI->medal_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 //========================================================================================
     plen_model = new QStandardItemModel();
     UI->plen_tableView->setModel(plen_model);
     QStringList pl_list;
-    pl_list <<"Был ли в плену, при каких обстоятельствах, где и когда пленен и освобожден из плена";
+    pl_list <<"Р‘С‹Р» Р»Рё РІ РїР»РµРЅСѓ, РїСЂРё РєР°РєРёС… РѕР±СЃС‚РѕСЏС‚РµР»СЊСЃС‚РІР°С…, РіРґРµ Рё РєРѕРіРґР° РїР»РµРЅРµРЅ Рё РѕСЃРІРѕР±РѕР¶РґРµРЅ РёР· РїР»РµРЅР°";
     plen_model->setHorizontalHeaderLabels(pl_list);
-    UI->plen_tableView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    UI->plen_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 //=========================================================================================
     komp_model = new QStandardItemModel();
     UI->kompromat_tableView->setModel(komp_model);
     QStringList k_list;
-    k_list <<"Дата"<<"Обстоятельства";
+    k_list <<"Р”Р°С‚Р°"<<"РћР±СЃС‚РѕСЏС‚РµР»СЊСЃС‚РІР°";
     komp_model->setHorizontalHeaderLabels(k_list);
-    UI->kompromat_tableView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    UI->kompromat_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 //=========================================================================================
     fam_model = new QStandardItemModel();
     UI->family_tableView->setModel(fam_model);
     QStringList f_list;
-    f_list <<"Родственники"<<"Фамилия, имя, отчество, дата рождения жены, родителей, их место жительства. \n Имена и дата рождения детей, а также других иждивенцев";
+    f_list <<"Р РѕРґСЃС‚РІРµРЅРЅРёРєРё"<<"Р¤Р°РјРёР»РёСЏ, РёРјСЏ, РѕС‚С‡РµСЃС‚РІРѕ, РґР°С‚Р° СЂРѕР¶РґРµРЅРёСЏ Р¶РµРЅС‹, СЂРѕРґРёС‚РµР»РµР№, РёС… РјРµСЃС‚Рѕ Р¶РёС‚РµР»СЊСЃС‚РІР°. \n РРјРµРЅР° Рё РґР°С‚Р° СЂРѕР¶РґРµРЅРёСЏ РґРµС‚РµР№, Р° С‚Р°РєР¶Рµ РґСЂСѓРіРёС… РёР¶РґРёРІРµРЅС†РµРІ";
    // fam_model->setH
     fam_model->setHorizontalHeaderLabels(f_list);
-    UI->family_tableView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    UI->family_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     com_delegat = new ComboboxDelegat();
 
     UI->family_tableView->setItemDelegateForColumn(0,com_delegat);
@@ -149,11 +149,11 @@ PersonesData::PersonesData(QString type_element,int id_object, int id_persones,Q
     connect(UI->child_add_pushButton,SIGNAL(clicked()),this,SLOT(add_fam_row()));
     connect(UI->child_del_pushButton,SIGNAL(clicked()),this,SLOT(del_fam_row()));
 
- //===================== размеры полей и тд =========================================================
+ //===================== СЂР°Р·РјРµСЂС‹ РїРѕР»РµР№ Рё С‚Рґ =========================================================
 
-//    header_list<<" "<<" "<<"Воинские звания \n (специальные звания, \n классные чины )"<<"Правовой акт о присвоении \n воинского звания \n (специального звания, классного чина), \n его дата и номер"<<" ";
+//    header_list<<" "<<" "<<"Р’РѕРёРЅСЃРєРёРµ Р·РІР°РЅРёСЏ \n (СЃРїРµС†РёР°Р»СЊРЅС‹Рµ Р·РІР°РЅРёСЏ, \n РєР»Р°СЃСЃРЅС‹Рµ С‡РёРЅС‹ )"<<"РџСЂР°РІРѕРІРѕР№ Р°РєС‚ Рѕ РїСЂРёСЃРІРѕРµРЅРёРё \n РІРѕРёРЅСЃРєРѕРіРѕ Р·РІР°РЅРёСЏ \n (СЃРїРµС†РёР°Р»СЊРЅРѕРіРѕ Р·РІР°РЅРёСЏ, РєР»Р°СЃСЃРЅРѕРіРѕ С‡РёРЅР°), \n РµРіРѕ РґР°С‚Р° Рё РЅРѕРјРµСЂ"<<" ";
 
-//    header_list_table_educ<<" "<<" "<<"Наименования учебных заведений"<<"Год окончания"<<"Наименования факультетов"<<" ";
+//    header_list_table_educ<<" "<<" "<<"РќР°РёРјРµРЅРѕРІР°РЅРёСЏ СѓС‡РµР±РЅС‹С… Р·Р°РІРµРґРµРЅРёР№"<<"Р“РѕРґ РѕРєРѕРЅС‡Р°РЅРёСЏ"<<"РќР°РёРјРµРЅРѕРІР°РЅРёСЏ С„Р°РєСѓР»СЊС‚РµС‚РѕРІ"<<" ";
 //================================== CONNECT =======================================================
 
     connect(UI->save_all_button,SIGNAL(clicked()),this,SLOT(save_persones()));
@@ -955,7 +955,7 @@ void PersonesData::save_persones()
         insert_komp_data(id_persones);
         insert_brak_data(id_persones);
         insert_fam_data(id_persones);
-//======================= фото персоны ===================================
+//======================= С„РѕС‚Рѕ РїРµСЂСЃРѕРЅС‹ ===================================
 	
 		bool fotoFlag = isExistPhotoInDB(id_persones);
 
@@ -965,11 +965,11 @@ void PersonesData::save_persones()
 			if(!fotoFlag)
 			{
 				QMessageBox msgBox;
-				msgBox.setWindowTitle("Внимание");
-				msgBox.setText("Фотография отсутствует.Нажмите ДА, чтобы продолжить");
+				msgBox.setWindowTitle("Р’РЅРёРјР°РЅРёРµ");
+				msgBox.setText("Р¤РѕС‚РѕРіСЂР°С„РёСЏ РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚.РќР°Р¶РјРёС‚Рµ Р”Рђ, С‡С‚РѕР±С‹ РїСЂРѕРґРѕР»Р¶РёС‚СЊ");
 				msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-				msgBox.setButtonText(QMessageBox::Yes, "Да");
-				msgBox.setButtonText(QMessageBox::No, "Нет");
+				msgBox.setButtonText(QMessageBox::Yes, "Р”Р°");
+				msgBox.setButtonText(QMessageBox::No, "РќРµС‚");
 				if (msgBox.exec()== QMessageBox::Yes){
 
 					if(id_rezult>0){
@@ -1088,7 +1088,7 @@ void PersonesData::fillFamModelFromDB(QString query_str,QStandardItemModel *mode
 
 
 
-//======================= выбор типа персоналии в комбо ========================================
+//======================= РІС‹Р±РѕСЂ С‚РёРїР° РїРµСЂСЃРѕРЅР°Р»РёРё РІ РєРѕРјР±Рѕ ========================================
 void PersonesData::fill_combobox_persones(QComboBox *box)
 {
     box->clear();
@@ -1103,7 +1103,7 @@ void PersonesData::fill_combobox_persones(QComboBox *box)
     }
     query.clear();
 }
-//====== данные по персоналиям для всех ** организации ** сми ** ВФ ** =========================
+//====== РґР°РЅРЅС‹Рµ РїРѕ РїРµСЂСЃРѕРЅР°Р»РёСЏРј РґР»СЏ РІСЃРµС… ** РѕСЂРіР°РЅРёР·Р°С†РёРё ** СЃРјРё ** Р’Р¤ ** =========================
 int PersonesData::insert_in_table(QString table,QMap<QString,QString> map,QString id){
 
         QString table_columns="";
@@ -1131,9 +1131,9 @@ int PersonesData::insert_in_table(QString table,QMap<QString,QString> map,QStrin
         }
        // insert into persones (birth_date,id_smi,id_type_persones,name,name_persones,nationality,patronumic,personal_number,surname) values ('01-06-2015','62','0','sdf','sdfdsf s.s.','sdf','sdf','sdf','sdfdsf') returning id_persones
 }
-//=========================== путь к файлу с фото ==================================
+//=========================== РїСѓС‚СЊ Рє С„Р°Р№Р»Сѓ СЃ С„РѕС‚Рѕ ==================================
 void PersonesData::open_file(){
-    QString fileName = QFileDialog::getOpenFileName(this, "Выбор фотографии", "",
+    QString fileName = QFileDialog::getOpenFileName(this, "Р’С‹Р±РѕСЂ С„РѕС‚РѕРіСЂР°С„РёРё", "",
                                                     "Images (*.jpg *.png)");
     if (fileName.isEmpty()) return;
     UI->path_foto_lineEdit->setText(fileName);

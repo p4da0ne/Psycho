@@ -8,6 +8,7 @@
 #include <QSettings>
 #include <my_mapaccess.h>
 #include "mapview.h"
+#include "qprogressdialog.h"
 
 RegionsMpos::RegionsMpos(QObject *parent)
     : QObject(parent)

@@ -1,30 +1,31 @@
 #include "users_manager.h"
-#include <QVBoxLayout>
+#include <QtWidgets/QVBoxLayout>
 #include <QSqlQuery>
 #include <QSqlRecord>
-#include <QHeaderView>
+#include <QtWidgets/QHeaderView>
 #include <QCryptographicHash>
+#include <QtWidgets/QDialog>
 
 UsersManager::UsersManager(QDialog *parent)
     : QDialog(parent)
 {
-	setWindowTitle("Управление пользователями");
+	setWindowTitle("РЈРїСЂР°РІР»РµРЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏРјРё");
 
     addUserButton = new QToolButton;
 	addUserButton->setIcon(QIcon(":/Resources/add_but.png"));
-	addUserButton->setToolTip("Добавить нового пользователя");
+	addUserButton->setToolTip("Р”РѕР±Р°РІРёС‚СЊ РЅРѕРІРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ");
 
 	editUserButton = new QToolButton;
 	editUserButton->setIcon(QIcon(":/Resources/edit_but.png"));
-	editUserButton->setToolTip("Редактировать данные выбранного пользователя");
+	editUserButton->setToolTip("Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ РґР°РЅРЅС‹Рµ РІС‹Р±СЂР°РЅРЅРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ");
 
 	passwordButton = new QToolButton;
 	passwordButton->setIcon(QIcon(":/Resources/stock_lock.png"));
-	passwordButton->setToolTip("Изменить пароль выбранного пользователя");
+	passwordButton->setToolTip("РР·РјРµРЅРёС‚СЊ РїР°СЂРѕР»СЊ РІС‹Р±СЂР°РЅРЅРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ");
 
 	delUserButton = new QToolButton;
 	delUserButton->setIcon(QIcon(":/Resources/delete_but.png"));
-	delUserButton->setToolTip("Удалить выбранных пользователей");
+	delUserButton->setToolTip("РЈРґР°Р»РёС‚СЊ РІС‹Р±СЂР°РЅРЅС‹С… РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№");
 
 	connect(addUserButton,SIGNAL(clicked()),this,SLOT(addUser()));
 	connect(editUserButton,SIGNAL(clicked()),this,SLOT(editUser()));
@@ -42,7 +43,7 @@ UsersManager::UsersManager(QDialog *parent)
 	usersModel = new QStandardItemModel;
 	usersView->setModel(usersModel);
 
-	usersView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    usersView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 	usersView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	
 
@@ -66,7 +67,7 @@ UsersManager::~UsersManager()
 
 
 //===================================================================================
-//===== Метод инициализации модели пользователей и отображения её в TableView =======
+//===== РњРµС‚РѕРґ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РјРѕРґРµР»Рё РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ Рё РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РµС‘ РІ TableView =======
 //===================================================================================
 void UsersManager::fillUsersModel()
 {
@@ -120,14 +121,14 @@ void UsersManager::fillUsersModel()
 			usersModel->appendRow(rowList);
 		}
 		QStringList hList;
-		hList<<"Воинское звание"<<"Фамилия"<<"Имя"<<"Отчество"<<"Логин"<<"Статус";
+		hList<<"Р’РѕРёРЅСЃРєРѕРµ Р·РІР°РЅРёРµ"<<"Р¤Р°РјРёР»РёСЏ"<<"РРјСЏ"<<"РћС‚С‡РµСЃС‚РІРѕ"<<"Р›РѕРіРёРЅ"<<"РЎС‚Р°С‚СѓСЃ";
 		usersModel->setHorizontalHeaderLabels(hList);
 	}
 	return;
 }
 
 //================================================================
-//==== Метод возвращает число выбранных пользователей в модели ===
+//==== РњРµС‚РѕРґ РІРѕР·РІСЂР°С‰Р°РµС‚ С‡РёСЃР»Рѕ РІС‹Р±СЂР°РЅРЅС‹С… РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ РІ РјРѕРґРµР»Рё ===
 //================================================================
 int UsersManager::selectedUsersCount()
 {
@@ -144,7 +145,7 @@ int UsersManager::selectedUsersCount()
 
 
 //==================================================================
-//====== Слот добавления нового пользователя =======================
+//====== РЎР»РѕС‚ РґРѕР±Р°РІР»РµРЅРёСЏ РЅРѕРІРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ =======================
 //==================================================================
 void UsersManager::addUser()
 {
@@ -152,19 +153,19 @@ void UsersManager::addUser()
 	userDlg = new UserDataDialog;
 	if(userDlg->exec() == QDialog::Accepted)
 	{
-		//------ Вставка данных в БД ------
+		//------ Р’СЃС‚Р°РІРєР° РґР°РЅРЅС‹С… РІ Р‘Р” ------
 		addUserInDB();
 	}
 }
 
 //==================================================================
-//====== Слот редактирования данных пользователя ===================
+//====== РЎР»РѕС‚ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ РґР°РЅРЅС‹С… РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ ===================
 //==================================================================
 void UsersManager::editUser()
 {
 	if(selectedUsersCount() != 1)
 	{
-		showMessageToUser("Для редактирования данных \nнеобходимо выбрать одного пользователя.");
+		showMessageToUser("Р”Р»СЏ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ РґР°РЅРЅС‹С… \nРЅРµРѕР±С…РѕРґРёРјРѕ РІС‹Р±СЂР°С‚СЊ РѕРґРЅРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.");
 		return;
 	}
 	int idUser;
@@ -178,26 +179,26 @@ void UsersManager::editUser()
 	userDlg = new UserDataDialog(idUser);
 	if(userDlg->exec() == QDialog::Accepted)
 	{
-		//------ Обновление данных в БД ------
+		//------ РћР±РЅРѕРІР»РµРЅРёРµ РґР°РЅРЅС‹С… РІ Р‘Р” ------
 		updateUserDataInDB();
 	}
 	//
 }
 
 //==================================================================
-//====== Слот удаления пользователя ================================
+//====== РЎР»РѕС‚ СѓРґР°Р»РµРЅРёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ ================================
 //==================================================================
 void UsersManager::deleteUser()
 {
 	if(selectedUsersCount() == 0)
 	{
-		showMessageToUser("Для удаления необходимо выбрать \nодного или нескольких пользователей.");
+		showMessageToUser("Р”Р»СЏ СѓРґР°Р»РµРЅРёСЏ РЅРµРѕР±С…РѕРґРёРјРѕ РІС‹Р±СЂР°С‚СЊ \nРѕРґРЅРѕРіРѕ РёР»Рё РЅРµСЃРєРѕР»СЊРєРёС… РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№.");
 		return;
 	}
 	//================MessageBox===============================
 	QMessageBox msgBox;
-	msgBox.setWindowTitle("Предупреждение");
-	msgBox.setText("Вы действительно хотите удалить выбранных пользователей?");   
+	msgBox.setWindowTitle("РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ");
+	msgBox.setText("Р’С‹ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅРѕ С…РѕС‚РёС‚Рµ СѓРґР°Р»РёС‚СЊ РІС‹Р±СЂР°РЅРЅС‹С… РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№?");   
 	msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
 	 switch (msgBox.exec()) {
 	 case QMessageBox::Yes:
@@ -215,17 +216,17 @@ void UsersManager::deleteUser()
 }
 
 //===========================================================================
-//=== Сообщение пользователю в виде диалогового окна ========================
+//=== РЎРѕРѕР±С‰РµРЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЋ РІ РІРёРґРµ РґРёР°Р»РѕРіРѕРІРѕРіРѕ РѕРєРЅР° ========================
 //===========================================================================
 void UsersManager::showMessageToUser(const QString message) 
 {
-    QMessageBox::information(this, "Сообщение",
+    QMessageBox::information(this, "РЎРѕРѕР±С‰РµРЅРёРµ",
                           message,
                           QMessageBox::Ok, 0);
 }
 
 //===========================================================================
-//====== Метод удаления выбранных пользователей =============================
+//====== РњРµС‚РѕРґ СѓРґР°Р»РµРЅРёСЏ РІС‹Р±СЂР°РЅРЅС‹С… РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ =============================
 //===========================================================================
 void UsersManager::deleteSelectedUsers()
 {
@@ -257,7 +258,7 @@ void UsersManager::deleteSelectedUsers()
 
 
 //============================================================================
-//======= Метод добавления нового пользователя в БД ============
+//======= РњРµС‚РѕРґ РґРѕР±Р°РІР»РµРЅРёСЏ РЅРѕРІРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РІ Р‘Р” ============
 //============================================================================
 void UsersManager::addUserInDB()
 {
@@ -300,7 +301,7 @@ void UsersManager::addUserInDB()
 
 
 //============================================================================
-//======= Метод обновления данных пользователя в БД ============
+//======= РњРµС‚РѕРґ РѕР±РЅРѕРІР»РµРЅРёСЏ РґР°РЅРЅС‹С… РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РІ Р‘Р” ============
 //============================================================================
 void UsersManager::updateUserDataInDB()
 {
@@ -331,24 +332,24 @@ void UsersManager::updateUserDataInDB()
 
 
 //====================================================================
-//===== Метод шифрования строки по методу MD5 ========================
+//===== РњРµС‚РѕРґ С€РёС„СЂРѕРІР°РЅРёСЏ СЃС‚СЂРѕРєРё РїРѕ РјРµС‚РѕРґСѓ MD5 ========================
 //====================================================================
 QString UsersManager::str_to_md5(QString str)
 {
 	QCryptographicHash hash(QCryptographicHash::Md5);
-	hash.addData(str.toAscii()); 
+    hash.addData(str.toLatin1());
 	QString md5_str(hash.result().toHex());
 	return md5_str;
 }
 
 //====================================================================
-//====== Слот изменения пароля пользователя ==========================
+//====== РЎР»РѕС‚ РёР·РјРµРЅРµРЅРёСЏ РїР°СЂРѕР»СЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ ==========================
 //====================================================================
 void UsersManager::changeUserPassword()
 {
 	if(selectedUsersCount() != 1)
 	{
-		showMessageToUser("Для изменения пароля выберите одного пользователя.");
+		showMessageToUser("Р”Р»СЏ РёР·РјРµРЅРµРЅРёСЏ РїР°СЂРѕР»СЏ РІС‹Р±РµСЂРёС‚Рµ РѕРґРЅРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.");
 		return;
 	}
 	int idUser;
@@ -371,7 +372,7 @@ void UsersManager::changeUserPassword()
 
 
 //====================================================================================
-//====== Метод изменения пароля пользователя в БД ====================================
+//====== РњРµС‚РѕРґ РёР·РјРµРЅРµРЅРёСЏ РїР°СЂРѕР»СЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РІ Р‘Р” ====================================
 //====================================================================================
 void UsersManager::updateUserPasswordInDB(int idUser,QString newPassword)
 {
@@ -381,11 +382,11 @@ void UsersManager::updateUserPasswordInDB(int idUser,QString newPassword)
 	QString mess;
 	if(query.exec(str))
 	{
-		mess = "Пароль изменен успешно.";
+		mess = "РџР°СЂРѕР»СЊ РёР·РјРµРЅРµРЅ СѓСЃРїРµС€РЅРѕ.";
 	}
 	else
 	{
-		mess = "При изменении пароля произошла ошибка.";
+		mess = "РџСЂРё РёР·РјРµРЅРµРЅРёРё РїР°СЂРѕР»СЏ РїСЂРѕРёР·РѕС€Р»Р° РѕС€РёР±РєР°.";
 	}
 	showMessageToUser(mess);
 	return;

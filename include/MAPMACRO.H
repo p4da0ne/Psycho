@@ -6,7 +6,7 @@
 *                                                                  *
 ********************************************************************
 *                                                                  *
-*                  ОПИСАНИЕ МАКРОРАСШИРЕНИЙ                        *
+*                  РћРџРРЎРђРќРР• РњРђРљР РћР РђРЎРЁРР Р•РќРР™                        *
 *                                                                  *
 *******************************************************************/
 
@@ -21,9 +21,9 @@
  #include "mapsyst.h"
 #endif
 
-#define HUGER  // Устаревшее определение
+#define HUGER  // РЈСЃС‚Р°СЂРµРІС€РµРµ РѕРїСЂРµРґРµР»РµРЅРёРµ
 
-// Идентификаторы сообщений процессов обработки карты
+// РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂС‹ СЃРѕРѕР±С‰РµРЅРёР№ РїСЂРѕС†РµСЃСЃРѕРІ РѕР±СЂР°Р±РѕС‚РєРё РєР°СЂС‚С‹
 
 #define IMM_OBJECT 0x585
 #define IMM_LIST   0x586
@@ -36,15 +36,15 @@
 #endif
 
 
-// Определяется экспорт/импорт классов и функций (_DLLCLASS)
+// РћРїСЂРµРґРµР»СЏРµС‚СЃСЏ СЌРєСЃРїРѕСЂС‚/РёРјРїРѕСЂС‚ РєР»Р°СЃСЃРѕРІ Рё С„СѓРЅРєС†РёР№ (_DLLCLASS)
 #if defined(BUILD_DLL)
 
-    #if defined(__BORLANDC__) // Для Borland C++
+    #if defined(__BORLANDC__) // Р”Р»СЏ Borland C++
       #define _DLLCLASS _export
       #define _MAPAPI   _export WINAPI
       #define HIDETRY                             // 19/09/01
       #define _MAPIMP
-    #else                     // Для Visual C++
+    #else                     // Р”Р»СЏ Visual C++
       #ifndef WINCE
         #if defined(LINUXAPI)
           #define _DLLCLASS
@@ -66,9 +66,9 @@
 #ifndef BUILD_TIM              // 29/10/01
 #ifdef  HIDENEW                // 23/07/04
 
-    #if defined(__BORLANDC__) // Для Borland C++
+    #if defined(__BORLANDC__) // Р”Р»СЏ Borland C++
 
-    // Применение для универсальной DLL new и delete - опасно !
+    // РџСЂРёРјРµРЅРµРЅРёРµ РґР»СЏ СѓРЅРёРІРµСЂСЃР°Р»СЊРЅРѕР№ DLL new Рё delete - РѕРїР°СЃРЅРѕ !
 
     inline void * operator new (size_t value)
      {
@@ -99,11 +99,11 @@
 
 #else
 
-    #if defined(__BORLANDC__) // Для Borland C++
+    #if defined(__BORLANDC__) // Р”Р»СЏ Borland C++
       #define _DLLCLASS _import
       #define _MAPAPI   _import WINAPI
       #define _MAPIMP
-    #else                     // Для Visual C++
+    #else                     // Р”Р»СЏ Visual C++
       #ifndef WINCE
         #if defined(LINUXAPI)
           #define _DLLCLASS
@@ -126,7 +126,7 @@
 #ifndef GISALLOC
 #define GISALLOC
 
-    // В универсальных библиотеках new/delete должны иметь единую реализацию
+    // Р’ СѓРЅРёРІРµСЂСЃР°Р»СЊРЅС‹С… Р±РёР±Р»РёРѕС‚РµРєР°С… new/delete РґРѕР»Р¶РЅС‹ РёРјРµС‚СЊ РµРґРёРЅСѓСЋ СЂРµР°Р»РёР·Р°С†РёСЋ
 
 extern "C"
 {

@@ -22,7 +22,6 @@ SupportingTables::SupportingTables(QDialog *parent)
 
 	//connect(UI->supp_table,SIGNAL(cellClicked(int,int)),this,SLOT(edit_pattern_obj(int,int)));
 	QTextCodec *codec = QTextCodec::codecForName("CP1251");
-	QTextCodec::setCodecForCStrings(codec);
 
 	init_supporting_tree();
 }
@@ -33,7 +32,7 @@ SupportingTables::~SupportingTables()
 }
 //
 
-//======= Формирование списка вспомогательных таблиц =======
+//======= Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ СЃРїРёСЃРєР° РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹С… С‚Р°Р±Р»РёС† =======
 void SupportingTables::init_supporting_tree()
 {
 	UI->supp_tables_tree->setHeaderHidden(true);
@@ -46,62 +45,62 @@ void SupportingTables::init_supporting_tree()
 	//root_item = add_root("Military ranks","military_rank");
 	//UI->supp_tables_tree->setCurrentItem(root_item,0);
 
-	root_item = add_root("СМИ","-");
-		add_child(root_item,"Тип СМИ","type_smi");
-		add_child(root_item,"Представительство","type_office_smi");
-		add_child(root_item,"Способ вещания","type_broadcast_smi");
-		add_child(root_item,"Уровень вещания","level_smi");
-		add_child(root_item,"Направленность","position_smi");
-		add_child(root_item,"Тематика","theme_smi");
-		/*add_child(root_item,"Аудитория","auditoria_smi");
-		add_child(root_item,"Зона охвата","zona_smi");
-		add_child(root_item,"Периодичность вещания","period_smi");*/
+	root_item = add_root("РЎРњР","-");
+		add_child(root_item,"РўРёРї РЎРњР","type_smi");
+		add_child(root_item,"РџСЂРµРґСЃС‚Р°РІРёС‚РµР»СЊСЃС‚РІРѕ","type_office_smi");
+		add_child(root_item,"РЎРїРѕСЃРѕР± РІРµС‰Р°РЅРёСЏ","type_broadcast_smi");
+		add_child(root_item,"РЈСЂРѕРІРµРЅСЊ РІРµС‰Р°РЅРёСЏ","level_smi");
+		add_child(root_item,"РќР°РїСЂР°РІР»РµРЅРЅРѕСЃС‚СЊ","position_smi");
+		add_child(root_item,"РўРµРјР°С‚РёРєР°","theme_smi");
+		/*add_child(root_item,"РђСѓРґРёС‚РѕСЂРёСЏ","auditoria_smi");
+		add_child(root_item,"Р—РѕРЅР° РѕС…РІР°С‚Р°","zona_smi");
+		add_child(root_item,"РџРµСЂРёРѕРґРёС‡РЅРѕСЃС‚СЊ РІРµС‰Р°РЅРёСЏ","period_smi");*/
 	
-	root_item = add_root("Население","-");
-		ch_item = add_child(root_item,"Профессии","profession");
-		add_child(root_item,"Возрастные группы","age");
+	root_item = add_root("РќР°СЃРµР»РµРЅРёРµ","-");
+		ch_item = add_child(root_item,"РџСЂРѕС„РµСЃСЃРёРё","profession");
+		add_child(root_item,"Р’РѕР·СЂР°СЃС‚РЅС‹Рµ РіСЂСѓРїРїС‹","age");
 
-	root_item = add_root("Организации","-");
-		add_child(root_item,"Сфера деятельности","sphere_groups");
-		add_child(root_item,"Форма организации","form_groups");
-		add_child(root_item,"Информационные органы","propaganda_groups");
-		add_child(root_item,"Направленность","trend_groups");
+	root_item = add_root("РћСЂРіР°РЅРёР·Р°С†РёРё","-");
+		add_child(root_item,"РЎС„РµСЂР° РґРµСЏС‚РµР»СЊРЅРѕСЃС‚Рё","sphere_groups");
+		add_child(root_item,"Р¤РѕСЂРјР° РѕСЂРіР°РЅРёР·Р°С†РёРё","form_groups");
+		add_child(root_item,"РРЅС„РѕСЂРјР°С†РёРѕРЅРЅС‹Рµ РѕСЂРіР°РЅС‹","propaganda_groups");
+		add_child(root_item,"РќР°РїСЂР°РІР»РµРЅРЅРѕСЃС‚СЊ","trend_groups");
 
-//	root_item = add_root("Подразделения","-");
+//	root_item = add_root("РџРѕРґСЂР°Р·РґРµР»РµРЅРёСЏ","-");
 		
 
-	root_item = add_root("Средства","-");
-		add_child(root_item,"Типы средств","type_mpo_pso");
-	root_item = add_root("Воинские формирования","-");
-		add_child(root_item,"Виды воинских формирований ","type_ls");
+	root_item = add_root("РЎСЂРµРґСЃС‚РІР°","-");
+		add_child(root_item,"РўРёРїС‹ СЃСЂРµРґСЃС‚РІ","type_mpo_pso");
+	root_item = add_root("Р’РѕРёРЅСЃРєРёРµ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ","-");
+		add_child(root_item,"Р’РёРґС‹ РІРѕРёРЅСЃРєРёС… С„РѕСЂРјРёСЂРѕРІР°РЅРёР№ ","type_ls");
 
-	root_item = add_root("Регионы","-");
-		add_child(root_item,"Типы регионов","type_region");
+	root_item = add_root("Р РµРіРёРѕРЅС‹","-");
+		add_child(root_item,"РўРёРїС‹ СЂРµРіРёРѕРЅРѕРІ","type_region");
 	
-	root_item = add_root("Особые условия","-");
-		add_child(root_item,"Типы особых условий","type_special_conditions");
+	root_item = add_root("РћСЃРѕР±С‹Рµ СѓСЃР»РѕРІРёСЏ","-");
+		add_child(root_item,"РўРёРїС‹ РѕСЃРѕР±С‹С… СѓСЃР»РѕРІРёР№","type_special_conditions");
 		
-	root_item = add_root("Персоналии","-");
-		add_child(root_item,"Типы персоналий","type_persones");
+	root_item = add_root("РџРµСЂСЃРѕРЅР°Р»РёРё","-");
+		add_child(root_item,"РўРёРїС‹ РїРµСЂСЃРѕРЅР°Р»РёР№","type_persones");
 		
-    root_item = add_root("События","type_event");
+    root_item = add_root("РЎРѕР±С‹С‚РёСЏ","type_event");
 		
-	root_item = add_root("Воинские звания","military_rank");
+	root_item = add_root("Р’РѕРёРЅСЃРєРёРµ Р·РІР°РЅРёСЏ","military_rank");
 
-	root_item = add_root("Должности","rank");
+	root_item = add_root("Р”РѕР»Р¶РЅРѕСЃС‚Рё","rank");
 
-	root_item = add_root("Национальности","nations");
+	root_item = add_root("РќР°С†РёРѕРЅР°Р»СЊРЅРѕСЃС‚Рё","nations");
 
-	root_item = add_root("Религии","confessions");
+	root_item = add_root("Р РµР»РёРіРёРё","confessions");
 
-	root_item = add_root("Языки","language");
+	root_item = add_root("РЇР·С‹РєРё","language");
 
 
 	
 
 }
 
-//============ Добавление элемента дерева верхнего уровня =============
+//============ Р”РѕР±Р°РІР»РµРЅРёРµ СЌР»РµРјРµРЅС‚Р° РґРµСЂРµРІР° РІРµСЂС…РЅРµРіРѕ СѓСЂРѕРІРЅСЏ =============
 QTreeWidgetItem * SupportingTables::add_root(QString name, QString table_name)
 {
 	QTreeWidgetItem *item = new QTreeWidgetItem(UI->supp_tables_tree);
@@ -112,7 +111,7 @@ QTreeWidgetItem * SupportingTables::add_root(QString name, QString table_name)
 	return item;
 }
 
-//============ Добавление элемента-потомка  =============
+//============ Р”РѕР±Р°РІР»РµРЅРёРµ СЌР»РµРјРµРЅС‚Р°-РїРѕС‚РѕРјРєР°  =============
 QTreeWidgetItem * SupportingTables::add_child(QTreeWidgetItem *parent, QString name, QString table_name)
 {
 	QTreeWidgetItem *child_item = new QTreeWidgetItem();
@@ -122,14 +121,13 @@ QTreeWidgetItem * SupportingTables::add_child(QTreeWidgetItem *parent, QString n
 	return child_item;
 }
 
-//=========== Заполнение таблицы по нажатию на элемент дерева вспомогательных таблиц =============
+//=========== Р—Р°РїРѕР»РЅРµРЅРёРµ С‚Р°Р±Р»РёС†С‹ РїРѕ РЅР°Р¶Р°С‚РёСЋ РЅР° СЌР»РµРјРµРЅС‚ РґРµСЂРµРІР° РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹С… С‚Р°Р±Р»РёС† =============
 void SupportingTables::fill_supp_table(QTreeWidgetItem * item, int column)
 {
 	QString table_name = item->text(1);
 	if(table_name == "-") {
 		QTreeWidgetItem * child = item->child(0);
-		UI->supp_tables_tree->setCurrentItem(child,0);
-		UI->supp_tables_tree->setItemSelected(child,true);
+        UI->supp_tables_tree->setCurrentItem(child,0);
 		return;
 	}
 	UI->table_name_label->setText(UI->supp_tables_tree->currentItem()->text(0));
@@ -169,7 +167,7 @@ void SupportingTables::fill_supp_table(QTreeWidgetItem * item, int column)
 			if (rec.fieldName(col) == "id_sign") continue;
 			QTableWidgetItem * itm = new QTableWidgetItem((query.value(col)).toString());
 			//itm->setBackgroundColor(Qt::lightGray);
-			itm->setTextColor(Qt::darkBlue);
+            itm->setData(Qt::ForegroundRole, QVariant(QColorConstants::DarkBlue));
 			UI->supp_table->setItem(row,sch,itm);
 			sch++;
 		}
@@ -178,7 +176,7 @@ void SupportingTables::fill_supp_table(QTreeWidgetItem * item, int column)
 	UI->supp_table->resizeColumnsToContents();
 }
 
-//========== Функция очищения таблицы (удаление всех строк и столбцов) ===============
+//========== Р¤СѓРЅРєС†РёСЏ РѕС‡РёС‰РµРЅРёСЏ С‚Р°Р±Р»РёС†С‹ (СѓРґР°Р»РµРЅРёРµ РІСЃРµС… СЃС‚СЂРѕРє Рё СЃС‚РѕР»Р±С†РѕРІ) ===============
 void SupportingTables::clear_tableWidget(QTableWidget *table){
 	int count_rows = table->rowCount();
 	while(count_rows >= 0){
@@ -192,7 +190,7 @@ void SupportingTables::clear_tableWidget(QTableWidget *table){
 	}
 }
 
-//========== Функция добавления строки в таблицу supp_table ===============
+//========== Р¤СѓРЅРєС†РёСЏ РґРѕР±Р°РІР»РµРЅРёСЏ СЃС‚СЂРѕРєРё РІ С‚Р°Р±Р»РёС†Сѓ supp_table ===============
 void  SupportingTables::add_supp_table_row(){
 	int row_count = UI->supp_table->rowCount();
 	if(!UI->supp_table->item(row_count-1,2)&&row_count>0){
@@ -205,7 +203,7 @@ void  SupportingTables::add_supp_table_row(){
 	return;
 }
 
-//========== Функция сохранения изменений таблицы supp_table ===============
+//========== Р¤СѓРЅРєС†РёСЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ РёР·РјРµРЅРµРЅРёР№ С‚Р°Р±Р»РёС†С‹ supp_table ===============
 void SupportingTables::save_supp_table_data(){
  int row_count = UI->supp_table->rowCount();
  int col_count = UI->supp_table->columnCount();
@@ -219,14 +217,14 @@ void SupportingTables::save_supp_table_data(){
 			flag = 0;
 		}
 	}	 
-	if(flag == 1)	return;  // === если добавлена строка, но нет данных 
+	if(flag == 1)	return;  // === РµСЃР»Рё РґРѕР±Р°РІР»РµРЅР° СЃС‚СЂРѕРєР°, РЅРѕ РЅРµС‚ РґР°РЅРЅС‹С… 
  }
  QSqlQuery query;
  QString str_ins,str_upd,col_name;
  str_ins = "INSERT INTO ";
 		str_ins.append(UI->supp_tables_tree->currentItem()->text(1));
 		str_ins.append(" (");
- //===== считывание названий столбцов таблицы (insert) ====
+ //===== СЃС‡РёС‚С‹РІР°РЅРёРµ РЅР°Р·РІР°РЅРёР№ СЃС‚РѕР»Р±С†РѕРІ С‚Р°Р±Р»РёС†С‹ (insert) ====
  for(int col=2;col<col_count;col++){
 	col_name = UI->supp_table->horizontalHeaderItem(col)->text();
 	str_ins.append(col_name);
@@ -237,7 +235,7 @@ void SupportingTables::save_supp_table_data(){
  str_upd = "UPDATE ";
 		str_upd.append(UI->supp_tables_tree->currentItem()->text(1));
 		str_upd.append(" SET ");
- for(int i=0;i<row_count;i++)   //=== цикл по строкам таблицы supp_table ===
+ for(int i=0;i<row_count;i++)   //=== С†РёРєР» РїРѕ СЃС‚СЂРѕРєР°Рј С‚Р°Р±Р»РёС†С‹ supp_table ===
  {	
 		if(!UI->supp_table->item(i,1))   // == insert in supp_table
 		{
@@ -253,7 +251,7 @@ void SupportingTables::save_supp_table_data(){
 			}
 			str_q_ins.chop(1);
 			str_q_ins.append(")");
-			//=== запрос на вставку === 
+			//=== Р·Р°РїСЂРѕСЃ РЅР° РІСЃС‚Р°РІРєСѓ === 
 			if(!query.exec(str_q_ins))
 			{
 				qDebug() << query.lastError().text() << " query" << str_q_ins;
@@ -282,7 +280,7 @@ void SupportingTables::save_supp_table_data(){
 			str_q_upd.append("= ");
 			str_q_upd.append(UI->supp_table->item(i,1)->text());
 			str_q_upd.append(" ");
-			//=== запрос на обновление === 
+			//=== Р·Р°РїСЂРѕСЃ РЅР° РѕР±РЅРѕРІР»РµРЅРёРµ === 
 			if(!query.exec(str_q_upd)){
 				return;
 			}
@@ -293,7 +291,7 @@ item = UI->supp_tables_tree->currentItem();
 fill_supp_table(item, 0);
 }
 
-//======== Удаление выбранных строк таблицы supp_table =============
+//======== РЈРґР°Р»РµРЅРёРµ РІС‹Р±СЂР°РЅРЅС‹С… СЃС‚СЂРѕРє С‚Р°Р±Р»РёС†С‹ supp_table =============
 void SupportingTables::del_supp_table_data()
 {
 
@@ -306,8 +304,8 @@ void SupportingTables::del_supp_table_data()
 		if(f > 0){
   			//================MessageBox===============================
 			  QMessageBox msgBox;
-			  msgBox.setWindowTitle("Внимание!");
-			  msgBox.setText("Вы действительно хотите удалить эту строку?");   
+			  msgBox.setWindowTitle("Р’РЅРёРјР°РЅРёРµ!");
+			  msgBox.setText("Р’С‹ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅРѕ С…РѕС‚РёС‚Рµ СѓРґР°Р»РёС‚СЊ СЌС‚Сѓ СЃС‚СЂРѕРєСѓ?");   
 			  msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
 				 switch (msgBox.exec()) {
 				 case QMessageBox::Yes:
@@ -355,7 +353,7 @@ void SupportingTables::del_supp_table_data()
 	return;
 }
 
-//========= Закрытие формы редактирования вспомогательных таблиц с сохранением данных =============
+//========= Р—Р°РєСЂС‹С‚РёРµ С„РѕСЂРјС‹ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹С… С‚Р°Р±Р»РёС† СЃ СЃРѕС…СЂР°РЅРµРЅРёРµРј РґР°РЅРЅС‹С… =============
 void SupportingTables::ok_slot(){
 	save_supp_table_data();
 	close();

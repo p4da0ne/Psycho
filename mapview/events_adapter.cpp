@@ -33,7 +33,7 @@ EventsAdapter::~EventsAdapter()
 
 
 //======================================================================================
-//========= Метод перевода геодезических координат (WGS84) в прямоугольные =============
+//========= РњРµС‚РѕРґ РїРµСЂРµРІРѕРґР° РіРµРѕРґРµР·РёС‡РµСЃРєРёС… РєРѕРѕСЂРґРёРЅР°С‚ (WGS84) РІ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅС‹Рµ =============
 //======================================================================================
 Coord* EventsAdapter::WGStoPlane(long int hMap,Coord *coordObject)
 {
@@ -70,7 +70,7 @@ Coord* EventsAdapter::WGStoPlane(long int hMap,Coord *coordObject)
 }
 
 //======================================================================================
-//========= Метод перевода прямоугольных координат в геодезические (WGS-84) ============
+//========= РњРµС‚РѕРґ РїРµСЂРµРІРѕРґР° РїСЂСЏРјРѕСѓРіРѕР»СЊРЅС‹С… РєРѕРѕСЂРґРёРЅР°С‚ РІ РіРµРѕРґРµР·РёС‡РµСЃРєРёРµ (WGS-84) ============
 //======================================================================================
 Coord* EventsAdapter::planeToWGS(long int hMap,Coord *coordObject)
 {
@@ -106,7 +106,7 @@ Coord* EventsAdapter::planeToWGS(long int hMap,Coord *coordObject)
 
 
 //============================================================================
-//======= Метод возвращает список статусов событий ===========================
+//======= РњРµС‚РѕРґ РІРѕР·РІСЂР°С‰Р°РµС‚ СЃРїРёСЃРѕРє СЃС‚Р°С‚СѓСЃРѕРІ СЃРѕР±С‹С‚РёР№ ===========================
 //============================================================================
 QStandardItemModel * EventsAdapter::getEventStatusList()
 {
@@ -137,7 +137,7 @@ QStandardItemModel * EventsAdapter::getEventStatusList()
 
 
 //============================================================================
-//======= Метод возвращает список типов событий ==============================
+//======= РњРµС‚РѕРґ РІРѕР·РІСЂР°С‰Р°РµС‚ СЃРїРёСЃРѕРє С‚РёРїРѕРІ СЃРѕР±С‹С‚РёР№ ==============================
 //============================================================================
 QStandardItemModel * EventsMapModel::getEventTypesList()
 {
@@ -168,8 +168,8 @@ QStandardItemModel * EventsMapModel::getEventTypesList()
 
 
 //================================================================================
-//==== Метод возвращает список событий ===========================================
-//==== для нанесения на карту и инициализации условных знаков событий ============
+//==== РњРµС‚РѕРґ РІРѕР·РІСЂР°С‰Р°РµС‚ СЃРїРёСЃРѕРє СЃРѕР±С‹С‚РёР№ ===========================================
+//==== РґР»СЏ РЅР°РЅРµСЃРµРЅРёСЏ РЅР° РєР°СЂС‚Сѓ Рё РёРЅРёС†РёР°Р»РёР·Р°С†РёРё СѓСЃР»РѕРІРЅС‹С… Р·РЅР°РєРѕРІ СЃРѕР±С‹С‚РёР№ ============
 //================================================================================
 QList<SignData*> EventsMapModel::getEvents(long int hMap,double x1,double y1,double x2,double y2)
 {
@@ -240,7 +240,7 @@ QList<SignData*> EventsMapModel::getEvents(long int hMap,double x1,double y1,dou
 	//		int long_wgs_m = query.value(rec.indexOf("longitude_wgs_84_m")).toInt();
 	//		double long_wgs_s = query.value(rec.indexOf("longitude_wgs_84_s")).toDouble();
 	//				
-	//		///получить из запроса 6 параметров координат WGS
+	//		///РїРѕР»СѓС‡РёС‚СЊ РёР· Р·Р°РїСЂРѕСЃР° 6 РїР°СЂР°РјРµС‚СЂРѕРІ РєРѕРѕСЂРґРёРЅР°С‚ WGS
 
 	//		Coord c1(wgs_g,wgs_m,wgs_s,long_wgs_g,long_wgs_m,long_wgs_s);
 	//		
@@ -256,9 +256,9 @@ QList<SignData*> EventsMapModel::getEvents(long int hMap,double x1,double y1,dou
 	//		QString signCode = query.value(rec.indexOf("sign_key")).toString();
 	//		QString id_mpo_pso = query.value(rec.indexOf("id_mpo_pso")).toString();
 
-	//		// дальность (радиус) действия, километры
+	//		// РґР°Р»СЊРЅРѕСЃС‚СЊ (СЂР°РґРёСѓСЃ) РґРµР№СЃС‚РІРёСЏ, РєРёР»РѕРјРµС‚СЂС‹
 	//		QString semantika_digit1_mpo_pso = query.value(rec.indexOf("semantika_digit1")).toString();
-	//		// угол (направление) относительно горизонта против часовой стрелки, градусы
+	//		// СѓРіРѕР» (РЅР°РїСЂР°РІР»РµРЅРёРµ) РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РіРѕСЂРёР·РѕРЅС‚Р° РїСЂРѕС‚РёРІ С‡Р°СЃРѕРІРѕР№ СЃС‚СЂРµР»РєРё, РіСЂР°РґСѓСЃС‹
 	//		QString semantika_digit2_mpo_pso = query.value(rec.indexOf("semantika_digit2")).toString();
 	//		QString semantika_1_mpo_pso = query.value(rec.indexOf("semantika_1")).toString();
 
@@ -280,7 +280,7 @@ QList<SignData*> EventsMapModel::getEvents(long int hMap,double x1,double y1,dou
 	//		}
 
 	//	 
-	//		// если зачек радио-теле центра (свой или вражеский), то добавляем вторую метрику
+	//		// РµСЃР»Рё Р·Р°С‡РµРє СЂР°РґРёРѕ-С‚РµР»Рµ С†РµРЅС‚СЂР° (СЃРІРѕР№ РёР»Рё РІСЂР°Р¶РµСЃРєРёР№), С‚Рѕ РґРѕР±Р°РІР»СЏРµРј РІС‚РѕСЂСѓСЋ РјРµС‚СЂРёРєСѓ
 	//		if ((signCode=="V0000169007")||(signCode=="V0000169029"))
 	//		{	
 	//			coord = new Coord(x_coord,y_coord+radius);
@@ -288,7 +288,7 @@ QList<SignData*> EventsMapModel::getEvents(long int hMap,double x1,double y1,dou
 	//		}
 
 
-	//		if (signCode=="L00000060504") // самолет
+	//		if (signCode=="L00000060504") // СЃР°РјРѕР»РµС‚
 	//		{	
 	//			coord = new Coord(x_coord+120000,y_coord+140000);
 	//			coordList.append(coord);
@@ -297,8 +297,8 @@ QList<SignData*> EventsMapModel::getEvents(long int hMap,double x1,double y1,dou
 	//		}
 
 
-	//		// если передвижная звуковещательная станция, то добавляем вторую метрику 
-	//		// (получаем ее как угол места и длину радиус-вектора, направленного из первой точки метрики)
+	//		// РµСЃР»Рё РїРµСЂРµРґРІРёР¶РЅР°СЏ Р·РІСѓРєРѕРІРµС‰Р°С‚РµР»СЊРЅР°СЏ СЃС‚Р°РЅС†РёСЏ, С‚Рѕ РґРѕР±Р°РІР»СЏРµРј РІС‚РѕСЂСѓСЋ РјРµС‚СЂРёРєСѓ 
+	//		// (РїРѕР»СѓС‡Р°РµРј РµРµ РєР°Рє СѓРіРѕР» РјРµСЃС‚Р° Рё РґР»РёРЅСѓ СЂР°РґРёСѓСЃ-РІРµРєС‚РѕСЂР°, РЅР°РїСЂР°РІР»РµРЅРЅРѕРіРѕ РёР· РїРµСЂРІРѕР№ С‚РѕС‡РєРё РјРµС‚СЂРёРєРё)
 	//		if (signCode=="V0000060505")
 	//		{	
 	//			double xx=4*radius*qCos(angle);
@@ -313,10 +313,10 @@ QList<SignData*> EventsMapModel::getEvents(long int hMap,double x1,double y1,dou
 
 	//		semantic_map[17501] = id_mpo_pso;
 	//		semantic_map[17502] = QString::number(SMI_MEANS);
-	//		semantic_map[18]=semantika_digit1_mpo_pso;	// иногда это наполнение значка (в тех случаях, когда не "дальность")
-	//		semantic_map[19]=semantika_1_mpo_pso;	// подпись значка
-	//		semantic_map[32811]=semantika_digit1_mpo_pso;	//дальность действия средства
-	//		semantic_map[32852]=semantika_digit2_mpo_pso;	//направление (угол) действия средства
+	//		semantic_map[18]=semantika_digit1_mpo_pso;	// РёРЅРѕРіРґР° СЌС‚Рѕ РЅР°РїРѕР»РЅРµРЅРёРµ Р·РЅР°С‡РєР° (РІ С‚РµС… СЃР»СѓС‡Р°СЏС…, РєРѕРіРґР° РЅРµ "РґР°Р»СЊРЅРѕСЃС‚СЊ")
+	//		semantic_map[19]=semantika_1_mpo_pso;	// РїРѕРґРїРёСЃСЊ Р·РЅР°С‡РєР°
+	//		semantic_map[32811]=semantika_digit1_mpo_pso;	//РґР°Р»СЊРЅРѕСЃС‚СЊ РґРµР№СЃС‚РІРёСЏ СЃСЂРµРґСЃС‚РІР°
+	//		semantic_map[32852]=semantika_digit2_mpo_pso;	//РЅР°РїСЂР°РІР»РµРЅРёРµ (СѓРіРѕР») РґРµР№СЃС‚РІРёСЏ СЃСЂРµРґСЃС‚РІР°
 
 	//		SignData *signData = new SignData(signCode,coordList,semantic_map);
 	//			

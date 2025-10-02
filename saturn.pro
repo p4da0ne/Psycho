@@ -2,7 +2,7 @@ TEMPLATE = subdirs
 
 CONFIG += ordered
 
-QT   += gui widgets sql
+QT   += core gui widgets sql
 
 # Directories
 SUBDIRS += \

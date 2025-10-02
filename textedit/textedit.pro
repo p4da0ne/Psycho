@@ -2,6 +2,7 @@ TEMPLATE        = lib
 TARGET          = textedit
 DESTDIR = ../build
 CONFIG          += qt warn_on
+QT += widgets printsupport core5compat
 
 build_all:!build_pass {
     CONFIG -= build_all

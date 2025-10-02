@@ -14,7 +14,7 @@ add_object::add_object(int id_region, bool is_parent_ko,QWidget *parent)
 	id_bool_preg=is_parent_ko;
 	connect(UI->add_object_pushButton,SIGNAL(clicked()),this,SLOT(add_new_object()));
 	connect(UI->cancel_pushButton,SIGNAL(clicked()),this,SLOT(close()));
-	setWindowTitle("ƒÓ·‡‚ËÚ¸ Â„ËÓÌ");
+	setWindowTitle("–î–æ–±–∞–≤–∏—Ç—å —Ä–µ–≥–∏–æ–Ω");
     setWindowIcon(QIcon(":/Resources/planet.png"));
     fill_combobox_type_region(UI->type_region_combo);
 //	setWindowIcon(QIcon("./img/database.png"));
@@ -25,7 +25,7 @@ add_object::~add_object()
 {
 	delete UI;
 }
-//========================== ÍÓÏ·Ó·ÓÍÒ ÒÚ‡Ì˚ =============================
+//========================== –∫–æ–º–±–æ–±–æ–∫—Å —Å—Ç—Ä–∞–Ω—ã =============================
 void add_object::fill_combobox_type_region(QComboBox *box)
 {
     box->clear();
@@ -45,7 +45,7 @@ void add_object::add_new_object(){
 
     if (UI->type_region_combo->currentIndex() == 0){
        QMessageBox::StandardButton ret;
-       ret = QMessageBox::critical (this,"Œ¯Ë·Í‡",("¬˚·ÂËÚÂ ÚËÔ Â„ËÓÌ‡ "),QMessageBox::Ok );
+       ret = QMessageBox::critical (this,"–û—à–∏–±–∫–∞",("–í—ã–±–µ—Ä–∏—Ç–µ —Ç–∏–ø —Ä–µ–≥–∏–æ–Ω–∞ "),QMessageBox::Ok );
     }
 
 
@@ -53,8 +53,8 @@ void add_object::add_new_object(){
     int id_type = UI->type_region_combo->itemData(UI->type_region_combo->currentIndex()).toInt();
 	QString description_region=UI->desc_region_textEdit->toPlainText();
 	
-	if (UI->name_region_lineEdit->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Œ¯Ë·Í‡",("¬‚Â‰ËÚÂ Ì‡ËÏÂÌÓ‚‡ÌËÂ Â„ËÓÌ‡ "),QMessageBox::Ok);return;}
-	else if (UI->desc_region_textEdit->toPlainText() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"Œ¯Ë·Í‡",("¬‚Â‰ËÚÂ ÓÔËÒ‡ÌËÂ Â„ËÓÌ‡ "),QMessageBox::Ok);return;}
+	if (UI->name_region_lineEdit->text() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"–û—à–∏–±–∫–∞",("–í–≤–µ–¥–∏—Ç–µ –Ω–∞–∏–º–µ–Ω–æ–≤–∞–Ω–∏–µ —Ä–µ–≥–∏–æ–Ω–∞ "),QMessageBox::Ok);return;}
+	else if (UI->desc_region_textEdit->toPlainText() == ""){QMessageBox::StandardButton ret; ret = QMessageBox::warning (this,"–û—à–∏–±–∫–∞",("–í–≤–µ–¥–∏—Ç–µ –æ–ø–∏—Å–∞–Ω–∏–µ —Ä–µ–≥–∏–æ–Ω–∞ "),QMessageBox::Ok);return;}
 	
 		QSqlQuery query;
 

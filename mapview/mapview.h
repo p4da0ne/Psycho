@@ -7,9 +7,11 @@
 #include <QDialog>
 #include <QPrinter>
 #include <QCheckBox>
+#include <QRadioButton>
 
 #include "config_mapview.h"
 #include "mapscroll.h"
+#include "qlistview.h"
 #include "view_manage.h"
 #include "change_coord_dialog.h"
 
@@ -42,7 +44,7 @@ private:
 	HSITE			openMapSit(QString sitFileName, QString rscFilePath);						
 	void			closeSitByName(QString sitFileName);										
 	void			updateSite(int objectType);
-	//------ Метод для отрисовки условных знаков на пользовательской карте -------------
+	//------ РњРµС‚РѕРґ РґР»СЏ РѕС‚СЂРёСЃРѕРІРєРё СѓСЃР»РѕРІРЅС‹С… Р·РЅР°РєРѕРІ РЅР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРѕР№ РєР°СЂС‚Рµ -------------
 	void			createSitObjects(HSITE hSite,QList<SignData*> signsList);					
 	//------------------------------------------------------------------------
 	QMenu*			createGreateLessScaleMenu();	
@@ -52,7 +54,7 @@ private:
 	void			showInformationDialog(QString information);
 	void			showViewScale();
 	void			changeObjectCoordInDB();
-	//---- Меню по нажатию правой кнопки мыши (специфичные для конкретного программного комплекса) -------------------
+	//---- РњРµРЅСЋ РїРѕ РЅР°Р¶Р°С‚РёСЋ РїСЂР°РІРѕР№ РєРЅРѕРїРєРё РјС‹С€Рё (СЃРїРµС†РёС„РёС‡РЅС‹Рµ РґР»СЏ РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ РїСЂРѕРіСЂР°РјРјРЅРѕРіРѕ РєРѕРјРїР»РµРєСЃР°) -------------------
 	QMenu*			createFormationsMenu(QStringList objInfo);
 	QMenu*			createSpecialConditionsMenu(QStringList objInfo);
 	QMenu*			createSmiMeansMenu(QStringList objInfo);
@@ -83,9 +85,9 @@ private slots:
 	void			slotObjectReport();
 	void			slotFormationPsiLooses();
 	void			slotRegionMpos();
-	void			slotMoveObject(); //слот обработки перемещения объекта
+	void			slotMoveObject(); //СЃР»РѕС‚ РѕР±СЂР°Р±РѕС‚РєРё РїРµСЂРµРјРµС‰РµРЅРёСЏ РѕР±СЉРµРєС‚Р°
 	void			changeObjectCoordInDB(double x, double y);
-	//------------ Обработчики нажатий на кнопки мыши (общие для разных программных комплексов) ------------------
+	//------------ РћР±СЂР°Р±РѕС‚С‡РёРєРё РЅР°Р¶Р°С‚РёР№ РЅР° РєРЅРѕРїРєРё РјС‹С€Рё (РѕР±С‰РёРµ РґР»СЏ СЂР°Р·РЅС‹С… РїСЂРѕРіСЂР°РјРјРЅС‹С… РєРѕРјРїР»РµРєСЃРѕРІ) ------------------
 	void			slotMouseLeftButtonClicked(QPoint pe, QList<QStringList> objectsList);
 	void			slotMouseRightButtonClicked(QPoint pe, QList<QStringList> objectsList);
 	void			mouseRightSimpleMenu(QPoint pe);
@@ -97,7 +99,8 @@ private slots:
 	void			showCheckedCalcResults();
 	void			showCheckedEvents();
 
-	void			PrintMapSlot();
+	//РїРµС‡Р°С‚СЊ РІСЃРµР№ РєР°СЂС‚С‹
+        void			PrintMapSlot();
 	void			PrintScreenSlot();
 
 	void			slotSelectButtonToggled(bool checked);
@@ -120,7 +123,7 @@ private:
 	QVBoxLayout *vertLayout;
 	QHBoxLayout *centralLayout;
 
-	//---- Чекбоксы фильтра отображения -----
+	//---- Р§РµРєР±РѕРєСЃС‹ С„РёР»СЊС‚СЂР° РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ -----
 	QCheckBox *mpo_regions_checkbox;
 	QCheckBox *smi_means_checkbox;
 	QCheckBox *formation_means_checkbox;
@@ -128,13 +131,13 @@ private:
 	QCheckBox *formations_checkbox;
 	QCheckBox *conditions_checkbox;
 	QCheckBox *persones_checkbox;
-	//---- Чекбоксы фильтра расчетных задач -----
+	//---- Р§РµРєР±РѕРєСЃС‹ С„РёР»СЊС‚СЂР° СЂР°СЃС‡РµС‚РЅС‹С… Р·Р°РґР°С‡ -----
 	QCheckBox *mps_our_Mil_checkbox;
 	QCheckBox *mps_enemy_checkbox;
 	QCheckBox *psi_looses_checkbox;
 	//--------------------------------------
 
-	//--- Элементы фильтра событий -------
+	//--- Р­Р»РµРјРµРЅС‚С‹ С„РёР»СЊС‚СЂР° СЃРѕР±С‹С‚РёР№ -------
 	QDateTimeEdit *beginEventDateTime;
 	QDateTimeEdit *endEventDateTime;
 	QRadioButton *allObjectsButton;

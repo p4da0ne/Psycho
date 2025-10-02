@@ -5,7 +5,7 @@
 #include <QToolButton>
 #include "ui_signs_edit.h"
 
-SignsEdit::SignsEdit(QDialog *parent, Qt::WFlags flags)
+SignsEdit::SignsEdit(QDialog *parent, QFlag flags)
     : QDialog(parent, flags),
       UI (new Ui::signs_edit_form)
 {
@@ -25,7 +25,7 @@ SignsEdit::~SignsEdit(){
 }
 
 /*!
-  Построение дерева типов объектов поражения
+  РџРѕСЃС‚СЂРѕРµРЅРёРµ РґРµСЂРµРІР° С‚РёРїРѕРІ РѕР±СЉРµРєС‚РѕРІ РїРѕСЂР°Р¶РµРЅРёСЏ
   void SignsEdit::show_object_types()
   */
 void SignsEdit::show_object_types(){
@@ -34,42 +34,42 @@ void SignsEdit::show_object_types(){
     parentItem = model->invisibleRootItem();
 
     // Add type from type_ls table
-    QStandardItem *type_ls_item = new QStandardItem("Типы формирований");
+    QStandardItem *type_ls_item = new QStandardItem("РўРёРїС‹ С„РѕСЂРјРёСЂРѕРІР°РЅРёР№");
     type_ls_item->setData("type_ls",Qt::UserRole);
     parentItem->appendRow(type_ls_item);
     str_query="SELECT id_sign, name_type_ls, id_type_ls FROM type_ls order by id_type_ls";
     this->add_type_to_model(str_query,type_ls_item);
 
     // Add type from type_mpo_pso table
-    QStandardItem *type_mpo_pso_item = new QStandardItem("Типы средств");
+    QStandardItem *type_mpo_pso_item = new QStandardItem("РўРёРїС‹ СЃСЂРµРґСЃС‚РІ");
     type_mpo_pso_item->setData("type_mpo_pso",Qt::UserRole);
     parentItem->appendRow(type_mpo_pso_item);
     str_query="SELECT id_sign, name_type_mpo_pso, id_type_mpo_pso FROM type_mpo_pso order by id_type_mpo_pso";
     this->add_type_to_model(str_query,type_mpo_pso_item);
 
     // Add type from type_persones table
-    QStandardItem *type_persones_item = new QStandardItem("Типы персоналий");
+    QStandardItem *type_persones_item = new QStandardItem("РўРёРїС‹ РїРµСЂСЃРѕРЅР°Р»РёР№");
     type_persones_item->setData("type_persones",Qt::UserRole);
     parentItem->appendRow(type_persones_item);
     str_query="SELECT id_sign, name_type_persones, id_type_persones FROM type_persones order by id_type_persones";
     this->add_type_to_model(str_query,type_persones_item);
 
     // Add type from type_special_conditions table
-    QStandardItem *type_special_conditions_item = new QStandardItem("Типы особых условий");
+    QStandardItem *type_special_conditions_item = new QStandardItem("РўРёРїС‹ РѕСЃРѕР±С‹С… СѓСЃР»РѕРІРёР№");
     type_special_conditions_item->setData("type_special_conditions",Qt::UserRole);
     parentItem->appendRow(type_special_conditions_item);
     str_query="SELECT id_sign, name_type_special_conditions, id_type_special_conditions FROM type_special_conditions order by id_type_special_conditions";
     this->add_type_to_model(str_query,type_special_conditions_item);
 
     // Add type from type_region table
-    QStandardItem *type_region_item = new QStandardItem("Типы регионов");
+    QStandardItem *type_region_item = new QStandardItem("РўРёРїС‹ СЂРµРіРёРѕРЅРѕРІ");
     type_region_item->setData("type_region",Qt::UserRole);
     parentItem->appendRow(type_region_item);
     str_query="SELECT id_sign, name_type_region, id_type_region FROM type_region order by id_type_region";
     this->add_type_to_model(str_query,type_region_item);
 
     // Add type from type_region table
-    QStandardItem *type_event_item = new QStandardItem("Типы событий");
+    QStandardItem *type_event_item = new QStandardItem("РўРёРїС‹ СЃРѕР±С‹С‚РёР№");
     type_event_item->setData("type_event",Qt::UserRole);
     parentItem->appendRow(type_event_item);
     str_query="SELECT id_sign, name_type_event, id_type_event FROM type_event order by id_type_event";
@@ -80,8 +80,8 @@ void SignsEdit::show_object_types(){
 }
 
 /*!
-Отображение информации о знаках выбранного типа объектов
-Обработка нажатия на элемент дерева типов объектов
+РћС‚РѕР±СЂР°Р¶РµРЅРёРµ РёРЅС„РѕСЂРјР°С†РёРё Рѕ Р·РЅР°РєР°С… РІС‹Р±СЂР°РЅРЅРѕРіРѕ С‚РёРїР° РѕР±СЉРµРєС‚РѕРІ
+РћР±СЂР°Р±РѕС‚РєР° РЅР°Р¶Р°С‚РёСЏ РЅР° СЌР»РµРјРµРЅС‚ РґРµСЂРµРІР° С‚РёРїРѕРІ РѕР±СЉРµРєС‚РѕРІ
 void SignsEdit::show_signs_table(const QModelIndex &index)
 */
 void SignsEdit::show_signs_table(const QModelIndex &index){
@@ -91,7 +91,7 @@ void SignsEdit::show_signs_table(const QModelIndex &index){
 }
 
 /*!
-Построение таблицы знаков объектов
+РџРѕСЃС‚СЂРѕРµРЅРёРµ С‚Р°Р±Р»РёС†С‹ Р·РЅР°РєРѕРІ РѕР±СЉРµРєС‚РѕРІ
 void SignsEdit::create_signs_table(const QModelIndex &index)
 */
 void SignsEdit::create_signs_table(const QModelIndex &index)
@@ -105,7 +105,7 @@ void SignsEdit::create_signs_table(const QModelIndex &index)
     QStringList h_list;
     h_list << "" << tr("Sign") << tr("Code") << tr("Sign name") <<tr("Delete");
     UI->object_signs_table->setHorizontalHeaderLabels(h_list);
-    //ЗАпрос на выдачу id_sign из выбранной таблицы
+    //Р—РђРїСЂРѕСЃ РЅР° РІС‹РґР°С‡Сѓ id_sign РёР· РІС‹Р±СЂР°РЅРЅРѕР№ С‚Р°Р±Р»РёС†С‹
     QString table_type=index.parent().data(Qt::UserRole).toString();
     QSqlQuery query,query_sign;
     QString str = QString("select id_%1, name_%1, id_sign from %1 where id_%1 = %2").arg(table_type).arg(index.data(Qt::UserRole).toInt());
@@ -151,12 +151,12 @@ void SignsEdit::create_signs_table(const QModelIndex &index)
         }
     }
     UI->object_signs_table->resizeColumnsToContents();
-    UI->object_signs_table->horizontalHeader()->setResizeMode(3,QHeaderView::Stretch);
+    UI->object_signs_table->horizontalHeader()->setSectionResizeMode(3,QHeaderView::Stretch);
 }
 
 
 /*!
-Добавление знака для типа объекта
+Р”РѕР±Р°РІР»РµРЅРёРµ Р·РЅР°РєР° РґР»СЏ С‚РёРїР° РѕР±СЉРµРєС‚Р°
 void SignsEdit::add_new_sign()
 */
 void SignsEdit::add_new_sign()
@@ -233,7 +233,7 @@ void SignsEdit::add_new_sign()
     {
         if((sign_filepath_edit->text() == "") || (sign_code_edit->text() == "") || (sign_name_edit->text() == "")) return;
 
-        //------ По кнопке ОК добавление в БД нового знака для типа объекта --------
+        //------ РџРѕ РєРЅРѕРїРєРµ РћРљ РґРѕР±Р°РІР»РµРЅРёРµ РІ Р‘Р” РЅРѕРІРѕРіРѕ Р·РЅР°РєР° РґР»СЏ С‚РёРїР° РѕР±СЉРµРєС‚Р° --------
         QSqlQuery query;
         query.prepare("INSERT INTO signs (sign_key,sign_name,sign_picture) VALUES (?,?,?) RETURNING id_sign");
         query.addBindValue(sign_code_edit->text());
@@ -283,7 +283,7 @@ void SignsEdit::add_new_sign()
 
 
 /*!
-Функция очищения таблицы (удаление всех строк и столбцов)
+Р¤СѓРЅРєС†РёСЏ РѕС‡РёС‰РµРЅРёСЏ С‚Р°Р±Р»РёС†С‹ (СѓРґР°Р»РµРЅРёРµ РІСЃРµС… СЃС‚СЂРѕРє Рё СЃС‚РѕР»Р±С†РѕРІ)
 void SignsEdit::clear_tableWidget(QTableWidget *table)
 */
 void SignsEdit::clear_tableWidget(QTableWidget *table)
@@ -303,7 +303,7 @@ void SignsEdit::clear_tableWidget(QTableWidget *table)
 }
 
 /*!
-Получение пути файла изображения знака объекта
+РџРѕР»СѓС‡РµРЅРёРµ РїСѓС‚Рё С„Р°Р№Р»Р° РёР·РѕР±СЂР°Р¶РµРЅРёСЏ Р·РЅР°РєР° РѕР±СЉРµРєС‚Р°
 void SignsEdit::get_path()
 */
 void SignsEdit::get_path()
@@ -316,7 +316,7 @@ void SignsEdit::get_path()
 }
 
 /*!
-Удаление знака объекта
+РЈРґР°Р»РµРЅРёРµ Р·РЅР°РєР° РѕР±СЉРµРєС‚Р°
 void SignsEdit::delete_sign(int row, int column)
 */
 void SignsEdit::delete_sign(int row, int column)
@@ -353,7 +353,7 @@ void SignsEdit::delete_sign(int row, int column)
 }
 
 /*!
-Сохранение изменений после редактирования знаков
+РЎРѕС…СЂР°РЅРµРЅРёРµ РёР·РјРµРЅРµРЅРёР№ РїРѕСЃР»Рµ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ Р·РЅР°РєРѕРІ
 void SignsEdit::save_changes()
 */
 void SignsEdit::save_changes()
@@ -387,10 +387,10 @@ void SignsEdit::save_changes()
 }
 
 /*!
-Добавление одного типа объекта в модель типов
+Р”РѕР±Р°РІР»РµРЅРёРµ РѕРґРЅРѕРіРѕ С‚РёРїР° РѕР±СЉРµРєС‚Р° РІ РјРѕРґРµР»СЊ С‚РёРїРѕРІ
 void SignsEdit::add_type_to_model(QString str_query, QStandardItem *parent)
-@str_query - строка запроса первый возвращаемый параметр - id типа, второй - имя
-@*parent - родительский узел (содержит название подгруппы типов)
+@str_query - СЃС‚СЂРѕРєР° Р·Р°РїСЂРѕСЃР° РїРµСЂРІС‹Р№ РІРѕР·РІСЂР°С‰Р°РµРјС‹Р№ РїР°СЂР°РјРµС‚СЂ - id С‚РёРїР°, РІС‚РѕСЂРѕР№ - РёРјСЏ
+@*parent - СЂРѕРґРёС‚РµР»СЊСЃРєРёР№ СѓР·РµР» (СЃРѕРґРµСЂР¶РёС‚ РЅР°Р·РІР°РЅРёРµ РїРѕРґРіСЂСѓРїРїС‹ С‚РёРїРѕРІ)
 */
 void SignsEdit::add_type_to_model(QString str_query, QStandardItem *parent)
 {

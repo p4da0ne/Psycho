@@ -4,7 +4,7 @@ TARGET = reports
 
 DESTDIR = ../build
 
-QT += sql
+QT += sql widgets printsupport core5compat
 
 INCLUDEPATH += . \
                 ../output \

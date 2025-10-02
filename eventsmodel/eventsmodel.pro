@@ -4,7 +4,7 @@ TARGET = eventsmodel
 
 DESTDIR = ../build
 
-QT += sql
+QT += sql widgets
 
 
 DEFINES += __USE_DLL_EVENTSMODEL

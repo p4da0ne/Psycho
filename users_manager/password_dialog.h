@@ -1,11 +1,11 @@
 #ifndef PASSWORD_DIALOG_H
 #define PASSWORD_DIALOG_H
 
-#include <QDialog>
-#include <QLineEdit>
-#include <QFormLayout>
-#include <QPushButton>
-#include <QMessageBox>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QFormLayout>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QMessageBox>
 #include <QVariant>
 
 

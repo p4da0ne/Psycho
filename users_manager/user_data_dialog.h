@@ -1,13 +1,13 @@
 #ifndef USER_DATA_DIALOG_H
 #define USER_DATA_DIALOG_H
 
-#include <QDialog>
-#include <QLabel>
-#include <QLineEdit>
-#include <QComboBox>
-#include <QFormLayout>
-#include <QPushButton>
-#include <QMessageBox>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QFormLayout>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QMessageBox>
 #include <QStandardItemModel>
 
 class UserDataDialog : public QDialog

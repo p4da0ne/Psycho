@@ -3,7 +3,7 @@ TARGET = supporting_tables
 
 DESTDIR = ../build
 
-QT              += sql network widgets gui
+QT              += sql network widgets gui core5compat
 
 DEPENDPATH +=   ../my_mapaccess \
                 ../dataaccess \

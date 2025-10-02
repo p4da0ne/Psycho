@@ -21,14 +21,14 @@ bool DataAccess::create_connection(QString db_driver_,QString database_,QString 
 	db.setUserName(user);
 	db.setPassword(user_password);
 	db.setHostName(hostname);
-	db.setPort(port);
+    db.setPort(port);
 	if(!db.open()){
 		message = db.lastError().text();
 		connection_flag = false;
 		return false;
 	}
 	else{
-		message = ("Соединение с базой данных установлено");
+		message = ("РЎРѕРµРґРёРЅРµРЅРёРµ СЃ Р±Р°Р·РѕР№ РґР°РЅРЅС‹С… СѓСЃС‚Р°РЅРѕРІР»РµРЅРѕ");
 		connection_flag = true;
 		return true;
 	}

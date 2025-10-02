@@ -58,9 +58,9 @@ QString calculating_mps::isEnemy(QString id_ls)
 	{
 		bool tmp = query.value(0).toBool();
 		if(tmp)
-			return QString("войск противника");
+			return QString("РІРѕР№СЃРє РїСЂРѕС‚РёРІРЅРёРєР°");
 		else
-			return QString("своих войск");
+			return QString("СЃРІРѕРёС… РІРѕР№СЃРє");
 	}
 	else
 		return QString();
@@ -75,9 +75,9 @@ QString calculating_mps::isEnemy(int id_ls)
 	{
 		bool tmp = query.value(0).toBool();
 		if(tmp)
-			return QString("войск противника");
+			return QString("РІРѕР№СЃРє РїСЂРѕС‚РёРІРЅРёРєР°");
 		else
-			return QString("своих войск");
+			return QString("СЃРІРѕРёС… РІРѕР№СЃРє");
 	}
 	else
 		return QString();

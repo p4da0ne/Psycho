@@ -1,13 +1,13 @@
 #ifndef USERS_MANAGER_H
 #define USERS_MANAGER_H
 
-#include <QDialog>
+#include <QtWidgets/QDialog>
 #include "config_users_manager.h"
 #include <QStandardItemModel>
 #include <QStandardItem>
-#include <QTableView>
-#include <QToolButton>
-#include <QMessageBox>
+#include <QtWidgets/QTableView>
+#include <QtWidgets/QToolButton>
+#include <QtWidgets/QMessageBox>
 #include "user_data_dialog.h"
 #include "password_dialog.h"
 
