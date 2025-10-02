@@ -1,0 +1,3 @@
+[submodule "thirdparty/maplibre-native"]
+	path = thirdparty/maplibre-native
+	url = https://github.com/maplibre/maplibre-native.git
