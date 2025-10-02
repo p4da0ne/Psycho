@@ -37,3 +37,20 @@ build/event_manager.dll
 build/eventsmodel.dll
 build/users_manager.dll
 saturn.suo
+# Файлы и директории, создаваемые CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+CMakeBuild/
+*.cmake
+!CMakeLists.txt
+
+# Директории сборки (build directories)
+build/
+*/build/
+*/*/build/
+
+# Прочие временные файлы
+*.tmp
+*.swp

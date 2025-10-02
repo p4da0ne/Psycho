@@ -1,8 +1,11 @@
 ﻿#ifndef MAPVIEWNEW_H
 #define MAPVIEWNEW_H
 
+#include <QQmlApplicationEngine>
+#include <QQmlContext>
 #include <QtQuickWidgets/QQuickWidget>
-#include <QGui>
+#include <QQuickWindow>
+#include <QWidget>
 #include <QObject>
 #include <QLineEdit>
 #include <QDialog>
@@ -26,20 +29,14 @@ class __EXPORT_MAPVIEWNEW MapViewNew : public QQuickWidget
     Q_OBJECT
 
 public:
-    MapView(QWidget *parent=0);
-    ~MapView();
+    MapViewNew(QWidget *parent=0);
+    ~MapViewNew();
 
 protected:
     void			keyPressEvent(QKeyEvent *e);
 
 
 private:
-    void			initToolButtonsPanel();
-    void			initSaturnLeftMenu();
-    QWidget*		createObjectPanel();
-    QWidget*		createCalculatePanel();
-    QWidget*		createEventPanel();
-
     Coord*			planeToWGS(long int hMap,Coord *coord);
     bool			openMap(QString mapFilepath = "");
     HSITE			openMapSit(QString sitFileName, QString rscFilePath);
