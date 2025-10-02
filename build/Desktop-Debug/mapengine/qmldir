@@ -1,8 +1,0 @@
-module mapengine
-linktarget mapengineplugin
-optional plugin mapengineplugin
-classname mapenginePlugin
-typeinfo mapengine.qmltypes
-prefer :/qt/qml/mapengine/
-MapView 1.0 MapView.qml
-

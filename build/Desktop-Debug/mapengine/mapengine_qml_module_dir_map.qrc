@@ -1,6 +1,0 @@
-<RCC>
-  <qresource prefix="/">
-    <file alias="/qt/qml/mapengine">C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/mapengine</file>
-
-  </qresource>
-</RCC>

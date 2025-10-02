@@ -1,3 +1,0 @@
-C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/eventsmodel/eventsmodel_autogen/include/../EWIEGA46WW/moc_event.cpp.json
-C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/eventsmodel/eventsmodel_autogen/include/../EWIEGA46WW/moc_event_object.cpp.json
-C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/eventsmodel/eventsmodel_autogen/include/../EWIEGA46WW/moc_eventsmodel.cpp.json

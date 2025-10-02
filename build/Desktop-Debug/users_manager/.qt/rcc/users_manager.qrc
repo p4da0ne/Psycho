@@ -1,9 +1,0 @@
-<RCC>
-  <qresource prefix="/">
-    <file alias="Resources/add_but.png">C:/Qt/repos/saturn_new_map_engine/users_manager/Resources/add_but.png</file>
-    <file alias="Resources/delete_but.png">C:/Qt/repos/saturn_new_map_engine/users_manager/Resources/delete_but.png</file>
-    <file alias="Resources/edit_but.png">C:/Qt/repos/saturn_new_map_engine/users_manager/Resources/edit_but.png</file>
-    <file alias="Resources/stock_lock.png">C:/Qt/repos/saturn_new_map_engine/users_manager/Resources/stock_lock.png</file>
-  </qresource>
-</RCC>
-

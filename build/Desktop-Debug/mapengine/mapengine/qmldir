@@ -1,5 +1,0 @@
-module mapengine
-typeinfo mapengine.qmltypes
-prefer :/qt/qml/mapengine/
-MapView 1.0 MapView.qml
-

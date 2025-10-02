@@ -1,5 +1,0 @@
-module maplibre_engine
-typeinfo appmaplibre_engine.qmltypes
-prefer :/qt/qml/maplibre_engine/
-Main 1.0 Main.qml
-

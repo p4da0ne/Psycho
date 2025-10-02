@@ -1,4 +1,0 @@
-C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/reports/reports_autogen/include/../EWIEGA46WW/moc_report_data.cpp.json
-C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/reports/reports_autogen/include/../EWIEGA46WW/moc_report_view.cpp.json
-C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/reports/reports_autogen/include/../EWIEGA46WW/moc_reports.cpp.json
-C:/Qt/repos/saturn_new_map_engine/build/Desktop-Debug/reports/reports_autogen/include/../EWIEGA46WW/moc_textprinter.cpp.json
