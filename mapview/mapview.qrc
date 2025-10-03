@@ -17,5 +17,6 @@
 		<file>Resources/edit_1.png</file>
 		<file>Resources/event-search.png</file>
 		<file>Resources/search.png</file>
+        <file>MapView.qml</file>
     </qresource>
 </RCC>

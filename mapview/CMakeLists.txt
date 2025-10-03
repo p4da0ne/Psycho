@@ -3,7 +3,7 @@ project(mapview VERSION 1.0 LANGUAGES C CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core5Compat Gui PrintSupport Sql Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Core5Compat Gui PrintSupport Sql Widgets QuickWidgets)
 find_package(QMapLibre REQUIRED COMPONENTS Core Location)
 
 qt_standard_project_setup()
@@ -51,13 +51,14 @@ target_compile_definitions(mapview PRIVATE
 )
 
 target_link_libraries(mapview PUBLIC
-    Qt::Core
-    Qt::Core5Compat
-    Qt::Gui
-    Qt::PrintSupport
-    Qt::Sql
-    Qt::Widgets
+    Qt6::Core
+    Qt6::Core5Compat
+    Qt6::Gui
+    Qt6::PrintSupport
+    Qt6::Sql
+    Qt6::Widgets
     Qt6::Qml
+    Qt6::QuickWidgets
     Qt6::Quick
     Qt6::Location
     Qt6::Positioning

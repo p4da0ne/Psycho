@@ -49,6 +49,7 @@ public:
 	QMdiSubWindow * obmanager;
 	QMdiSubWindow * signs_window;
 	QMdiSubWindow * events_window;
+    QMdiSubWindow* newMap_window;
 
 	QList<QMdiSubWindow *> subwindowList;
 
@@ -61,6 +62,7 @@ private slots:
 	void show_login_form();
 	void create_user_menu(int id_user);
 	void show_map_form();
+    void show_newMap_widget();
 	void show_supporting_tables_form();
 	void show_object_manager_form();
     void show_signs_edit();
@@ -88,6 +90,7 @@ private:
 	QMenu * DB_work_menu;
 	QMenu * oper_menu;
 	QAction * map_act;
+    QAction * newMap_act;
 	QAction * open_map_sett_action;
 	QAction * backup_db_action;
 ///////////////////////////////////////////////////
@@ -117,6 +120,7 @@ private:
 	bool test_db_connection();
 	int login(QString login_name,QString password);
 	void add_mapwork(QMenu *oper_menu);
+    void add_mapworkReworked();
 	void add_menu_db_connection(QMenu *settings_menu);
 	void add_menu_manage_users(QMenu *settings_menu);
 	void add_menu_map_settings(QMenu *settings_menu);

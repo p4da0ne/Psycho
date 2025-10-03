@@ -3,7 +3,7 @@
 
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
-#include <QtQuickWidgets/QQuickWidget>
+#include <QtQuickWidgets/QtQuickWidgets>
 #include <QQuickWindow>
 #include <QWidget>
 #include <QObject>
@@ -14,10 +14,6 @@
 #include <QRadioButton>
 
 #include "config_mapview.h"
-#include "mapscroll.h"
-#include "qlistview.h"
-#include "view_manage.h"
-#include "change_coord_dialog.h"
 
 
 #define SETTINGS_ORGANIZATION "vka"
@@ -30,15 +26,15 @@ class __EXPORT_MAPVIEWNEW MapViewNew : public QQuickWidget
 
 public:
     MapViewNew(QWidget *parent=0);
-    ~MapViewNew();
+    // ~MapViewNew();
 
 protected:
-    void			keyPressEvent(QKeyEvent *e);
+    // void			keyPressEvent(QKeyEvent *e);
 
 
 private:
     // Coord*			planeToWGS(long int hMap,Coord *coord);
-    bool			openMap(QString mapFilepath = "");
+    // bool			openMap(QString mapFilepath = "");
     // HSITE			openMapSit(QString sitFileName, QString rscFilePath);
     // void			closeSitByName(QString sitFileName);
     // void			updateSite(int objectType);
@@ -62,107 +58,107 @@ private:
     // QMenu*			createPersonnelMenu(QStringList objInfo);
     // QMenu*			createEventMenu(QStringList objInfo);
     // ----------------------------------------------------------------------
-    void			showMessageToUser(const QString);
+    // void			showMessageToUser(const QString);
 private slots:
-    void			openNewMap();
-    void			openMapFromSettings();
+    // void			openNewMap();
+    // void			openMapFromSettings();
     // void			openRST();
     // void			closeRST();
     // void			closeSelectedRST();
     // void			closeAllRST();
     // void			lessScale();
     // void			greateScale();
-    void			closeMap();
+    // void			closeMap();
 
     // void			changeBrihgtUp();
     // void			changeBrihgtDown();
     // void			changeContrastUp();
     // void			changeContrastDown();
-    void			showCoordinates(QPointF xyCoord);
-    void			slotObjectInfo();
-    void			slotObjectReport();
-    void			slotFormationPsiLooses();
-    void			slotRegionMpos();
-    void			slotMoveObject(); //слот обработки перемещения объекта
-    void			changeObjectCoordInDB(double x, double y);
+    // void			showCoordinates(QPointF xyCoord);
+    // void			slotObjectInfo();
+    // void			slotObjectReport();
+    // void			slotFormationPsiLooses();
+    // void			slotRegionMpos();
+    // void			slotMoveObject(); //слот обработки перемещения объекта
+    // void			changeObjectCoordInDB(double x, double y);
     //------------ Обработчики нажатий на кнопки мыши (общие для разных программных комплексов) ------------------
-    void			slotMouseLeftButtonClicked(QPoint pe, QList<QStringList> objectsList);
-    void			slotMouseRightButtonClicked(QPoint pe, QList<QStringList> objectsList);
-    void			mouseRightSimpleMenu(QPoint pe);
-    void			addEvent();
-    void			slotEventMedia();
-    void			slotDeleteEvent();
+    // void			slotMouseLeftButtonClicked(QPoint pe, QList<QStringList> objectsList);
+    // void			slotMouseRightButtonClicked(QPoint pe, QList<QStringList> objectsList);
+    // void			mouseRightSimpleMenu(QPoint pe);
+    // void			addEvent();
+    // void			slotEventMedia();
+    // void			slotDeleteEvent();
     //======================================================
-    void			showCheckedObjects();
-    void			showCheckedCalcResults();
-    void			showCheckedEvents();
+    // void			showCheckedObjects();
+    // void			showCheckedCalcResults();
+    // void			showCheckedEvents();
 
     //печать всей карты
     // void			PrintMapSlot();
     // void			PrintScreenSlot();
 
-    void			slotSelectButtonToggled(bool checked);
-    void			slotSearchObject();
-    void			chooseSelectedObjects();
-    void			chooseAllObjects();
+    // void			slotSelectButtonToggled(bool checked);
+    // void			slotSearchObject();
+    // void			chooseSelectedObjects();
+    // void			chooseAllObjects();
 
-    void			slotSelectedObjectsListViewCustomMenu(const QPoint &pe);
-    void			slotRemoveOneObject();
-    void			slotClearSelectedList();
+    // void			slotSelectedObjectsListViewCustomMenu(const QPoint &pe);
+    // void			slotRemoveOneObject();
+    // void			slotClearSelectedList();
 
 private:
-    QTextCodec		* MainCodec;
-    ViewManage		* model;
-    QLineEdit		* cursor_coord;
-    QDialog			* info_dialog;
+    // QTextCodec		* MainCodec;
+    // ViewManage		* model;
+    // QLineEdit		* cursor_coord;
+    // QDialog			* info_dialog;
     // HDC				hdc;
 
     // QVBoxLayout *vertLayout;
     // QHBoxLayout *centralLayout;
 
     //---- Чекбоксы фильтра отображения -----
-    QCheckBox *mpo_regions_checkbox;
-    QCheckBox *smi_means_checkbox;
-    QCheckBox *formation_means_checkbox;
-    QCheckBox *organization_means_checkbox;
-    QCheckBox *formations_checkbox;
-    QCheckBox *conditions_checkbox;
-    QCheckBox *persones_checkbox;
+    // QCheckBox *mpo_regions_checkbox;
+    // QCheckBox *smi_means_checkbox;
+    // QCheckBox *formation_means_checkbox;
+    // QCheckBox *organization_means_checkbox;
+    // QCheckBox *formations_checkbox;
+    // QCheckBox *conditions_checkbox;
+    // QCheckBox *persones_checkbox;
     //---- Чекбоксы фильтра расчетных задач -----
-    QCheckBox *mps_our_Mil_checkbox;
-    QCheckBox *mps_enemy_checkbox;
-    QCheckBox *psi_looses_checkbox;
+    // QCheckBox *mps_our_Mil_checkbox;
+    // QCheckBox *mps_enemy_checkbox;
+    // QCheckBox *psi_looses_checkbox;
     //--------------------------------------
 
     //--- Элементы фильтра событий -------
-    QDateTimeEdit *beginEventDateTime;
-    QDateTimeEdit *endEventDateTime;
-    QRadioButton *allObjectsButton;
-    QRadioButton *selectObjectsButton;
-    QListView *selectedObjectsListView;
-    QStandardItemModel *selectedObjectsModel;
-    QWidget *selectObjectsWidget;
-    QLineEdit *searchObjectLineEdit;
+    // QDateTimeEdit *beginEventDateTime;
+    // QDateTimeEdit *endEventDateTime;
+    // QRadioButton *allObjectsButton;
+    // QRadioButton *selectObjectsButton;
+    // QListView *selectedObjectsListView;
+    // QStandardItemModel *selectedObjectsModel;
+    // QWidget *selectObjectsWidget;
+    // QLineEdit *searchObjectLineEdit;
 
-    QListView *eventStatesView;
-    QStandardItemModel *eventStatesModel;
+    // QListView *eventStatesView;
+    // QStandardItemModel *eventStatesModel;
 
-    QStandardItemModel *eventTypesModel;
-    QListView *eventTypesView;
-    QDateTime *startDateTime;
-    QDateTime *endDateTime;
+    // QStandardItemModel *eventTypesModel;
+    // QListView *eventTypesView;
+    // QDateTime *startDateTime;
+    // QDateTime *endDateTime;
     //---------------------------------------
-    ChangeCoordDialog *dlg;
-    QSettings *settings;
-    QMenu			* mouse_menu;
-    QDialog			* closeRSTdialog;
-    QDialog			* searchResultsDialog;
-    QLineEdit		* scale_info;
-    QListView		* searchResultListView;
-    QStandardItemModel *searchResultsModel;
+    // ChangeCoordDialog *dlg;
+    // QSettings *settings;
+    // QMenu			* mouse_menu;
+    // QDialog			* closeRSTdialog;
+    // QDialog			* searchResultsDialog;
+    // QLineEdit		* scale_info;
+    // QListView		* searchResultListView;
+    // QStandardItemModel *searchResultsModel;
 
-    QStandardItemModel *rstModel;
-    QListView *rstListView;
+    // QStandardItemModel *rstModel;
+    // QListView *rstListView;
 
 };
 

@@ -23,10 +23,11 @@
     #define __EXPORT_MAPVIEWNEW __declspec(dllexport)
 #else
     #define __EXPORT_MAPVIEW __declspec(dllimport)
-    #define __EXPORT_MAPVIEW __declspec(dllimport)
+    #define __EXPORT_MAPVIEWNEW __declspec(dllimport)
 #endif
 #else
-	#define __EXPORT_MAPVIEW
+    #define __EXPORT_MAPVIEW
+        #define __EXPORT_MAPVIEWNEW
 #endif
 
 #include <math.h>

@@ -5,7 +5,7 @@
 #include <event_manager.h>
 #include <mapview.h>
 #include <object_manager.h>
-#include <MapBridge.h>
+#include <MapViewNew.h>
 
 
 #if defined Q_OS_WIN
@@ -253,8 +253,8 @@ void Mainform::init_menu(int id_user_group)
     switch(id_user_group)
 	{
 	 case 0:	  //==== Незарегистрированный пользователь (вошел без логина и пароля)или нет соединения с БД ====
-		    UI->menuBar->clear();
-            open_map = new QAction("Открыть карту");// <--------------------------------------------------
+                UI->menuBar->clear();
+                open_map = new QAction("Открыть карту");// <--------------------------------------------------
 
 			menu = new QMenu("Файл");
             if(connection_flag == false)
@@ -350,6 +350,13 @@ void Mainform::add_mapwork(QMenu *oper_menu){
 	map_act->setIcon(QIcon(":/Resources/mapwork.png"));
 	oper_menu->addAction(map_act);
 	connect(map_act, SIGNAL(triggered()),this, SLOT(show_map_form()));
+}
+
+void Mainform::add_mapworkReworked(){
+    newMap_act = new QAction("Новый движок", this);
+    newMap_act->setIcon(QIcon(":/Resources/mapwork.png"));
+    UI->menuBar->addAction(newMap_act);
+    connect(newMap_act, &QAction::triggered, this, &Mainform::show_newMap_widget);
 }
 
 void Mainform::add_menu_db_connection(QMenu *settings_menu){
@@ -599,7 +606,29 @@ void Mainform::show_map_form()
 
 		return;
 }
+//==============Открытие карты на QMapLibre===========================
+void Mainform::show_newMap_widget(){
+    QList< MapViewNew* > list = m_mdiArea->findChildren< MapViewNew* >();
+    if(!list.isEmpty())
+    {
+        m_mdiArea->setActiveSubWindow(newMap_window);
+        return;
+    }
 
+    MapViewNew *map_view = new MapViewNew;
+
+
+    map_view->setWindowTitle("Работа с картой");
+    map_window = m_mdiArea->addSubWindow(map_view);
+    map_view->showMaximized();
+
+    map_window->setAttribute(Qt::WA_DeleteOnClose);
+    map_window->setWindowIcon(QIcon(":/Resources/mapwork.png"));
+    m_mdiArea->setActiveSubWindow(map_window);
+
+
+    return;
+}
 //============= Открытие формы работы с событиями ==============
 void Mainform::slotOpenEventManagerForm()
 {
