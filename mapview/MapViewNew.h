@@ -37,47 +37,47 @@ protected:
 
 
 private:
-    Coord*			planeToWGS(long int hMap,Coord *coord);
+    // Coord*			planeToWGS(long int hMap,Coord *coord);
     bool			openMap(QString mapFilepath = "");
-    HSITE			openMapSit(QString sitFileName, QString rscFilePath);
-    void			closeSitByName(QString sitFileName);
-    void			updateSite(int objectType);
+    // HSITE			openMapSit(QString sitFileName, QString rscFilePath);
+    // void			closeSitByName(QString sitFileName);
+    // void			updateSite(int objectType);
     //------ Метод для отрисовки условных знаков на пользовательской карте -------------
-    void			createSitObjects(HSITE hSite,QList<SignData*> signsList);
+    // void			createSitObjects(HSITE hSite,QList<SignData*> signsList);
     //------------------------------------------------------------------------
-    QMenu*			createGreateLessScaleMenu();
-    QAction*		createAddEventAction();
-    QMenu*			createObjectsListMenu(QList<QStringList> objectsList);
-    QMenu*			createObjectsListComplexMenu(QList<QStringList> objectsList);
-    void			showInformationDialog(QString information);
-    void			showViewScale();
-    void			changeObjectCoordInDB();
+    // QMenu*			createGreateLessScaleMenu();
+    // QAction*		createAddEventAction();
+    // QMenu*			createObjectsListMenu(QList<QStringList> objectsList);
+    // QMenu*			createObjectsListComplexMenu(QList<QStringList> objectsList);
+    // void			showInformationDialog(QString information);
+    // void			showViewScale();
+    // void			changeObjectCoordInDB();
     //---- Меню по нажатию правой кнопки мыши (специфичные для конкретного программного комплекса) -------------------
-    QMenu*			createFormationsMenu(QStringList objInfo);
-    QMenu*			createSpecialConditionsMenu(QStringList objInfo);
-    QMenu*			createSmiMeansMenu(QStringList objInfo);
-    QMenu*			createFormationsMeansMenu(QStringList objInfo);
-    QMenu*			createGroupsMeansMenu(QStringList objInfo);
-    QMenu*			createRegionsMenu(QStringList objInfo);
-    QMenu*			createPersonnelMenu(QStringList objInfo);
-    QMenu*			createEventMenu(QStringList objInfo);
-    //----------------------------------------------------------------------
+    // QMenu*			createFormationsMenu(QStringList objInfo);
+    // QMenu*			createSpecialConditionsMenu(QStringList objInfo);
+    // QMenu*			createSmiMeansMenu(QStringList objInfo);
+    // QMenu*			createFormationsMeansMenu(QStringList objInfo);
+    // QMenu*			createGroupsMeansMenu(QStringList objInfo);
+    // QMenu*			createRegionsMenu(QStringList objInfo);
+    // QMenu*			createPersonnelMenu(QStringList objInfo);
+    // QMenu*			createEventMenu(QStringList objInfo);
+    // ----------------------------------------------------------------------
     void			showMessageToUser(const QString);
 private slots:
     void			openNewMap();
     void			openMapFromSettings();
-    void			openRST();
-    void			closeRST();
-    void			closeSelectedRST();
-    void			closeAllRST();
-    void			lessScale();
-    void			greateScale();
+    // void			openRST();
+    // void			closeRST();
+    // void			closeSelectedRST();
+    // void			closeAllRST();
+    // void			lessScale();
+    // void			greateScale();
     void			closeMap();
 
-    void			changeBrihgtUp();
-    void			changeBrihgtDown();
-    void			changeContrastUp();
-    void			changeContrastDown();
+    // void			changeBrihgtUp();
+    // void			changeBrihgtDown();
+    // void			changeContrastUp();
+    // void			changeContrastDown();
     void			showCoordinates(QPointF xyCoord);
     void			slotObjectInfo();
     void			slotObjectReport();
@@ -98,8 +98,8 @@ private slots:
     void			showCheckedEvents();
 
     //печать всей карты
-    void			PrintMapSlot();
-    void			PrintScreenSlot();
+    // void			PrintMapSlot();
+    // void			PrintScreenSlot();
 
     void			slotSelectButtonToggled(bool checked);
     void			slotSearchObject();
@@ -112,14 +112,13 @@ private slots:
 
 private:
     QTextCodec		* MainCodec;
-    MapScroll		* mapwin;
     ViewManage		* model;
     QLineEdit		* cursor_coord;
     QDialog			* info_dialog;
-    HDC				hdc;
+    // HDC				hdc;
 
-    QVBoxLayout *vertLayout;
-    QHBoxLayout *centralLayout;
+    // QVBoxLayout *vertLayout;
+    // QHBoxLayout *centralLayout;
 
     //---- Чекбоксы фильтра отображения -----
     QCheckBox *mpo_regions_checkbox;

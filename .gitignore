@@ -50,6 +50,7 @@ CMakeBuild/
 build/
 */build/
 */*/build/
+working_build/
 
 # Прочие временные файлы
 *.tmp
