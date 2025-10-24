@@ -50,6 +50,7 @@ target_compile_definitions(mapview PRIVATE
     __USE_DLL_XXXXX
 )
 
+
 target_link_libraries(mapview PUBLIC
     Qt6::Core
     Qt6::Core5Compat
@@ -93,6 +94,7 @@ set(mapview_resource_files
     "Resources/print_part.png"
     "Resources/search.png"
     "Resources/up_bright.png"
+    "MapView.qml"
 )
 
 qt_add_resources(mapview "mapview"

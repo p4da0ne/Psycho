@@ -254,9 +254,8 @@ void Mainform::init_menu(int id_user_group)
 	{
 	 case 0:	  //==== Незарегистрированный пользователь (вошел без логина и пароля)или нет соединения с БД ====
                 UI->menuBar->clear();
-                open_map = new QAction("Открыть карту");// <--------------------------------------------------
-
 			menu = new QMenu("Файл");
+                add_mapworkReworked();
             if(connection_flag == false)
 			{
 				mess = "Сатурн - нет соединения с БД";
@@ -268,7 +267,6 @@ void Mainform::init_menu(int id_user_group)
 			}
 			add_menu_exit(menu);
 			UI->menuBar->addMenu(menu);
-            UI->menuBar->addAction(open_map);
 
 			settings_menu = new QMenu("Настройки");
 			add_menu_db_connection(settings_menu);			

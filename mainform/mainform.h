@@ -1,4 +1,4 @@
-#ifndef MAINFORM_H
+﻿#ifndef MAINFORM_H
 #define MAINFORM_H
 
 #include <QtGui>
@@ -84,13 +84,13 @@ private:
 	QAction * sett_act1;
 	QAction * sett_act2;
 	QAction * sett_act3;
-    QAction * sett_act5;
+      QAction * sett_act5;
 	QAction * event_act;
 
 	QMenu * DB_work_menu;
 	QMenu * oper_menu;
 	QAction * map_act;
-    QAction * newMap_act;
+      QAction * newMap_act;
 	QAction * open_map_sett_action;
 	QAction * backup_db_action;
 ///////////////////////////////////////////////////

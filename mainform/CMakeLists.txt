@@ -20,6 +20,9 @@ qt_add_executable(saturn WIN32 MACOSX_BUNDLE
 target_compile_definitions(saturn PRIVATE
     BUILD_DLL
 )
+target_compile_definitions(saturn PUBLIC
+    NOMINMAX
+)
 
 target_link_directories(saturn PRIVATE
     ../build
@@ -45,7 +48,6 @@ target_link_libraries(saturn PRIVATE
     signs_edit
     supporting_tables
     users_manager
-    mapengine
 )
 
 
