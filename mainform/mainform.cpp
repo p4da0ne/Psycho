@@ -50,7 +50,6 @@ Mainform::Mainform(QMainWindow *parent, QFlag flags)
 	{
 		tab->setTabsClosable(true);
 		tab->setExpanding(false);
-		connect(tab, SIGNAL(tabCloseRequested(int)),this, SLOT(closeTab(int)));
 	}
 	//-------------------------------------------------------
 
@@ -59,17 +58,6 @@ Mainform::Mainform(QMainWindow *parent, QFlag flags)
 Mainform::~Mainform()
 {
  delete UI;
-}
-
-
-void Mainform::closeTab(int i)
-{
-    QMdiSubWindow *sub = m_mdiArea->subWindowList()[i];
-	
-	QWidget *win = sub->widget();
-
-	win->close();
-	sub->close();
 }
 
 

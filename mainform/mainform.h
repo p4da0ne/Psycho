@@ -69,7 +69,6 @@ private slots:
 	void slotOpenMapSettingsDialog();
 	void slotOpenBackupDbDialog();
 	void slotOpenEventManagerForm();
-	void closeTab(int i);
 
 	////////////////////////////////////
 	void slotOpenUserManageForm();

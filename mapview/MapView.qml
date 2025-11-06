@@ -11,9 +11,7 @@ Item {
     width: 640
     height: 480
     visible: true
-    Rectangle {
-        color: "#101010"
-        width: 100
-        height: 100
+    MapView {
+        id: mapview
     }
 }
