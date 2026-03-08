@@ -1,11 +1,9 @@
-﻿cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.16)
 project(mapview VERSION 1.0 LANGUAGES C CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core5Compat Gui PrintSupport Sql Widgets QuickWidgets)
-find_package(Qt6 REQUIRED COMPONENTS Core)
-find_package(Qt6 REQUIRED COMPONENTS Core)
 find_package(QMapLibre REQUIRED COMPONENTS Core Location)
 
 qt_standard_project_setup()
@@ -33,9 +31,7 @@ qt_add_qml_module(mapview
     URI mapview
     VERSION 1.0
     QML_FILES
-    MyMapView.qml
-    SOURCES
-    SOURCES
+        MyMapView.qml
 )
 
 target_include_directories(mapview PUBLIC
@@ -46,7 +42,6 @@ target_include_directories(mapview PUBLIC
     ../my_mapaccess
     ../reports
     ../searchengine
-    /
     calculatingClasses
 )
 
@@ -78,8 +73,6 @@ target_link_libraries(mapview PUBLIC
     reports
     searchengine
 )
-target_link_libraries(mapview PRIVATE Qt6::Core)
-target_link_libraries(mapview PRIVATE Qt6::Core)
 
 qmaplibre_location_setup_plugins(mapview)
 
@@ -117,3 +110,4 @@ install(TARGETS mapview
     FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+

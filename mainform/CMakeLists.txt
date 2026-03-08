@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.16)
 project(saturn VERSION 1.0 LANGUAGES C CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -95,7 +95,6 @@ if(WIN32)
         ../signs_edit
         ../supporting_tables
         ../users_manager
-        ../mapengine
     )
 endif()
 

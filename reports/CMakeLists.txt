@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.16)
 project(reports VERSION 1.0 LANGUAGES C CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -16,7 +16,6 @@ qt_add_library(reports
 )
 target_include_directories(reports PUBLIC
     .
-    ../Calculate_K_omkrf
     ../output
     ../textedit
 )
