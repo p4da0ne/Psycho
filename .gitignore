@@ -1,4 +1,5 @@
 *.[oa]
+*.dll
 *.idb
 *.pdb
 *.pdsyncu
