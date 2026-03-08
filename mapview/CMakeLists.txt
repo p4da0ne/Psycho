@@ -4,6 +4,8 @@ project(mapview VERSION 1.0 LANGUAGES C CXX)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core5Compat Gui PrintSupport Sql Widgets QuickWidgets)
+find_package(Qt6 REQUIRED COMPONENTS Core)
+find_package(Qt6 REQUIRED COMPONENTS Core)
 find_package(QMapLibre REQUIRED COMPONENTS Core Location)
 
 qt_standard_project_setup()
@@ -24,13 +26,16 @@ qt_add_library(mapview
     signdata.cpp signdata.h
     view_manage.cpp view_manage.h
     MapViewNew.cpp MapViewNew.h
+
 )
 
 qt_add_qml_module(mapview
     URI mapview
     VERSION 1.0
     QML_FILES
-        MapView.qml
+    MyMapView.qml
+    SOURCES
+    SOURCES
 )
 
 target_include_directories(mapview PUBLIC
@@ -65,6 +70,7 @@ target_link_libraries(mapview PUBLIC
     Qt6::Positioning
     QMapLibre::Core
     QMapLibre::Location
+    opengl32
     coord
     event_manager
     eventsmodel
@@ -72,6 +78,8 @@ target_link_libraries(mapview PUBLIC
     reports
     searchengine
 )
+target_link_libraries(mapview PRIVATE Qt6::Core)
+target_link_libraries(mapview PRIVATE Qt6::Core)
 
 qmaplibre_location_setup_plugins(mapview)
 
@@ -94,7 +102,7 @@ set(mapview_resource_files
     "Resources/print_part.png"
     "Resources/search.png"
     "Resources/up_bright.png"
-    "MapView.qml"
+    "MyMapView.qml"
 )
 
 qt_add_resources(mapview "mapview"

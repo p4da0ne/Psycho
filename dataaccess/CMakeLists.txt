@@ -20,6 +20,7 @@ target_link_libraries(dataaccess PUBLIC
     Qt::Core
     Qt::Gui
     Qt::Sql
+    Qt::Quick
 )
 
 install(TARGETS dataaccess

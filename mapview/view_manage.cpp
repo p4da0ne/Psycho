@@ -1,4 +1,4 @@
-#include "view_manage.h"
+﻿#include "view_manage.h"
 
 #include <QSqlQuery>
 #include <QSqlError>
@@ -113,8 +113,7 @@ QList<SignData*> ViewManage::getSmiMeans(long int hMap,double x1,double y1,doubl
 			QString semantika_1_mpo_pso = query.value(rec.indexOf("semantika_1")).toString();
 
 			QList<Coord*> coordList;
-			Coord *coord = new Coord(x_coord,y_coord);	
-			coordList.append(coord);
+                     coordList.append(&c1);
 			
 			///////////////////////////////////
 			double radius;
@@ -133,14 +132,14 @@ QList<SignData*> ViewManage::getSmiMeans(long int hMap,double x1,double y1,doubl
 			// если зачек радио-теле центра (свой или вражеский), то добавляем вторую метрику
 			if ((signCode=="V0000169007")||(signCode=="V0000169029")||(signCode == "V0000060503"))
 			{	
-				coord = new Coord(x_coord,y_coord+radius);
+                Coord* coord = new Coord(x_coord,y_coord+radius);
 				coordList.append(coord);
 			}
 
 
 			if (signCode=="L00000060504") // самолет
 			{	
-				coord = new Coord(x_coord+120000,y_coord+140000);
+                Coord* coord = new Coord(x_coord+120000,y_coord+140000);
 				coordList.append(coord);
 				coord = new Coord(x_coord+120000+70000,y_coord+140000-80000);
 				coordList.append(coord);
@@ -154,7 +153,7 @@ QList<SignData*> ViewManage::getSmiMeans(long int hMap,double x1,double y1,doubl
 				double xx=4*radius*qCos(angle);
 				double yy=4*radius*qSin(angle);
 				
-				coord = new Coord(x_coord+xx,y_coord+yy);
+                Coord* coord = new Coord(x_coord+xx,y_coord+yy);
 				coordList.append(coord);
 			}
 			
@@ -230,9 +229,8 @@ QList<SignData*> ViewManage::getFormationsMeans(long int hMap,double x1,double y
 			QString semantika_digit2_mpo_pso = query.value(rec.indexOf("semantika_digit2")).toString();
 			QString semantika_1_mpo_pso = query.value(rec.indexOf("semantika_1")).toString();
 
-			QList<Coord*> coordList;
-			Coord *coord = new Coord(x_coord,y_coord);	
-			coordList.append(coord);
+            QList<Coord*> coordList;
+            coordList.append(&c1);
 
 			QMap<long int,QString> semantic_map;
 
@@ -303,9 +301,8 @@ QList<SignData*> ViewManage::getGroupsMeans(long int hMap,double x1,double y1,do
 			QString semantika_digit2_mpo_pso = query.value(rec.indexOf("semantika_digit2")).toString();
 			QString semantika_1_mpo_pso = query.value(rec.indexOf("semantika_1")).toString();
 
-			QList<Coord*> coordList;
-			Coord *coord = new Coord(x_coord,y_coord);	
-			coordList.append(coord);
+                     QList<Coord*> coordList;
+                     coordList.append(&c1);
 
 			QMap<long int,QString> semantic_map;
 
@@ -373,8 +370,7 @@ QList<SignData*> ViewManage::getFormations(long int hMap,double x1,double y1,dou
 			QString idLs = query.value(rec.indexOf("id_ls")).toString();
 
 			QList<Coord*> coordList;
-			Coord *coord = new Coord(x_coord,y_coord);	
-			coordList.append(coord);
+                     coordList.append(&c1);
 
 			QMap<long int,QString> semantic_map;
 			semantic_map[105] = shortNameLs;
@@ -435,8 +431,7 @@ QList<SignData*> ViewManage::getPersones(long int hMap,double x1,double y1,doubl
 			QString idPers = query.value(rec.indexOf("id_persones")).toString();
 
 			QList<Coord*> coordList;
-			Coord *coord = new Coord(x_coord,y_coord);	
-			coordList.append(coord);
+            coordList.append(&c1);
 
 			QMap<long int,QString> semantic_map;
 			semantic_map[17501] = idPers;
@@ -756,7 +751,7 @@ QString ViewManage::get_ls_info(int idObject){
 	}
 
 	int parent_ls = idObject;
-		while (!parent_ls == 0)
+        while ((!parent_ls) == 0)
 		{
 			str = QString("SELECT id_ls, parent_ls, id_region, name_ls FROM ls WHERE id_ls = %1").arg(parent_ls);
 			query.exec(str);

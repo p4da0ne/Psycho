@@ -4,7 +4,7 @@ project(saturn VERSION 1.0 LANGUAGES C CXX)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS AxContainer Core5Compat Gui Network PrintSupport Sql Widgets)
+find_package(Qt6 REQUIRED COMPONENTS AxContainer Core5Compat Gui Network PrintSupport Sql Widgets OpenGLWidgets)
 
 qt_standard_project_setup()
 
@@ -16,6 +16,9 @@ qt_add_executable(saturn WIN32 MACOSX_BUNDLE
     mapsettingsdialog.cpp mapsettingsdialog.h
     mymdiarea.cpp mymdiarea.h
     settings.cpp settings.h
+    main.qml
+    LoginScreen.qml
+    DBConnectScreen.qml
 )
 target_compile_definitions(saturn PRIVATE
     BUILD_DLL
@@ -37,6 +40,8 @@ target_link_libraries(saturn PRIVATE
     Qt::PrintSupport
     Qt::Sql
     Qt::Widgets
+    Qt6::OpenGLWidgets
+    Qt::Quick
     dataaccess
     db_saturn
     event_manager

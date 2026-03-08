@@ -1,4 +1,4 @@
-#ifndef MYQMIDIAREA_H
+﻿#ifndef MYQMIDIAREA_H
 #define MYQMIDIAREA_H
 
 #include <QMdiArea>
@@ -8,11 +8,11 @@ class myQMdiArea : public QMdiArea
 {
   Q_OBJECT
   public:
-    myQMdiArea(QImage image,QWidget *parent = 0);
+    myQMdiArea(QPixmap image,QWidget *parent = 0);
 	~myQMdiArea();
-	QImage img;
+    QPixmap img;
   protected:
-    void paintEvent(QPaintEvent *);
+    void paintEvent(QPaintEvent *) override;
 
 
 };

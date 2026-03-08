@@ -6,6 +6,7 @@
 #include <mapview.h>
 #include <object_manager.h>
 #include <MapViewNew.h>
+#include <QtOpenGLWidgets>
 
 
 #if defined Q_OS_WIN
@@ -25,10 +26,12 @@ Mainform::Mainform(QMainWindow *parent, QFlag flags)
 
 	connection_flag = false;
 	login_flag = false;
-	QImage img(":/Resources/saturn.png");
+    QPixmap img(":/Resources/saturn.png");
     m_mdiArea = new myQMdiArea(img,this);
 	m_mdiArea->setTabShape(QTabWidget::Triangular);
 	m_mdiArea->setViewMode(QMdiArea::TabbedView);
+    m_mdiArea->setTabsClosable(true);
+    m_mdiArea->setTabsMovable(true);
 	setCentralWidget(m_mdiArea);
 
 	db=new db_saturn();
@@ -43,15 +46,8 @@ Mainform::Mainform(QMainWindow *parent, QFlag flags)
 		connection_flag = true;
 	}
 
-	init_menu(0);
 
-	//-------------------------------------------------------------
-	Q_FOREACH (QTabBar* tab, m_mdiArea->findChildren<QTabBar*>())
-	{
-		tab->setTabsClosable(true);
-		tab->setExpanding(false);
-	}
-	//-------------------------------------------------------
+	init_menu(0);
 
 }
 
@@ -601,12 +597,20 @@ void Mainform::show_newMap_widget(){
         return;
     }
 
-    MapViewNew *map_view = new MapViewNew;
+    MapViewNew* map_view = new MapViewNew;
 
+    QWidget* viewContainer = QWidget::createWindowContainer(map_view, this);
+    viewContainer->setAttribute(Qt::WA_OpaquePaintEvent);
+    viewContainer->setMinimumSize(400, 300);
+    viewContainer->setFocusPolicy(Qt::TabFocus);
 
-    map_view->setWindowTitle("Работа с картой");
-    map_window = m_mdiArea->addSubWindow(map_view);
-    map_view->showMaximized();
+    viewContainer->setWindowTitle("Работа с картой");
+    map_window = m_mdiArea->addSubWindow(viewContainer);
+    map_window->resize(800, 600);
+
+    map_view->show();
+    viewContainer->show();
+    map_window->show();
 
     map_window->setAttribute(Qt::WA_DeleteOnClose);
     map_window->setWindowIcon(QIcon(":/Resources/mapwork.png"));

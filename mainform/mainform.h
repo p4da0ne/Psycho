@@ -7,6 +7,7 @@
 #include <QFile>
 #include <QMdiSubWindow>
 
+#include "MapViewNew.h"
 #include "mymdiarea.h"
 #include "qmainwindow.h"
 #include "settings.h"
@@ -52,7 +53,7 @@ public:
     QMdiSubWindow* newMap_window;
 
 	QList<QMdiSubWindow *> subwindowList;
-
+    MapViewNew* mapview;
     
 private slots:
 

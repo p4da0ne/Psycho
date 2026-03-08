@@ -20,7 +20,7 @@
 #define SETTINGS_APPLICATION "saturnMap"
 
 
-class __EXPORT_MAPVIEWNEW MapViewNew : public QQuickWidget
+class __EXPORT_MAPVIEWNEW MapViewNew : public QQuickView
 {
     Q_OBJECT
 
@@ -60,6 +60,7 @@ private:
     // ----------------------------------------------------------------------
     // void			showMessageToUser(const QString);
 private slots:
+    void onAfterRendering();
     // void			openNewMap();
     // void			openMapFromSettings();
     // void			openRST();

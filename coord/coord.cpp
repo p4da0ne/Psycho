@@ -1,4 +1,4 @@
-#include "coord.h"
+﻿#include "coord.h"
 
 
 Coord::Coord()
@@ -31,6 +31,9 @@ Coord::Coord(int latDegrees, int latMinutes, double latSeconds, int longDegrees,
 	this->longDegrees = longDegrees;
 	this->longMinutes = longMinutes;
 	this->longSeconds = longSeconds;
+
+    this->lat = latDegrees + latMinutes/60.0 + latSeconds/3600.0;
+    this->lon = longDegrees + longMinutes/60.0 + longSeconds/3600.0;
 }
 
 Coord::~Coord()
