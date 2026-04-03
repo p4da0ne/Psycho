@@ -46,3 +46,8 @@ Role/type constraints:
 - `position` -> `Point`
 - `route` -> `LineString`
 - `coverage` -> `Polygon`
+
+
+Security:
+- Write calls depend on Auth session and permissions enforced by MapEditingService.
+

@@ -69,6 +69,7 @@ private:
     static QString normalizeGeometryType(const QString &geometryType);
     static QString normalizeGeometryRole(const QString &geometryRole);
     static bool isFiniteCoordinate(double value);
+    bool ensureGeometryWritePermission(bool deleteOperation = false);
     bool validateRoleGeometryType(const QString &geometryRole, const QString &geometryType);
     bool setError(const QString &error);
 

@@ -7,6 +7,7 @@
 #include <QVariantMap>
 
 #include "dataaccess.h"
+#include "authmanager.h"
 
 MapEditingService *MapEditingService::s_instance = nullptr;
 
@@ -47,6 +48,10 @@ bool MapEditingService::replaceGeometry(
     const QVariantList &points,
     bool isClosed)
 {
+    if (!ensureGeometryWritePermission(false)) {
+        return false;
+    }
+
     const QString normalizedRole = normalizeGeometryRole(geometryRole);
     const QString normalizedType = normalizeGeometryType(geometryType);
     if (normalizedRole.isEmpty()) {
@@ -158,6 +163,10 @@ bool MapEditingService::replaceGeometryByCoordinateIds(
     const QVariantList &coordinateIds,
     bool isClosed)
 {
+    if (!ensureGeometryWritePermission(false)) {
+        return false;
+    }
+
     const QString normalizedRole = normalizeGeometryRole(geometryRole);
     const QString normalizedType = normalizeGeometryType(geometryType);
     if (normalizedRole.isEmpty()) {
@@ -230,6 +239,10 @@ bool MapEditingService::replaceGeometryBundle(
     const QVariantList &geometries,
     bool replaceAllRoles)
 {
+    if (!ensureGeometryWritePermission(false)) {
+        return false;
+    }
+
     if (geometries.isEmpty()) {
         return setError("Пустой набор геометрий");
     }
@@ -388,6 +401,10 @@ bool MapEditingService::replaceObjectsGeometryBundles(
     const QVariantList &objects,
     bool replaceAllRoles)
 {
+    if (!ensureGeometryWritePermission(false)) {
+        return false;
+    }
+
     if (objects.isEmpty()) {
         return setError("Пустой набор объектов");
     }
@@ -588,6 +605,10 @@ bool MapEditingService::replaceObjectsGeometryBundles(
 
 bool MapEditingService::deleteGeometry(int objectType, int objectId, const QString &geometryRole)
 {
+    if (!ensureGeometryWritePermission(true)) {
+        return false;
+    }
+
     const QString normalizedRole = normalizeGeometryRole(geometryRole);
     DataAccess *db = DataAccess::instance();
     if (!db->connected() && !db->connectToDatabase()) {
@@ -767,6 +788,24 @@ bool MapEditingService::setError(const QString &error)
     m_lastError = error;
     emit errorChanged();
     return false;
+}
+
+bool MapEditingService::ensureGeometryWritePermission(bool deleteOperation)
+{
+    AuthManager *auth = AuthManager::instance();
+    if (!auth->loggedIn()) {
+        return setError("Требуется авторизация для изменения геометрии");
+    }
+    if (deleteOperation) {
+        if (!auth->canDelete()) {
+            return setError("Недостаточно прав для удаления геометрии");
+        }
+        return true;
+    }
+    if (!auth->canEditGeometry()) {
+        return setError("Недостаточно прав для редактирования геометрии");
+    }
+    return true;
 }
 
 QString MapEditingService::normalizeGeometryType(const QString &geometryType)

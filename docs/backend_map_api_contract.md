@@ -66,6 +66,7 @@ Row format from `loadObjectGeometry`:
 - `featureCollectionAll() -> string`
 - `snapshotMeta() -> QVariantList`
 - Properties: `lastUpdatedIso`, `pollingBound`
+- Delta strategy: preferred source is object_geometry_changes; fallback is MAX(updated_at)+COUNT(*) per object type.
 
 ### `MapRuntime` (`MapRuntimeService`)
 - `refreshNow()`
@@ -86,6 +87,7 @@ Row format from `loadObjectGeometry`:
 - Signal: `geometryChanged(objectType, objectId, geometryRole)`
 - Signal: `geometryBundleChanged(objectType, objectId)`
 - Signal: `geometriesBatchChanged()`
+- Security: write operations require active session (Auth.loggedIn) and corresponding permission checks (canEditGeometry / canDelete).
 
 Role/type guards in editing:
 - `position` requires `Point`
@@ -102,3 +104,4 @@ Role/type guards in editing:
 - `mainform/main.qml`: diagnostic text panels (`snapshotInfo`, `runtimeInfo`, `editingInfo`).
 - `mainform/main.qml`: button "Тест записи геометрии" for smoke validation only.
 - `mainform/main.cpp`: comment marking temporary shell entrypoint.
+

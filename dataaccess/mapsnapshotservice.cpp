@@ -4,6 +4,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QSqlQuery>
+#include <QSet>
 
 #include "dataaccess.h"
 #include "mapobjectsrepository.h"
@@ -65,6 +66,10 @@ QString MapSnapshotService::refreshAll()
         }
     }
     m_deltaBaselineInitialized = true;
+    qint64 lastChangeId = 0;
+    if (readLastChangeId(lastChangeId)) {
+        m_lastProcessedChangeId = lastChangeId;
+    }
     m_lastUpdated = QDateTime::currentDateTimeUtc();
     emit snapshotUpdated();
     return featureCollectionAll();
@@ -79,6 +84,21 @@ QVariantList MapSnapshotService::refreshByDelta(int limit)
         refreshAll();
         for (int objectType : types) {
             changedTypes.append(objectType);
+        }
+        return changedTypes;
+    }
+
+    QSet<int> changedTypesSet;
+    qint64 maxChangeId = m_lastProcessedChangeId;
+    if (readChangedTypesFromChangeLog(changedTypesSet, maxChangeId)) {
+        for (int objectType : changedTypesSet) {
+            updateCacheForType(objectType, limit);
+            changedTypes.append(objectType);
+        }
+        m_lastProcessedChangeId = maxChangeId;
+        if (!changedTypes.isEmpty()) {
+            m_lastUpdated = QDateTime::currentDateTimeUtc();
+            emit snapshotUpdated();
         }
         return changedTypes;
     }
@@ -236,6 +256,60 @@ bool MapSnapshotService::readGeometryMeta(int objectType, QDateTime &maxUpdatedU
     } else {
         maxUpdatedUtc = QDateTime();
     }
+    return true;
+}
+
+bool MapSnapshotService::readChangedTypesFromChangeLog(QSet<int> &changedTypes, qint64 &maxChangeId) const
+{
+    DataAccess *db = DataAccess::instance();
+    if (!db->connected() && !db->connectToDatabase()) {
+        return false;
+    }
+
+    const QList<int> mapTypes = supportedMapTypes();
+    const QSet<int> mapTypeSet = QSet<int>(mapTypes.begin(), mapTypes.end());
+
+    QSqlQuery query;
+    query.prepare(
+        "SELECT id_object_geometry_change, object_type "
+        "FROM object_geometry_changes "
+        "WHERE id_object_geometry_change > :last_change_id "
+        "ORDER BY id_object_geometry_change");
+    query.bindValue(":last_change_id", m_lastProcessedChangeId);
+    if (!query.exec()) {
+        return false;
+    }
+
+    qint64 localMaxChangeId = m_lastProcessedChangeId;
+    while (query.next()) {
+        const qint64 changeId = query.value("id_object_geometry_change").toLongLong();
+        const int objectType = query.value("object_type").toInt();
+        if (changeId > localMaxChangeId) {
+            localMaxChangeId = changeId;
+        }
+        if (mapTypeSet.contains(objectType)) {
+            changedTypes.insert(objectType);
+        }
+    }
+
+    maxChangeId = localMaxChangeId;
+    return true;
+}
+
+bool MapSnapshotService::readLastChangeId(qint64 &lastChangeId) const
+{
+    DataAccess *db = DataAccess::instance();
+    if (!db->connected() && !db->connectToDatabase()) {
+        return false;
+    }
+
+    QSqlQuery query;
+    query.prepare("SELECT COALESCE(MAX(id_object_geometry_change), 0) AS max_change_id FROM object_geometry_changes");
+    if (!query.exec() || !query.next()) {
+        return false;
+    }
+
+    lastChangeId = query.value("max_change_id").toLongLong();
     return true;
 }
 

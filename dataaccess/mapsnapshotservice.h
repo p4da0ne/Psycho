@@ -9,6 +9,7 @@
 #include <QVariantList>
 #include <QVariantMap>
 #include <QMap>
+#include <QSet>
 
 #include "config_dataaccess.h"
 
@@ -53,6 +54,8 @@ private:
     void bindPollingIfNeeded();
     void updateCacheForType(int objectType, int limit);
     bool readGeometryMeta(int objectType, QDateTime &maxUpdatedUtc, int &rowCount) const;
+    bool readChangedTypesFromChangeLog(QSet<int> &changedTypes, qint64 &maxChangeId) const;
+    bool readLastChangeId(qint64 &lastChangeId) const;
     static int countFeaturesInCollection(const QString &geoJson);
     static QList<int> supportedMapTypes();
 
@@ -64,6 +67,7 @@ private:
     QMap<int, QDateTime> m_lastGeometryUpdatedByType;
     QMap<int, int> m_lastGeometryRowsByType;
     bool m_deltaBaselineInitialized = false;
+    qint64 m_lastProcessedChangeId = 0;
 };
 
 #endif // MAPSNAPSHOTSERVICE_H

@@ -1,0 +1,60 @@
+import QtQuick 2.15
+import QtQuick.Controls 2.15
+import Saturn.Backend 1.0
+
+Menu {
+    id: root
+
+    property var appState
+
+    background: Rectangle {
+        color: "#111821"
+        border.color: Qt.rgba(1, 1, 1, 0.07)
+        border.width: 1
+        radius: 14
+    }
+
+    MenuItem {
+        text: "Обновить данные карты"
+        onTriggered: {
+            Polling.triggerNow()
+            appState.statusMessage = "Запрошено обновление данных карты"
+        }
+    }
+
+    MenuItem {
+        text: "Задать позицию выбранного объекта"
+        enabled: !!appState.selectedObject
+        onTriggered: {
+            if (!appState.selectedObject) {
+                appState.statusMessage = "Не выбран объект"
+                return
+            }
+            var ok = MapGeometryRoles.upsertPosition(
+                        appState.selectedObject.objectType,
+                        appState.selectedObject.objectId,
+                        { "longitude": appState.lastContextLon, "latitude": appState.lastContextLat })
+            appState.statusMessage = ok
+                ? "Позиция обновлена для " + appState.selectedObject.name
+                : "Ошибка обновления позиции: " + MapGeometryRoles.lastError
+        }
+    }
+
+    MenuItem {
+        text: "Переключить в heatmap"
+        onTriggered: {
+            appState.mapMode = "heatmap"
+            appState.statusMessage = "Включен heatmap режим"
+        }
+    }
+
+    MenuSeparator {}
+
+    MenuItem {
+        text: "Lon " + Number(appState.lastContextLon).toFixed(5)
+    }
+
+    MenuItem {
+        text: "Lat " + Number(appState.lastContextLat).toFixed(5)
+    }
+}

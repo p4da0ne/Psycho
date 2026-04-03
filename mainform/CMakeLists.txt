@@ -8,6 +8,10 @@ find_package(Qt6 REQUIRED COMPONENTS AxContainer Core5Compat Gui Network PrintSu
 
 qt_standard_project_setup()
 
+file(GLOB MAINFORM_COMPONENT_QML CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/components/*.qml"
+)
+
 qt_add_executable(saturn WIN32 MACOSX_BUNDLE
     dbbackup.cpp dbbackup.h
     main.cpp
@@ -16,9 +20,11 @@ qt_add_executable(saturn WIN32 MACOSX_BUNDLE
     mapsettingsdialog.cpp mapsettingsdialog.h
     mymdiarea.cpp mymdiarea.h
     settings.cpp settings.h
+    AppShell.qml
     main.qml
     LoginScreen.qml
     DBConnectScreen.qml
+    ${MAINFORM_COMPONENT_QML}
 )
 target_compile_definitions(saturn PRIVATE
     BUILD_DLL

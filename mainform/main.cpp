@@ -38,8 +38,7 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonType<PollingService>("Saturn.Backend", 1, 0, "Polling", PollingService::qmlSingleton);
 
     QQmlApplicationEngine engine;
-    // TEMPORARY(TEST): main.qml currently acts as technical backend validation shell.
-    const QUrl url(QStringLiteral("qrc:/main.qml"));
+    const QUrl url(QStringLiteral("qrc:/AppShell.qml"));
 
     QObject::connect(
         &engine,
