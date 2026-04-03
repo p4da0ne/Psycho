@@ -17,11 +17,10 @@
 #include <windows.h>
 #pragma warning (disable:4251)
 #pragma warning (disable:4530)
-#ifdef __USE_DLL_XXXXX
-
-	#define __EXPORT_DATAACCESS __declspec(dllexport)
+#ifdef DATAACCESS_BUILD_DLL
+    #define __EXPORT_DATAACCESS __declspec(dllexport)
 #else
-	#define __EXPORT_DATAACCESS __declspec(dllimport)
+    #define __EXPORT_DATAACCESS __declspec(dllimport)
 #endif
 #else
 	#define __EXPORT_DATAACCESS

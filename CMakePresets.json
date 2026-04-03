@@ -1,0 +1,29 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "windows-qt653-maplibre",
+      "displayName": "Windows Qt 6.5.3 + QMapLibre",
+      "description": "Local developer preset for Qt 6.5.3 and QMapLibre package paths.",
+      "generator": "Visual Studio 17 2022",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "Qt6_DIR": "C:/Qt/6.5.3/msvc2019_64/lib/cmake/Qt6",
+        "QMapLibre_DIR": "C:/Qt/6.5.3/msvc2019_64/lib/cmake/QMapLibre"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "windows-qt653-maplibre-debug",
+      "displayName": "Build Debug (Qt 6.5.3 + QMapLibre)",
+      "configurePreset": "windows-qt653-maplibre",
+      "configuration": "Debug"
+    }
+  ]
+}

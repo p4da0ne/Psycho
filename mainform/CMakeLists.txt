@@ -4,7 +4,7 @@ project(saturn VERSION 1.0 LANGUAGES C CXX)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS AxContainer Core5Compat Gui Network PrintSupport Sql Widgets OpenGLWidgets)
+find_package(Qt6 REQUIRED COMPONENTS AxContainer Core5Compat Gui Network PrintSupport Qml Quick Sql Widgets OpenGLWidgets)
 
 qt_standard_project_setup()
 
@@ -38,10 +38,11 @@ target_link_libraries(saturn PRIVATE
     Qt::Gui
     Qt::Network
     Qt::PrintSupport
+    Qt::Qml
+    Qt::Quick
     Qt::Sql
     Qt::Widgets
     Qt6::OpenGLWidgets
-    Qt::Quick
     dataaccess
     db_saturn
     event_manager
