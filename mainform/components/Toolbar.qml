@@ -5,11 +5,13 @@ Item {
     id: root
 
     property var appState
+    property var agentHub
+    property var panelManager
     property Item backdropSource
 
-    implicitHeight: 58
-    opacity: appState && appState.controlsVisible ? 1 : 0.10
-    y: appState && appState.controlsVisible ? 0 : -12
+    implicitHeight: 50
+    opacity: appState && appState.controlsVisible ? 1 : 0.88
+    y: 0
 
     Behavior on opacity {
         NumberAnimation {
@@ -28,15 +30,15 @@ Item {
 
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        width: field.activeFocus || field.text.length > 0 ? Math.min(root.width, 560) : Math.min(root.width, 460)
-        height: 48
-        radius: 24
+        width: field.activeFocus || field.text.length > 0 ? Math.min(root.width, 540) : Math.min(root.width, 490)
+        height: 42
+        radius: 21
         padding: 0
         backdropSource: root.backdropSource
         surfaceColor: "#141c24"
-        surfaceOpacity: field.activeFocus ? 0.58 : 0.52
-        shadowOpacity: 0.08
-        highlightOpacity: 0.05
+        surfaceOpacity: field.activeFocus ? 0.52 : 0.46
+        shadowOpacity: 0.05
+        highlightOpacity: 0.04
 
         Behavior on width {
             SpringAnimation {
@@ -47,28 +49,66 @@ Item {
 
         Row {
             anchors.fill: parent
-            anchors.leftMargin: 16
-            anchors.rightMargin: 10
-            spacing: 12
+            anchors.leftMargin: 8
+            anchors.rightMargin: 8
+            spacing: 8
+
+            ToolButton {
+                id: leftToggle
+
+                anchors.verticalCenter: parent.verticalCenter
+                implicitWidth: 86
+                implicitHeight: 26
+                text: "Навигация"
+                font.pixelSize: 10
+                hoverEnabled: true
+                background: Rectangle {
+                    radius: 13
+                    color: "#ffffff"
+                    opacity: leftToggle.down ? 0.09 : leftToggle.hovered ? 0.06 : 0.04
+                }
+                contentItem: Text {
+                    text: leftToggle.text
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    color: "#d7e0ea"
+                    font.pixelSize: 10
+                    elide: Text.ElideRight
+                }
+                ToolTip.visible: hovered
+                ToolTip.text: "Показать или скрыть навигацию"
+                onClicked: {
+                    if (root.agentHub && root.agentHub.uiStateAgent)
+                        root.agentHub.uiStateAgent.toggleNavigationVisible()
+                }
+            }
 
             Text {
+                id: searchIcon
                 anchors.verticalCenter: parent.verticalCenter
                 text: "⌕"
                 color: "#d9e2ed"
-                font.pixelSize: 14
+                font.pixelSize: 13
                 opacity: 0.80
             }
 
             TextField {
                 id: field
 
-                width: searchShell.width - (clearButton.visible ? 86 : 54)
+                width: Math.max(96,
+                                searchShell.width
+                                - leftToggle.width
+                                - rightToggle.width
+                                - statusToggle.width
+                                - searchIcon.width
+                                - (clearButton.visible ? 36 : 10)
+                                - 34)
                 height: parent.height
-                placeholderText: "Search"
-                placeholderTextColor: "#95a2b1"
+                placeholderText: "Поиск"
+                placeholderTextColor: "#91a0b0"
                 text: root.appState ? root.appState.searchText : ""
-                color: Qt.rgba(1, 1, 1, 0.9)
-                font.pixelSize: 13
+                color: Qt.rgba(1, 1, 1, 0.88)
+                font.pixelSize: 12
                 font.weight: Font.Normal
                 leftPadding: 0
                 rightPadding: 0
@@ -76,7 +116,14 @@ Item {
                 background: Item {}
                 selectByMouse: true
 
-                onTextChanged: if (root.appState) root.appState.searchText = text
+                onTextChanged: {
+                    if (root.agentHub && root.agentHub.uiStateAgent)
+                        root.agentHub.uiStateAgent.setSearchText(text)
+                }
+                onAccepted: {
+                    if (root.agentHub && root.agentHub.uiStateAgent)
+                        root.agentHub.uiStateAgent.focusSearchResult()
+                }
             }
 
             Button {
@@ -84,11 +131,11 @@ Item {
 
                 visible: field.text.length > 0
                 anchors.verticalCenter: parent.verticalCenter
-                implicitWidth: 28
-                implicitHeight: 28
+                implicitWidth: 24
+                implicitHeight: 24
                 flat: true
                 background: Rectangle {
-                    radius: 14
+                    radius: 12
                     color: "#ffffff"
                     opacity: clearButton.down ? 0.09 : clearButton.hovered ? 0.06 : 0.04
                 }
@@ -97,11 +144,74 @@ Item {
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     color: "#d7e0ea"
-                    font.pixelSize: 16
+                    font.pixelSize: 14
                 }
                 onClicked: {
                     field.text = ""
-                    root.appState.searchText = ""
+                    if (root.agentHub && root.agentHub.uiStateAgent)
+                        root.agentHub.uiStateAgent.setSearchText("")
+                }
+            }
+
+            ToolButton {
+                id: rightToggle
+
+                anchors.verticalCenter: parent.verticalCenter
+                implicitWidth: 82
+                implicitHeight: 26
+                text: "Инспектор"
+                font.pixelSize: 10
+                hoverEnabled: true
+                background: Rectangle {
+                    radius: 13
+                    color: "#ffffff"
+                    opacity: rightToggle.down ? 0.09 : rightToggle.hovered ? 0.06 : 0.04
+                }
+                contentItem: Text {
+                    text: rightToggle.text
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    color: "#d7e0ea"
+                    font.pixelSize: 10
+                    elide: Text.ElideRight
+                }
+                ToolTip.visible: hovered
+                ToolTip.text: "Показать или скрыть инспектор"
+                onClicked: {
+                    if (root.agentHub && root.agentHub.uiStateAgent)
+                        root.agentHub.uiStateAgent.toggleInspectorVisible()
+                }
+            }
+
+            ToolButton {
+                id: statusToggle
+
+                anchors.verticalCenter: parent.verticalCenter
+                implicitWidth: 64
+                implicitHeight: 26
+                text: "Статус"
+                font.pixelSize: 10
+                hoverEnabled: true
+                background: Rectangle {
+                    radius: 13
+                    color: "#ffffff"
+                    opacity: statusToggle.down ? 0.09 : statusToggle.hovered ? 0.06 : 0.04
+                }
+                contentItem: Text {
+                    text: statusToggle.text
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    color: "#d7e0ea"
+                    font.pixelSize: 10
+                    elide: Text.ElideRight
+                }
+                ToolTip.visible: hovered
+                ToolTip.text: "Показать или скрыть строку состояния"
+                onClicked: {
+                    if (!root.panelManager)
+                        return
+                    var panel = root.panelManager.panelById("status-bar")
+                    root.panelManager.setPanelVisible("status-bar", !(panel.visible === true))
                 }
             }
         }

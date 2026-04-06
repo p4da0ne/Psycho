@@ -9,6 +9,7 @@ Rectangle {
     clip: true
 
     property var appState
+    property var agentHub
     property var objects: []
     property var labels: []
     property alias sceneContent: mapScene
