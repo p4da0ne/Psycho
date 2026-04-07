@@ -7,7 +7,7 @@ Item {
     property real radius: 24
     property real padding: 16
     property color surfaceColor: "#10161e"
-    property real surfaceOpacity: 0.55
+    property real surfaceOpacity: 0.50
     property real noiseOpacity: 0.008
     property real shadowOpacity: 0.09
     property real highlightOpacity: 0.11
@@ -69,10 +69,10 @@ Item {
             visible: root.useBackdrop
             source: sourceCapture
             blurEnabled: true
-            blurMax: 34
-            blur: 0.60
-            saturation: 1.02
-            brightness: 0.015
+            blurMax: 24
+            blur: 0.46
+            saturation: 1.01
+            brightness: 0.01
         }
 
         Rectangle {
@@ -106,7 +106,7 @@ Item {
             anchors.fill: parent
             radius: parent.radius
             color: "#000000"
-            opacity: 0.045
+            opacity: 0.032
         }
 
         Rectangle {
@@ -124,7 +124,7 @@ Item {
             height: parent.height * 0.16
             radius: parent.radius
             color: "#000000"
-            opacity: 0.05
+            opacity: 0.035
         }
 
         Rectangle {

@@ -34,6 +34,7 @@ Item {
     readonly property var filteredObjects: filterAgent ? filterAgent.visibleObjects(objects || []) : []
     readonly property var filteredEvents: filterAgent ? filterAgent.visibleEvents(events || []) : []
     readonly property var selectedObject: appState ? appState.selectedObject : ({})
+    readonly property var selectedObjectDetails: appState ? (appState.selectedObjectDetails || ({})) : ({})
     readonly property var selectedEvent: appState ? appState.selectedEvent : ({})
     readonly property string selectedStructurePath: appState ? appState.selectedStructurePath : ""
     readonly property var selectedStructureNode: structureAgent ? structureAgent.nodeDetails(selectedStructurePath) : ({})
@@ -166,6 +167,54 @@ Item {
         if (!nodeData || !nodeData.id)
             return "—"
         return (nodeData.children && nodeData.children.length > 0) ? "Группа" : "Элемент"
+    }
+
+    function scalarToText(value) {
+        if (value === null || value === undefined)
+            return "—"
+        return String(value)
+    }
+
+    function appendObjectRows(rows, prefix, objectValue, level) {
+        if (!objectValue || level > 3)
+            return
+        var keys = Object.keys(objectValue)
+        keys.sort()
+        for (var i = 0; i < keys.length; ++i) {
+            var key = keys[i]
+            var value = objectValue[key]
+            var label = prefix !== "" ? (prefix + "." + key) : key
+            if (value === null || value === undefined)
+                continue
+            if (Array.isArray(value)) {
+                rows.push({ "label": label, "value": "[" + value.length + "]" })
+                var limit = Math.min(value.length, 12)
+                for (var a = 0; a < limit; ++a) {
+                    var arrayItem = value[a]
+                    if (arrayItem !== null && typeof arrayItem === "object")
+                        appendObjectRows(rows, label + "#" + (a + 1), arrayItem, level + 1)
+                    else
+                        rows.push({ "label": label + "#" + (a + 1), "value": scalarToText(arrayItem) })
+                }
+                if (value.length > limit) {
+                    rows.push({ "label": label, "value": "... +" + (value.length - limit) + " записей" })
+                }
+                continue
+            }
+            if (typeof value === "object") {
+                appendObjectRows(rows, label, value, level + 1)
+                continue
+            }
+            if (String(value) === "")
+                continue
+            rows.push({ "label": label, "value": scalarToText(value) })
+        }
+    }
+
+    function detailsRows() {
+        var rows = []
+        appendObjectRows(rows, "", root.selectedObjectDetails, 0)
+        return rows
     }
 
     function syncSymbolDraft() {
@@ -649,6 +698,16 @@ Item {
                             value: root.selectedStructureNode && root.selectedStructureNode.children
                                 ? String(root.selectedStructureNode.children.length)
                                 : "0"
+                        }
+
+                        Repeater {
+                            model: !root.structureMode ? root.detailsRows() : []
+
+                            delegate: InfoField {
+                                width: parent.width
+                                label: modelData.label
+                                value: modelData.value
+                            }
                         }
 
                         Text {

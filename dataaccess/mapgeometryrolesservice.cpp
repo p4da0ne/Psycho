@@ -165,16 +165,14 @@ void MapGeometryRolesService::bindEditing()
         this,
         [this](int objectType, int objectId) {
             emit bundleChanged(objectType, objectId);
-        },
-        Qt::UniqueConnection);
+        });
     connect(
         editing,
         &MapEditingService::geometriesBatchChanged,
         this,
         [this]() {
             emit bundlesBatchChanged();
-        },
-        Qt::UniqueConnection);
+        });
     connect(
         editing,
         &MapEditingService::errorChanged,
@@ -182,7 +180,6 @@ void MapGeometryRolesService::bindEditing()
         [this, editing]() {
             m_lastError = editing->lastError();
             emit errorChanged();
-        },
-        Qt::UniqueConnection);
+        });
     m_editingBound = true;
 }

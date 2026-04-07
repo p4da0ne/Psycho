@@ -8,23 +8,21 @@ find_package(Qt6 REQUIRED COMPONENTS AxContainer Core5Compat Gui Network PrintSu
 
 qt_standard_project_setup()
 
-file(GLOB MAINFORM_COMPONENT_QML CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/components/*.qml"
+file(GLOB MAINFORM_COMPONENT_QML RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS
+    "components/*.qml"
 )
 
-qt_add_executable(saturn WIN32 MACOSX_BUNDLE
-    dbbackup.cpp dbbackup.h
-    main.cpp
-    main_form.ui
-    mainform.cpp mainform.h
-    mapsettingsdialog.cpp mapsettingsdialog.h
-    mymdiarea.cpp mymdiarea.h
-    settings.cpp settings.h
+set(MAINFORM_QML_FILES
     AppShell.qml
     main.qml
     LoginScreen.qml
     DBConnectScreen.qml
     ${MAINFORM_COMPONENT_QML}
+)
+
+qt_add_executable(saturn WIN32 MACOSX_BUNDLE
+    main.cpp
+    ${MAINFORM_QML_FILES}
 )
 target_compile_definitions(saturn PRIVATE
     BUILD_DLL
@@ -50,16 +48,7 @@ target_link_libraries(saturn PRIVATE
     Qt::Widgets
     Qt6::OpenGLWidgets
     dataaccess
-    db_saturn
-    event_manager
     mapview
-    my_mapaccess
-    object_manager
-    output
-    reports
-    signs_edit
-    supporting_tables
-    users_manager
 )
 
 
@@ -87,22 +76,72 @@ qt_add_resources(saturn "saturn"
         ${saturn_resource_files}
 )
 
+qt_add_resources(saturn "saturn_qml"
+    BASE
+        "${CMAKE_CURRENT_SOURCE_DIR}"
+    PREFIX
+        "/"
+    FILES
+        ${MAINFORM_QML_FILES}
+)
+
 if(WIN32)
+    set(POSTGRESQL_RUNTIME_DIR "" CACHE PATH "Optional PostgreSQL bin directory containing libpq.dll")
+
     target_include_directories(saturn PRIVATE
         .
         ../dataaccess
-        ../db_saturn
-        ../event_manager
         ../include
         ../mapview
-        ../my_mapaccess
-        ../object_manager
-        ../output
-        ../reports
-        ../signs_edit
-        ../supporting_tables
-        ../users_manager
     )
+
+    # Post-build runtime deployment so saturn.exe starts directly from build dir.
+    get_target_property(_qt_qmake_executable Qt6::qmake IMPORTED_LOCATION)
+    get_filename_component(_qt_bin_dir "${_qt_qmake_executable}" DIRECTORY)
+    set(_windeployqt_executable "${_qt_bin_dir}/windeployqt.exe")
+
+    if(EXISTS "${_windeployqt_executable}")
+        set(_deploy_mode_arg "$<$<CONFIG:Debug>:--debug>$<$<NOT:$<CONFIG:Debug>>:--release>")
+
+        add_custom_command(TARGET saturn POST_BUILD
+            COMMAND "${CMAKE_COMMAND}" -E make_directory "$<TARGET_FILE_DIR:saturn>/mapview"
+            COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+                "$<TARGET_FILE:mapviewplugin>"
+                "$<TARGET_FILE_DIR:saturn>/mapview/"
+            COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+                "${CMAKE_SOURCE_DIR}/mapview/qmldir.runtime"
+                "$<TARGET_FILE_DIR:saturn>/mapview/qmldir"
+            COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+                "${CMAKE_BINARY_DIR}/mapview/MyMapView.qml"
+                "$<TARGET_FILE_DIR:saturn>/mapview/MyMapView.qml"
+            COMMAND "${_windeployqt_executable}"
+                --force
+                --compiler-runtime
+                --dir "$<TARGET_FILE_DIR:saturn>"
+                --qmldir "${CMAKE_CURRENT_SOURCE_DIR}"
+                --qmldir "${CMAKE_SOURCE_DIR}/mapview"
+                ${_deploy_mode_arg}
+                "$<TARGET_FILE:saturn>"
+            COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+                "$<$<CONFIG:Debug>:${_qt_bin_dir}/QMapLibred.dll>$<$<NOT:$<CONFIG:Debug>>:${_qt_bin_dir}/QMapLibre.dll>"
+                "$<TARGET_FILE_DIR:saturn>/"
+            COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+                "$<$<CONFIG:Debug>:${_qt_bin_dir}/QMapLibreLocationd.dll>$<$<NOT:$<CONFIG:Debug>>:${_qt_bin_dir}/QMapLibreLocation.dll>"
+                "$<TARGET_FILE_DIR:saturn>/"
+            COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+                "$<$<CONFIG:Debug>:${_qt_bin_dir}/QMapLibreWidgetsd.dll>$<$<NOT:$<CONFIG:Debug>>:${_qt_bin_dir}/QMapLibreWidgets.dll>"
+                "$<TARGET_FILE_DIR:saturn>/"
+            COMMAND "${CMAKE_COMMAND}" -E env
+                "APP_DIR=$<TARGET_FILE_DIR:saturn>"
+                "POSTGRESQL_RUNTIME_DIR=${POSTGRESQL_RUNTIME_DIR}"
+                "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_SOURCE_DIR}/copy_postgresql_runtime.cmake"
+            VERBATIM
+            COMMAND_EXPAND_LISTS
+            COMMENT "Deploying Qt/QML runtime, plugins, and module binaries for saturn.exe"
+        )
+    else()
+        message(WARNING "windeployqt.exe not found near Qt6::qmake; post-build deployment disabled")
+    endif()
 endif()
 
 install(TARGETS saturn

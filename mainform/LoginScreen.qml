@@ -2,6 +2,9 @@ import QtQuick 2.15
 import Saturn.Backend 1.0
 
 Rectangle {
+    id: root
+    signal loginSucceeded()
+
     color: "#0f172a"
     radius: 12
     border.color: "#1e293b"
@@ -94,10 +97,18 @@ Rectangle {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
+                        DbSettings.load()
+                        // TEST/TEMP NOTE: force PostgreSQL driver in current architecture.
+                        DbSettings.driver = "QPSQL"
+                        if (!DbSettings.applyAndConnect()) {
+                            messageText.text = "Нет подключения к БД: " + Database.lastError
+                            return
+                        }
                         if (!Auth.login(loginInput.text, passwordInput.text)) {
                             messageText.text = Auth.lastError
                         } else {
                             messageText.text = "Успешная авторизация"
+                            root.loginSucceeded()
                         }
                     }
                 }

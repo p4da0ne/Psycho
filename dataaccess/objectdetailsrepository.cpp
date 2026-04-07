@@ -2,10 +2,12 @@
 
 #include <QSqlQuery>
 #include <QSqlRecord>
+#include <QStringList>
 #include <QVariantList>
 
 #include "dataaccess.h"
 #include "eventsrepository.h"
+#include "geometryrepository.h"
 #include "personnelrepository.h"
 
 namespace {
@@ -26,6 +28,108 @@ QVariantMap readSingleRow(QSqlQuery &query)
     if (!query.exec() || !query.next()) {
         return row;
     }
+    const QSqlRecord record = query.record();
+    for (int i = 0; i < record.count(); ++i) {
+        row.insert(record.fieldName(i), query.value(i));
+    }
+    return row;
+}
+
+QString tableNameByObjectType(int objectType)
+{
+    switch (objectType) {
+    case FORMATIONS:
+        return "ls";
+    case SPECIAL_CONDITIONS:
+        return "special_conditions";
+    case SMI_MEANS:
+    case FORMATIONS_MEANS:
+    case GROUPS_MEANS:
+        return "mpo_pso";
+    case REGIONS:
+        return "region";
+    case PERSONNEL:
+        return "persones";
+    case EVENTS:
+        return "events";
+    case GROUPS:
+        return "groups";
+    case SMI:
+        return "smi";
+    default:
+        return QString();
+    }
+}
+
+QString idColumnByObjectType(int objectType)
+{
+    switch (objectType) {
+    case FORMATIONS:
+        return "id_ls";
+    case SPECIAL_CONDITIONS:
+        return "id_special_conditions";
+    case SMI_MEANS:
+    case FORMATIONS_MEANS:
+    case GROUPS_MEANS:
+        return "id_mpo_pso";
+    case REGIONS:
+        return "id_region";
+    case PERSONNEL:
+        return "id_persones";
+    case EVENTS:
+        return "id_event";
+    case GROUPS:
+        return "id_groups";
+    case SMI:
+        return "id_smi";
+    default:
+        return QString();
+    }
+}
+
+QVariantMap readFullRecordExcludingBytea(const QString &tableName, const QString &idColumn, int objectId)
+{
+    QVariantMap row;
+    if (tableName.isEmpty() || idColumn.isEmpty()) {
+        return row;
+    }
+
+    QSqlQuery columnsQuery;
+    columnsQuery.prepare(
+        "SELECT column_name, data_type "
+        "FROM information_schema.columns "
+        "WHERE table_schema = 'public' AND table_name = :table_name "
+        "ORDER BY ordinal_position");
+    columnsQuery.bindValue(":table_name", tableName);
+    if (!columnsQuery.exec()) {
+        return row;
+    }
+
+    QStringList columns;
+    while (columnsQuery.next()) {
+        const QString columnName = columnsQuery.value("column_name").toString();
+        const QString dataType = columnsQuery.value("data_type").toString();
+        if (dataType == "bytea") {
+            continue;
+        }
+        columns.append(QString("\"%1\"").arg(columnName));
+    }
+
+    if (columns.isEmpty()) {
+        return row;
+    }
+
+    QSqlQuery query;
+    query.prepare(
+        QString("SELECT %1 FROM public.%2 WHERE %3 = :id LIMIT 1")
+            .arg(columns.join(", "))
+            .arg(tableName)
+            .arg(idColumn));
+    query.bindValue(":id", objectId);
+    if (!query.exec() || !query.next()) {
+        return row;
+    }
+
     const QSqlRecord record = query.record();
     for (int i = 0; i < record.count(); ++i) {
         row.insert(record.fieldName(i), query.value(i));
@@ -259,6 +363,16 @@ QVariantMap ObjectDetailsRepository::objectDetails(int objectType, int objectId)
     default:
         break;
     }
+
+    details.insert("tableName", tableNameByObjectType(objectType));
+    details.insert("idColumn", idColumnByObjectType(objectType));
+    details.insert(
+        "fullRow",
+        readFullRecordExcludingBytea(
+            tableNameByObjectType(objectType),
+            idColumnByObjectType(objectType),
+            objectId));
+    details.insert("geometry", GeometryRepository::instance()->loadObjectGeometry(objectType, objectId));
 
     return details;
 }

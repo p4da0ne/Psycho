@@ -1,9 +1,29 @@
 #include "personnelrepository.h"
 
 #include <QSqlQuery>
+#include <QSqlRecord>
 #include <QVariantList>
 
 #include "dataaccess.h"
+
+namespace {
+QVariantList queryRows(QSqlQuery &query)
+{
+    QVariantList rows;
+    if (!query.exec()) {
+        return rows;
+    }
+    const QSqlRecord rec = query.record();
+    while (query.next()) {
+        QVariantMap row;
+        for (int i = 0; i < rec.count(); ++i) {
+            row.insert(rec.fieldName(i), query.value(i));
+        }
+        rows.append(row);
+    }
+    return rows;
+}
+}
 
 PersonnelRepository *PersonnelRepository::s_instance = nullptr;
 
@@ -128,6 +148,108 @@ QVariantMap PersonnelRepository::personnelDetails(int personesId)
         }
     }
     result.insert("documents", documents);
+
+    QSqlQuery rankHistoryQuery;
+    rankHistoryQuery.prepare(
+        "SELECT rank_name, rank_document, rank_get_date "
+        "FROM rank_history "
+        "WHERE id_persones = :id_persones "
+        "ORDER BY id_rank_history ASC");
+    rankHistoryQuery.bindValue(":id_persones", personesId);
+    result.insert("rankHistory", queryRows(rankHistoryQuery));
+
+    QSqlQuery educationQuery;
+    educationQuery.prepare(
+        "SELECT it.type_name, ei.info "
+        "FROM education_institute ei "
+        "LEFT JOIN institute_type it ON it.id_institute_type = ei.id_institute_type "
+        "WHERE ei.id_persones = :id_persones "
+        "ORDER BY ei.id_education_institute ASC");
+    educationQuery.bindValue(":id_persones", personesId);
+    result.insert("education", queryRows(educationQuery));
+
+    QSqlQuery familyQuery;
+    familyQuery.prepare(
+        "SELECT ft.type_name, fd.info "
+        "FROM family_data fd "
+        "LEFT JOIN family_types ft ON ft.id_family_types = fd.id_family_types "
+        "WHERE fd.id_persones = :id_persones "
+        "ORDER BY fd.id_family_data ASC");
+    familyQuery.bindValue(":id_persones", personesId);
+    result.insert("familyData", queryRows(familyQuery));
+
+    QSqlQuery scienceQuery;
+    scienceQuery.prepare(
+        "SELECT srt.type_name, sr.rank_name, sr.date "
+        "FROM science_rank sr "
+        "LEFT JOIN science_rank_type srt ON srt.id_science_rank_type = sr.id_science_rank_type "
+        "WHERE sr.id_persones = :id_persones "
+        "ORDER BY sr.id_science_rank ASC");
+    scienceQuery.bindValue(":id_persones", personesId);
+    result.insert("scienceRanks", queryRows(scienceQuery));
+
+    QSqlQuery serviceQuery;
+    serviceQuery.prepare(
+        "SELECT begin_date, end_date, service_info, working_place, order_data "
+        "FROM service_history "
+        "WHERE id_persones = :id_persones "
+        "ORDER BY id_service_history ASC");
+    serviceQuery.bindValue(":id_persones", personesId);
+    result.insert("serviceHistory", queryRows(serviceQuery));
+
+    QSqlQuery workQuery;
+    workQuery.prepare(
+        "SELECT begin_date, end_date, rank_and_place, comments "
+        "FROM work_history "
+        "WHERE id_persones = :id_persones "
+        "ORDER BY id_work_history ASC");
+    workQuery.bindValue(":id_persones", personesId);
+    result.insert("workHistory", queryRows(workQuery));
+
+    QSqlQuery warQuery;
+    warQuery.prepare(
+        "SELECT name, begin_date, end_date "
+        "FROM war_actions "
+        "WHERE id_persones = :id_persones "
+        "ORDER BY id_war_actions ASC");
+    warQuery.bindValue(":id_persones", personesId);
+    result.insert("warActions", queryRows(warQuery));
+
+    QSqlQuery traumaQuery;
+    traumaQuery.prepare(
+        "SELECT name, comments "
+        "FROM travm "
+        "WHERE id_persones = :id_persones "
+        "ORDER BY id_travm ASC");
+    traumaQuery.bindValue(":id_persones", personesId);
+    result.insert("traumas", queryRows(traumaQuery));
+
+    QSqlQuery medalQuery;
+    medalQuery.prepare(
+        "SELECT medal_name, achievment, \"order\" "
+        "FROM medal "
+        "WHERE id_persones = :id_persones "
+        "ORDER BY id_medal ASC");
+    medalQuery.bindValue(":id_persones", personesId);
+    result.insert("medals", queryRows(medalQuery));
+
+    QSqlQuery prisonQuery;
+    prisonQuery.prepare(
+        "SELECT comments "
+        "FROM prison "
+        "WHERE id_persones = :id_persones "
+        "ORDER BY id_prison ASC");
+    prisonQuery.bindValue(":id_persones", personesId);
+    result.insert("prison", queryRows(prisonQuery));
+
+    QSqlQuery compromatQuery;
+    compromatQuery.prepare(
+        "SELECT date, comments "
+        "FROM compromat_table "
+        "WHERE id_persones = :id_persones "
+        "ORDER BY id_compromat_table ASC");
+    compromatQuery.bindValue(":id_persones", personesId);
+    result.insert("compromat", queryRows(compromatQuery));
 
     return result;
 }

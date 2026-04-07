@@ -5,6 +5,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
+#include "dataaccess.h"
 #include "mapsnapshotservice.h"
 #include "mapeditingservice.h"
 
@@ -49,7 +50,9 @@ MapRuntimeService::MapRuntimeService(QObject *parent)
 
     bindSnapshot();
     bindEditing();
-    refreshNow();
+    if (DataAccess::instance()->connected()) {
+        refreshNow();
+    }
 }
 
 MapRuntimeService *MapRuntimeService::qmlSingleton(QQmlEngine*, QJSEngine*)
@@ -149,8 +152,7 @@ void MapRuntimeService::bindSnapshot()
         [this, snapshot](int objectType) {
             updateTypeCaches(objectType, snapshot->featureCollectionForType(objectType));
             scheduleMergedRebuild();
-        },
-        Qt::UniqueConnection);
+        });
     connect(
         snapshot,
         &MapSnapshotService::snapshotUpdated,
@@ -158,8 +160,7 @@ void MapRuntimeService::bindSnapshot()
         [this]() {
             // Fallback sync point (for full refresh paths).
             scheduleMergedRebuild();
-        },
-        Qt::UniqueConnection);
+        });
     m_snapshotBound = true;
 }
 
@@ -178,8 +179,7 @@ void MapRuntimeService::bindEditing()
             // Coalesced refresh by object type to avoid duplicate snapshot calls
             // during multi-role/batch edit operations.
             scheduleTypeRefresh(objectType);
-        },
-        Qt::UniqueConnection);
+        });
     m_editingBound = true;
 }
 
@@ -263,7 +263,7 @@ void MapRuntimeService::flushPendingTypeRefreshes()
     m_pendingRefreshTypes.clear();
 
     for (int objectType : objectTypes) {
-        snapshot->refreshType(objectType, 5000);
+        snapshot->refreshType(objectType, 1200);
     }
 }
 

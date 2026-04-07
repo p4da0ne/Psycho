@@ -6,6 +6,7 @@ Menu {
     id: root
 
     property var appState
+    property var agentHub
     property var objectData
 
     background: Rectangle {
@@ -32,9 +33,22 @@ Menu {
                 return
             }
             var summary = ObjectDetailsRepo.objectSummary(objectData.objectType, objectData.objectId)
-            appState.statusMessage = summary && summary.name
-                ? ("Карточка: " + summary.name + " (ID " + summary.objectId + ")")
+            var summaryName = summary && summary.objectName ? summary.objectName : ""
+            appState.statusMessage = summaryName !== ""
+                ? ("Карточка: " + summaryName + " (ID " + summary.objectId + ")")
                 : ("Карточка: " + objectData.name)
+        }
+    }
+
+    MenuItem {
+        text: "Информация"
+        enabled: !!objectData
+        onTriggered: {
+            if (!objectData) {
+                appState.statusMessage = "Объект не выбран"
+                return
+            }
+            appState.showObjectInfo(objectData)
         }
     }
 
@@ -50,6 +64,52 @@ Menu {
             appState.statusMessage = route.length > 0
                 ? ("Маршрут найден, точек: " + route.length)
                 : "Маршрут не задан"
+        }
+    }
+
+    MenuSeparator {}
+
+    MenuItem {
+        text: "Редактировать позицию"
+        enabled: !!objectData
+        onTriggered: {
+            if (!objectData)
+                return
+            appState.selectObject(objectData)
+            appState.beginGeometryEdit("position")
+        }
+    }
+
+    MenuItem {
+        text: "Редактировать маршрут"
+        enabled: !!objectData
+        onTriggered: {
+            if (!objectData)
+                return
+            appState.selectObject(objectData)
+            appState.beginGeometryEdit("route")
+        }
+    }
+
+    MenuItem {
+        text: "Редактировать покрытие"
+        enabled: !!objectData
+        onTriggered: {
+            if (!objectData)
+                return
+            appState.selectObject(objectData)
+            appState.beginGeometryEdit("coverage")
+        }
+    }
+
+    MenuItem {
+        text: "Редактировать все геометрии"
+        enabled: !!objectData
+        onTriggered: {
+            if (!objectData)
+                return
+            appState.selectObject(objectData)
+            appState.beginGeometryEditAll()
         }
     }
 

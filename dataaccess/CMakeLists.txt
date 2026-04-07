@@ -15,6 +15,7 @@ qt_add_library(dataaccess
     eventsrepository.cpp eventsrepository.h
     geometryrepository.cpp geometryrepository.h
     geojsonservice.cpp geojsonservice.h
+    legacycalculationservice.cpp legacycalculationservice.h
     mapobjectsrepository.cpp mapobjectsrepository.h
     mapeditingservice.cpp mapeditingservice.h
     mapgeometryrolesservice.cpp mapgeometryrolesservice.h

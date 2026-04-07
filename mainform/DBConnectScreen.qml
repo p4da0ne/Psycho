@@ -18,7 +18,8 @@ Rectangle {
     }
 
     function syncSettings() {
-        DbSettings.driver = driverField.text
+        // TEST/TEMP NOTE: until multi-driver support is implemented, lock to PostgreSQL.
+        DbSettings.driver = "QPSQL"
         DbSettings.host = hostField.text
         DbSettings.port = Number(portField.text)
         DbSettings.dbName = dbNameField.text
@@ -47,7 +48,15 @@ Rectangle {
             border.width: 1
             border.color: "#334155"
             property alias text: driverInput.text
-            TextInput { id: driverInput; anchors.fill: parent; anchors.margins: 10; color: "#f8fafc"; verticalAlignment: TextInput.AlignVCenter }
+            TextInput {
+                id: driverInput
+                anchors.fill: parent
+                anchors.margins: 10
+                color: "#94a3b8"
+                verticalAlignment: TextInput.AlignVCenter
+                readOnly: true
+                text: "QPSQL"
+            }
         }
         Rectangle {
             id: hostField

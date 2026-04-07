@@ -41,6 +41,24 @@ Menu {
     }
 
     MenuItem {
+        text: "Добавить точку в редактируемую геометрию"
+        enabled: appState.geometryEditActive
+        onTriggered: {
+            if (!appState.geometryEditActive)
+                return
+            var current = appState.geometryEditPoints ? appState.geometryEditPoints.slice(0) : []
+            if (appState.geometryEditRole === "position") {
+                current = [{ "longitude": appState.lastContextLon, "latitude": appState.lastContextLat }]
+            } else {
+                current.push({ "longitude": appState.lastContextLon, "latitude": appState.lastContextLat })
+            }
+            appState.geometryEditPoints = current
+            appState.geometryEditDirty = true
+            appState.statusMessage = "Точка добавлена в " + appState.geometryEditRole
+        }
+    }
+
+    MenuItem {
         text: "Переключить в heatmap"
         onTriggered: {
             appState.mapMode = "heatmap"

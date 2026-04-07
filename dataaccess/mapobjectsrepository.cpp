@@ -3,11 +3,13 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonValue>
 #include <QSqlQuery>
 #include <QVariantMap>
 
 #include "dataaccess.h"
 #include "geojsonservice.h"
+#include "legacycalculationservice.h"
 
 MapObjectsRepository *MapObjectsRepository::s_instance = nullptr;
 
@@ -81,6 +83,7 @@ QString MapObjectsRepository::buildTypeGeoJson(int objectType, int limit)
         const QVariantMap item = itemValue.toMap();
         const int objectId = item.value("id").toInt();
         const QString oneObjectJson = buildObjectGeoJson(objectType, objectId);
+        const QVariantMap metrics = LegacyCalculationService::instance()->objectMetrics(objectType, objectId);
         const QJsonDocument oneDoc = QJsonDocument::fromJson(oneObjectJson.toUtf8());
         if (!oneDoc.isObject()) {
             continue;
@@ -91,6 +94,9 @@ QString MapObjectsRepository::buildTypeGeoJson(int objectType, int limit)
             QJsonObject properties = feature.value("properties").toObject();
             properties.insert("title", item.value("name").toString());
             properties.insert("subtitle", item.value("subtitle").toString());
+            for (auto it = metrics.constBegin(); it != metrics.constEnd(); ++it) {
+                properties.insert(it.key(), QJsonValue::fromVariant(it.value()));
+            }
             feature.insert("properties", properties);
             featureAccumulator.append(feature);
         }
@@ -108,7 +114,11 @@ QString MapObjectsRepository::objectSelectSqlForType(int objectType)
     case 1: // FORMATIONS
         return "SELECT id_ls AS id, name_ls AS name, short_name_ls AS subtitle FROM ls ORDER BY name_ls";
     case 2: // SPECIAL_CONDITIONS
-        return "SELECT id_special_conditions AS id, name_special_conditions AS name, '' AS subtitle FROM special_conditions ORDER BY name_special_conditions";
+        return "SELECT s.id_special_conditions AS id, s.name_special_conditions AS name, "
+               "COALESCE(t.name_type_special_conditions, '') AS subtitle "
+               "FROM special_conditions s "
+               "LEFT JOIN type_special_conditions t ON t.id_type_special_conditions = s.id_type_special_conditions "
+               "ORDER BY s.name_special_conditions";
     case 3: // SMI_MEANS
     case 4: // FORMATIONS_MEANS
     case 5: // GROUPS_MEANS

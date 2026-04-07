@@ -1,5 +1,7 @@
 #include "dbconnectionsettings.h"
 
+#include <QSettings>
+
 #include "dataaccess.h"
 
 DbConnectionSettings *DbConnectionSettings::s_instance = nullptr;
@@ -122,6 +124,48 @@ void DbConnectionSettings::load()
     m_dbName = m_settings.value("/settings_db_connect/db_name", "SATURN").toString();
     m_user = m_settings.value("/settings_db_connect/user_name", "postgres").toString();
     m_password = m_settings.value("/settings_db_connect/user_password", "").toString();
+
+    // Legacy compatibility: read old app-scoped QSettings if dedicated storage is empty.
+    if (m_password.isEmpty()) {
+        QSettings legacy("vka", "saturn");
+        if (m_driver == "QPSQL") {
+            const QString legacyPassword = legacy.value("/settings_db_connect/user_password", "").toString();
+            if (!legacyPassword.isEmpty()) {
+                m_password = legacyPassword;
+            }
+        }
+        if (m_host == "localhost") {
+            const QString legacyHost = legacy.value("/settings_db_connect/host", "").toString();
+            if (!legacyHost.isEmpty()) {
+                m_host = legacyHost;
+            }
+        }
+        if (m_dbName.compare("SATURN", Qt::CaseInsensitive) == 0) {
+            const QString legacyDbName = legacy.value("/settings_db_connect/db_name", "").toString();
+            if (!legacyDbName.isEmpty()) {
+                m_dbName = legacyDbName;
+            }
+        }
+        if (m_user.compare("postgres", Qt::CaseInsensitive) == 0) {
+            const QString legacyUser = legacy.value("/settings_db_connect/user_name", "").toString();
+            if (!legacyUser.isEmpty()) {
+                m_user = legacyUser;
+            }
+        }
+    }
+
+    // Optional operational fallback: allow password from environment when not persisted.
+    if (m_password.isEmpty()) {
+        const QString envPassword = qEnvironmentVariable("SATURN_DB_PASSWORD");
+        if (!envPassword.isEmpty()) {
+            m_password = envPassword;
+        } else {
+            const QString pgPassword = qEnvironmentVariable("PGPASSWORD");
+            if (!pgPassword.isEmpty()) {
+                m_password = pgPassword;
+            }
+        }
+    }
     emit changed();
 }
 

@@ -41,6 +41,15 @@ Row format from `loadObjectGeometry`:
 - `buildObjectGeoJson(objectType, objectId) -> string`
 - `buildTypeGeoJson(objectType, limit) -> string`
 
+`buildTypeGeoJson` enriches every feature with legacy-calculation fields used by heatmap:
+- `calcSource: string`
+- `legacyScoreRaw: number`
+- `legacyScoreNormalized: number` (0..1)
+- `legacyClass: int`
+- `heatValue: number` (0..1, higher means hotter)
+- `heatClass: int` (1..4)
+- optional details by type (for example `mpsPriz/mpsKontr/mpsOfficer`, `lossesMin/lossesMax`, `kSnf/kKf/kRf`).
+
 ### `ObjectDetailsRepo` (`ObjectDetailsRepository`)
 - `objectSummary(objectType, objectId) -> QVariantMap`
 - `objectDetails(objectType, objectId) -> QVariantMap`
@@ -104,4 +113,5 @@ Role/type guards in editing:
 - `mainform/main.qml`: diagnostic text panels (`snapshotInfo`, `runtimeInfo`, `editingInfo`).
 - `mainform/main.qml`: button "Тест записи геометрии" for smoke validation only.
 - `mainform/main.cpp`: comment marking temporary shell entrypoint.
+
 

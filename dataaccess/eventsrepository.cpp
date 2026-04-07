@@ -1,9 +1,29 @@
 #include "eventsrepository.h"
 
 #include <QSqlQuery>
+#include <QSqlRecord>
 #include <QVariantList>
 
 #include "dataaccess.h"
+
+namespace {
+QVariantList queryRows(QSqlQuery &query)
+{
+    QVariantList rows;
+    if (!query.exec()) {
+        return rows;
+    }
+    const QSqlRecord rec = query.record();
+    while (query.next()) {
+        QVariantMap row;
+        for (int i = 0; i < rec.count(); ++i) {
+            row.insert(rec.fieldName(i), query.value(i));
+        }
+        rows.append(row);
+    }
+    return rows;
+}
+}
 
 EventsRepository *EventsRepository::s_instance = nullptr;
 
@@ -126,5 +146,28 @@ QVariantMap EventsRepository::eventDetails(int eventId)
     }
 
     result.insert("objects", objects);
+
+    QSqlQuery mediaQuery;
+    mediaQuery.prepare(
+        "SELECT em.id_event_media, mt.type_name, em.filename_media, em.description "
+        "FROM event_media em "
+        "LEFT JOIN media_type mt ON mt.id_media_type = em.id_media_type "
+        "WHERE em.id_event = :id_event "
+        "ORDER BY em.id_event_media ASC");
+    mediaQuery.bindValue(":id_event", eventId);
+    result.insert("media", queryRows(mediaQuery));
+
+    QSqlQuery coordinatesQuery;
+    coordinatesQuery.prepare(
+        "SELECT c.id_coordinates, c.latitude_wgs_84_g, c.latitude_wgs_84_m, c.latitude_wgs_84_s, "
+        "c.longitude_wgs_84_g, c.longitude_wgs_84_m, c.longitude_wgs_84_s, "
+        "c.x_coordinates, c.y_coordinates "
+        "FROM coord_events ce "
+        "JOIN coordinates c ON c.id_coordinates = ce.id_coordinates "
+        "WHERE ce.id_event = :id_event "
+        "ORDER BY ce.id_coord_event ASC");
+    coordinatesQuery.bindValue(":id_event", eventId);
+    result.insert("coordinates", queryRows(coordinatesQuery));
+
     return result;
 }

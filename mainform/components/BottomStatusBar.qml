@@ -12,8 +12,8 @@ Item {
 
     readonly property bool panelVisible: panelState && panelState.visible !== undefined ? panelState.visible : true
     readonly property bool collapsed: panelState && panelState.collapsed ? panelState.collapsed : false
-    readonly property real expandedHeight: panelState && panelState.height ? panelState.height : 30
-    readonly property real targetHeight: panelVisible ? (collapsed ? 24 : expandedHeight) : 0
+    readonly property real expandedHeight: panelState && panelState.height ? panelState.height : 24
+    readonly property real targetHeight: panelVisible ? (collapsed ? 20 : expandedHeight) : 0
 
     implicitHeight: targetHeight
     height: targetHeight
@@ -65,7 +65,7 @@ Item {
                     onPositionChanged: function(mouse) {
                         if (!pressed || !root.panelManager)
                             return
-                        var nextHeight = Math.max(24, root.dragStartHeight - (mouse.y - startMouseY))
+                        var nextHeight = Math.max(20, root.dragStartHeight - (mouse.y - startMouseY))
                         root.panelManager.resizePanel("status-bar", root.width, nextHeight)
                     }
                 }

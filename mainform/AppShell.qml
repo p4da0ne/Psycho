@@ -2,7 +2,7 @@ pragma ComponentBehavior: Bound
 import QtQuick 2.15
 import QtQuick.Window 2.15
 import Saturn.Backend 1.0
-import "components"
+import "qrc:/components"
 
 Window {
     id: root
@@ -17,9 +17,12 @@ Window {
 
     property string panel: "none"
     property var mapObjects: []
+    property var mapLines: []
+    property var mapPolygons: []
     property var locationLabels: []
     property var mapEvents: []
     property var referenceTreeData: []
+    property bool pendingDbBootstrap: false
 
     QtObject {
         id: appState
@@ -47,7 +50,19 @@ Window {
         property string selectedStructurePath: ""
         property string eventStatusFilter: "all"
         property string eventTypeFilter: "all"
+        property bool geometryEditActive: false
+        property string geometryEditRole: ""
+        property string geometryEditType: ""
+        property int geometryEditObjectType: 0
+        property int geometryEditObjectId: 0
+        property string geometryEditObjectName: ""
+        property bool geometryEditClosed: false
+        property bool geometryEditDirty: false
+        property var geometryEditPoints: []
+        property bool geometryEditAllActive: false
+        property var geometryEditBundle: ({})
         property var selectedObject: null
+        property var selectedObjectDetails: ({})
         property var selectedEvent: null
         property var hoveredObject: null
         property string selectionType: "none"
@@ -61,17 +76,56 @@ Window {
             hoveredObject = objectData
             selectionType = objectData ? "object" : "none"
             selectedObjects = objectData ? [objectData] : []
-            if (objectData)
+            if (objectData) {
                 selectedEvent = null
+                root.loadObjectDetailsForObject(objectData)
+            } else {
+                selectedObjectDetails = ({})
+            }
             statusMessage = objectData ? "Выбран объект: " + objectData.name : "Выделение снято"
         }
 
         function clearSelection() {
             selectedObject = null
+            selectedObjectDetails = ({})
             hoveredObject = null
             selectionType = "none"
             selectedObjects = []
             statusMessage = "Выделение снято"
+        }
+
+        function showObjectInfo(objectData) {
+            root.showObjectInfoForObject(objectData || selectedObject)
+        }
+
+        function beginGeometryEdit(roleName) {
+            root.startGeometryEditForSelected(roleName)
+        }
+
+        function beginGeometryEditAll() {
+            root.startAllGeometryEditForSelected()
+        }
+
+        function setGeometryEditRole(roleName) {
+            root.switchGeometryEditRole(roleName)
+        }
+
+        function commitGeometryEdit() {
+            root.commitGeometryEdit()
+        }
+
+        function cancelGeometryEdit() {
+            root.cancelGeometryEdit()
+        }
+
+        onGeometryEditPointsChanged: {
+            if (!geometryEditAllActive || !geometryEditRole)
+                return
+            var nextBundle = Object.assign({}, geometryEditBundle || {})
+            var entry = Object.assign({}, nextBundle[geometryEditRole] || {})
+            entry.points = geometryEditPoints ? geometryEditPoints.slice(0) : []
+            nextBundle[geometryEditRole] = entry
+            geometryEditBundle = nextBundle
         }
     }
 
@@ -104,9 +158,9 @@ Window {
                 "collapsed": false,
                 "detached": false,
                 "x": 16,
-                "y": root.height - 48,
+                "y": root.height - 40,
                 "width": root.width - 32,
-                "height": 30
+                "height": 24
             }
         })
         property string activePanelId: "right-sidebar"
@@ -297,6 +351,10 @@ Window {
                 current.push(objectData)
             appState.selectedObjects = current
             appState.selectedObject = current.length > 0 ? current[0] : null
+            if (appState.selectedObject)
+                root.loadObjectDetailsForObject(appState.selectedObject)
+            else
+                appState.selectedObjectDetails = ({})
             appState.selectionType = current.length > 1 ? "multi" : (current.length === 1 ? "object" : "none")
         }
 
@@ -314,6 +372,8 @@ Window {
                 appState.selectionType = "none"
                 return
             }
+            appState.selectedObject = null
+            appState.selectedObjectDetails = ({})
             var details = EventsRepo.eventDetails(Number(eventData.id || 0))
             var linked = []
             var objects = details && details.objects ? details.objects : []
@@ -374,7 +434,57 @@ Window {
         function setSelectedStructurePath(pathValue) {
             structureAgent.selectedPath = pathValue || ""
             appState.selectedStructurePath = structureAgent.selectedPath
-            appState.selectionType = appState.selectedStructurePath !== "" ? "structure" : "none"
+            if (appState.selectedStructurePath === "") {
+                appState.selectionType = "none"
+                return
+            }
+
+            var selectedNode = structureAgent.nodeDetails(appState.selectedStructurePath)
+            if (!selectedNode || !selectedNode.nodeKind) {
+                appState.selectionType = "structure"
+                return
+            }
+
+            if (selectedNode.nodeKind === "object") {
+                var runtimeObject = root.findRuntimeObject(selectedNode.objectType, selectedNode.objectId)
+                if (!runtimeObject) {
+                    runtimeObject = {
+                        "id": selectedNode.objectType + "-" + selectedNode.objectId,
+                        "objectType": Number(selectedNode.objectType),
+                        "objectId": Number(selectedNode.objectId),
+                        "name": selectedNode.label || ("Object " + selectedNode.objectId),
+                        "side": sideByType(Number(selectedNode.objectType)),
+                        "kind": kindByType(Number(selectedNode.objectType)),
+                        "lat": 0,
+                        "lon": 0,
+                        "mpps": 0,
+                        "speed": 0,
+                        "course": 0,
+                        "source": "db",
+                        "notes": selectedNode.subtitle || "",
+                        "structurePath": appState.selectedStructurePath
+                    }
+                }
+                selectionAgent.selectObject(runtimeObject)
+                appState.statusMessage = "Выбрана запись БД: " + (runtimeObject.name || "")
+                return
+            }
+
+            if (selectedNode.nodeKind === "event") {
+                selectionAgent.selectEvent({
+                    "id": Number(selectedNode.eventId),
+                    "name": selectedNode.label || ("Событие " + selectedNode.eventId),
+                    "type": selectedNode.eventType || "monitoring",
+                    "status": selectedNode.eventStatus || "actual",
+                    "startTimestamp": selectedNode.eventStart || "",
+                    "endTimestamp": selectedNode.eventEnd || "",
+                    "updatedTimestamp": ""
+                })
+                appState.statusMessage = "Выбрано событие: " + (selectedNode.label || "")
+                return
+            }
+
+            appState.selectionType = "structure"
         }
         function syncSelectedStructurePath(pathValue) { setSelectedStructurePath(pathValue) }
         function setActivePanel(panelIndex) {
@@ -744,6 +854,18 @@ Window {
         return "actual"
     }
 
+    function eventStatusLabel(statusKey) {
+        if (statusKey === "actual")
+            return "Актуальные"
+        if (statusKey === "planned")
+            return "Плановые"
+        if (statusKey === "past")
+            return "Завершенные"
+        if (statusKey === "cancelled")
+            return "Отмененные"
+        return "События"
+    }
+
     function eventTypeValue(typeName) {
         var normalized = String(typeName || "").toLowerCase()
         if (normalized.indexOf("связ") !== -1 || normalized.indexOf("comm") !== -1)
@@ -778,32 +900,581 @@ Window {
         return 0
     }
 
+    function findRuntimeObject(objectType, objectId) {
+        var targetType = Number(objectType)
+        var targetId = Number(objectId)
+        var items = mapObjects || []
+        for (var i = 0; i < items.length; ++i) {
+            if (Number(items[i].objectType) === targetType && Number(items[i].objectId) === targetId)
+                return items[i]
+        }
+        return null
+    }
+
+    function loadObjectDetailsForObject(objectData) {
+        if (!objectData || objectData.objectType === undefined || objectData.objectId === undefined) {
+            appState.selectedObjectDetails = ({})
+            return
+        }
+        var details = ObjectDetailsRepo.objectDetails(
+                    Number(objectData.objectType),
+                    Number(objectData.objectId))
+        appState.selectedObjectDetails = details || ({})
+    }
+
+    function showObjectInfoForObject(objectData) {
+        if (!objectData || objectData.objectType === undefined || objectData.objectId === undefined) {
+            appState.statusMessage = "Информация недоступна: объект не выбран"
+            return
+        }
+        appState.selectObject(objectData)
+        if (root.agentHub && root.agentHub.uiStateAgent) {
+            root.agentHub.uiStateAgent.setInspectorVisible(true)
+            root.agentHub.uiStateAgent.setInspectorTab(0)
+            root.agentHub.uiStateAgent.setActivePanel(1)
+        }
+        var details = appState.selectedObjectDetails || {}
+        var payload = details.payload || {}
+        var count = Object.keys(payload).length
+        appState.statusMessage = "Информация загружена: " + (objectData.name || "") + " (" + count + " полей)"
+    }
+
+    function coordinatePairToPoint(pair) {
+        if (!pair || pair.length < 2)
+            return null
+        return {
+            "lon": Number(pair[0]),
+            "lat": Number(pair[1])
+        }
+    }
+
+    function geometryTypeByRole(roleName) {
+        if (roleName === "position")
+            return "Point"
+        if (roleName === "route")
+            return "LineString"
+        if (roleName === "coverage")
+            return "Polygon"
+        return ""
+    }
+
+    function roleClosedByName(roleName) {
+        return roleName === "coverage"
+    }
+
+    function geometryPointsForRole(objectType, objectId, roleName) {
+        var raw = MapGeometryRoles.geometry(objectType, objectId, roleName)
+        var points = []
+        for (var i = 0; i < raw.length; ++i) {
+            var row = raw[i]
+            points.push({
+                "longitude": Number(row.longitude),
+                "latitude": Number(row.latitude)
+            })
+        }
+        return points
+    }
+
+    function switchGeometryEditRole(roleName) {
+        if (!appState.geometryEditActive) {
+            appState.statusMessage = "Режим редактирования не активен"
+            return
+        }
+        var geometryType = geometryTypeByRole(roleName)
+        if (geometryType === "") {
+            appState.statusMessage = "Неизвестная роль геометрии: " + roleName
+            return
+        }
+        if (appState.geometryEditAllActive) {
+            var bundle = appState.geometryEditBundle || {}
+            var bundleEntry = bundle[roleName]
+            if (!bundleEntry) {
+                bundleEntry = {
+                    "geometryRole": roleName,
+                    "geometryType": geometryType,
+                    "isClosed": roleClosedByName(roleName),
+                    "points": []
+                }
+                var updatedBundle = Object.assign({}, bundle)
+                updatedBundle[roleName] = bundleEntry
+                appState.geometryEditBundle = updatedBundle
+            }
+            appState.geometryEditRole = roleName
+            appState.geometryEditType = geometryType
+            appState.geometryEditClosed = !!bundleEntry.isClosed
+            appState.geometryEditPoints = (bundleEntry.points || []).slice(0)
+            appState.geometryEditDirty = false
+            appState.statusMessage = "Режим редактирования: " + roleName + " (" + appState.geometryEditObjectName + ")"
+            return
+        }
+        startGeometryEditForSelected(roleName)
+    }
+
+    function startGeometryEditForSelected(roleName) {
+        if (!appState.selectedObject) {
+            appState.statusMessage = "Не выбран объект для редактирования геометрии"
+            return
+        }
+        if (!Auth.loggedIn || !Auth.canEditGeometry()) {
+            appState.statusMessage = "Требуется авторизация с правом редактирования геометрии"
+            return
+        }
+        var geometryType = geometryTypeByRole(roleName)
+        if (geometryType === "") {
+            appState.statusMessage = "Неизвестная роль геометрии: " + roleName
+            return
+        }
+        var points = geometryPointsForRole(
+                    appState.selectedObject.objectType,
+                    appState.selectedObject.objectId,
+                    roleName)
+
+        appState.geometryEditActive = true
+        appState.geometryEditAllActive = false
+        appState.geometryEditBundle = ({})
+        appState.geometryEditRole = roleName
+        appState.geometryEditType = geometryType
+        appState.geometryEditObjectType = appState.selectedObject.objectType
+        appState.geometryEditObjectId = appState.selectedObject.objectId
+        appState.geometryEditObjectName = appState.selectedObject.name
+        appState.geometryEditClosed = roleClosedByName(roleName)
+        appState.geometryEditPoints = points
+        appState.geometryEditDirty = false
+        appState.statusMessage = "Режим редактирования: " + roleName + " (" + appState.selectedObject.name + ")"
+    }
+
+    function startAllGeometryEditForSelected() {
+        if (!appState.selectedObject) {
+            appState.statusMessage = "Не выбран объект для редактирования геометрии"
+            return
+        }
+        if (!Auth.loggedIn || !Auth.canEditGeometry()) {
+            appState.statusMessage = "Требуется авторизация с правом редактирования геометрии"
+            return
+        }
+
+        var objectType = appState.selectedObject.objectType
+        var objectId = appState.selectedObject.objectId
+        var roles = ["position", "route", "coverage"]
+        var bundle = {}
+        for (var i = 0; i < roles.length; ++i) {
+            var roleName = roles[i]
+            var geometryType = geometryTypeByRole(roleName)
+            bundle[roleName] = {
+                "geometryRole": roleName,
+                "geometryType": geometryType,
+                "isClosed": roleClosedByName(roleName),
+                "points": geometryPointsForRole(objectType, objectId, roleName)
+            }
+        }
+
+        appState.geometryEditActive = true
+        appState.geometryEditAllActive = true
+        appState.geometryEditBundle = bundle
+        appState.geometryEditObjectType = objectType
+        appState.geometryEditObjectId = objectId
+        appState.geometryEditObjectName = appState.selectedObject.name
+        appState.geometryEditDirty = false
+        switchGeometryEditRole("position")
+    }
+
+    function commitGeometryEdit() {
+        if (!appState.geometryEditActive) {
+            appState.statusMessage = "Режим редактирования не активен"
+            return
+        }
+
+        if (appState.geometryEditAllActive) {
+            var roles = ["position", "route", "coverage"]
+            var payload = []
+            var bundle = appState.geometryEditBundle || {}
+            for (var i = 0; i < roles.length; ++i) {
+                var roleName = roles[i]
+                var entry = bundle[roleName]
+                if (!entry)
+                    continue
+                var points = entry.points || []
+                if (roleName === "position" && points.length >= 1) {
+                    payload.push({
+                        "geometryRole": roleName,
+                        "geometryType": "Point",
+                        "points": [points[0]],
+                        "isClosed": false
+                    })
+                } else if (roleName === "route" && points.length >= 2) {
+                    payload.push({
+                        "geometryRole": roleName,
+                        "geometryType": "LineString",
+                        "points": points,
+                        "isClosed": false
+                    })
+                } else if (roleName === "coverage" && points.length >= 3) {
+                    payload.push({
+                        "geometryRole": roleName,
+                        "geometryType": "Polygon",
+                        "points": points,
+                        "isClosed": true
+                    })
+                }
+            }
+            var bundleOk = MapGeometryRoles.applyBundle(
+                        appState.geometryEditObjectType,
+                        appState.geometryEditObjectId,
+                        payload,
+                        true)
+            if (bundleOk) {
+                appState.geometryEditActive = false
+                appState.geometryEditAllActive = false
+                appState.geometryEditRole = ""
+                appState.geometryEditType = ""
+                appState.geometryEditObjectType = 0
+                appState.geometryEditObjectId = 0
+                appState.geometryEditObjectName = ""
+                appState.geometryEditClosed = false
+                appState.geometryEditDirty = false
+                appState.geometryEditPoints = []
+                appState.geometryEditBundle = ({})
+                appState.statusMessage = "Геометрии сохранены: position/route/coverage"
+                MapRuntime.refreshNow()
+                refreshObjectsFromRuntime()
+                return
+            }
+            appState.statusMessage = "Ошибка пакетного сохранения геометрии: " + MapGeometryRoles.lastError
+            return
+        }
+
+        var points = appState.geometryEditPoints || []
+        var ok = false
+        if (appState.geometryEditRole === "position") {
+            if (points.length === 0) {
+                appState.statusMessage = "Для position нужна 1 точка"
+                return
+            }
+            ok = MapGeometryRoles.upsertPosition(
+                        appState.geometryEditObjectType,
+                        appState.geometryEditObjectId,
+                        {
+                            "longitude": Number(points[0].longitude),
+                            "latitude": Number(points[0].latitude)
+                        })
+        } else if (appState.geometryEditRole === "route") {
+            ok = MapGeometryRoles.upsertRoute(
+                        appState.geometryEditObjectType,
+                        appState.geometryEditObjectId,
+                        points)
+        } else if (appState.geometryEditRole === "coverage") {
+            ok = MapGeometryRoles.upsertCoverage(
+                        appState.geometryEditObjectType,
+                        appState.geometryEditObjectId,
+                        points,
+                        true)
+        }
+
+        if (ok) {
+            appState.statusMessage = "Геометрия сохранена: " + appState.geometryEditRole
+            appState.geometryEditActive = false
+            appState.geometryEditDirty = false
+            appState.geometryEditPoints = []
+            MapRuntime.refreshNow()
+            refreshObjectsFromRuntime()
+            return
+        }
+
+        appState.statusMessage = "Ошибка сохранения геометрии: " + MapGeometryRoles.lastError
+    }
+
+    function cancelGeometryEdit() {
+        appState.geometryEditActive = false
+        appState.geometryEditAllActive = false
+        appState.geometryEditRole = ""
+        appState.geometryEditType = ""
+        appState.geometryEditObjectType = 0
+        appState.geometryEditObjectId = 0
+        appState.geometryEditObjectName = ""
+        appState.geometryEditClosed = false
+        appState.geometryEditDirty = false
+        appState.geometryEditPoints = []
+        appState.geometryEditBundle = ({})
+        appState.statusMessage = "Редактирование геометрии отменено"
+    }
+
+    function buildLineEntriesFromFeature(feature) {
+        var entries = []
+        if (!feature || !feature.geometry)
+            return entries
+
+        var geometry = feature.geometry
+        var props = feature.properties || {}
+        var objectType = Number(props.objectType || 0)
+        var objectId = Number(props.objectId || 0)
+        var base = {
+            "id": objectType + "-" + objectId,
+            "objectType": objectType,
+            "objectId": objectId,
+            "name": props.title || ("Object " + objectId),
+            "side": sideByType(objectType),
+            "kind": kindByType(objectType),
+            "role": String(props.geometryRole || ""),
+            "calcSource": String(props.calcSource || ""),
+            "legacyScoreRaw": Number(props.legacyScoreRaw !== undefined ? props.legacyScoreRaw : 0.5),
+            "legacyScoreNormalized": Number(props.legacyScoreNormalized !== undefined ? props.legacyScoreNormalized : 0.5),
+            "heatValue": Number(props.heatValue !== undefined ? props.heatValue : 0.5),
+            "heatClass": Number(props.heatClass !== undefined ? props.heatClass : 0)
+        }
+
+        if (geometry.type === "LineString") {
+            var linePath = []
+            var coords = geometry.coordinates || []
+            for (var i = 0; i < coords.length; ++i) {
+                var point = coordinatePairToPoint(coords[i])
+                if (point)
+                    linePath.push(point)
+            }
+            if (linePath.length >= 2)
+                entries.push(Object.assign({ "path": linePath }, base))
+            return entries
+        }
+
+        if (geometry.type === "MultiLineString") {
+            var lineList = geometry.coordinates || []
+            for (var l = 0; l < lineList.length; ++l) {
+                var segment = lineList[l] || []
+                var segmentPath = []
+                for (var p = 0; p < segment.length; ++p) {
+                    var segmentPoint = coordinatePairToPoint(segment[p])
+                    if (segmentPoint)
+                        segmentPath.push(segmentPoint)
+                }
+                if (segmentPath.length >= 2) {
+                    entries.push(Object.assign({
+                        "id": base.id + "-l" + l,
+                        "path": segmentPath
+                    }, base))
+                }
+            }
+        }
+        return entries
+    }
+
+    function buildPolygonEntriesFromFeature(feature) {
+        var entries = []
+        if (!feature || !feature.geometry)
+            return entries
+
+        var geometry = feature.geometry
+        var props = feature.properties || {}
+        var objectType = Number(props.objectType || 0)
+        var objectId = Number(props.objectId || 0)
+        var base = {
+            "id": objectType + "-" + objectId,
+            "objectType": objectType,
+            "objectId": objectId,
+            "name": props.title || ("Object " + objectId),
+            "side": sideByType(objectType),
+            "kind": kindByType(objectType),
+            "role": String(props.geometryRole || ""),
+            "calcSource": String(props.calcSource || ""),
+            "legacyScoreRaw": Number(props.legacyScoreRaw !== undefined ? props.legacyScoreRaw : 0.5),
+            "legacyScoreNormalized": Number(props.legacyScoreNormalized !== undefined ? props.legacyScoreNormalized : 0.5),
+            "heatValue": Number(props.heatValue !== undefined ? props.heatValue : 0.5),
+            "heatClass": Number(props.heatClass !== undefined ? props.heatClass : 0)
+        }
+
+        function ringToPath(ring) {
+            var path = []
+            for (var i = 0; i < ring.length; ++i) {
+                var point = coordinatePairToPoint(ring[i])
+                if (point)
+                    path.push(point)
+            }
+            return path
+        }
+
+        if (geometry.type === "Polygon") {
+            var rings = geometry.coordinates || []
+            if (rings.length > 0) {
+                var outer = ringToPath(rings[0])
+                if (outer.length >= 3)
+                    entries.push(Object.assign({ "path": outer }, base))
+            }
+            return entries
+        }
+
+        if (geometry.type === "MultiPolygon") {
+            var polygons = geometry.coordinates || []
+            for (var g = 0; g < polygons.length; ++g) {
+                var polyRings = polygons[g] || []
+                if (polyRings.length === 0)
+                    continue
+                var polyOuter = ringToPath(polyRings[0])
+                if (polyOuter.length >= 3) {
+                    entries.push(Object.assign({
+                        "id": base.id + "-p" + g,
+                        "path": polyOuter
+                    }, base))
+                }
+            }
+        }
+        return entries
+    }
+
     function refreshReferenceTreeFromDb() {
-        var types = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        var roots = []
-        for (var i = 0; i < types.length; ++i) {
-            var typeId = types[i]
-            var rows = MapObjectsRepo.listObjectsByType(typeId, 10000)
-            var children = []
-            for (var j = 0; j < rows.length; ++j) {
-                var row = rows[j]
-                children.push({
-                    "id": typeId + "_" + row.id,
-                    "label": row.name ? String(row.name) : (typeLabel(typeId) + " #" + row.id),
+        if (!Database.connected)
+            return
+        var objectsLimit = 1500
+        var personnelLimit = 1500
+        var eventsLimit = 1500
+        var objectTypeNodes = []
+        var mapTypes = [1, 3, 4, 5, 6, 9, 10]
+        for (var i = 0; i < mapTypes.length; ++i) {
+            var mapType = mapTypes[i]
+            var mapRows = MapObjectsRepo.listObjectsByType(mapType, objectsLimit)
+            var mapLeaves = []
+            for (var j = 0; j < mapRows.length; ++j) {
+                var mapRow = mapRows[j]
+                mapLeaves.push({
+                    "id": "obj_" + mapType + "_" + mapRow.id,
+                    "label": mapRow.name ? String(mapRow.name) : (typeLabel(mapType) + " #" + mapRow.id),
+                    "subtitle": mapRow.subtitle ? String(mapRow.subtitle) : "",
+                    "nodeKind": "object",
+                    "objectType": mapType,
+                    "objectId": Number(mapRow.id),
                     "children": []
                 })
             }
-            roots.push({
-                "id": "type_" + typeId,
-                "label": typeLabel(typeId),
-                "children": children
+            objectTypeNodes.push({
+                "id": "map_type_" + mapType,
+                "label": typeLabel(mapType) + " [" + mapLeaves.length + "]",
+                "children": mapLeaves
             })
         }
+
+        var personnelRows = PersonnelRepo.listPersonnel("", personnelLimit, 0)
+        var personnelGroups = ({})
+        for (var p = 0; p < personnelRows.length; ++p) {
+            var person = personnelRows[p]
+            var personType = person.typeName ? String(person.typeName) : "Без типа"
+            if (!personnelGroups[personType])
+                personnelGroups[personType] = []
+            personnelGroups[personType].push({
+                "id": "pers_" + Number(person.id),
+                "label": person.name ? String(person.name) : ("Персоналия #" + person.id),
+                "subtitle": person.rank ? String(person.rank) : "",
+                "nodeKind": "object",
+                "objectType": 7,
+                "objectId": Number(person.id),
+                "children": []
+            })
+        }
+        var personnelNodes = []
+        var personnelTypes = Object.keys(personnelGroups)
+        personnelTypes.sort()
+        for (var pt = 0; pt < personnelTypes.length; ++pt) {
+            var personnelTypeName = personnelTypes[pt]
+            var personnelLeaves = personnelGroups[personnelTypeName]
+            personnelNodes.push({
+                "id": "pers_type_" + pt,
+                "label": personnelTypeName + " [" + personnelLeaves.length + "]",
+                "children": personnelLeaves
+            })
+        }
+
+        var specialRows = MapObjectsRepo.listObjectsByType(2, objectsLimit)
+        var specialGroups = ({})
+        for (var s = 0; s < specialRows.length; ++s) {
+            var sc = specialRows[s]
+            var scType = sc.subtitle ? String(sc.subtitle) : "Без типа"
+            if (!specialGroups[scType])
+                specialGroups[scType] = []
+            specialGroups[scType].push({
+                "id": "sc_" + Number(sc.id),
+                "label": sc.name ? String(sc.name) : ("Особое условие #" + sc.id),
+                "subtitle": sc.subtitle ? String(sc.subtitle) : "",
+                "nodeKind": "object",
+                "objectType": 2,
+                "objectId": Number(sc.id),
+                "children": []
+            })
+        }
+        var specialNodes = []
+        var specialTypes = Object.keys(specialGroups)
+        specialTypes.sort()
+        for (var st = 0; st < specialTypes.length; ++st) {
+            var specialTypeName = specialTypes[st]
+            var specialLeaves = specialGroups[specialTypeName]
+            specialNodes.push({
+                "id": "sc_type_" + st,
+                "label": specialTypeName + " [" + specialLeaves.length + "]",
+                "children": specialLeaves
+            })
+        }
+
+        var eventRows = EventsRepo.listEvents("", eventsLimit, 0)
+        var eventStatusGroups = ({})
+        for (var e = 0; e < eventRows.length; ++e) {
+            var eventRow = eventRows[e]
+            var statusKey = eventStatusValue(eventRow.statusName, eventRow.start, eventRow.end)
+            if (!eventStatusGroups[statusKey])
+                eventStatusGroups[statusKey] = ({})
+            var typeKey = eventTypeValue(eventRow.typeName)
+            if (!eventStatusGroups[statusKey][typeKey])
+                eventStatusGroups[statusKey][typeKey] = []
+            eventStatusGroups[statusKey][typeKey].push({
+                "id": "event_" + Number(eventRow.id),
+                "label": eventRow.name ? String(eventRow.name) : ("Событие #" + eventRow.id),
+                "nodeKind": "event",
+                "eventId": Number(eventRow.id),
+                "eventType": typeKey,
+                "eventStatus": statusKey,
+                "eventStart": eventRow.start ? String(eventRow.start) : "",
+                "eventEnd": eventRow.end ? String(eventRow.end) : "",
+                "children": []
+            })
+        }
+        var eventNodes = []
+        var statusOrder = ["actual", "planned", "past", "cancelled"]
+        for (var so = 0; so < statusOrder.length; ++so) {
+            var statusName = statusOrder[so]
+            var typeGroups = eventStatusGroups[statusName]
+            if (!typeGroups)
+                continue
+            var typeNodes = []
+            var typeKeys = Object.keys(typeGroups)
+            typeKeys.sort()
+            for (var tk = 0; tk < typeKeys.length; ++tk) {
+                var typeName = typeKeys[tk]
+                var eventLeaves = typeGroups[typeName]
+                typeNodes.push({
+                    "id": "event_type_" + statusName + "_" + typeName,
+                    "label": typeName + " [" + eventLeaves.length + "]",
+                    "children": eventLeaves
+                })
+            }
+            eventNodes.push({
+                "id": "event_status_" + statusName,
+                "label": eventStatusLabel(statusName) + " [" + typeNodes.length + "]",
+                "children": typeNodes
+            })
+        }
+
+        var roots = [{
+            "id": "db_entities",
+            "label": "Сущности БД",
+            "children": [
+                { "id": "db_map_objects", "label": "Объекты", "children": objectTypeNodes },
+                { "id": "db_personnel", "label": "Персоналии", "children": personnelNodes },
+                { "id": "db_special_conditions", "label": "Особые условия", "children": specialNodes },
+                { "id": "db_events", "label": "События", "children": eventNodes }
+            ]
+        }]
         referenceTreeData = roots
-        structureAgent.referenceTree = roots
+        if (structureAgent)
+            structureAgent.referenceTree = roots
     }
 
     function refreshEventsFromDb() {
+        if (!Database.connected)
+            return
         var list = EventsRepo.listEvents("", 500, 0)
         var mapped = []
         for (var i = 0; i < list.length; ++i) {
@@ -826,8 +1497,12 @@ Window {
 
     function refreshObjectsFromRuntime() {
         var pointsJson = MapRuntime.pointsSource
+        var linesJson = MapRuntime.linesSource
+        var polygonsJson = MapRuntime.polygonsSource
         if (!pointsJson || pointsJson.length === 0) {
             mapObjects = []
+            mapLines = []
+            mapPolygons = []
             locationLabels = []
             return
         }
@@ -835,6 +1510,9 @@ Window {
         var parsed = JSON.parse(pointsJson)
         var features = parsed.features || []
         var objects = []
+        var objectByKey = ({})
+        var lines = []
+        var polygons = []
         var labels = []
 
         for (var i = 0; i < features.length; ++i) {
@@ -849,33 +1527,81 @@ Window {
             var props = feature.properties || {}
             var objectType = Number(props.objectType || 0)
             var objectId = Number(props.objectId || 0)
+            if (objectType <= 0 || objectId <= 0)
+                continue
+            var legacyScore = Number(props.legacyScoreNormalized !== undefined ? props.legacyScoreNormalized : 0.5)
+            var heatValue = Number(props.heatValue !== undefined ? props.heatValue : (1.0 - legacyScore))
+            var geometryRole = String(props.geometryRole || "").toLowerCase()
+            var key = objectType + "-" + objectId
             var row = {
-                "id": objectType + "-" + objectId,
+                "id": key,
                 "objectType": objectType,
                 "objectId": objectId,
                 "name": props.title || ("Object " + objectId),
                 "side": sideByType(objectType),
                 "kind": kindByType(objectType),
+                "role": geometryRole,
                 "lat": Number(coords[1]),
                 "lon": Number(coords[0]),
-                "mpps": 50,
+                "mpps": Math.round(legacyScore * 100),
                 "speed": 0,
                 "course": 0,
                 "source": "backend",
                 "notes": props.subtitle || "",
-                "structurePath": structurePathByType(objectType)
+                "structurePath": structurePathByType(objectType),
+                "calcSource": String(props.calcSource || ""),
+                "legacyScoreRaw": Number(props.legacyScoreRaw !== undefined ? props.legacyScoreRaw : legacyScore),
+                "legacyScoreNormalized": legacyScore,
+                "heatValue": heatValue,
+                "heatClass": Number(props.heatClass !== undefined ? props.heatClass : 0)
             }
-            objects.push(row)
+            var existing = objectByKey[key]
+            if (!existing) {
+                objectByKey[key] = row
+            } else {
+                var existingIsPosition = existing.role === "position"
+                var currentIsPosition = geometryRole === "position"
+                if (currentIsPosition && !existingIsPosition)
+                    objectByKey[key] = row
+            }
+        }
 
+        var objectKeys = Object.keys(objectByKey)
+        objectKeys.sort()
+        for (var ok = 0; ok < objectKeys.length; ++ok) {
+            var objectRow = objectByKey[objectKeys[ok]]
+            objects.push(objectRow)
             if (labels.length < 24)
-                labels.push({ "name": row.name, "lat": row.lat, "lon": row.lon })
+                labels.push({ "name": objectRow.name, "lat": objectRow.lat, "lon": objectRow.lon })
         }
 
         mapObjects = objects
+        if (linesJson && linesJson.length > 0) {
+            var linesCollection = JSON.parse(linesJson)
+            var lineFeatures = linesCollection.features || []
+            for (var l = 0; l < lineFeatures.length; ++l) {
+                var lineEntries = buildLineEntriesFromFeature(lineFeatures[l])
+                for (var le = 0; le < lineEntries.length; ++le)
+                    lines.push(lineEntries[le])
+            }
+        }
+
+        if (polygonsJson && polygonsJson.length > 0) {
+            var polygonsCollection = JSON.parse(polygonsJson)
+            var polygonFeatures = polygonsCollection.features || []
+            for (var p = 0; p < polygonFeatures.length; ++p) {
+                var polygonEntries = buildPolygonEntriesFromFeature(polygonFeatures[p])
+                for (var pe = 0; pe < polygonEntries.length; ++pe)
+                    polygons.push(polygonEntries[pe])
+            }
+        }
+
+        mapLines = lines
+        mapPolygons = polygons
         locationLabels = labels
         if (mapEvents.length > 0)
             mapEvents[0].objectIds = objects.length > 0 ? [objects[0].id] : []
-        appState.statusMessage = "Объектов на карте: " + objects.length
+        appState.statusMessage = "Объектов: " + objects.length + ", линий: " + lines.length + ", полигонов: " + polygons.length
     }
 
     function syncLayoutBounds() {
@@ -889,14 +1615,38 @@ Window {
         }
     }
 
-    Component.onCompleted: {
-        Polling.intervalMs = 30000
-        Polling.start()
-        MapSnapshot.refreshAll()
+    function scheduleConnectedBootstrap() {
+        if (!Database.connected)
+            return
+        dbBootstrapTimer.restart()
+    }
+
+    function runConnectedBootstrap() {
+        if (!Database.connected)
+            return
+        appState.statusMessage = "Загрузка данных из БД..."
         MapRuntime.refreshNow()
-        refreshObjectsFromRuntime()
         refreshEventsFromDb()
         refreshReferenceTreeFromDb()
+        pendingDbBootstrap = false
+    }
+
+    onPanelChanged: {
+        if (panel === "none" && pendingDbBootstrap && Database.connected)
+            scheduleConnectedBootstrap()
+    }
+
+    Component.onCompleted: {
+        Polling.intervalMs = 30000
+        if (Database.connected) {
+            if (!Polling.running)
+                Polling.start()
+            if (panel === "none")
+                scheduleConnectedBootstrap()
+            else
+                pendingDbBootstrap = true
+        }
+        refreshObjectsFromRuntime()
         syncLayoutBounds()
         if (root.panelManager) {
             root.panelManager.setPanelVisible("right-sidebar", root.stateManager.inspectorVisible)
@@ -916,10 +1666,33 @@ Window {
     Connections {
         target: Polling
         function onTick() {
-            MapRuntime.refreshNow()
+            if (!Database.connected)
+                return
             refreshEventsFromDb()
-            refreshReferenceTreeFromDb()
+            if (root.stateManager && root.stateManager.navigationVisible)
+                refreshReferenceTreeFromDb()
         }
+    }
+
+    Connections {
+        target: Database
+        function onConnectionChanged() {
+            if (!Database.connected)
+                return
+            if (!Polling.running)
+                Polling.start()
+            if (root.panel === "none")
+                scheduleConnectedBootstrap()
+            else
+                pendingDbBootstrap = true
+        }
+    }
+
+    Timer {
+        id: dbBootstrapTimer
+        interval: 0
+        repeat: false
+        onTriggered: runConnectedBootstrap()
     }
 
     Connections {
@@ -945,7 +1718,7 @@ Window {
         }
 
         function onSelectedStructurePathChanged() {
-            if (root.stateManager.selectedStructurePath !== root.structureAgent.selectedPath)
+            if (root.structureAgent && root.stateManager.selectedStructurePath !== root.structureAgent.selectedPath)
                 root.structureAgent.selectedPath = root.stateManager.selectedStructurePath
         }
     }
@@ -1034,7 +1807,7 @@ Window {
             appState: root.stateManager
             agentHub: root.agentHub
             objects: root.mapObjects
-            structureAgent: root.agentHub.structureAgent
+            structureAgent: root.structureAgent
             backdropSource: mapCanvas.sceneContent
             dragSurface: dragSurface
         }
@@ -1069,7 +1842,7 @@ Window {
             anchors.right: parent.right
             anchors.rightMargin: root.rightDockedVisible ? rightSidebar.width + 28 : 16
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 16
+            anchors.bottomMargin: 8
             appState: root.stateManager
             panelManager: root.panelManager
             panelState: root.statusBarState
@@ -1085,10 +1858,12 @@ Window {
             anchors.top: topBar.bottom
             anchors.topMargin: 14
             anchors.bottom: statusBar.visible ? statusBar.top : parent.bottom
-            anchors.bottomMargin: statusBar.visible ? 12 : 16
+            anchors.bottomMargin: statusBar.visible ? 8 : 12
             appState: root.stateManager
             agentHub: root.agentHub
             objects: root.mapObjects
+            lines: root.mapLines
+            polygons: root.mapPolygons
             labels: root.locationLabels
             onInteractionActivity: {
                 root.agentHub.uiStateAgent.setControlsVisible(false)
@@ -1101,6 +1876,7 @@ Window {
             z: 60
             width: 272
             height: 170
+            visible: !Auth.loggedIn
             anchors.left: parent.left
             anchors.leftMargin: 18
             anchors.top: parent.top
@@ -1216,7 +1992,9 @@ Window {
 
     Component {
         id: authPanel
-        LoginScreen { }
+        LoginScreen {
+            onLoginSucceeded: root.panel = "none"
+        }
     }
 
     Component {

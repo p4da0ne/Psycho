@@ -1,0 +1,6 @@
+module mapview
+linktarget mapviewplugin
+optional plugin mapviewplugin
+classname mapviewPlugin
+typeinfo mapview.qmltypes
+MyMapView 1.0 MyMapView.qml

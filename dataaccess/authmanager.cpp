@@ -4,8 +4,11 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QSqlRecord>
+#include <QSqlDatabase>
+#include <QDebug>
 
 #include "dataaccess.h"
+#include "dbconnectionsettings.h"
 
 AuthManager *AuthManager::s_instance = nullptr;
 
@@ -69,9 +72,27 @@ bool AuthManager::login(const QString &loginName, const QString &password)
         return false;
     }
 
+    DbConnectionSettings *dbSettings = DbConnectionSettings::instance();
+    dbSettings->load();
+
     DataAccess *dbAccess = DataAccess::instance();
+    dbAccess->setDriver(dbSettings->driver());
+    dbAccess->setHost(dbSettings->host());
+    dbAccess->setPort(dbSettings->port());
+    dbAccess->setDbName(dbSettings->dbName());
+    dbAccess->setUser(dbSettings->user());
+    dbAccess->setPassword(dbSettings->password());
+
     if (!dbAccess->connected() && !dbAccess->connectToDatabase()) {
         m_lastError = dbAccess->lastError();
+        if (m_lastError.contains("no password supplied", Qt::CaseInsensitive)) {
+            m_lastError = "Не задан пароль подключения к БД. Откройте 'Настройки подключения к БД' и заполните пароль пользователя PostgreSQL.";
+        }
+        qWarning().noquote()
+            << "Auth login failed on DB connect;"
+            << "login=" << loginName
+            << "; error=" << m_lastError
+            << "; availableDrivers=" << QSqlDatabase::drivers().join(",");
         emit errorChanged();
         return false;
     }
@@ -87,6 +108,11 @@ bool AuthManager::login(const QString &loginName, const QString &password)
 
     if (!query.exec()) {
         m_lastError = query.lastError().text();
+        qWarning().noquote()
+            << "Auth query exec failed;"
+            << "login=" << loginName
+            << "; error=" << m_lastError
+            << "; availableDrivers=" << QSqlDatabase::drivers().join(",");
         emit errorChanged();
         return false;
     }

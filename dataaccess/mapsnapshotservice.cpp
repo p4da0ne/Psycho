@@ -10,6 +10,10 @@
 #include "mapobjectsrepository.h"
 #include "pollingservice.h"
 
+namespace {
+constexpr int kDefaultSnapshotLimit = 1200;
+}
+
 MapSnapshotService *MapSnapshotService::s_instance = nullptr;
 
 MapSnapshotService::MapSnapshotService(QObject *parent)
@@ -56,7 +60,7 @@ QString MapSnapshotService::refreshAll()
 {
     const QList<int> types = supportedMapTypes();
     for (int objectType : types) {
-        updateCacheForType(objectType, 5000);
+        updateCacheForType(objectType, kDefaultSnapshotLimit);
 
         QDateTime maxUpdatedUtc;
         int rowCount = 0;
@@ -149,7 +153,7 @@ QString MapSnapshotService::refreshType(int objectType, int limit)
 QString MapSnapshotService::featureCollectionForType(int objectType)
 {
     if (!m_geoJsonByType.contains(objectType)) {
-        updateCacheForType(objectType, 5000);
+        updateCacheForType(objectType, kDefaultSnapshotLimit);
     }
     return m_geoJsonByType.value(objectType);
 }
@@ -206,9 +210,8 @@ void MapSnapshotService::bindPollingIfNeeded()
         &PollingService::tick,
         this,
         [this]() {
-            refreshByDelta(5000);
-        },
-        Qt::UniqueConnection);
+            refreshByDelta(kDefaultSnapshotLimit);
+        });
     m_pollingBound = true;
     emit pollingBindingChanged();
 }

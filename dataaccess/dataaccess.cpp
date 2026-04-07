@@ -1,6 +1,21 @@
 #include "dataaccess.h"
 
+#include <QCoreApplication>
+#include <QSqlDatabase>
 #include <QSqlError>
+#include <QStringList>
+#include <QDebug>
+
+namespace {
+QString normalizeDriverName(const QString &driverName)
+{
+    QString normalized = driverName.trimmed().toUpper();
+    if (normalized == "QPSQL7") {
+        normalized = "QPSQL";
+    }
+    return normalized;
+}
+}
 
 DataAccess *DataAccess::s_instance = nullptr;
 
@@ -55,6 +70,46 @@ QString DataAccess::driver() const
 
 bool DataAccess::connectToDatabase()
 {
+    if (connected()) {
+        return true;
+    }
+
+    const QString normalizedDriver = normalizeDriverName(m_driver);
+    if (normalizedDriver.isEmpty()) {
+        m_lastError = "Не указан драйвер БД";
+        emit errorOccurred();
+        emit connectionChanged();
+        return false;
+    }
+    if (normalizedDriver != m_driver) {
+        m_driver = normalizedDriver;
+        emit settingsChanged();
+    }
+    if (m_host.trimmed().isEmpty()) {
+        m_lastError = "Не указан хост БД";
+        emit errorOccurred();
+        emit connectionChanged();
+        return false;
+    }
+    if (m_dbName.trimmed().isEmpty()) {
+        m_lastError = "Не указано имя БД";
+        emit errorOccurred();
+        emit connectionChanged();
+        return false;
+    }
+    if (m_user.trimmed().isEmpty()) {
+        m_lastError = "Не указан пользователь БД";
+        emit errorOccurred();
+        emit connectionChanged();
+        return false;
+    }
+    if (m_driver == "QPSQL" && m_password.isEmpty()) {
+        m_lastError = "Не задан пароль подключения к PostgreSQL. Откройте 'Настройки подключения к БД' и заполните пароль.";
+        emit errorOccurred();
+        emit connectionChanged();
+        return false;
+    }
+
     return create_connection(m_driver, m_dbName, m_user, m_password, m_host, m_port);
 }
 
@@ -70,10 +125,11 @@ bool DataAccess::disconnectDatabase()
 
 void DataAccess::setDriver(const QString &v)
 {
-    if (m_driver == v || v.isEmpty()) {
+    const QString normalized = normalizeDriverName(v);
+    if (normalized.isEmpty() || m_driver == normalized) {
         return;
     }
-    m_driver = v;
+    m_driver = normalized;
     emit settingsChanged();
 }
 
@@ -124,7 +180,7 @@ void DataAccess::setPassword(const QString &v)
 
 bool DataAccess::create_connection(QString db_driver, QString database, QString user, QString user_password, QString hostname, int port)
 {
-    m_driver = db_driver;
+    m_driver = normalizeDriverName(db_driver);
     m_dbName = database;
     m_user = user;
     m_password = user_password;
@@ -132,14 +188,44 @@ bool DataAccess::create_connection(QString db_driver, QString database, QString 
     m_port = port;
 
     m_db = ensureDatabase();
+    if (!m_db.isValid()) {
+        const QStringList drivers = QSqlDatabase::drivers();
+        m_lastError = QString("Драйвер БД '%1' не загружен. Доступные драйверы: %2")
+                          .arg(m_driver, drivers.join(", "));
+        qWarning().noquote()
+            << "DB driver load failed;"
+            << "requested=" << m_driver
+            << "; availableDrivers=" << drivers.join(",")
+            << "; libraryPaths=" << QCoreApplication::libraryPaths().join(";");
+        m_connectionFlag = false;
+        emit errorOccurred();
+        emit connectionChanged();
+        return false;
+    }
     m_db.setDatabaseName(m_dbName);
     m_db.setUserName(m_user);
     m_db.setPassword(m_password);
     m_db.setHostName(m_host);
     m_db.setPort(m_port);
+    if (m_driver == "QPSQL") {
+        // Prevent long UI stalls on unreachable hosts during sync connect().
+        m_db.setConnectOptions("connect_timeout=5");
+    } else {
+        m_db.setConnectOptions(QString());
+    }
 
     if (!m_db.open()) {
         m_lastError = m_db.lastError().text();
+        qWarning().noquote()
+            << "DB open failed;"
+            << "driver=" << m_driver
+            << "; error=" << m_lastError
+            << "; db=" << m_dbName
+            << "; host=" << m_host
+            << "; port=" << m_port
+            << "; user=" << m_user
+            << "; availableDrivers=" << QSqlDatabase::drivers().join(",")
+            << "; libraryPaths=" << QCoreApplication::libraryPaths().join(";");
         m_connectionFlag = false;
         emit errorOccurred();
         emit connectionChanged();
@@ -205,7 +291,9 @@ void DataAccess::set_hostname(QString new_hostname)
 
 QString DataAccess::defaultConnectionName()
 {
-    return "saturn_main_connection";
+    // Keep Qt default SQL connection for compatibility with existing code paths
+    // that use QSqlQuery() without explicitly passing a connection.
+    return QSqlDatabase::defaultConnection;
 }
 
 QSqlDatabase DataAccess::ensureDatabase()

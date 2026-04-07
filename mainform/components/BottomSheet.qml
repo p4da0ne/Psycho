@@ -6,6 +6,7 @@ Item {
     id: root
 
     property var appState
+    property var agentHub
     property var objects: []
     property int visibleCount: 0
     property int averageMppsValue: 0
@@ -529,10 +530,10 @@ Item {
                         height: 36
 
                         readonly property bool selected: root.appState.selectedObject
-                            && root.appState.selectedObject.id === modelData.id
+                            && root.agentHub.selectionAgent.isSelected(modelData)
                         readonly property bool hovered: root.appState.hoveredObject
                             && root.appState.hoveredObject.id === modelData.id
-                        readonly property bool muted: root.appState.selectedObject && !selected
+                        readonly property bool muted: root.agentHub.selectionAgent.selectionCount() > 0 && !selected
 
                         Rectangle {
                             anchors.fill: parent
@@ -618,13 +619,19 @@ Item {
                             anchors.fill: parent
                             hoverEnabled: true
 
-                            onEntered: root.appState.hoveredObject = rowRoot.modelData
+                            onEntered: root.agentHub.selectionAgent.setHoveredObject(rowRoot.modelData)
                             onExited: {
                                 if (root.appState.hoveredObject && root.appState.hoveredObject.id === rowRoot.modelData.id)
-                                    root.appState.hoveredObject = null
+                                    root.agentHub.selectionAgent.setHoveredObject({})
                             }
 
-                            onClicked: root.appState.selectObject(rowRoot.modelData)
+                            onClicked: function(mouse) {
+                                var additive = (mouse.modifiers & Qt.ControlModifier) || (mouse.modifiers & Qt.MetaModifier)
+                                if (additive)
+                                    root.agentHub.selectionAgent.toggleObjectSelection(rowRoot.modelData)
+                                else
+                                    root.agentHub.selectionAgent.selectObject(rowRoot.modelData)
+                            }
                         }
                     }
                 }
