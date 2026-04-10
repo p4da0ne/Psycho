@@ -1,0 +1,85 @@
+﻿{
+  "version": 8,
+  "name": "Saturn Europe Admin Dark Demo",
+  "metadata": {
+    "saturn:profile": "europe-admin-demo"
+  },
+  "glyphs": "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
+  "sources": {
+    "openmaptiles": {
+      "type": "vector",
+      "url": "https://demotiles.maplibre.org/tiles/tiles.json"
+    }
+  },
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {
+        "background-color": "#2f343b"
+      }
+    },
+    {
+      "id": "water",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "water",
+      "paint": {
+        "fill-color": "#1e2732",
+        "fill-opacity": 0.95
+      }
+    },
+    {
+      "id": "landcover",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "landcover",
+      "paint": {
+        "fill-color": "#39414a",
+        "fill-opacity": 0.45
+      }
+    },
+    {
+      "id": "country-boundaries",
+      "type": "line",
+      "source": "openmaptiles",
+      "source-layer": "boundary",
+      "filter": [
+        "all",
+        ["==", ["get", "admin_level"], 2]
+      ],
+      "paint": {
+        "line-color": "#d8dee6",
+        "line-width": [
+          "interpolate", ["linear"], ["zoom"],
+          2, 0.6,
+          4, 1.1,
+          6, 1.8
+        ],
+        "line-opacity": 0.9
+      }
+    },
+    {
+      "id": "country-labels",
+      "type": "symbol",
+      "source": "openmaptiles",
+      "source-layer": "place",
+      "filter": ["==", ["get", "class"], "country"],
+      "layout": {
+        "text-field": ["coalesce", ["get", "name:en"], ["get", "name"]],
+        "text-font": ["Open Sans Regular", "Arial Unicode MS Regular"],
+        "text-size": [
+          "interpolate", ["linear"], ["zoom"],
+          3, 10,
+          5, 13,
+          7, 15
+        ]
+      },
+      "paint": {
+        "text-color": "#e5ebf2",
+        "text-halo-color": "#1f252d",
+        "text-halo-width": 1.1
+      }
+    }
+  ]
+}

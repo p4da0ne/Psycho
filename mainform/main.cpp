@@ -16,6 +16,7 @@
 #include <eventsrepository.h>
 #include <geometryrepository.h>
 #include <geojsonservice.h>
+#include <geojsontilefeedservice.h>
 #include <mapobjectsrepository.h>
 #include <mapeditingservice.h>
 #include <mapgeometryrolesservice.h>
@@ -99,6 +100,7 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonType<EventsRepository>("Saturn.Backend", 1, 0, "EventsRepo", EventsRepository::qmlSingleton);
     qmlRegisterSingletonType<GeometryRepository>("Saturn.Backend", 1, 0, "GeometryRepo", GeometryRepository::qmlSingleton);
     qmlRegisterSingletonType<GeoJsonService>("Saturn.Backend", 1, 0, "GeoJson", GeoJsonService::qmlSingleton);
+    qmlRegisterSingletonType<GeoJsonTileFeedService>("Saturn.Backend", 1, 0, "TileFeed", GeoJsonTileFeedService::qmlSingleton);
     qmlRegisterSingletonType<MapObjectsRepository>("Saturn.Backend", 1, 0, "MapObjectsRepo", MapObjectsRepository::qmlSingleton);
     qmlRegisterSingletonType<MapEditingService>("Saturn.Backend", 1, 0, "MapEditing", MapEditingService::qmlSingleton);
     qmlRegisterSingletonType<MapGeometryRolesService>("Saturn.Backend", 1, 0, "MapGeometryRoles", MapGeometryRolesService::qmlSingleton);
@@ -107,6 +109,7 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonType<ObjectDetailsRepository>("Saturn.Backend", 1, 0, "ObjectDetailsRepo", ObjectDetailsRepository::qmlSingleton);
     qmlRegisterSingletonType<PersonnelRepository>("Saturn.Backend", 1, 0, "PersonnelRepo", PersonnelRepository::qmlSingleton);
     qmlRegisterSingletonType<PollingService>("Saturn.Backend", 1, 0, "Polling", PollingService::qmlSingleton);
+    GeoJsonTileFeedService::instance();
 
     // Keep legacy behavior: all backend services use persisted DB settings immediately on startup.
     DbConnectionSettings *dbSettings = DbConnectionSettings::instance();

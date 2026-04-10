@@ -4,6 +4,7 @@
 #include <QJSEngine>
 #include <QObject>
 #include <QQmlEngine>
+#include <QSqlDatabase>
 #include <QVariantList>
 
 #include "config_dataaccess.h"
@@ -28,6 +29,7 @@ public:
     //   "latitude": double
     // }
     Q_INVOKABLE QVariantList loadObjectGeometry(int objectType, int objectId);
+    QVariantList loadObjectGeometryWithDb(int objectType, int objectId, const QSqlDatabase &db);
 
     // coordinates is a QVariantList of coordinate IDs.
     Q_INVOKABLE bool saveObjectGeometry(

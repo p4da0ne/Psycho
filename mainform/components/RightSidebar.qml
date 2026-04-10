@@ -36,6 +36,21 @@ Item {
     readonly property var selectedObject: appState ? appState.selectedObject : ({})
     readonly property var selectedObjectDetails: appState ? (appState.selectedObjectDetails || ({})) : ({})
     readonly property var selectedEvent: appState ? appState.selectedEvent : ({})
+    readonly property var eventStatusOptions: [
+        { "value": "all", "label": "Все" },
+        { "value": "actual", "label": "Актуальные" },
+        { "value": "planned", "label": "План" },
+        { "value": "past", "label": "Прошлые" },
+        { "value": "cancelled", "label": "Отмененные" }
+    ]
+    readonly property var eventTypeOptions: [
+        { "value": "all", "label": "Все типы" },
+        { "value": "operations", "label": "Операции" },
+        { "value": "communications", "label": "Связь" },
+        { "value": "monitoring", "label": "Наблюдение" },
+        { "value": "logistics", "label": "Логистика" },
+        { "value": "infrastructure", "label": "Инфраструктура" }
+    ]
     readonly property string selectedStructurePath: appState ? appState.selectedStructurePath : ""
     readonly property var selectedStructureNode: structureAgent ? structureAgent.nodeDetails(selectedStructurePath) : ({})
     readonly property bool structureMode: appState && appState.selectionType === "structure" && selectedStructurePath !== ""
@@ -211,9 +226,21 @@ Item {
         }
     }
 
+    function toggleBooleanState(key) {
+        if (!root.appState)
+            return
+        root.appState[key] = !root.appState[key]
+    }
+
     function detailsRows() {
         var rows = []
-        appendObjectRows(rows, "", root.selectedObjectDetails, 0)
+        if (!root.selectedObjectDetails)
+            return rows
+
+        var dbPayload = root.selectedObjectDetails.fullRow
+        if (!dbPayload || Object.keys(dbPayload).length === 0)
+            dbPayload = root.selectedObjectDetails.payload
+        appendObjectRows(rows, "", dbPayload, 0)
         return rows
     }
 
@@ -319,7 +346,7 @@ Item {
                             anchors.centerIn: parent
                             text: tabButton.modelData.label
                             color: root.currentTab === tabButton.modelData.id ? Qt.rgba(1, 1, 1, 0.90) : Qt.rgba(1, 1, 1, 0.62)
-                            font.pixelSize: 10
+                            font.pixelSize: 12
                             font.weight: root.currentTab === tabButton.modelData.id ? Font.Medium : Font.Normal
                         }
 
@@ -390,7 +417,7 @@ Item {
                 Text {
                     text: "Инспектор"
                     color: Qt.rgba(1, 1, 1, 0.76)
-                    font.pixelSize: 10
+                    font.pixelSize: 12
                     font.weight: Font.Medium
                     horizontalAlignment: Text.AlignHCenter
                     width: parent.width
@@ -411,7 +438,7 @@ Item {
                     contentItem: Text {
                         text: collapsedInspectorButton.text
                         color: "#dce4ed"
-                        font.pixelSize: 10
+                        font.pixelSize: 12
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
@@ -432,7 +459,7 @@ Item {
                     contentItem: Text {
                         text: collapsedEventsButton.text
                         color: "#dce4ed"
-                        font.pixelSize: 10
+                        font.pixelSize: 12
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
@@ -453,7 +480,7 @@ Item {
                     contentItem: Text {
                         text: collapsedSymbolsButton.text
                         color: "#dce4ed"
-                        font.pixelSize: 10
+                        font.pixelSize: 12
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
@@ -518,6 +545,66 @@ Item {
 
             Rectangle {
                 width: parent.width
+                height: 122
+                radius: 18
+                color: Qt.rgba(1, 1, 1, 0.018)
+                border.width: 1
+                border.color: Qt.rgba(1, 1, 1, 0.03)
+
+                Column {
+                    anchors.fill: parent
+                    anchors.margins: 10
+                    spacing: 8
+
+                    Text {
+                        text: "Карта и слои"
+                        color: Qt.rgba(1, 1, 1, 0.50)
+                        font.pixelSize: 11
+                        font.weight: Font.Medium
+                    }
+
+                    Row {
+                        spacing: 6
+
+                        FilterChip {
+                            text: "Точки"
+                            checked: root.appState && root.appState.mapMode === "point"
+                            onClicked: root.appState.mapMode = "point"
+                        }
+
+                        FilterChip {
+                            text: "Heatmap"
+                            checked: root.appState && root.appState.mapMode === "heatmap"
+                            onClicked: root.appState.mapMode = "heatmap"
+                        }
+                    }
+
+                    Row {
+                        spacing: 6
+
+                        FilterChip {
+                            text: "Линии"
+                            checked: root.appState ? root.appState.showCoverageLine : true
+                            onClicked: root.toggleBooleanState("showCoverageLine")
+                        }
+
+                        FilterChip {
+                            text: "Подписи"
+                            checked: root.appState ? root.appState.showLabels : true
+                            onClicked: root.toggleBooleanState("showLabels")
+                        }
+
+                        FilterChip {
+                            text: "Heat слой"
+                            checked: root.appState ? root.appState.showHeatmapLayer : true
+                            onClicked: root.toggleBooleanState("showHeatmapLayer")
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
                 height: Math.max(170, parent.height * 0.38)
                 radius: 18
                 color: Qt.rgba(1, 1, 1, 0.018)
@@ -575,7 +662,7 @@ Item {
                                         ? (objectRow.modelData.label || "Узел структуры")
                                         : objectRow.modelData.name
                                     color: objectRow.selected ? Qt.rgba(1, 1, 1, 0.92) : Qt.rgba(1, 1, 1, 0.76)
-                                    font.pixelSize: 11
+                                    font.pixelSize: 13
                                     font.weight: objectRow.selected ? Font.Medium : Font.Normal
                                     elide: Text.ElideRight
                                 }
@@ -586,7 +673,7 @@ Item {
                                         ? ("Путь: " + (root.selectedStructurePath || "—"))
                                         : (objectRow.modelData.kind === "relay" ? "узел связи" : objectRow.modelData.kind === "lbs" ? "линейный объект" : "подразделение") + " · МППС " + objectRow.modelData.mpps
                                     color: Qt.rgba(1, 1, 1, 0.44)
-                                    font.pixelSize: 9
+                                    font.pixelSize: 11
                                     elide: Text.ElideRight
                                 }
                             }
@@ -636,7 +723,7 @@ Item {
                                 ? (root.selectedStructureNode && root.selectedStructureNode.label ? root.selectedStructureNode.label : "Выберите узел структуры")
                                 : (root.selectedObject && root.selectedObject.name ? root.selectedObject.name : "Выберите объект")
                             color: Qt.rgba(1, 1, 1, 0.92)
-                            font.pixelSize: 14
+                            font.pixelSize: 16
                             font.weight: Font.Medium
                             elide: Text.ElideRight
                         }
@@ -645,41 +732,10 @@ Item {
                             width: parent.width
                             text: root.structureMode
                                 ? "Узел структуры и связанные объекты"
-                                : (root.selectedObject && root.selectedObject.kind
-                                    ? (root.selectedObject.kind === "relay" ? "узел связи" : root.selectedObject.kind === "lbs" ? "линейный объект" : "подразделение")
-                                      + " · "
-                                      + (root.selectedObject.side === "friendly" ? "свои" : root.selectedObject.side === "foreign" ? "чужие" : "инфраструктура")
-                                    : "Выберите строку выше для просмотра деталей")
+                                : "Данные объекта из БД (табличный режим)"
                             color: Qt.rgba(1, 1, 1, 0.52)
-                            font.pixelSize: 10
+                            font.pixelSize: 12
                             wrapMode: Text.WordWrap
-                        }
-
-                        InfoField {
-                            visible: !root.structureMode
-                            label: "МППС"
-                            value: root.selectedObject && root.selectedObject.mpps !== undefined ? String(root.selectedObject.mpps) : "—"
-                            accent: true
-                        }
-                        InfoField {
-                            visible: !root.structureMode
-                            label: "Координаты"
-                            value: root.selectedObject && root.selectedObject.lon !== undefined ? Number(root.selectedObject.lon).toFixed(5) + ", " + Number(root.selectedObject.lat).toFixed(5) : "—"
-                        }
-                        InfoField {
-                            visible: !root.structureMode
-                            label: "Скорость"
-                            value: root.selectedObject && root.selectedObject.speed !== undefined ? String(root.selectedObject.speed) : "—"
-                        }
-                        InfoField {
-                            visible: !root.structureMode
-                            label: "Курс"
-                            value: root.selectedObject && root.selectedObject.course !== undefined ? String(root.selectedObject.course) : "—"
-                        }
-                        InfoField {
-                            visible: !root.structureMode
-                            label: "Источник"
-                            value: root.selectedObject && root.selectedObject.source ? root.selectedObject.source : "—"
                         }
 
                         InfoField {
@@ -700,13 +756,110 @@ Item {
                                 : "0"
                         }
 
-                        Repeater {
-                            model: !root.structureMode ? root.detailsRows() : []
+                        Rectangle {
+                            visible: !root.structureMode
+                            width: parent.width
+                            implicitHeight: tableHeader.implicitHeight + tableRows.implicitHeight + 12
+                            radius: 14
+                            color: Qt.rgba(1, 1, 1, 0.015)
+                            border.width: 1
+                            border.color: Qt.rgba(1, 1, 1, 0.03)
 
-                            delegate: InfoField {
-                                width: parent.width
-                                label: modelData.label
-                                value: modelData.value
+                            Column {
+                                anchors.fill: parent
+                                anchors.margins: 6
+                                spacing: 0
+
+                                Row {
+                                    id: tableHeader
+                                    width: parent.width
+                                    height: 28
+
+                                    Rectangle {
+                                        width: Math.max(120, parent.width * 0.38)
+                                        height: parent.height
+                                        color: Qt.rgba(1, 1, 1, 0.06)
+
+                                        Text {
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            anchors.left: parent.left
+                                            anchors.leftMargin: 8
+                                            text: "Поле"
+                                            color: Qt.rgba(1, 1, 1, 0.80)
+                                            font.pixelSize: 12
+                                            font.weight: Font.Medium
+                                        }
+                                    }
+
+                                    Rectangle {
+                                        width: parent.width - (Math.max(120, parent.width * 0.38))
+                                        height: parent.height
+                                        color: Qt.rgba(1, 1, 1, 0.06)
+
+                                        Text {
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            anchors.left: parent.left
+                                            anchors.leftMargin: 8
+                                            text: "Значение"
+                                            color: Qt.rgba(1, 1, 1, 0.80)
+                                            font.pixelSize: 12
+                                            font.weight: Font.Medium
+                                        }
+                                    }
+                                }
+
+                                Column {
+                                    id: tableRows
+                                    width: parent.width
+                                    spacing: 0
+
+                                    Repeater {
+                                        model: root.detailsRows()
+
+                                        delegate: Row {
+                                            required property int index
+                                            required property var modelData
+                                            width: tableRows.width
+                                            height: 26
+
+                                            Rectangle {
+                                                width: Math.max(120, parent.width * 0.38)
+                                                height: parent.height
+                                                color: (index % 2 === 0) ? Qt.rgba(1, 1, 1, 0.025) : Qt.rgba(1, 1, 1, 0.01)
+
+                                                Text {
+                                                    anchors.verticalCenter: parent.verticalCenter
+                                                    anchors.left: parent.left
+                                                    anchors.leftMargin: 8
+                                                    anchors.right: parent.right
+                                                    anchors.rightMargin: 6
+                                                    text: modelData.label
+                                                    color: Qt.rgba(1, 1, 1, 0.62)
+                                                    font.pixelSize: 11
+                                                    elide: Text.ElideRight
+                                                }
+                                            }
+
+                                            Rectangle {
+                                                width: parent.width - (Math.max(120, parent.width * 0.38))
+                                                height: parent.height
+                                                color: (index % 2 === 0) ? Qt.rgba(1, 1, 1, 0.025) : Qt.rgba(1, 1, 1, 0.01)
+
+                                                Text {
+                                                    anchors.verticalCenter: parent.verticalCenter
+                                                    anchors.left: parent.left
+                                                    anchors.leftMargin: 8
+                                                    anchors.right: parent.right
+                                                    anchors.rightMargin: 6
+                                                    text: modelData.value
+                                                    color: Qt.rgba(1, 1, 1, 0.78)
+                                                    font.pixelSize: 11
+                                                    elide: Text.ElideRight
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
 
@@ -714,10 +867,10 @@ Item {
                             width: parent.width
                             text: root.structureMode
                                 ? "Выберите объект на карте или в структуре для перехода к детальным параметрам."
-                                : (root.selectedObject && root.selectedObject.notes ? root.selectedObject.notes : "")
+                                : (root.detailsRows().length === 0 ? "Нет данных БД для выбранного объекта." : "")
                             visible: text.length > 0
                             color: Qt.rgba(1, 1, 1, 0.60)
-                            font.pixelSize: 10
+                            font.pixelSize: 12
                             lineHeight: 1.24
                             wrapMode: Text.WordWrap
                         }
@@ -736,6 +889,53 @@ Item {
             spacing: 10
 
             SectionTitle { text: "Список событий" }
+
+            Rectangle {
+                width: parent.width
+                height: 98
+                radius: 18
+                color: Qt.rgba(1, 1, 1, 0.018)
+                border.width: 1
+                border.color: Qt.rgba(1, 1, 1, 0.03)
+
+                Column {
+                    anchors.fill: parent
+                    anchors.margins: 10
+                    spacing: 6
+
+                    Flow {
+                        width: parent.width
+                        spacing: 6
+
+                        Repeater {
+                            model: root.eventStatusOptions
+
+                            delegate: FilterChip {
+                                required property var modelData
+                                text: modelData.label
+                                checked: root.appState && root.appState.eventStatusFilter === modelData.value
+                                onClicked: root.appState.eventStatusFilter = modelData.value
+                            }
+                        }
+                    }
+
+                    Flow {
+                        width: parent.width
+                        spacing: 6
+
+                        Repeater {
+                            model: root.eventTypeOptions
+
+                            delegate: FilterChip {
+                                required property var modelData
+                                text: modelData.label
+                                checked: root.appState && root.appState.eventTypeFilter === modelData.value
+                                onClicked: root.appState.eventTypeFilter = modelData.value
+                            }
+                        }
+                    }
+                }
+            }
 
             Rectangle {
                 width: parent.width
@@ -790,7 +990,7 @@ Item {
                                     width: parent.width
                                     text: eventRow.modelData.name
                                     color: eventRow.selected ? Qt.rgba(1, 1, 1, 0.92) : Qt.rgba(1, 1, 1, 0.76)
-                                    font.pixelSize: 11
+                                    font.pixelSize: 13
                                     font.weight: eventRow.selected ? Font.Medium : Font.Normal
                                     elide: Text.ElideRight
                                 }
@@ -799,7 +999,7 @@ Item {
                                     width: parent.width
                                     text: root.typeIcon(eventRow.modelData.type) + " " + root.typeLabel(eventRow.modelData.type) + " · " + root.statusLabel(eventRow.modelData.status)
                                     color: Qt.rgba(1, 1, 1, 0.44)
-                                    font.pixelSize: 9
+                                    font.pixelSize: 11
                                     elide: Text.ElideRight
                                 }
                             }
@@ -843,7 +1043,7 @@ Item {
                             width: parent.width
                             text: root.selectedEvent && root.selectedEvent.name ? root.selectedEvent.name : "Выберите событие"
                             color: Qt.rgba(1, 1, 1, 0.92)
-                            font.pixelSize: 14
+                            font.pixelSize: 16
                             font.weight: Font.Medium
                             elide: Text.ElideRight
                         }
@@ -854,7 +1054,7 @@ Item {
                                 ? root.typeIcon(root.selectedEvent.type) + " " + root.typeLabel(root.selectedEvent.type) + " · " + root.statusLabel(root.selectedEvent.status)
                                 : "Выберите событие выше для просмотра деталей"
                             color: Qt.rgba(1, 1, 1, 0.52)
-                            font.pixelSize: 10
+                            font.pixelSize: 12
                             wrapMode: Text.WordWrap
                         }
 
@@ -868,7 +1068,7 @@ Item {
                             text: root.selectedEvent && root.selectedEvent.description ? root.selectedEvent.description : ""
                             visible: text.length > 0
                             color: Qt.rgba(1, 1, 1, 0.60)
-                            font.pixelSize: 10
+                            font.pixelSize: 12
                             lineHeight: 1.24
                             wrapMode: Text.WordWrap
                         }
@@ -905,7 +1105,7 @@ Item {
                         width: parent.width
                         text: root.symbolAgent ? root.symbolTypeLabel(root.symbolAgent.selectedTypePath) : "Тип не выбран"
                         color: Qt.rgba(1, 1, 1, 0.56)
-                        font.pixelSize: 10
+                        font.pixelSize: 12
                         elide: Text.ElideRight
                     }
 
@@ -956,7 +1156,7 @@ Item {
                                         width: parent.width
                                         text: symbolRow.modelData.name
                                         color: symbolRow.selected ? Qt.rgba(1, 1, 1, 0.92) : Qt.rgba(1, 1, 1, 0.76)
-                                        font.pixelSize: 11
+                                        font.pixelSize: 13
                                         font.weight: symbolRow.selected ? Font.Medium : Font.Normal
                                         elide: Text.ElideRight
                                     }
@@ -965,7 +1165,7 @@ Item {
                                         width: parent.width
                                         text: symbolRow.modelData.glyph + " · " + symbolRow.modelData.fillColor
                                         color: Qt.rgba(1, 1, 1, 0.44)
-                                        font.pixelSize: 9
+                                        font.pixelSize: 11
                                         elide: Text.ElideRight
                                     }
                                 }
@@ -1031,7 +1231,7 @@ Item {
                                     anchors.centerIn: parent
                                     text: root.symbolDraftGlyph || "●"
                                     color: Qt.rgba(1, 1, 1, 0.86)
-                                    font.pixelSize: 12
+                                    font.pixelSize: 14
                                 }
                             }
 
@@ -1043,7 +1243,7 @@ Item {
                                     width: parent.width
                                     text: root.symbolDraftName || "Выберите символ"
                                     color: Qt.rgba(1, 1, 1, 0.92)
-                                    font.pixelSize: 13
+                                    font.pixelSize: 15
                                     font.weight: Font.Medium
                                     elide: Text.ElideRight
                                 }
@@ -1052,7 +1252,7 @@ Item {
                                     width: parent.width
                                     text: root.symbolAgent ? root.symbolTypeLabel(root.symbolAgent.selectedTypePath) : "—"
                                     color: Qt.rgba(1, 1, 1, 0.52)
-                                    font.pixelSize: 10
+                                    font.pixelSize: 12
                                     elide: Text.ElideRight
                                 }
                             }
@@ -1119,7 +1319,7 @@ Item {
                                 Text {
                                     text: "Внутренняя непрозрачность"
                                     color: Qt.rgba(1, 1, 1, 0.48)
-                                    font.pixelSize: 9
+                                    font.pixelSize: 11
                                 }
 
                                 Slider {
@@ -1161,13 +1361,13 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             color: "#dce4ed"
-            font.pixelSize: 13
+            font.pixelSize: 15
         }
     }
 
     component SectionTitle: Text {
         color: Qt.rgba(1, 1, 1, 0.44)
-        font.pixelSize: 9
+        font.pixelSize: 11
         font.weight: Font.Medium
         font.letterSpacing: 0.4
     }
@@ -1196,7 +1396,7 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 text: infoField.label
                 color: Qt.rgba(1, 1, 1, 0.46)
-                font.pixelSize: 9
+                font.pixelSize: 11
                 elide: Text.ElideRight
             }
 
@@ -1205,7 +1405,7 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 text: infoField.value
                 color: infoField.accent ? Qt.rgba(1, 1, 1, 0.90) : Qt.rgba(1, 1, 1, 0.76)
-                font.pixelSize: 10
+                font.pixelSize: 12
                 font.weight: infoField.accent ? Font.Medium : Font.Normal
                 elide: Text.ElideRight
             }
@@ -1233,7 +1433,7 @@ Item {
             Text {
                 text: editField.label
                 color: Qt.rgba(1, 1, 1, 0.46)
-                font.pixelSize: 9
+                font.pixelSize: 11
                 font.weight: Font.Medium
             }
 
@@ -1241,11 +1441,40 @@ Item {
                 width: parent.width
                 text: editField.value
                 color: Qt.rgba(1, 1, 1, 0.84)
-                font.pixelSize: 10
+                font.pixelSize: 12
                 padding: 0
                 background: Item {}
                 onTextEdited: editField.valueEdited(text)
             }
+        }
+    }
+
+    component FilterChip: Rectangle {
+        id: filterChip
+        property string text: ""
+        property bool checked: false
+        signal clicked()
+
+        width: chipText.implicitWidth + 16
+        height: 28
+        radius: 14
+        color: checked ? Qt.rgba(1, 1, 1, 0.10) : Qt.rgba(1, 1, 1, 0.03)
+        border.width: 1
+        border.color: checked ? Qt.rgba(1, 1, 1, 0.12) : Qt.rgba(1, 1, 1, 0.04)
+
+        Text {
+            id: chipText
+            anchors.centerIn: parent
+            text: filterChip.text
+            color: filterChip.checked ? Qt.rgba(1, 1, 1, 0.90) : Qt.rgba(1, 1, 1, 0.62)
+            font.pixelSize: 12
+            font.weight: filterChip.checked ? Font.Medium : Font.Normal
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            onClicked: filterChip.clicked()
         }
     }
 }

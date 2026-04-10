@@ -4,6 +4,7 @@
 #include <QJSEngine>
 #include <QObject>
 #include <QQmlEngine>
+#include <QSqlDatabase>
 #include <QString>
 #include <QVariantList>
 
@@ -22,6 +23,9 @@ public:
     Q_INVOKABLE QVariantList listObjectsByType(int objectType, int limit = 10000);
     Q_INVOKABLE QString buildObjectGeoJson(int objectType, int objectId);
     Q_INVOKABLE QString buildTypeGeoJson(int objectType, int limit = 5000);
+    static QVariantList listObjectsByTypeWithDb(int objectType, int limit, const QSqlDatabase &db);
+    static QString buildObjectGeoJsonWithDb(int objectType, int objectId, const QSqlDatabase &db);
+    static QString buildTypeGeoJsonWithDb(int objectType, int limit, const QSqlDatabase &db);
 
 private:
     static MapObjectsRepository *s_instance;

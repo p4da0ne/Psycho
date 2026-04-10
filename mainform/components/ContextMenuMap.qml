@@ -6,6 +6,7 @@ Menu {
     id: root
 
     property var appState
+    font.pixelSize: 14
 
     background: Rectangle {
         color: "#111821"
@@ -76,3 +77,4 @@ Menu {
         text: "Lat " + Number(appState.lastContextLat).toFixed(5)
     }
 }
+

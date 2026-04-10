@@ -56,3 +56,18 @@ working_build/
 # Прочие временные файлы
 *.tmp
 *.swp
+
+# IDE/service noise
+.qtcreator/
+build-codex/
+CMakeLists.txt.user
+
+# Demo payloads and scratch artifacts
+mapview/data/
+*_before.txt
+*_after.txt
+
+# Runtime artifacts from embedded tileserver
+tileserver-gl/*.log
+tileserver-gl/styles/*/dynamic/*.geojson
+tileserver-gl/styles/*/dynamic/manifest.json

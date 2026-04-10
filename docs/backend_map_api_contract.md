@@ -83,6 +83,12 @@ Row format from `loadObjectGeometry`:
 - `updateMeta() -> QVariantList`
 - Properties: `pointsSource`, `linesSource`, `polygonsSource`, `lastRuntimeUpdateIso`
 
+### `TileFeed` (`GeoJsonTileFeedService`)
+- `publishNow() -> bool`
+- Properties: `enabled`, `outputDir`, `lastError`, `lastPublishIso`, `publishCount`
+- Default output dir: `<repo>/tileserver-gl/styles/maptiler-basic/dynamic` (resolved from app build dir)
+- Purpose: atomically publish runtime GeoJSON snapshots (`points/lines/polygons/markers + manifest`) for tileserver-gl static serving.
+
 ### `MapEditing` (`MapEditingService`)
 - `replaceGeometry(objectType, objectId, geometryRole, geometryType, points, isClosed) -> bool`
 - `replaceGeometryByCoordinateIds(objectType, objectId, geometryRole, geometryType, coordinateIds, isClosed) -> bool`

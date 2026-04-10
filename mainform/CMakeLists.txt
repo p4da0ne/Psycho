@@ -8,16 +8,18 @@ find_package(Qt6 REQUIRED COMPONENTS AxContainer Core5Compat Gui Network PrintSu
 
 qt_standard_project_setup()
 
-file(GLOB MAINFORM_COMPONENT_QML RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS
-    "components/*.qml"
-)
-
 set(MAINFORM_QML_FILES
     AppShell.qml
-    main.qml
     LoginScreen.qml
     DBConnectScreen.qml
-    ${MAINFORM_COMPONENT_QML}
+    components/BottomStatusBar.qml
+    components/ContextMenuMap.qml
+    components/ContextMenuObject.qml
+    components/GlassPanel.qml
+    components/MapCanvas.qml
+    components/ReferenceSidebar.qml
+    components/RightSidebar.qml
+    components/Toolbar.qml
 )
 
 qt_add_executable(saturn WIN32 MACOSX_BUNDLE

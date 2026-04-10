@@ -60,7 +60,7 @@ Item {
                 implicitWidth: 86
                 implicitHeight: 26
                 text: "Навигация"
-                font.pixelSize: 10
+                font.pixelSize: 14
                 hoverEnabled: true
                 background: Rectangle {
                     radius: 13
@@ -72,7 +72,7 @@ Item {
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     color: "#d7e0ea"
-                    font.pixelSize: 10
+                    font.pixelSize: 14
                     elide: Text.ElideRight
                 }
                 ToolTip.visible: hovered
@@ -88,7 +88,7 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 text: "⌕"
                 color: "#d9e2ed"
-                font.pixelSize: 13
+                font.pixelSize: 17
                 opacity: 0.80
             }
 
@@ -108,7 +108,7 @@ Item {
                 placeholderTextColor: "#91a0b0"
                 text: root.appState ? root.appState.searchText : ""
                 color: Qt.rgba(1, 1, 1, 0.88)
-                font.pixelSize: 12
+                font.pixelSize: 16
                 font.weight: Font.Normal
                 leftPadding: 0
                 rightPadding: 0
@@ -144,7 +144,7 @@ Item {
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     color: "#d7e0ea"
-                    font.pixelSize: 14
+                    font.pixelSize: 18
                 }
                 onClicked: {
                     field.text = ""
@@ -160,7 +160,7 @@ Item {
                 implicitWidth: 82
                 implicitHeight: 26
                 text: "Инспектор"
-                font.pixelSize: 10
+                font.pixelSize: 14
                 hoverEnabled: true
                 background: Rectangle {
                     radius: 13
@@ -172,7 +172,7 @@ Item {
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     color: "#d7e0ea"
-                    font.pixelSize: 10
+                    font.pixelSize: 14
                     elide: Text.ElideRight
                 }
                 ToolTip.visible: hovered
@@ -190,7 +190,7 @@ Item {
                 implicitWidth: 64
                 implicitHeight: 26
                 text: "Статус"
-                font.pixelSize: 10
+                font.pixelSize: 14
                 hoverEnabled: true
                 background: Rectangle {
                     radius: 13
@@ -202,7 +202,7 @@ Item {
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     color: "#d7e0ea"
-                    font.pixelSize: 10
+                    font.pixelSize: 14
                     elide: Text.ElideRight
                 }
                 ToolTip.visible: hovered
@@ -217,3 +217,4 @@ Item {
         }
     }
 }
+

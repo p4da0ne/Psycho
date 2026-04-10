@@ -50,13 +50,11 @@ private:
     void flushPendingTypeRefreshes();
     void updateTypeCaches(int objectType, const QString &typeCollectionJson);
     void rebuildMergedSourcesFromTypeCaches();
-    void rebuildAllFromSnapshotCache();
     static void splitCollectionByGeometry(
         const QString &collectionJson,
         QJsonArray &points,
         QJsonArray &lines,
         QJsonArray &polygons);
-    static QList<int> extractTypesFromSnapshotMeta(const QVariantList &meta);
 
     bool m_snapshotBound = false;
     bool m_editingBound = false;

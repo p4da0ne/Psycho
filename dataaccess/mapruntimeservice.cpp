@@ -99,7 +99,6 @@ void MapRuntimeService::refreshNow()
 {
     MapSnapshotService *snapshot = MapSnapshotService::instance();
     snapshot->refreshAll();
-    rebuildAllFromSnapshotCache();
 }
 
 QString MapRuntimeService::sourceForGeometry(const QString &geometryFamily) const
@@ -151,14 +150,6 @@ void MapRuntimeService::bindSnapshot()
         this,
         [this, snapshot](int objectType) {
             updateTypeCaches(objectType, snapshot->featureCollectionForType(objectType));
-            scheduleMergedRebuild();
-        });
-    connect(
-        snapshot,
-        &MapSnapshotService::snapshotUpdated,
-        this,
-        [this]() {
-            // Fallback sync point (for full refresh paths).
             scheduleMergedRebuild();
         });
     m_snapshotBound = true;
@@ -299,16 +290,6 @@ void MapRuntimeService::rebuildMergedSourcesFromTypeCaches()
     emit sourcesUpdated();
 }
 
-void MapRuntimeService::rebuildAllFromSnapshotCache()
-{
-    MapSnapshotService *snapshot = MapSnapshotService::instance();
-    const QList<int> types = extractTypesFromSnapshotMeta(snapshot->snapshotMeta());
-    for (int objectType : types) {
-        updateTypeCaches(objectType, snapshot->featureCollectionForType(objectType));
-    }
-    rebuildMergedSourcesFromTypeCaches();
-}
-
 void MapRuntimeService::splitCollectionByGeometry(
     const QString &collectionJson,
     QJsonArray &points,
@@ -342,17 +323,4 @@ void MapRuntimeService::splitCollectionByGeometry(
             continue;
         }
     }
-}
-
-QList<int> MapRuntimeService::extractTypesFromSnapshotMeta(const QVariantList &meta)
-{
-    QList<int> types;
-    for (const QVariant &rowValue : meta) {
-        const QVariantMap row = rowValue.toMap();
-        const int objectType = row.value("objectType").toInt();
-        if (objectType > 0) {
-            types.append(objectType);
-        }
-    }
-    return types;
 }

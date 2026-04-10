@@ -23,6 +23,9 @@ Window {
     property var mapEvents: []
     property var referenceTreeData: []
     property bool pendingDbBootstrap: false
+    property bool connectedBootstrapScheduled: false
+    property bool connectedBootstrapRunning: false
+    property bool connectedBootstrapRerunRequested: false
 
     QtObject {
         id: appState
@@ -32,6 +35,13 @@ Window {
         property real cursorLon: 37.6176
         property real cursorLat: 55.7558
         property real zoomLevel: 11.8
+        property real viewNorth: centerLat
+        property real viewSouth: centerLat
+        property real viewEast: centerLon
+        property real viewWest: centerLon
+        property real mapMetersPerPixel: 0
+        property real mapScaleDenominator: 0
+        property string mapStyleUrl: "http://localhost:8080/styles/maptiler-basic/style.json"
         property string mapMode: "point"
         property string activeTool: "navigate"
         property string searchText: ""
@@ -259,6 +269,12 @@ Window {
                 if (haystack.indexOf(needle) === -1)
                     return false
             }
+            if (appState.selectedGroup === "units" && objectData.kind !== "unit")
+                return false
+            if (appState.selectedGroup === "relays" && objectData.kind !== "relay")
+                return false
+            if (appState.selectedGroup === "lbs" && objectData.kind !== "lbs")
+                return false
             if (objectData.side === "friendly" && !appState.showFriendly)
                 return false
             if (objectData.side === "foreign" && !appState.showForeign)
@@ -420,7 +436,34 @@ Window {
         function toggleNavigationVisible() { setNavigationVisible(!appState.navigationVisible) }
         function setControlsVisible(value) { appState.controlsVisible = !!value }
         function setSearchText(textValue) { appState.searchText = textValue || "" }
-        function focusSearchResult() { appState.statusMessage = appState.searchText === "" ? "Поиск: строка пуста" : "Поиск: " + appState.searchText }
+        function focusSearchResult() {
+            if (appState.searchText === "") {
+                appState.statusMessage = "Поиск: строка пуста"
+                return
+            }
+
+            var objects = filterAgent.visibleObjects(root.mapObjects || [])
+            if (objects.length > 0) {
+                var firstObject = objects[0]
+                selectionAgent.selectObject(firstObject)
+                if (firstObject.lon !== undefined && firstObject.lat !== undefined) {
+                    appState.centerLon = Number(firstObject.lon)
+                    appState.centerLat = Number(firstObject.lat)
+                }
+                appState.statusMessage = "Поиск: выбран объект " + (firstObject.name || "")
+                return
+            }
+
+            var events = filterAgent.visibleEvents(root.mapEvents || [])
+            if (events.length > 0) {
+                var firstEvent = events[0]
+                selectionAgent.selectEvent(firstEvent)
+                appState.statusMessage = "Поиск: выбрано событие " + (firstEvent.name || "")
+                return
+            }
+
+            appState.statusMessage = "Поиск: совпадений не найдено"
+        }
         function setFilterState(filterKey, enabled) {
             if (filterKey === "friendly")
                 appState.showFriendly = !!enabled
@@ -924,7 +967,7 @@ Window {
 
     function showObjectInfoForObject(objectData) {
         if (!objectData || objectData.objectType === undefined || objectData.objectId === undefined) {
-            appState.statusMessage = "Информация недоступна: объект не выбран"
+            appState.statusMessage = "Детали недоступны: объект не выбран"
             return
         }
         appState.selectObject(objectData)
@@ -934,9 +977,9 @@ Window {
             root.agentHub.uiStateAgent.setActivePanel(1)
         }
         var details = appState.selectedObjectDetails || {}
-        var payload = details.payload || {}
+        var payload = details.fullRow || details.payload || {}
         var count = Object.keys(payload).length
-        appState.statusMessage = "Информация загружена: " + (objectData.name || "") + " (" + count + " полей)"
+        appState.statusMessage = "Открыты детали из БД: " + (objectData.name || "") + " (" + count + " полей)"
     }
 
     function coordinatePairToPoint(pair) {
@@ -1544,9 +1587,9 @@ Window {
                 "lat": Number(coords[1]),
                 "lon": Number(coords[0]),
                 "mpps": Math.round(legacyScore * 100),
-                "speed": 0,
-                "course": 0,
-                "source": "backend",
+                "speed": props.speed !== undefined ? Number(props.speed) : undefined,
+                "course": props.course !== undefined ? Number(props.course) : undefined,
+                "source": props.source !== undefined ? String(props.source) : "",
                 "notes": props.subtitle || "",
                 "structurePath": structurePathByType(objectType),
                 "calcSource": String(props.calcSource || ""),
@@ -1571,8 +1614,7 @@ Window {
         for (var ok = 0; ok < objectKeys.length; ++ok) {
             var objectRow = objectByKey[objectKeys[ok]]
             objects.push(objectRow)
-            if (labels.length < 24)
-                labels.push({ "name": objectRow.name, "lat": objectRow.lat, "lon": objectRow.lon })
+            labels.push({ "name": objectRow.name, "lat": objectRow.lat, "lon": objectRow.lon })
         }
 
         mapObjects = objects
@@ -1599,8 +1641,6 @@ Window {
         mapLines = lines
         mapPolygons = polygons
         locationLabels = labels
-        if (mapEvents.length > 0)
-            mapEvents[0].objectIds = objects.length > 0 ? [objects[0].id] : []
         appState.statusMessage = "Объектов: " + objects.length + ", линий: " + lines.length + ", полигонов: " + polygons.length
     }
 
@@ -1618,16 +1658,39 @@ Window {
     function scheduleConnectedBootstrap() {
         if (!Database.connected)
             return
-        dbBootstrapTimer.restart()
+        if (connectedBootstrapRunning) {
+            connectedBootstrapRerunRequested = true
+            return
+        }
+        if (connectedBootstrapScheduled)
+            return
+        connectedBootstrapScheduled = true
+        dbBootstrapMapTimer.restart()
     }
 
-    function runConnectedBootstrap() {
+    function runConnectedBootstrapMapPhase() {
+        connectedBootstrapScheduled = false
         if (!Database.connected)
             return
+        connectedBootstrapRunning = true
         appState.statusMessage = "Загрузка данных из БД..."
         MapRuntime.refreshNow()
+        dbBootstrapMetaTimer.restart()
+    }
+
+    function runConnectedBootstrapMetaPhase() {
+        if (!Database.connected) {
+            connectedBootstrapRunning = false
+            return
+        }
         refreshEventsFromDb()
         refreshReferenceTreeFromDb()
+        connectedBootstrapRunning = false
+        if (connectedBootstrapRerunRequested) {
+            connectedBootstrapRerunRequested = false
+            scheduleConnectedBootstrap()
+            return
+        }
         pendingDbBootstrap = false
     }
 
@@ -1638,6 +1701,7 @@ Window {
 
     Component.onCompleted: {
         Polling.intervalMs = 30000
+        TileFeed.enabled = true
         if (Database.connected) {
             if (!Polling.running)
                 Polling.start()
@@ -1660,6 +1724,7 @@ Window {
         target: MapRuntime
         function onSourcesUpdated() {
             refreshObjectsFromRuntime()
+            TileFeed.publishNow()
         }
     }
 
@@ -1689,10 +1754,17 @@ Window {
     }
 
     Timer {
-        id: dbBootstrapTimer
+        id: dbBootstrapMapTimer
+        interval: 140
+        repeat: false
+        onTriggered: runConnectedBootstrapMapPhase()
+    }
+
+    Timer {
+        id: dbBootstrapMetaTimer
         interval: 0
         repeat: false
-        onTriggered: runConnectedBootstrap()
+        onTriggered: runConnectedBootstrapMetaPhase()
     }
 
     Connections {

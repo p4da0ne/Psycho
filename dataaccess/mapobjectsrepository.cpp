@@ -39,9 +39,24 @@ MapObjectsRepository *MapObjectsRepository::instance()
 
 QVariantList MapObjectsRepository::listObjectsByType(int objectType, int limit)
 {
+    return listObjectsByTypeWithDb(objectType, limit, QSqlDatabase());
+}
+
+QVariantList MapObjectsRepository::listObjectsByTypeWithDb(
+    int objectType,
+    int limit,
+    const QSqlDatabase &dbConnection)
+{
     QVariantList items;
-    DataAccess *db = DataAccess::instance();
-    if (!db->connected() && !db->connectToDatabase()) {
+    QSqlDatabase db = dbConnection;
+    if (!db.isValid()) {
+        DataAccess *dataAccess = DataAccess::instance();
+        if (!dataAccess->connected() && !dataAccess->connectToDatabase()) {
+            return items;
+        }
+        db = QSqlDatabase::database();
+    }
+    if (!db.isValid() || !db.isOpen()) {
         return items;
     }
 
@@ -50,7 +65,7 @@ QVariantList MapObjectsRepository::listObjectsByType(int objectType, int limit)
         return items;
     }
 
-    QSqlQuery query;
+    QSqlQuery query(db);
     query.prepare(baseSql + " LIMIT :limit");
     query.bindValue(":limit", limit);
     if (!query.exec()) {
@@ -71,19 +86,35 @@ QVariantList MapObjectsRepository::listObjectsByType(int objectType, int limit)
 
 QString MapObjectsRepository::buildObjectGeoJson(int objectType, int objectId)
 {
-    return GeoJsonService::instance()->buildFeatureCollection(objectType, objectId);
+    return buildObjectGeoJsonWithDb(objectType, objectId, QSqlDatabase());
+}
+
+QString MapObjectsRepository::buildObjectGeoJsonWithDb(
+    int objectType,
+    int objectId,
+    const QSqlDatabase &db)
+{
+    return GeoJsonService::instance()->buildFeatureCollectionWithDb(objectType, objectId, db);
 }
 
 QString MapObjectsRepository::buildTypeGeoJson(int objectType, int limit)
 {
-    const QVariantList objects = listObjectsByType(objectType, limit);
+    return buildTypeGeoJsonWithDb(objectType, limit, QSqlDatabase());
+}
+
+QString MapObjectsRepository::buildTypeGeoJsonWithDb(
+    int objectType,
+    int limit,
+    const QSqlDatabase &db)
+{
+    const QVariantList objects = listObjectsByTypeWithDb(objectType, limit, db);
     QJsonArray featureAccumulator;
 
     for (const QVariant &itemValue : objects) {
         const QVariantMap item = itemValue.toMap();
         const int objectId = item.value("id").toInt();
-        const QString oneObjectJson = buildObjectGeoJson(objectType, objectId);
-        const QVariantMap metrics = LegacyCalculationService::instance()->objectMetrics(objectType, objectId);
+        const QString oneObjectJson = buildObjectGeoJsonWithDb(objectType, objectId, db);
+        const QVariantMap metrics = LegacyCalculationService::instance()->objectMetricsWithDb(objectType, objectId, db);
         const QJsonDocument oneDoc = QJsonDocument::fromJson(oneObjectJson.toUtf8());
         if (!oneDoc.isObject()) {
             continue;

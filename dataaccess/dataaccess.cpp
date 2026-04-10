@@ -68,6 +68,31 @@ QString DataAccess::driver() const
     return m_driver;
 }
 
+QString DataAccess::host() const
+{
+    return m_host;
+}
+
+int DataAccess::port() const
+{
+    return m_port;
+}
+
+QString DataAccess::dbName() const
+{
+    return m_dbName;
+}
+
+QString DataAccess::user() const
+{
+    return m_user;
+}
+
+QString DataAccess::password() const
+{
+    return m_password;
+}
+
 bool DataAccess::connectToDatabase()
 {
     if (connected()) {

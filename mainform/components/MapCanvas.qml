@@ -184,84 +184,6 @@ Rectangle {
         }
     }
 
-    GlassPanel {
-        id: markerCard
-
-        visible: !!root.appState.selectedObject
-        z: 30
-        width: 208
-        height: 82
-        radius: 20
-        padding: 12
-        backdropSource: root.sceneContent
-        surfaceColor: "#10161d"
-        surfaceOpacity: 0.58
-        shadowOpacity: 0.08
-        highlightOpacity: 0.05
-        anchors.right: parent.right
-        anchors.rightMargin: 22
-        anchors.top: parent.top
-        anchors.topMargin: 88
-        opacity: visible ? 1 : 0
-        scale: visible ? 1 : 0.95
-
-        Behavior on opacity {
-            NumberAnimation { duration: 240 }
-        }
-
-        Behavior on scale {
-            NumberAnimation { duration: 240 }
-        }
-
-        Column {
-            width: parent.width
-            spacing: 4
-
-            Text {
-                width: parent.width
-                text: root.appState.selectedObject ? root.appState.selectedObject.name : ""
-                color: "#f3f7fb"
-                font.pixelSize: 13
-                font.weight: Font.Medium
-                lineHeight: 1.12
-                elide: Text.ElideRight
-            }
-
-            Text {
-                width: parent.width
-                text: root.appState.selectedObject
-                    ? root.appState.selectedObject.kind + " · " + root.appState.selectedObject.side
-                    : ""
-                color: "#909daa"
-                font.pixelSize: 9
-                lineHeight: 1.12
-                elide: Text.ElideRight
-            }
-
-            Text {
-                width: parent.width
-                text: root.appState.selectedObject
-                    ? "MPPS " + root.appState.selectedObject.mpps
-                    : ""
-                color: "#a3beff"
-                font.pixelSize: 10
-                elide: Text.ElideRight
-            }
-
-            Text {
-                width: parent.width
-                text: root.appState.selectedObject
-                    ? Number(root.appState.selectedObject.lon).toFixed(5) + ", "
-                      + Number(root.appState.selectedObject.lat).toFixed(5)
-                    : ""
-                color: "#8b98a6"
-                font.family: "Menlo"
-                font.pixelSize: 9
-                elide: Text.ElideRight
-            }
-        }
-    }
-
     ContextMenuMap {
         id: mapMenu
         appState: root.appState
@@ -298,7 +220,7 @@ Rectangle {
                 width: parent.width
                 text: "Редактирование геометрии: " + (root.appState ? root.appState.geometryEditRole : "")
                 color: "#f3f7fb"
-                font.pixelSize: 13
+                font.pixelSize: 17
                 font.weight: Font.Medium
                 elide: Text.ElideRight
             }
@@ -308,7 +230,7 @@ Rectangle {
                 text: (root.appState ? root.appState.geometryEditObjectName : "") +
                       " | точек: " + String(root.appState && root.appState.geometryEditPoints ? root.appState.geometryEditPoints.length : 0)
                 color: "#9fb0c3"
-                font.pixelSize: 10
+                font.pixelSize: 14
                 elide: Text.ElideRight
             }
 
@@ -316,7 +238,7 @@ Rectangle {
                 width: parent.width
                 text: "ЛКМ по карте: добавить вершину в конец. ЛКМ по ромбу: вставить в сегмент. ПКМ по вершине: удалить."
                 color: "#8b98a6"
-                font.pixelSize: 9
+                font.pixelSize: 13
                 wrapMode: Text.WordWrap
             }
 
@@ -339,7 +261,7 @@ Rectangle {
                             anchors.centerIn: parent
                             text: roleItem.label || ""
                             color: "#f8fafc"
-                            font.pixelSize: 10
+                            font.pixelSize: 14
                         }
 
                         MouseArea {
@@ -364,7 +286,7 @@ Rectangle {
                         anchors.centerIn: parent
                         text: "Сохранить"
                         color: "#f8fafc"
-                        font.pixelSize: 12
+                        font.pixelSize: 16
                     }
 
                     MouseArea {
@@ -384,7 +306,7 @@ Rectangle {
                         anchors.centerIn: parent
                         text: "Отменить"
                         color: "#f8fafc"
-                        font.pixelSize: 12
+                        font.pixelSize: 16
                     }
 
                     MouseArea {
@@ -397,3 +319,4 @@ Rectangle {
         }
     }
 }
+

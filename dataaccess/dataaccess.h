@@ -32,6 +32,11 @@ public:
     bool connected() const;
     QString lastError() const;
     QString driver() const;
+    QString host() const;
+    int port() const;
+    QString dbName() const;
+    QString user() const;
+    QString password() const;
 
     Q_INVOKABLE bool connectToDatabase();
     Q_INVOKABLE bool connect();

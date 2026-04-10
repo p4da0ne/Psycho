@@ -12,8 +12,8 @@ Item {
 
     readonly property bool panelVisible: panelState && panelState.visible !== undefined ? panelState.visible : true
     readonly property bool collapsed: panelState && panelState.collapsed ? panelState.collapsed : false
-    readonly property real expandedHeight: panelState && panelState.height ? panelState.height : 24
-    readonly property real targetHeight: panelVisible ? (collapsed ? 20 : expandedHeight) : 0
+    readonly property real expandedHeight: panelState && panelState.height ? panelState.height : 36
+    readonly property real targetHeight: panelVisible ? (collapsed ? 28 : expandedHeight) : 0
 
     implicitHeight: targetHeight
     height: targetHeight
@@ -25,9 +25,12 @@ Item {
 
     function approximateScale() {
         if (!appState)
-            return "—"
-        var scale = Math.max(500, Math.round(160000 / Math.pow(1.45, Math.max(0, appState.zoomLevel - 8))))
-        return "1:" + scale
+            return "-"
+        var exactScale = Number(appState.mapScaleDenominator || 0)
+        if (exactScale > 0)
+            return "1:" + Math.max(1, Math.round(exactScale))
+        var fallback = Math.max(500, Math.round(160000 / Math.pow(1.45, Math.max(0, appState.zoomLevel - 8))))
+        return "1:" + fallback
     }
 
     GlassPanel {
@@ -65,7 +68,7 @@ Item {
                     onPositionChanged: function(mouse) {
                         if (!pressed || !root.panelManager)
                             return
-                        var nextHeight = Math.max(20, root.dragStartHeight - (mouse.y - startMouseY))
+                        var nextHeight = Math.max(28, root.dragStartHeight - (mouse.y - startMouseY))
                         root.panelManager.resizePanel("status-bar", root.width, nextHeight)
                     }
                 }
@@ -86,7 +89,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     text: "Долгота: " + Number(root.appState ? root.appState.cursorLon : 0).toFixed(5)
                     color: Qt.rgba(1, 1, 1, 0.76)
-                    font.pixelSize: 9
+                    font.pixelSize: 13
                     elide: Text.ElideRight
                 }
 
@@ -95,7 +98,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     text: "Широта: " + Number(root.appState ? root.appState.cursorLat : 0).toFixed(5)
                     color: Qt.rgba(1, 1, 1, 0.76)
-                    font.pixelSize: 9
+                    font.pixelSize: 13
                     elide: Text.ElideRight
                 }
 
@@ -104,7 +107,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     text: "Масштаб: " + root.approximateScale()
                     color: Qt.rgba(1, 1, 1, 0.56)
-                    font.pixelSize: 9
+                    font.pixelSize: 13
                     elide: Text.ElideRight
                 }
             }
@@ -119,7 +122,7 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 text: "Статус: " + (root.appState ? root.appState.statusMessage : "")
                 color: Qt.rgba(1, 1, 1, 0.50)
-                font.pixelSize: 9
+                font.pixelSize: 13
                 elide: Text.ElideRight
             }
 
@@ -132,11 +135,11 @@ Item {
 
                 Button {
                     id: collapseButton
-                    implicitWidth: 20
-                    implicitHeight: 20
+                    implicitWidth: 28
+                    implicitHeight: 28
                     flat: true
                     background: Rectangle {
-                        radius: 10
+                        radius: 12
                         color: "#ffffff"
                         opacity: collapseButton.down ? 0.08 : collapseButton.hovered ? 0.05 : 0.03
                     }
@@ -145,18 +148,18 @@ Item {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         color: "#dce4ed"
-                        font.pixelSize: 10
+                        font.pixelSize: 14
                     }
                     onClicked: root.panelManager.toggleCollapsed("status-bar")
                 }
 
                 Button {
                     id: closeButton
-                    implicitWidth: 20
-                    implicitHeight: 20
+                    implicitWidth: 28
+                    implicitHeight: 28
                     flat: true
                     background: Rectangle {
-                        radius: 10
+                        radius: 12
                         color: "#ffffff"
                         opacity: closeButton.down ? 0.08 : closeButton.hovered ? 0.05 : 0.03
                     }
@@ -165,7 +168,7 @@ Item {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         color: "#dce4ed"
-                        font.pixelSize: 10
+                        font.pixelSize: 14
                     }
                     onClicked: root.panelManager.setPanelVisible("status-bar", false)
                 }
@@ -173,3 +176,4 @@ Item {
         }
     }
 }
+

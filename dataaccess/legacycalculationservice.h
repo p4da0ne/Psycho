@@ -4,6 +4,7 @@
 #include <QJSEngine>
 #include <QObject>
 #include <QQmlEngine>
+#include <QSqlDatabase>
 #include <QSet>
 #include <QString>
 #include <QVariantMap>
@@ -22,18 +23,19 @@ public:
 
     // Returns a map with normalized score/risk and legacy details for heatmap.
     Q_INVOKABLE QVariantMap objectMetrics(int objectType, int objectId);
+    QVariantMap objectMetricsWithDb(int objectType, int objectId, const QSqlDatabase &db);
 
 private:
     static LegacyCalculationService *s_instance;
 
-    QVariantMap objectMetricsInternal(int objectType, int objectId, QSet<QString> &guard);
-    QVariantMap formationMetrics(int lsId);
-    QVariantMap regionMetrics(int regionId);
-    QVariantMap mpoMetrics(int mpoId, QSet<QString> &guard);
-    QVariantMap groupMetrics(int groupId);
-    QVariantMap personnelMetrics(int personesId, QSet<QString> &guard);
-    QVariantMap specialConditionMetrics(int specialConditionId);
-    QVariantMap eventMetrics(int eventId, QSet<QString> &guard);
+    QVariantMap objectMetricsInternal(int objectType, int objectId, const QSqlDatabase &db, QSet<QString> &guard);
+    QVariantMap formationMetrics(int lsId, const QSqlDatabase &db);
+    QVariantMap regionMetrics(int regionId, const QSqlDatabase &db);
+    QVariantMap mpoMetrics(int mpoId, const QSqlDatabase &db, QSet<QString> &guard);
+    QVariantMap groupMetrics(int groupId, const QSqlDatabase &db);
+    QVariantMap personnelMetrics(int personesId, const QSqlDatabase &db, QSet<QString> &guard);
+    QVariantMap specialConditionMetrics(int specialConditionId, const QSqlDatabase &db);
+    QVariantMap eventMetrics(int eventId, const QSqlDatabase &db, QSet<QString> &guard);
 
     static QVariantMap neutralMetrics(const QString &source, const QString &reason = QString());
     static int tableNameToObjectType(const QString &tableName);

@@ -16,6 +16,12 @@ Item {
     property string editGeometryType: ""
     property var editPoints: []
     property bool editClosed: false
+    property real labelMinZoom: 8.0
+    property int markerHitSize: 42
+    property int markerOuterSize: 18
+    property int markerOuterSizeSelected: 24
+    property int markerInnerSize: 9
+    property int markerInnerSizeSelected: 12
 
     signal interactionActivity()
     signal requestMapMenu(real lon, real lat, real screenX, real screenY)
@@ -32,6 +38,52 @@ Item {
         var minZoom = mapView.minimumZoomLevel !== undefined ? Number(mapView.minimumZoomLevel) : 1
         var maxZoom = mapView.maximumZoomLevel !== undefined ? Number(mapView.maximumZoomLevel) : 20
         return Math.max(minZoom, Math.min(maxZoom, Number(nextZoom)))
+    }
+
+    function updateScaleMetrics() {
+        if (!root.appState || mapView.width < 2 || mapView.height < 2)
+            return
+
+        var samplePixels = Math.max(48, Math.min(220, mapView.width * 0.22))
+        if (samplePixels >= mapView.width)
+            samplePixels = mapView.width - 1
+        if (samplePixels < 1)
+            return
+
+        var pointA = Qt.point((mapView.width - samplePixels) / 2, mapView.height / 2)
+        var pointB = Qt.point(pointA.x + samplePixels, pointA.y)
+        var coordA = mapView.toCoordinate(pointA, false)
+        var coordB = mapView.toCoordinate(pointB, false)
+        if (!coordA.isValid || !coordB.isValid)
+            return
+
+        var meters = coordA.distanceTo(coordB)
+        if (!(meters > 0))
+            return
+
+        var metersPerPixel = meters / samplePixels
+        var pixelsPerMillimeter = 3.78
+        root.appState.mapMetersPerPixel = metersPerPixel
+        root.appState.mapScaleDenominator = metersPerPixel * pixelsPerMillimeter * 1000.0
+    }
+
+    function updateViewportBounds() {
+        if (!root.appState || mapView.width < 2 || mapView.height < 2)
+            return
+
+        var topLeft = mapView.toCoordinate(Qt.point(0, 0), false)
+        var topRight = mapView.toCoordinate(Qt.point(mapView.width, 0), false)
+        var bottomLeft = mapView.toCoordinate(Qt.point(0, mapView.height), false)
+        var bottomRight = mapView.toCoordinate(Qt.point(mapView.width, mapView.height), false)
+        if (!topLeft.isValid || !topRight.isValid || !bottomLeft.isValid || !bottomRight.isValid)
+            return
+
+        var lats = [topLeft.latitude, topRight.latitude, bottomLeft.latitude, bottomRight.latitude]
+        var lons = [topLeft.longitude, topRight.longitude, bottomLeft.longitude, bottomRight.longitude]
+        root.appState.viewNorth = Math.max(lats[0], lats[1], lats[2], lats[3])
+        root.appState.viewSouth = Math.min(lats[0], lats[1], lats[2], lats[3])
+        root.appState.viewEast = Math.max(lons[0], lons[1], lons[2], lons[3])
+        root.appState.viewWest = Math.min(lons[0], lons[1], lons[2], lons[3])
     }
 
     function pathToCoordinates(pathData) {
@@ -155,7 +207,9 @@ Item {
 
         PluginParameter {
             name: "maplibre.map.styles"
-            value: "http://localhost:8080/styles/maptiler-basic/style.json"
+            value: (root.appState && root.appState.mapStyleUrl && root.appState.mapStyleUrl.length > 0)
+                ? root.appState.mapStyleUrl
+                : "http://localhost:8080/styles/maptiler-basic/style.json"
         }
     }
 
@@ -168,6 +222,18 @@ Item {
         center: QtPositioning.coordinate(
                         root.appState ? root.appState.centerLat : 55.7558,
                         root.appState ? root.appState.centerLon : 37.6176)
+        onWidthChanged: {
+            root.updateScaleMetrics()
+            root.updateViewportBounds()
+        }
+        onHeightChanged: {
+            root.updateScaleMetrics()
+            root.updateViewportBounds()
+        }
+        Component.onCompleted: {
+            root.updateScaleMetrics()
+            root.updateViewportBounds()
+        }
 
         Connections {
             target: mapView
@@ -177,12 +243,16 @@ Item {
                     return
                 root.appState.centerLat = mapView.center.latitude
                 root.appState.centerLon = mapView.center.longitude
+                root.updateScaleMetrics()
+                root.updateViewportBounds()
             }
 
             function onZoomLevelChanged() {
                 if (!root.appState)
                     return
                 root.appState.zoomLevel = mapView.zoomLevel
+                root.updateScaleMetrics()
+                root.updateViewportBounds()
             }
         }
 
@@ -244,8 +314,8 @@ Item {
 
             sourceItem: Item {
                 id: hitArea
-                width: 36
-                height: 36
+                width: 44
+                height: 44
 
                 MouseArea {
                     anchors.fill: parent
@@ -256,13 +326,20 @@ Item {
                     onEntered: root.hoverObject(polygonHotspot.modelData)
                     onExited: root.hoverObject(null)
 
+                    onPressed: function(mouse) {
+                        if (mouse.button !== Qt.RightButton)
+                            return
+                        root.interactionActivity()
+                        var point = mapView.fromCoordinate(polygonHotspot.coordinate, false)
+                        root.requestObjectMenu(polygonHotspot.modelData, point.x + 16, point.y + 12)
+                        mouse.accepted = true
+                    }
+
                     onClicked: function(mouse) {
+                        if (mouse.button !== Qt.LeftButton)
+                            return
                         root.interactionActivity()
                         root.requestSelectObject(polygonHotspot.modelData)
-                        if (mouse.button === Qt.RightButton) {
-                            var point = mapView.fromCoordinate(polygonHotspot.coordinate, false)
-                            root.requestObjectMenu(polygonHotspot.modelData, point.x + 16, point.y + 12)
-                        }
                     }
                 }
             }
@@ -325,8 +402,8 @@ Item {
 
             sourceItem: Item {
                 id: hitArea
-                width: 30
-                height: 30
+                width: 38
+                height: 38
 
                 MouseArea {
                     anchors.fill: parent
@@ -337,13 +414,20 @@ Item {
                     onEntered: root.hoverObject(lineHotspot.modelData)
                     onExited: root.hoverObject(null)
 
+                    onPressed: function(mouse) {
+                        if (mouse.button !== Qt.RightButton)
+                            return
+                        root.interactionActivity()
+                        var point = mapView.fromCoordinate(lineHotspot.coordinate, false)
+                        root.requestObjectMenu(lineHotspot.modelData, point.x + 16, point.y + 12)
+                        mouse.accepted = true
+                    }
+
                     onClicked: function(mouse) {
+                        if (mouse.button !== Qt.LeftButton)
+                            return
                         root.interactionActivity()
                         root.requestSelectObject(lineHotspot.modelData)
-                        if (mouse.button === Qt.RightButton) {
-                            var point = mapView.fromCoordinate(lineHotspot.coordinate, false)
-                            root.requestObjectMenu(lineHotspot.modelData, point.x + 16, point.y + 12)
-                        }
                     }
                 }
             }
@@ -362,13 +446,13 @@ Item {
             coordinate: QtPositioning.coordinate(Number(modelData.lat), Number(modelData.lon))
             anchorPoint.x: labelText.width / 2
             anchorPoint.y: labelText.height / 2
-            visible: root.appState ? root.appState.showLabels : true
+            visible: (root.appState ? root.appState.showLabels : true) && mapView.zoomLevel >= root.labelMinZoom
 
             sourceItem: Text {
                 id: labelText
                 text: String(labelItem.modelData.name || "")
                 color: "#808995"
-                font.pixelSize: 11
+                font.pixelSize: 17
                 opacity: root.appState && root.appState.selectedObject ? 0.42 : 0.80
             }
         }
@@ -413,14 +497,14 @@ Item {
 
             sourceItem: Item {
                 id: vertexHit
-                width: 24
-                height: 24
+                width: 36
+                height: 36
 
                 Rectangle {
                     anchors.centerIn: parent
-                    width: 12
-                    height: 12
-                    radius: 6
+                    width: 14
+                    height: 14
+                    radius: 7
                     color: "#f8fafc"
                     border.width: 2
                     border.color: "#2563eb"
@@ -474,13 +558,13 @@ Item {
 
             sourceItem: Item {
                 id: segmentHit
-                width: 20
-                height: 20
+                width: 26
+                height: 26
 
                 Rectangle {
                     anchors.centerIn: parent
-                    width: 10
-                    height: 10
+                    width: 12
+                    height: 12
                     rotation: 45
                     color: "#bfdbfe"
                     border.width: 1
@@ -530,14 +614,14 @@ Item {
 
             sourceItem: Item {
                 id: markerRoot
-                width: 24
-                height: 24
+                width: root.markerHitSize
+                height: root.markerHitSize
                 opacity: markerItem.muted ? 0.56 : 1.0
                 scale: markerItem.selected ? 1.15 : markerItem.hovered ? 1.03 : 1.0
 
                 Rectangle {
                     anchors.centerIn: parent
-                    width: markerItem.selected ? 10 : 8
+                    width: markerItem.selected ? root.markerOuterSizeSelected : root.markerOuterSize
                     height: width
                     radius: markerItem.modelData.kind === "lbs" ? 3 : width / 2
                     border.width: 1
@@ -550,7 +634,7 @@ Item {
 
                 Rectangle {
                     anchors.centerIn: parent
-                    width: markerItem.selected ? 5 : 4
+                    width: markerItem.selected ? root.markerInnerSizeSelected : root.markerInnerSize
                     height: width
                     radius: width / 2
                     color: "#f6f9fc"
@@ -566,26 +650,60 @@ Item {
                     onEntered: root.hoverObject(markerItem.modelData)
                     onExited: root.hoverObject(null)
 
+                    onPressed: function(mouse) {
+                        if (mouse.button !== Qt.RightButton)
+                            return
+                        root.interactionActivity()
+                        var point = mapView.fromCoordinate(
+                                        QtPositioning.coordinate(Number(markerItem.modelData.lat),
+                                                                 Number(markerItem.modelData.lon)),
+                                        false)
+                        root.requestObjectMenu(markerItem.modelData, point.x + 16, point.y + 12)
+                        mouse.accepted = true
+                    }
+
                     onClicked: function(mouse) {
+                        if (mouse.button !== Qt.LeftButton)
+                            return
                         root.interactionActivity()
                         root.requestSelectObject(markerItem.modelData)
-                        if (mouse.button === Qt.RightButton) {
-                            var point = mapView.fromCoordinate(
-                                            QtPositioning.coordinate(Number(markerItem.modelData.lat),
-                                                                     Number(markerItem.modelData.lon)),
-                                            false)
-                            root.requestObjectMenu(markerItem.modelData, point.x + 16, point.y + 12)
-                        }
                     }
                 }
             }
         }
     }
 
+    DragHandler {
+        id: mapPanHandler
+        target: null
+        acceptedButtons: Qt.LeftButton
+        enabled: !root.editActive
+        property point lastPosition: Qt.point(0, 0)
+
+        onActiveChanged: {
+            if (!active)
+                return
+            lastPosition = centroid.position
+            root.interactionActivity()
+        }
+
+        onCentroidChanged: {
+            if (!active)
+                return
+            var dx = centroid.position.x - lastPosition.x
+            var dy = centroid.position.y - lastPosition.y
+            if (dx === 0 && dy === 0)
+                return
+            mapView.pan(-dx, -dy)
+            lastPosition = centroid.position
+            root.interactionActivity()
+        }
+    }
+
     MouseArea {
         id: mapHoverArea
         anchors.fill: parent
-        acceptedButtons: Qt.RightButton
+        acceptedButtons: Qt.NoButton
         hoverEnabled: true
         propagateComposedEvents: true
 
@@ -597,21 +715,23 @@ Item {
             root.appState.cursorLat = coord.latitude
         }
 
-        onClicked: function(mouse) {
-            if (mouse.button !== Qt.RightButton)
-                return
-            root.interactionActivity()
-            var coord = mapView.toCoordinate(Qt.point(mouse.x, mouse.y), false)
-            root.requestMapMenu(coord.longitude, coord.latitude, mouse.x, mouse.y)
-            mouse.accepted = true
-        }
     }
 
     TapHandler {
-        acceptedButtons: Qt.LeftButton
+        id: mapTapHandler
+        target: null
+        acceptedDevices: PointerDevice.Mouse
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        grabPermissions: PointerHandler.CanTakeOverFromAnything
 
-        onTapped: function(point, _) {
+        onTapped: function(point, button) {
             root.interactionActivity()
+            if (button === Qt.RightButton) {
+                var coord = mapView.toCoordinate(point.position, false)
+                root.requestMapMenu(coord.longitude, coord.latitude, point.position.x, point.position.y)
+                return
+            }
+
             if (root.editActive) {
                 var c = mapView.toCoordinate(point.position, false)
                 root.editPointAppended(c.longitude, c.latitude)
@@ -621,6 +741,7 @@ Item {
         }
     }
 }
+
 
 
 

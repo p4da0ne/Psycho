@@ -37,7 +37,15 @@ GeoJsonService *GeoJsonService::instance()
 
 QString GeoJsonService::buildFeatureCollection(int objectType, int objectId)
 {
-    const QVariantList rows = GeometryRepository::instance()->loadObjectGeometry(objectType, objectId);
+    return buildFeatureCollectionWithDb(objectType, objectId, QSqlDatabase());
+}
+
+QString GeoJsonService::buildFeatureCollectionWithDb(
+    int objectType,
+    int objectId,
+    const QSqlDatabase &db)
+{
+    const QVariantList rows = GeometryRepository::instance()->loadObjectGeometryWithDb(objectType, objectId, db);
 
     QJsonObject featureCollection;
     featureCollection.insert("type", "FeatureCollection");

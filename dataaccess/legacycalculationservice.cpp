@@ -48,10 +48,23 @@ LegacyCalculationService *LegacyCalculationService::instance()
 QVariantMap LegacyCalculationService::objectMetrics(int objectType, int objectId)
 {
     QSet<QString> guard;
-    return objectMetricsInternal(objectType, objectId, guard);
+    return objectMetricsInternal(objectType, objectId, QSqlDatabase(), guard);
 }
 
-QVariantMap LegacyCalculationService::objectMetricsInternal(int objectType, int objectId, QSet<QString> &guard)
+QVariantMap LegacyCalculationService::objectMetricsWithDb(
+    int objectType,
+    int objectId,
+    const QSqlDatabase &db)
+{
+    QSet<QString> guard;
+    return objectMetricsInternal(objectType, objectId, db, guard);
+}
+
+QVariantMap LegacyCalculationService::objectMetricsInternal(
+    int objectType,
+    int objectId,
+    const QSqlDatabase &dbConnection,
+    QSet<QString> &guard)
 {
     if (objectType <= 0 || objectId <= 0) {
         return neutralMetrics("invalid", "objectType/objectId must be positive");
@@ -63,36 +76,44 @@ QVariantMap LegacyCalculationService::objectMetricsInternal(int objectType, int 
     }
     guard.insert(guardKey);
 
-    DataAccess *db = DataAccess::instance();
-    if (!db->connected() && !db->connectToDatabase()) {
+    QSqlDatabase db = dbConnection;
+    if (!db.isValid()) {
+        DataAccess *dataAccess = DataAccess::instance();
+        if (!dataAccess->connected() && !dataAccess->connectToDatabase()) {
+            guard.remove(guardKey);
+            return neutralMetrics("db_unavailable", dataAccess->lastError());
+        }
+        db = QSqlDatabase::database();
+    }
+    if (!db.isValid() || !db.isOpen()) {
         guard.remove(guardKey);
-        return neutralMetrics("db_unavailable", db->lastError());
+        return neutralMetrics("db_unavailable", "database connection is not open");
     }
 
     QVariantMap metrics;
     switch (objectType) {
     case FORMATIONS:
-        metrics = formationMetrics(objectId);
+        metrics = formationMetrics(objectId, db);
         break;
     case REGIONS:
-        metrics = regionMetrics(objectId);
+        metrics = regionMetrics(objectId, db);
         break;
     case SMI_MEANS:
     case FORMATIONS_MEANS:
     case GROUPS_MEANS:
-        metrics = mpoMetrics(objectId, guard);
+        metrics = mpoMetrics(objectId, db, guard);
         break;
     case GROUPS:
-        metrics = groupMetrics(objectId);
+        metrics = groupMetrics(objectId, db);
         break;
     case PERSONNEL:
-        metrics = personnelMetrics(objectId, guard);
+        metrics = personnelMetrics(objectId, db, guard);
         break;
     case SPECIAL_CONDITIONS:
-        metrics = specialConditionMetrics(objectId);
+        metrics = specialConditionMetrics(objectId, db);
         break;
     case EVENTS:
-        metrics = eventMetrics(objectId, guard);
+        metrics = eventMetrics(objectId, db, guard);
         break;
     default:
         metrics = neutralMetrics("unsupported_object_type");
@@ -106,9 +127,9 @@ QVariantMap LegacyCalculationService::objectMetricsInternal(int objectType, int 
     return metrics;
 }
 
-QVariantMap LegacyCalculationService::formationMetrics(int lsId)
+QVariantMap LegacyCalculationService::formationMetrics(int lsId, const QSqlDatabase &db)
 {
-    QSqlQuery query;
+    QSqlQuery query(db);
     query.prepare(
         "SELECT mps_priz_ls, mps_konrt_ls, mps_of_ls, counte_ls, enimy_ls "
         "FROM ls WHERE id_ls = :id_ls LIMIT 1");
@@ -165,9 +186,9 @@ QVariantMap LegacyCalculationService::formationMetrics(int lsId)
     return metrics;
 }
 
-QVariantMap LegacyCalculationService::regionMetrics(int regionId)
+QVariantMap LegacyCalculationService::regionMetrics(int regionId, const QSqlDatabase &db)
 {
-    QSqlQuery query;
+    QSqlQuery query(db);
     query.prepare("SELECT * FROM region WHERE id_region = :id_region LIMIT 1");
     query.bindValue(":id_region", regionId);
     if (!query.exec() || !query.next()) {
@@ -231,9 +252,12 @@ QVariantMap LegacyCalculationService::regionMetrics(int regionId)
     return metrics;
 }
 
-QVariantMap LegacyCalculationService::mpoMetrics(int mpoId, QSet<QString> &guard)
+QVariantMap LegacyCalculationService::mpoMetrics(
+    int mpoId,
+    const QSqlDatabase &db,
+    QSet<QString> &guard)
 {
-    QSqlQuery query;
+    QSqlQuery query(db);
     query.prepare(
         "SELECT id_ls, id_groups, semantika_digit1, semantika_digit2 "
         "FROM mpo_pso WHERE id_mpo_pso = :id_mpo_pso LIMIT 1");
@@ -250,10 +274,10 @@ QVariantMap LegacyCalculationService::mpoMetrics(int mpoId, QSet<QString> &guard
     QVariantMap parentMetrics = neutralMetrics("mpo_linked_parent_missing");
     QString parentSource = "none";
     if (idLs > 0) {
-        parentMetrics = objectMetricsInternal(FORMATIONS, idLs, guard);
+        parentMetrics = objectMetricsInternal(FORMATIONS, idLs, db, guard);
         parentSource = "ls";
     } else if (idGroups > 0) {
-        parentMetrics = objectMetricsInternal(GROUPS, idGroups, guard);
+        parentMetrics = objectMetricsInternal(GROUPS, idGroups, db, guard);
         parentSource = "groups";
     }
 
@@ -277,9 +301,9 @@ QVariantMap LegacyCalculationService::mpoMetrics(int mpoId, QSet<QString> &guard
     return metrics;
 }
 
-QVariantMap LegacyCalculationService::groupMetrics(int groupId)
+QVariantMap LegacyCalculationService::groupMetrics(int groupId, const QSqlDatabase &db)
 {
-    QSqlQuery query;
+    QSqlQuery query(db);
     query.prepare("SELECT id_region FROM groups WHERE id_groups = :id_groups LIMIT 1");
     query.bindValue(":id_groups", groupId);
     if (!query.exec() || !query.next()) {
@@ -291,15 +315,18 @@ QVariantMap LegacyCalculationService::groupMetrics(int groupId)
         return neutralMetrics("group_region_k_omkrf", "group without region link");
     }
 
-    QVariantMap metrics = regionMetrics(regionId);
+    QVariantMap metrics = regionMetrics(regionId, db);
     metrics.insert("calcSource", "group_region_k_omkrf");
     metrics.insert("parentRegionId", regionId);
     return metrics;
 }
 
-QVariantMap LegacyCalculationService::personnelMetrics(int personesId, QSet<QString> &guard)
+QVariantMap LegacyCalculationService::personnelMetrics(
+    int personesId,
+    const QSqlDatabase &db,
+    QSet<QString> &guard)
 {
-    QSqlQuery query;
+    QSqlQuery query(db);
     query.prepare(
         "SELECT id_ls, id_groups FROM persones WHERE id_persones = :id_persones LIMIT 1");
     query.bindValue(":id_persones", personesId);
@@ -311,13 +338,13 @@ QVariantMap LegacyCalculationService::personnelMetrics(int personesId, QSet<QStr
     const int idGroups = query.value("id_groups").toInt();
 
     if (idLs > 0) {
-        QVariantMap metrics = objectMetricsInternal(FORMATIONS, idLs, guard);
+        QVariantMap metrics = objectMetricsInternal(FORMATIONS, idLs, db, guard);
         metrics.insert("calcSource", "personnel_ls_mps");
         metrics.insert("parentLsId", idLs);
         return metrics;
     }
     if (idGroups > 0) {
-        QVariantMap metrics = objectMetricsInternal(GROUPS, idGroups, guard);
+        QVariantMap metrics = objectMetricsInternal(GROUPS, idGroups, db, guard);
         metrics.insert("calcSource", "personnel_group_region");
         metrics.insert("parentGroupId", idGroups);
         return metrics;
@@ -326,9 +353,11 @@ QVariantMap LegacyCalculationService::personnelMetrics(int personesId, QSet<QStr
     return neutralMetrics("personnel_linked", "personnel has no linked formation/group");
 }
 
-QVariantMap LegacyCalculationService::specialConditionMetrics(int specialConditionId)
+QVariantMap LegacyCalculationService::specialConditionMetrics(
+    int specialConditionId,
+    const QSqlDatabase &db)
 {
-    QSqlQuery query;
+    QSqlQuery query(db);
     query.prepare(
         "SELECT id_region FROM special_conditions "
         "WHERE id_special_conditions = :id_special_conditions LIMIT 1");
@@ -342,15 +371,18 @@ QVariantMap LegacyCalculationService::specialConditionMetrics(int specialConditi
         return neutralMetrics("special_condition_region", "special condition without region link");
     }
 
-    QVariantMap metrics = regionMetrics(regionId);
+    QVariantMap metrics = regionMetrics(regionId, db);
     metrics.insert("calcSource", "special_condition_region");
     metrics.insert("parentRegionId", regionId);
     return metrics;
 }
 
-QVariantMap LegacyCalculationService::eventMetrics(int eventId, QSet<QString> &guard)
+QVariantMap LegacyCalculationService::eventMetrics(
+    int eventId,
+    const QSqlDatabase &db,
+    QSet<QString> &guard)
 {
-    QSqlQuery query;
+    QSqlQuery query(db);
     query.prepare(
         "SELECT eo.id_object, teo.table_name "
         "FROM event_objects eo "
@@ -369,7 +401,7 @@ QVariantMap LegacyCalculationService::eventMetrics(int eventId, QSet<QString> &g
         if (objectId <= 0 || objectType <= 0 || objectType == EVENTS) {
             continue;
         }
-        const QVariantMap linkedMetrics = objectMetricsInternal(objectType, objectId, guard);
+        const QVariantMap linkedMetrics = objectMetricsInternal(objectType, objectId, db, guard);
         heatAccumulator += clamp01(linkedMetrics.value("heatValue").toDouble());
         ++linkedCount;
     }

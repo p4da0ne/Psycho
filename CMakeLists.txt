@@ -24,3 +24,12 @@ add_subdirectory(searchengine)
 add_subdirectory(mapview)
 add_subdirectory(event_manager)
 add_subdirectory(mainform)
+
+find_program(PWSH_EXECUTABLE NAMES pwsh powershell REQUIRED)
+add_custom_target(quality-check
+    COMMAND "${PWSH_EXECUTABLE}" -NoProfile -ExecutionPolicy Bypass
+        -File "${CMAKE_SOURCE_DIR}/tools/repo_quality_gate.ps1"
+        -RepoRoot "${CMAKE_SOURCE_DIR}"
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+    COMMENT "Running repository quality gate"
+)

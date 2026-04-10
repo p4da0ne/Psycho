@@ -155,7 +155,7 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         text: "Навигация"
                         color: Qt.rgba(1, 1, 1, 0.90)
-                        font.pixelSize: 12
+                        font.pixelSize: 14
                         font.weight: Font.Medium
                         elide: Text.ElideRight
 
@@ -317,7 +317,7 @@ Item {
                                     width: 10
                                     text: nodeRow.modelData.hasChildren ? (nodeRow.modelData.expanded ? "▾" : "▸") : ""
                                     color: Qt.rgba(1, 1, 1, 0.46)
-                                    font.pixelSize: 10
+                                    font.pixelSize: 12
                                     horizontalAlignment: Text.AlignHCenter
                                 }
 
@@ -326,7 +326,7 @@ Item {
                                     width: Math.max(0, parent.width - 18)
                                     text: nodeRow.modelData.label
                                     color: nodeRow.selected ? Qt.rgba(1, 1, 1, 0.90) : Qt.rgba(1, 1, 1, 0.68)
-                                    font.pixelSize: 10
+                                    font.pixelSize: 12
                                     font.weight: nodeRow.selected ? Font.Medium : Font.Normal
                                     elide: Text.ElideRight
                                 }
@@ -360,7 +360,7 @@ Item {
                         horizontalAlignment: Text.AlignHCenter
                         text: "Панель свернута"
                         color: Qt.rgba(1, 1, 1, 0.52)
-                        font.pixelSize: 10
+                        font.pixelSize: 12
                         elide: Text.ElideRight
                     }
 
@@ -379,7 +379,7 @@ Item {
                         contentItem: Text {
                             text: openCollapsedButton.text
                             color: "#dce4ed"
-                            font.pixelSize: 10
+                            font.pixelSize: 12
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
                         }
@@ -434,13 +434,13 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             color: "#dce4ed"
-            font.pixelSize: 13
+            font.pixelSize: 15
         }
     }
 
     component SectionTitle: Text {
         color: Qt.rgba(1, 1, 1, 0.44)
-        font.pixelSize: 9
+        font.pixelSize: 11
         font.weight: Font.Medium
         font.letterSpacing: 0.4
     }
@@ -470,7 +470,7 @@ Item {
                 width: Math.max(0, parent.width - 68)
                 text: filterRow.label
                 color: Qt.rgba(1, 1, 1, 0.76)
-                font.pixelSize: 10
+                font.pixelSize: 12
                 elide: Text.ElideRight
             }
 
@@ -478,7 +478,7 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 text: String(filterRow.count)
                 color: Qt.rgba(1, 1, 1, 0.40)
-                font.pixelSize: 10
+                font.pixelSize: 12
             }
 
             Switch {
@@ -520,7 +520,7 @@ Item {
                     width: parent.width
                     text: groupRow.label
                     color: groupRow.active ? Qt.rgba(1, 1, 1, 0.88) : Qt.rgba(1, 1, 1, 0.76)
-                    font.pixelSize: 10
+                    font.pixelSize: 12
                     font.weight: groupRow.active ? Font.Medium : Font.Normal
                     elide: Text.ElideRight
                 }
@@ -529,7 +529,7 @@ Item {
                     width: parent.width
                     text: groupRow.meta
                     color: Qt.rgba(1, 1, 1, 0.42)
-                    font.pixelSize: 9
+                    font.pixelSize: 11
                     elide: Text.ElideRight
                 }
             }
@@ -538,7 +538,7 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 text: String(groupRow.count)
                 color: groupRow.active ? Qt.rgba(1, 1, 1, 0.62) : Qt.rgba(1, 1, 1, 0.48)
-                font.pixelSize: 10
+                font.pixelSize: 12
             }
         }
 

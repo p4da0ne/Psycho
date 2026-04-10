@@ -146,7 +146,7 @@ Window {
                 Text {
                     anchors.centerIn: parent
                     rotation: -90
-                    text: "Инспектор"
+                    text: "Детали"
                     color: Qt.rgba(1, 1, 1, 0.90)
                     font.pixelSize: 10
                     font.weight: Font.Medium
@@ -263,3 +263,4 @@ Window {
         }
     }
 }
+

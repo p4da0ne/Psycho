@@ -56,14 +56,30 @@ GeometryRepository *GeometryRepository::instance()
 
 QVariantList GeometryRepository::loadObjectGeometry(int objectType, int objectId)
 {
+    return loadObjectGeometryWithDb(objectType, objectId, QSqlDatabase());
+}
+
+QVariantList GeometryRepository::loadObjectGeometryWithDb(
+    int objectType,
+    int objectId,
+    const QSqlDatabase &dbConnection)
+{
     QVariantList result;
 
-    DataAccess *db = DataAccess::instance();
-    if (!db->connected() && !db->connectToDatabase()) {
+    QSqlDatabase db = dbConnection;
+    if (!db.isValid()) {
+        DataAccess *dataAccess = DataAccess::instance();
+        if (!dataAccess->connected() && !dataAccess->connectToDatabase()) {
+            return result;
+        }
+        db = QSqlDatabase::database();
+    }
+
+    if (!db.isValid() || !db.isOpen()) {
         return result;
     }
 
-    QSqlQuery query;
+    QSqlQuery query(db);
     query.prepare(
         "SELECT og.geometry_role, og.geometry_type, og.point_order, og.id_coordinates, "
         "c.latitude_wgs_84_g, c.latitude_wgs_84_m, c.latitude_wgs_84_s, "
@@ -109,7 +125,7 @@ QVariantList GeometryRepository::loadObjectGeometry(int objectType, int objectId
         return result;
     }
 
-    QSqlQuery legacyQuery;
+    QSqlQuery legacyQuery(db);
     const QString sql = QString(
         "SELECT c.id_coordinates, c.latitude_wgs_84_g, c.latitude_wgs_84_m, c.latitude_wgs_84_s, "
         "c.longitude_wgs_84_g, c.longitude_wgs_84_m, c.longitude_wgs_84_s "

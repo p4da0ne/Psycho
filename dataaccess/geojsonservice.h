@@ -4,6 +4,7 @@
 #include <QJSEngine>
 #include <QObject>
 #include <QQmlEngine>
+#include <QSqlDatabase>
 #include <QString>
 
 #include "config_dataaccess.h"
@@ -19,6 +20,7 @@ public:
     static GeoJsonService* instance();
 
     Q_INVOKABLE QString buildFeatureCollection(int objectType, int objectId);
+    QString buildFeatureCollectionWithDb(int objectType, int objectId, const QSqlDatabase &db);
 
 private:
     static GeoJsonService *s_instance;

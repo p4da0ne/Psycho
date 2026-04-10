@@ -8,6 +8,7 @@ Menu {
     property var appState
     property var agentHub
     property var objectData
+    font.pixelSize: 14
 
     background: Rectangle {
         color: "#111821"
@@ -21,22 +22,6 @@ Menu {
         onTriggered: {
             if (objectData)
                 appState.selectObject(objectData)
-        }
-    }
-
-    MenuItem {
-        text: "Показать карточку объекта"
-        enabled: !!objectData
-        onTriggered: {
-            if (!objectData) {
-                appState.statusMessage = "Объект не выбран"
-                return
-            }
-            var summary = ObjectDetailsRepo.objectSummary(objectData.objectType, objectData.objectId)
-            var summaryName = summary && summary.objectName ? summary.objectName : ""
-            appState.statusMessage = summaryName !== ""
-                ? ("Карточка: " + summaryName + " (ID " + summary.objectId + ")")
-                : ("Карточка: " + objectData.name)
         }
     }
 
@@ -61,9 +46,21 @@ Menu {
                 return
             }
             var route = MapGeometryRoles.geometry(objectData.objectType, objectData.objectId, "route")
-            appState.statusMessage = route.length > 0
-                ? ("Маршрут найден, точек: " + route.length)
-                : "Маршрут не задан"
+            if (route.length === 0) {
+                appState.statusMessage = "Маршрут не задан"
+                return
+            }
+
+            var lonSum = 0
+            var latSum = 0
+            for (var i = 0; i < route.length; ++i) {
+                lonSum += Number(route[i].longitude)
+                latSum += Number(route[i].latitude)
+            }
+            appState.selectObject(objectData)
+            appState.centerLon = lonSum / route.length
+            appState.centerLat = latSum / route.length
+            appState.statusMessage = "Маршрут найден, точек: " + route.length
         }
     }
 
@@ -123,3 +120,4 @@ Menu {
         text: objectData ? "Источник " + objectData.source : "Источник"
     }
 }
+

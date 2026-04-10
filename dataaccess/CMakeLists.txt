@@ -3,7 +3,7 @@ project(dataaccess VERSION 1.0 LANGUAGES C CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Gui Sql Qml Quick)
+find_package(Qt6 REQUIRED COMPONENTS Gui Sql Qml Quick Concurrent)
 
 qt_standard_project_setup()
 
@@ -15,6 +15,7 @@ qt_add_library(dataaccess
     eventsrepository.cpp eventsrepository.h
     geometryrepository.cpp geometryrepository.h
     geojsonservice.cpp geojsonservice.h
+    geojsontilefeedservice.cpp geojsontilefeedservice.h
     legacycalculationservice.cpp legacycalculationservice.h
     mapobjectsrepository.cpp mapobjectsrepository.h
     mapeditingservice.cpp mapeditingservice.h
@@ -34,6 +35,7 @@ target_link_libraries(dataaccess PUBLIC
     Qt::Gui
     Qt::Qml
     Qt::Quick
+    Qt6::Concurrent
     Qt::Sql
 )
 

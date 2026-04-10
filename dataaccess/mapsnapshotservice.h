@@ -2,6 +2,7 @@
 #define MAPSNAPSHOTSERVICE_H
 
 #include <QDateTime>
+#include <QFutureWatcher>
 #include <QJSEngine>
 #include <QObject>
 #include <QQmlEngine>
@@ -52,7 +53,9 @@ private:
     static MapSnapshotService *s_instance;
 
     void bindPollingIfNeeded();
-    void updateCacheForType(int objectType, int limit);
+    void requestWorkerBuild(const QList<int> &objectTypes, int limit, bool fullRefresh);
+    void startWorkerBuild(const QList<int> &objectTypes, int limit, bool fullRefresh);
+    void handleWorkerFinished();
     bool readGeometryMeta(int objectType, QDateTime &maxUpdatedUtc, int &rowCount) const;
     bool readChangedTypesFromChangeLog(QSet<int> &changedTypes, qint64 &maxChangeId) const;
     bool readLastChangeId(qint64 &lastChangeId) const;
@@ -68,6 +71,12 @@ private:
     QMap<int, int> m_lastGeometryRowsByType;
     bool m_deltaBaselineInitialized = false;
     qint64 m_lastProcessedChangeId = 0;
+
+    QFutureWatcher<QVariantMap> m_workerWatcher;
+    bool m_workerBusy = false;
+    bool m_pendingFullRefresh = false;
+    QSet<int> m_pendingTypes;
+    int m_pendingLimit = 5000;
 };
 
 #endif // MAPSNAPSHOTSERVICE_H

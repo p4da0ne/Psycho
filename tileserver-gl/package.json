@@ -1,0 +1,9 @@
+{
+  "name": "saturn-tileserver-runtime",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Local tileserver runtime for saturn_new_map_engine",
+  "dependencies": {
+    "tileserver-gl": "5.4.0"
+  }
+}
