@@ -72,3 +72,6 @@ mapview/data/
 tileserver-gl/*.log
 tileserver-gl/styles/*/dynamic/*.geojson
 tileserver-gl/styles/*/dynamic/manifest.json
+
+# Tileserver data sources (large geo/OSM blobs, build inputs)
+tileserver-gl/data-src/
