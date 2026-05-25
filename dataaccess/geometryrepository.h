@@ -1,7 +1,9 @@
 #ifndef GEOMETRYREPOSITORY_H
 #define GEOMETRYREPOSITORY_H
 
+#include <QHash>
 #include <QJSEngine>
+#include <QList>
 #include <QObject>
 #include <QQmlEngine>
 #include <QSqlDatabase>
@@ -30,6 +32,14 @@ public:
     // }
     Q_INVOKABLE QVariantList loadObjectGeometry(int objectType, int objectId);
     QVariantList loadObjectGeometryWithDb(int objectType, int objectId, const QSqlDatabase &db);
+
+    // Batch loader: single SELECT for all objectIds of the given type.
+    // Returns hash object_id -> list of row maps (same shape as loadObjectGeometryWithDb).
+    // Legacy coord_* fallback applies to ids missing from object_geometry.
+    QHash<int, QVariantList> loadGeometryForType(
+        int objectType,
+        const QList<int> &objectIds,
+        const QSqlDatabase &db);
 
     // coordinates is a QVariantList of coordinate IDs.
     Q_INVOKABLE bool saveObjectGeometry(

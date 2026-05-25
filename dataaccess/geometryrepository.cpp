@@ -3,6 +3,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QSqlRecord>
+#include <QStringList>
 #include <QVariantMap>
 #include <QtGlobal>
 
@@ -168,6 +169,155 @@ QVariantList GeometryRepository::loadObjectGeometryWithDb(
         QVariantMap row = result.first().toMap();
         row["geometryType"] = "Point";
         result[0] = row;
+    }
+
+    return result;
+}
+
+QHash<int, QVariantList> GeometryRepository::loadGeometryForType(
+    int objectType,
+    const QList<int> &objectIds,
+    const QSqlDatabase &dbConnection)
+{
+    QHash<int, QVariantList> result;
+    if (objectIds.isEmpty()) {
+        return result;
+    }
+
+    QSqlDatabase db = dbConnection;
+    if (!db.isValid()) {
+        DataAccess *dataAccess = DataAccess::instance();
+        if (!dataAccess->connected() && !dataAccess->connectToDatabase()) {
+            return result;
+        }
+        db = QSqlDatabase::database();
+    }
+    if (!db.isValid() || !db.isOpen()) {
+        return result;
+    }
+
+    QStringList placeholders;
+    for (int i = 0; i < objectIds.size(); ++i) {
+        placeholders.append(QStringLiteral("?"));
+    }
+    const QString placeholderList = placeholders.join(QStringLiteral(", "));
+
+    QSqlQuery primary(db);
+    const QString primarySql = QStringLiteral(
+        "SELECT og.object_id, og.geometry_role, og.geometry_type, og.point_order, og.id_coordinates, "
+        "c.latitude_wgs_84_g, c.latitude_wgs_84_m, c.latitude_wgs_84_s, "
+        "c.longitude_wgs_84_g, c.longitude_wgs_84_m, c.longitude_wgs_84_s "
+        "FROM object_geometry og "
+        "JOIN coordinates c ON c.id_coordinates = og.id_coordinates "
+        "WHERE og.object_type = ? AND og.object_id IN (%1) "
+        "ORDER BY og.object_id, og.geometry_role, og.point_order")
+            .arg(placeholderList);
+    primary.prepare(primarySql);
+    primary.addBindValue(objectType);
+    for (int id : objectIds) {
+        primary.addBindValue(id);
+    }
+    if (primary.exec()) {
+        while (primary.next()) {
+            const int objectId = primary.value("object_id").toInt();
+            QVariantMap row;
+            row.insert("geometryRole", primary.value("geometry_role").toString());
+            row.insert("geometryType", primary.value("geometry_type").toString());
+            row.insert("pointOrder", primary.value("point_order").toInt());
+            row.insert("coordinateId", primary.value("id_coordinates").toInt());
+            row.insert(
+                "latitude",
+                dmsToDecimal(
+                    primary.value("latitude_wgs_84_g").toInt(),
+                    primary.value("latitude_wgs_84_m").toInt(),
+                    primary.value("latitude_wgs_84_s").toDouble()));
+            row.insert(
+                "longitude",
+                dmsToDecimal(
+                    primary.value("longitude_wgs_84_g").toInt(),
+                    primary.value("longitude_wgs_84_m").toInt(),
+                    primary.value("longitude_wgs_84_s").toDouble()));
+            result[objectId].append(row);
+        }
+    }
+
+    QList<int> missing;
+    for (int id : objectIds) {
+        if (!result.contains(id)) {
+            missing.append(id);
+        }
+    }
+    if (missing.isEmpty()) {
+        return result;
+    }
+
+    const QString coordTable = legacyCoordTableForType(objectType);
+    const QString objectField = legacyObjectFieldForType(objectType);
+    if (coordTable.isEmpty() || objectField.isEmpty()) {
+        return result;
+    }
+
+    QStringList missingPlaceholders;
+    for (int i = 0; i < missing.size(); ++i) {
+        missingPlaceholders.append(QStringLiteral("?"));
+    }
+
+    QSqlQuery legacy(db);
+    const QString legacySql = QStringLiteral(
+        "SELECT co.%2 AS object_id, c.id_coordinates, "
+        "c.latitude_wgs_84_g, c.latitude_wgs_84_m, c.latitude_wgs_84_s, "
+        "c.longitude_wgs_84_g, c.longitude_wgs_84_m, c.longitude_wgs_84_s "
+        "FROM %1 co "
+        "JOIN coordinates c ON c.id_coordinates = co.id_coordinates "
+        "WHERE co.%2 IN (%3) "
+        "ORDER BY co.%2, c.id_coordinates")
+            .arg(coordTable, objectField, missingPlaceholders.join(QStringLiteral(", ")));
+    legacy.prepare(legacySql);
+    for (int id : missing) {
+        legacy.addBindValue(id);
+    }
+    if (!legacy.exec()) {
+        return result;
+    }
+
+    const QString legacyGeometryType = objectType == REGIONS
+        ? QStringLiteral("Polygon")
+        : QStringLiteral("LineString");
+    QHash<int, int> nextOrder;
+    while (legacy.next()) {
+        const int objectId = legacy.value("object_id").toInt();
+        const int order = nextOrder.value(objectId, 0);
+        QVariantMap row;
+        row.insert("geometryRole", "legacy");
+        row.insert("geometryType", legacyGeometryType);
+        row.insert("pointOrder", order);
+        row.insert("coordinateId", legacy.value("id_coordinates").toInt());
+        row.insert(
+            "latitude",
+            dmsToDecimal(
+                legacy.value("latitude_wgs_84_g").toInt(),
+                legacy.value("latitude_wgs_84_m").toInt(),
+                legacy.value("latitude_wgs_84_s").toDouble()));
+        row.insert(
+            "longitude",
+            dmsToDecimal(
+                legacy.value("longitude_wgs_84_g").toInt(),
+                legacy.value("longitude_wgs_84_m").toInt(),
+                legacy.value("longitude_wgs_84_s").toDouble()));
+        result[objectId].append(row);
+        nextOrder[objectId] = order + 1;
+    }
+
+    // Promote single-point legacy LineString to Point (matches single-object loader).
+    for (auto it = result.begin(); it != result.end(); ++it) {
+        QVariantList &rows = it.value();
+        if (rows.size() == 1) {
+            QVariantMap row = rows.first().toMap();
+            if (row.value("geometryRole").toString() == QStringLiteral("legacy")) {
+                row["geometryType"] = QStringLiteral("Point");
+                rows[0] = row;
+            }
+        }
     }
 
     return result;
