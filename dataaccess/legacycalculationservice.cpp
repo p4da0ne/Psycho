@@ -6,18 +6,7 @@
 #include <QtMath>
 
 #include "dataaccess.h"
-
-namespace {
-constexpr int FORMATIONS = 1;
-constexpr int SPECIAL_CONDITIONS = 2;
-constexpr int SMI_MEANS = 3;
-constexpr int FORMATIONS_MEANS = 4;
-constexpr int GROUPS_MEANS = 5;
-constexpr int REGIONS = 6;
-constexpr int PERSONNEL = 7;
-constexpr int EVENTS = 8;
-constexpr int GROUPS = 9;
-}
+#include "objecttypemapper.h"
 
 LegacyCalculationService *LegacyCalculationService::s_instance = nullptr;
 
@@ -92,27 +81,27 @@ QVariantMap LegacyCalculationService::objectMetricsInternal(
 
     QVariantMap metrics;
     switch (objectType) {
-    case FORMATIONS:
+    case ObjectTypeMapper::FORMATIONS:
         metrics = formationMetrics(objectId, db);
         break;
-    case REGIONS:
+    case ObjectTypeMapper::REGIONS:
         metrics = regionMetrics(objectId, db);
         break;
-    case SMI_MEANS:
-    case FORMATIONS_MEANS:
-    case GROUPS_MEANS:
+    case ObjectTypeMapper::SMI_MEANS:
+    case ObjectTypeMapper::FORMATIONS_MEANS:
+    case ObjectTypeMapper::GROUPS_MEANS:
         metrics = mpoMetrics(objectId, db, guard);
         break;
-    case GROUPS:
+    case ObjectTypeMapper::GROUPS:
         metrics = groupMetrics(objectId, db);
         break;
-    case PERSONNEL:
+    case ObjectTypeMapper::PERSONNEL:
         metrics = personnelMetrics(objectId, db, guard);
         break;
-    case SPECIAL_CONDITIONS:
+    case ObjectTypeMapper::SPECIAL_CONDITIONS:
         metrics = specialConditionMetrics(objectId, db);
         break;
-    case EVENTS:
+    case ObjectTypeMapper::EVENTS:
         metrics = eventMetrics(objectId, db, guard);
         break;
     default:
@@ -274,10 +263,10 @@ QVariantMap LegacyCalculationService::mpoMetrics(
     QVariantMap parentMetrics = neutralMetrics("mpo_linked_parent_missing");
     QString parentSource = "none";
     if (idLs > 0) {
-        parentMetrics = objectMetricsInternal(FORMATIONS, idLs, db, guard);
+        parentMetrics = objectMetricsInternal(ObjectTypeMapper::FORMATIONS, idLs, db, guard);
         parentSource = "ls";
     } else if (idGroups > 0) {
-        parentMetrics = objectMetricsInternal(GROUPS, idGroups, db, guard);
+        parentMetrics = objectMetricsInternal(ObjectTypeMapper::GROUPS, idGroups, db, guard);
         parentSource = "groups";
     }
 
@@ -338,13 +327,13 @@ QVariantMap LegacyCalculationService::personnelMetrics(
     const int idGroups = query.value("id_groups").toInt();
 
     if (idLs > 0) {
-        QVariantMap metrics = objectMetricsInternal(FORMATIONS, idLs, db, guard);
+        QVariantMap metrics = objectMetricsInternal(ObjectTypeMapper::FORMATIONS, idLs, db, guard);
         metrics.insert("calcSource", "personnel_ls_mps");
         metrics.insert("parentLsId", idLs);
         return metrics;
     }
     if (idGroups > 0) {
-        QVariantMap metrics = objectMetricsInternal(GROUPS, idGroups, db, guard);
+        QVariantMap metrics = objectMetricsInternal(ObjectTypeMapper::GROUPS, idGroups, db, guard);
         metrics.insert("calcSource", "personnel_group_region");
         metrics.insert("parentGroupId", idGroups);
         return metrics;
@@ -384,9 +373,10 @@ QVariantMap LegacyCalculationService::eventMetrics(
 {
     QSqlQuery query(db);
     query.prepare(
-        "SELECT eo.id_object, teo.table_name "
+        "SELECT eo.id_object, teo.table_name, m.id_ls, m.id_smi, m.id_groups "
         "FROM event_objects eo "
         "LEFT JOIN type_event_object teo ON teo.id_type_event_object = eo.id_type_event_object "
+        "LEFT JOIN mpo_pso m ON teo.table_name = 'mpo_pso' AND m.id_mpo_pso = eo.id_object "
         "WHERE eo.id_event = :id_event");
     query.bindValue(":id_event", eventId);
     if (!query.exec()) {
@@ -397,8 +387,12 @@ QVariantMap LegacyCalculationService::eventMetrics(
     double heatAccumulator = 0.0;
     while (query.next()) {
         const int objectId = query.value("id_object").toInt();
-        const int objectType = tableNameToObjectType(query.value("table_name").toString());
-        if (objectId <= 0 || objectType <= 0 || objectType == EVENTS) {
+        const int objectType = tableNameToObjectType(
+            query.value("table_name").toString(),
+            query.value("id_ls").toInt(),
+            query.value("id_smi").toInt(),
+            query.value("id_groups").toInt());
+        if (objectId <= 0 || objectType <= 0 || objectType == ObjectTypeMapper::EVENTS) {
             continue;
         }
         const QVariantMap linkedMetrics = objectMetricsInternal(objectType, objectId, db, guard);
@@ -439,31 +433,13 @@ QVariantMap LegacyCalculationService::neutralMetrics(const QString &source, cons
     return metrics;
 }
 
-int LegacyCalculationService::tableNameToObjectType(const QString &tableName)
+int LegacyCalculationService::tableNameToObjectType(
+    const QString &tableName,
+    int mpoLsId,
+    int mpoSmiId,
+    int mpoGroupsId)
 {
-    const QString key = tableName.trimmed().toLower();
-    if (key == "ls") {
-        return FORMATIONS;
-    }
-    if (key == "special_conditions") {
-        return SPECIAL_CONDITIONS;
-    }
-    if (key == "mpo_pso") {
-        return SMI_MEANS;
-    }
-    if (key == "region") {
-        return REGIONS;
-    }
-    if (key == "persones") {
-        return PERSONNEL;
-    }
-    if (key == "events") {
-        return EVENTS;
-    }
-    if (key == "groups") {
-        return GROUPS;
-    }
-    return 0;
+    return ObjectTypeMapper::objectTypeByTableName(tableName, mpoLsId, mpoSmiId, mpoGroupsId);
 }
 
 double LegacyCalculationService::clamp01(double value)

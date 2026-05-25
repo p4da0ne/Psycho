@@ -38,7 +38,7 @@ private:
     QVariantMap eventMetrics(int eventId, const QSqlDatabase &db, QSet<QString> &guard);
 
     static QVariantMap neutralMetrics(const QString &source, const QString &reason = QString());
-    static int tableNameToObjectType(const QString &tableName);
+    static int tableNameToObjectType(const QString &tableName, int mpoLsId, int mpoSmiId, int mpoGroupsId);
     static double clamp01(double value);
     static int scoreToHeatClass(double heatValue);
     static int mpsLegacyClass(double mpsValue);
