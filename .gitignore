@@ -49,6 +49,7 @@ CMakeBuild/
 
 # Директории сборки (build directories)
 build/
+build_ncuorf/
 */build/
 */*/build/
 working_build/
