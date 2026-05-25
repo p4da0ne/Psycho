@@ -8,8 +8,14 @@
 #include <QSqlRecord>
 #include <QVariantMap>
 
+#include <QJsonDocument>
+#include <QMap>
+#include <QSet>
+#include <algorithm>
+
 #include "dataaccess.h"
 #include "geojsonservice.h"
+#include "geometryrepository.h"
 #include "legacycalculationservice.h"
 #include "objecttypemapper.h"
 
@@ -120,6 +126,79 @@ QString MapObjectsRepository::buildTypeGeoJson(int objectType, int limit)
     return buildTypeGeoJsonWithDb(objectType, limit, QSqlDatabase());
 }
 
+namespace {
+QJsonArray buildFeaturesForObject(
+    int objectType,
+    int objectId,
+    const QVariantList &geometryRows)
+{
+    QJsonArray features;
+    if (geometryRows.isEmpty()) {
+        return features;
+    }
+
+    QMap<QString, QVariantList> grouped;
+    QMap<QString, QString> geometryTypeByRole;
+    for (const QVariant &rowValue : geometryRows) {
+        const QVariantMap row = rowValue.toMap();
+        const QString role = row.value("geometryRole").toString();
+        grouped[role].append(row);
+        geometryTypeByRole[role] = row.value("geometryType").toString();
+    }
+
+    for (auto it = grouped.begin(); it != grouped.end(); ++it) {
+        const QString role = it.key();
+        QVariantList points = it.value();
+        std::sort(points.begin(), points.end(), [](const QVariant &a, const QVariant &b) {
+            return a.toMap().value("pointOrder").toInt() < b.toMap().value("pointOrder").toInt();
+        });
+
+        QJsonArray coordinatesArray;
+        for (const QVariant &pointValue : points) {
+            const QVariantMap point = pointValue.toMap();
+            QJsonArray coord;
+            coord.append(point.value("longitude").toDouble());
+            coord.append(point.value("latitude").toDouble());
+            coordinatesArray.append(coord);
+        }
+
+        QString geometryType = geometryTypeByRole.value(role, QStringLiteral("Point"));
+        if (coordinatesArray.size() == 1) {
+            geometryType = QStringLiteral("Point");
+        }
+
+        QJsonObject geometry;
+        geometry.insert("type", geometryType);
+        if (geometryType == QStringLiteral("Point")) {
+            geometry.insert("coordinates", coordinatesArray.at(0));
+        } else if (geometryType == QStringLiteral("Polygon")) {
+            if (!coordinatesArray.isEmpty() && coordinatesArray.first() != coordinatesArray.last()) {
+                coordinatesArray.append(coordinatesArray.first());
+            }
+            QJsonArray polygon;
+            polygon.append(coordinatesArray);
+            geometry.insert("coordinates", polygon);
+        } else {
+            geometry.insert("coordinates", coordinatesArray);
+        }
+
+        QJsonObject properties;
+        properties.insert("objectType", objectType);
+        properties.insert("objectId", objectId);
+        properties.insert("geometryRole", role);
+        properties.insert("geometryType", geometryType);
+
+        QJsonObject feature;
+        feature.insert("type", "Feature");
+        feature.insert("id", QStringLiteral("%1:%2:%3").arg(objectType).arg(objectId).arg(role));
+        feature.insert("geometry", geometry);
+        feature.insert("properties", properties);
+        features.append(feature);
+    }
+    return features;
+}
+}
+
 QString MapObjectsRepository::buildTypeGeoJsonWithDb(
     int objectType,
     int limit,
@@ -127,18 +206,49 @@ QString MapObjectsRepository::buildTypeGeoJsonWithDb(
 {
     const QVariantList objects = listObjectsByTypeWithDb(objectType, limit, db);
     QJsonArray featureAccumulator;
+    if (objects.isEmpty()) {
+        QJsonObject emptyCollection;
+        emptyCollection.insert("type", "FeatureCollection");
+        emptyCollection.insert("features", featureAccumulator);
+        return QString::fromUtf8(QJsonDocument(emptyCollection).toJson(QJsonDocument::Compact));
+    }
 
+    QList<int> objectIds;
+    objectIds.reserve(objects.size());
+    QHash<int, QVariantMap> itemsById;
     for (const QVariant &itemValue : objects) {
         const QVariantMap item = itemValue.toMap();
         const int objectId = item.value("id").toInt();
-        const QString oneObjectJson = buildObjectGeoJsonWithDb(objectType, objectId, db);
-        const QVariantMap metrics = LegacyCalculationService::instance()->objectMetricsWithDb(objectType, objectId, db);
-        const QJsonDocument oneDoc = QJsonDocument::fromJson(oneObjectJson.toUtf8());
-        if (!oneDoc.isObject()) {
+        if (objectId <= 0) {
             continue;
         }
-        const QJsonArray oneFeatures = oneDoc.object().value("features").toArray();
-        for (const QJsonValue &featureValue : oneFeatures) {
+        objectIds.append(objectId);
+        itemsById.insert(objectId, item);
+    }
+
+    QSqlDatabase resolvedDb = db;
+    if (!resolvedDb.isValid()) {
+        DataAccess *dataAccess = DataAccess::instance();
+        if (dataAccess->connected() || dataAccess->connectToDatabase()) {
+            resolvedDb = QSqlDatabase::database();
+        }
+    }
+
+    const QHash<int, QVariantList> geometryByObject =
+        GeometryRepository::instance()->loadGeometryForType(objectType, objectIds, resolvedDb);
+    const QHash<int, QVariantMap> metricsByObject =
+        LegacyCalculationService::instance()->metricsForType(objectType, objectIds, resolvedDb);
+
+    for (int objectId : objectIds) {
+        const QVariantMap item = itemsById.value(objectId);
+        const QJsonArray features = buildFeaturesForObject(
+            objectType, objectId, geometryByObject.value(objectId));
+        if (features.isEmpty()) {
+            continue;
+        }
+        const QVariantMap metrics = metricsByObject.value(objectId);
+
+        for (const QJsonValue &featureValue : features) {
             QJsonObject feature = featureValue.toObject();
             QJsonObject properties = feature.value("properties").toObject();
             properties.insert("title", item.value("name").toString());
