@@ -1,8 +1,11 @@
 #ifndef LEGACYCALCULATIONSERVICE_H
 #define LEGACYCALCULATIONSERVICE_H
 
+#include <QHash>
 #include <QJSEngine>
+#include <QList>
 #include <QObject>
+#include <QPair>
 #include <QQmlEngine>
 #include <QSqlDatabase>
 #include <QSet>
@@ -25,6 +28,14 @@ public:
     Q_INVOKABLE QVariantMap objectMetrics(int objectType, int objectId);
     QVariantMap objectMetricsWithDb(int objectType, int objectId, const QSqlDatabase &db);
 
+    // Batch entry: one SELECT for the requested type plus batched recursive
+    // SELECTs for parent types (regions, formations, groups). Returns the same
+    // QVariantMap shape per object as objectMetricsWithDb.
+    QHash<int, QVariantMap> metricsForType(
+        int objectType,
+        const QList<int> &ids,
+        const QSqlDatabase &db);
+
 private:
     static LegacyCalculationService *s_instance;
 
@@ -36,6 +47,20 @@ private:
     QVariantMap personnelMetrics(int personesId, const QSqlDatabase &db, QSet<QString> &guard);
     QVariantMap specialConditionMetrics(int specialConditionId, const QSqlDatabase &db);
     QVariantMap eventMetrics(int eventId, const QSqlDatabase &db, QSet<QString> &guard);
+
+    using BatchCache = QHash<QPair<int, int>, QVariantMap>;
+    QHash<int, QVariantMap> metricsForTypeInternal(
+        int objectType,
+        const QList<int> &ids,
+        const QSqlDatabase &db,
+        BatchCache &cache);
+    QHash<int, QVariantMap> formationMetricsBatch(const QList<int> &ids, const QSqlDatabase &db);
+    QHash<int, QVariantMap> regionMetricsBatch(const QList<int> &ids, const QSqlDatabase &db);
+    QHash<int, QVariantMap> groupMetricsBatch(const QList<int> &ids, const QSqlDatabase &db, BatchCache &cache);
+    QHash<int, QVariantMap> specialConditionMetricsBatch(const QList<int> &ids, const QSqlDatabase &db, BatchCache &cache);
+    QHash<int, QVariantMap> mpoMetricsBatch(const QList<int> &ids, const QSqlDatabase &db, BatchCache &cache);
+    QHash<int, QVariantMap> personnelMetricsBatch(const QList<int> &ids, const QSqlDatabase &db, BatchCache &cache);
+    QHash<int, QVariantMap> eventMetricsBatch(const QList<int> &ids, const QSqlDatabase &db, BatchCache &cache);
 
     static QVariantMap neutralMetrics(const QString &source, const QString &reason = QString());
     static int tableNameToObjectType(const QString &tableName, int mpoLsId, int mpoSmiId, int mpoGroupsId);
