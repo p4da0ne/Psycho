@@ -31,6 +31,7 @@ public:
 
     // Force refresh and return combined FeatureCollection for all map types.
     Q_INVOKABLE QString refreshAll();
+    Q_INVOKABLE QString refreshAllWithLimit(int limit);
     // Delta refresh by object_geometry(updated_at/count) and return changed object types.
     Q_INVOKABLE QVariantList refreshByDelta(int limit = 5000);
 

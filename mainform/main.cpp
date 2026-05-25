@@ -22,9 +22,11 @@
 #include <mapgeometryrolesservice.h>
 #include <mapruntimeservice.h>
 #include <mapsnapshotservice.h>
+#include <localgeojsonrepository.h>
 #include <objectdetailsrepository.h>
 #include <personnelrepository.h>
 #include <pollingservice.h>
+#include <uidatarepository.h>
 
 namespace {
 QString startupLogPath()
@@ -106,9 +108,11 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonType<MapGeometryRolesService>("Saturn.Backend", 1, 0, "MapGeometryRoles", MapGeometryRolesService::qmlSingleton);
     qmlRegisterSingletonType<MapRuntimeService>("Saturn.Backend", 1, 0, "MapRuntime", MapRuntimeService::qmlSingleton);
     qmlRegisterSingletonType<MapSnapshotService>("Saturn.Backend", 1, 0, "MapSnapshot", MapSnapshotService::qmlSingleton);
+    qmlRegisterSingletonType<LocalGeoJsonRepository>("Saturn.Backend", 1, 0, "LocalGeoJsonRepo", LocalGeoJsonRepository::qmlSingleton);
     qmlRegisterSingletonType<ObjectDetailsRepository>("Saturn.Backend", 1, 0, "ObjectDetailsRepo", ObjectDetailsRepository::qmlSingleton);
     qmlRegisterSingletonType<PersonnelRepository>("Saturn.Backend", 1, 0, "PersonnelRepo", PersonnelRepository::qmlSingleton);
     qmlRegisterSingletonType<PollingService>("Saturn.Backend", 1, 0, "Polling", PollingService::qmlSingleton);
+    qmlRegisterSingletonType<UiDataRepository>("Saturn.Backend", 1, 0, "UiDataRepo", UiDataRepository::qmlSingleton);
     GeoJsonTileFeedService::instance();
 
     // Keep legacy behavior: all backend services use persisted DB settings immediately on startup.

@@ -117,61 +117,13 @@ Item {
                 visible: !root.collapsed
                 anchors.left: leftMetrics.right
                 anchors.leftMargin: 12
-                anchors.right: actionRow.left
+                anchors.right: parent.right
                 anchors.rightMargin: 10
                 anchors.verticalCenter: parent.verticalCenter
                 text: "Статус: " + (root.appState ? root.appState.statusMessage : "")
                 color: Qt.rgba(1, 1, 1, 0.50)
                 font.pixelSize: 13
                 elide: Text.ElideRight
-            }
-
-            Row {
-                id: actionRow
-                anchors.right: parent.right
-                anchors.rightMargin: 8
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: 6
-
-                Button {
-                    id: collapseButton
-                    implicitWidth: 28
-                    implicitHeight: 28
-                    flat: true
-                    background: Rectangle {
-                        radius: 12
-                        color: "#ffffff"
-                        opacity: collapseButton.down ? 0.08 : collapseButton.hovered ? 0.05 : 0.03
-                    }
-                    contentItem: Text {
-                        text: root.collapsed ? "▴" : "▾"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        color: "#dce4ed"
-                        font.pixelSize: 14
-                    }
-                    onClicked: root.panelManager.toggleCollapsed("status-bar")
-                }
-
-                Button {
-                    id: closeButton
-                    implicitWidth: 28
-                    implicitHeight: 28
-                    flat: true
-                    background: Rectangle {
-                        radius: 12
-                        color: "#ffffff"
-                        opacity: closeButton.down ? 0.08 : closeButton.hovered ? 0.05 : 0.03
-                    }
-                    contentItem: Text {
-                        text: "×"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        color: "#dce4ed"
-                        font.pixelSize: 14
-                    }
-                    onClicked: root.panelManager.setPanelVisible("status-bar", false)
-                }
             }
         }
     }

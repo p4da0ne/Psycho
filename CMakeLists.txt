@@ -3,6 +3,12 @@ project(saturn VERSION 1.0 LANGUAGES C CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+if (MSVC)
+    # Prevent PDB write contention (C1041) in parallel builds.
+    add_compile_options(/FS)
+    add_compile_options(/MP1)
+endif()
+
 find_package(Qt6 REQUIRED COMPONENTS AxContainer Core5Compat Gui Network PrintSupport Sql Widgets)
 find_package(QMapLibre REQUIRED COMPONENTS Core Location)
 

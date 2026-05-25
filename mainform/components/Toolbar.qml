@@ -1,5 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
+import QtQuick.Layouts 1.15
 
 Item {
     id: root
@@ -8,6 +9,37 @@ Item {
     property var agentHub
     property var panelManager
     property Item backdropSource
+    property var objectTypeFilters: [
+        { "value": 0, "label": "Все типы" },
+        { "value": 1, "label": "Формирования" },
+        { "value": 2, "label": "Особые условия" },
+        { "value": 3, "label": "Средства СМИ" },
+        { "value": 4, "label": "Средства формирований" },
+        { "value": 5, "label": "Средства групп" },
+        { "value": 6, "label": "Регионы" },
+        { "value": 7, "label": "Персоналии" },
+        { "value": 8, "label": "События" },
+        { "value": 9, "label": "Группы" },
+        { "value": 10, "label": "СМИ" }
+    ]
+    property var ownershipFilters: [
+        { "value": "all", "label": "Все" },
+        { "value": "friendly", "label": "Свои" },
+        { "value": "enemy", "label": "Противник" }
+    ]
+    property var regionFilters: [
+        { "value": "all", "label": "Все регионы" },
+        { "value": "russia", "label": "Внутри РФ" },
+        { "value": "foreign", "label": "Другие страны" }
+    ]
+
+    function indexByValue(listModel, value, fallbackIndex) {
+        for (var i = 0; i < listModel.length; ++i) {
+            if (String(listModel[i].value) === String(value))
+                return i
+        }
+        return fallbackIndex
+    }
 
     implicitHeight: 50
     opacity: appState && appState.controlsVisible ? 1 : 0.88
@@ -53,36 +85,6 @@ Item {
             anchors.rightMargin: 8
             spacing: 8
 
-            ToolButton {
-                id: leftToggle
-
-                anchors.verticalCenter: parent.verticalCenter
-                implicitWidth: 86
-                implicitHeight: 26
-                text: "Навигация"
-                font.pixelSize: 14
-                hoverEnabled: true
-                background: Rectangle {
-                    radius: 13
-                    color: "#ffffff"
-                    opacity: leftToggle.down ? 0.09 : leftToggle.hovered ? 0.06 : 0.04
-                }
-                contentItem: Text {
-                    text: leftToggle.text
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    color: "#d7e0ea"
-                    font.pixelSize: 14
-                    elide: Text.ElideRight
-                }
-                ToolTip.visible: hovered
-                ToolTip.text: "Показать или скрыть навигацию"
-                onClicked: {
-                    if (root.agentHub && root.agentHub.uiStateAgent)
-                        root.agentHub.uiStateAgent.toggleNavigationVisible()
-                }
-            }
-
             Text {
                 id: searchIcon
                 anchors.verticalCenter: parent.verticalCenter
@@ -97,9 +99,6 @@ Item {
 
                 width: Math.max(96,
                                 searchShell.width
-                                - leftToggle.width
-                                - rightToggle.width
-                                - statusToggle.width
                                 - searchIcon.width
                                 - (clearButton.visible ? 36 : 10)
                                 - 34)
@@ -123,6 +122,10 @@ Item {
                 onAccepted: {
                     if (root.agentHub && root.agentHub.uiStateAgent)
                         root.agentHub.uiStateAgent.focusSearchResult()
+                }
+                onActiveFocusChanged: {
+                    if (activeFocus)
+                        filtersPopup.open()
                 }
             }
 
@@ -153,65 +156,163 @@ Item {
                 }
             }
 
-            ToolButton {
-                id: rightToggle
+        }
 
-                anchors.verticalCenter: parent.verticalCenter
-                implicitWidth: 82
-                implicitHeight: 26
-                text: "Инспектор"
-                font.pixelSize: 14
-                hoverEnabled: true
-                background: Rectangle {
-                    radius: 13
-                    color: "#ffffff"
-                    opacity: rightToggle.down ? 0.09 : rightToggle.hovered ? 0.06 : 0.04
+        TapHandler {
+            onTapped: {
+                if (!filtersPopup.opened)
+                    filtersPopup.open()
+                field.forceActiveFocus()
+            }
+        }
+    }
+
+    Popup {
+        id: filtersPopup
+        parent: root
+        x: searchShell.x
+        y: searchShell.y + searchShell.height + 6
+        width: searchShell.width
+        modal: false
+        focus: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+        padding: 0
+
+        background: Rectangle {
+            radius: 14
+            color: "#1a242f"
+            border.width: 1
+            border.color: Qt.rgba(1, 1, 1, 0.09)
+        }
+
+        contentItem: ColumnLayout {
+            spacing: 10
+            anchors.fill: parent
+            anchors.margins: 12
+
+            Text {
+                text: "Фильтры"
+                color: "#e7eef7"
+                font.pixelSize: 16
+                font.weight: Font.DemiBold
+                Layout.fillWidth: true
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 10
+
+                Text {
+                    text: "Тип объекта"
+                    color: "#c8d4e2"
+                    font.pixelSize: 13
+                    Layout.preferredWidth: 146
                 }
-                contentItem: Text {
-                    text: rightToggle.text
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    color: "#d7e0ea"
-                    font.pixelSize: 14
-                    elide: Text.ElideRight
-                }
-                ToolTip.visible: hovered
-                ToolTip.text: "Показать или скрыть инспектор"
-                onClicked: {
-                    if (root.agentHub && root.agentHub.uiStateAgent)
-                        root.agentHub.uiStateAgent.toggleInspectorVisible()
+
+                ComboBox {
+                    id: objectTypeCombo
+                    Layout.fillWidth: true
+                    model: root.objectTypeFilters
+                    textRole: "label"
+                    currentIndex: root.indexByValue(root.objectTypeFilters,
+                                                   root.appState ? root.appState.quickFilterObjectType : 0,
+                                                   0)
+                    onActivated: {
+                        var value = model[currentIndex].value
+                        if (root.agentHub && root.agentHub.uiStateAgent)
+                            root.agentHub.uiStateAgent.setQuickFilterObjectType(value)
+                    }
                 }
             }
 
-            ToolButton {
-                id: statusToggle
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 10
 
-                anchors.verticalCenter: parent.verticalCenter
-                implicitWidth: 64
-                implicitHeight: 26
-                text: "Статус"
-                font.pixelSize: 14
-                hoverEnabled: true
-                background: Rectangle {
-                    radius: 13
-                    color: "#ffffff"
-                    opacity: statusToggle.down ? 0.09 : statusToggle.hovered ? 0.06 : 0.04
+                Text {
+                    text: "Принадлежность"
+                    color: "#c8d4e2"
+                    font.pixelSize: 13
+                    Layout.preferredWidth: 146
                 }
-                contentItem: Text {
-                    text: statusToggle.text
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    color: "#d7e0ea"
-                    font.pixelSize: 14
-                    elide: Text.ElideRight
+
+                ComboBox {
+                    id: ownershipCombo
+                    Layout.fillWidth: true
+                    model: root.ownershipFilters
+                    textRole: "label"
+                    currentIndex: root.indexByValue(root.ownershipFilters,
+                                                   root.appState ? root.appState.quickFilterOwnership : "all",
+                                                   0)
+                    onActivated: {
+                        var value = model[currentIndex].value
+                        if (root.agentHub && root.agentHub.uiStateAgent)
+                            root.agentHub.uiStateAgent.setQuickFilterOwnership(value)
+                    }
                 }
-                ToolTip.visible: hovered
-                ToolTip.text: "Показать или скрыть строку состояния"
-                onClicked: {
-                    if (!root.panelManager)
-                        return
-                    var panel = root.panelManager.panelById("status-bar")
-                    root.panelManager.setPanelVisible("status-bar", !(panel.visible === true))
+            }
+
+            RowLayout {
+                visible: root.appState && Number(root.appState.quickFilterObjectType || 0) === 8
+                Layout.fillWidth: true
+                spacing: 8
+
+                Text {
+                    text: "Временные рамки"
+                    color: "#c8d4e2"
+                    font.pixelSize: 13
+                    Layout.preferredWidth: 146
+                }
+
+                TextField {
+                    id: fromDateField
+                    Layout.fillWidth: true
+                    placeholderText: "от YYYY-MM-DD"
+                    text: root.appState ? root.appState.quickFilterEventFrom : ""
+                    selectByMouse: true
+                    onEditingFinished: {
+                        if (root.agentHub && root.agentHub.uiStateAgent)
+                            root.agentHub.uiStateAgent.setQuickFilterEventRange(text, toDateField.text)
+                    }
+                }
+
+                TextField {
+                    id: toDateField
+                    Layout.fillWidth: true
+                    placeholderText: "до YYYY-MM-DD"
+                    text: root.appState ? root.appState.quickFilterEventTo : ""
+                    selectByMouse: true
+                    onEditingFinished: {
+                        if (root.agentHub && root.agentHub.uiStateAgent)
+                            root.agentHub.uiStateAgent.setQuickFilterEventRange(fromDateField.text, text)
+                    }
+                }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 10
+
+                Text {
+                    text: "Регионы"
+                    color: "#c8d4e2"
+                    font.pixelSize: 13
+                    Layout.preferredWidth: 146
+                }
+
+                ComboBox {
+                    id: regionCombo
+                    Layout.fillWidth: true
+                    model: root.regionFilters
+                    textRole: "label"
+                    currentIndex: root.indexByValue(root.regionFilters,
+                                                   root.appState ? root.appState.quickFilterRegionScope : "all",
+                                                   0)
+                    onActivated: {
+                        var value = model[currentIndex].value
+                        if (root.agentHub && root.agentHub.uiStateAgent)
+                            root.agentHub.uiStateAgent.setQuickFilterRegionScope(value)
+                    }
                 }
             }
         }

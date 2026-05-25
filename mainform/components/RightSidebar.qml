@@ -20,12 +20,20 @@ Item {
     property string symbolDraftFillColor: ""
     property string symbolDraftTopColor: ""
     property real symbolDraftInnerOpacity: 0.8
+    property bool uiCollapsed: panelState && panelState.collapsed === true
 
+    readonly property var effectivePanelState: {
+        if (panelManager && panelManager.panelById) {
+            panelManager.panels
+            return panelManager.panelById("right-sidebar")
+        }
+        return panelState || ({})
+    }
     readonly property bool panelVisible: appState && appState.inspectorVisible !== undefined
         ? appState.inspectorVisible
-        : (panelState && panelState.visible !== undefined ? panelState.visible : true)
-    readonly property bool collapsed: panelState && panelState.collapsed ? panelState.collapsed : false
-    readonly property real expandedWidth: panelState && panelState.width ? panelState.width : 372
+        : (effectivePanelState && effectivePanelState.visible !== undefined ? effectivePanelState.visible : true)
+    readonly property bool collapsed: uiCollapsed
+    readonly property real expandedWidth: effectivePanelState && effectivePanelState.width ? effectivePanelState.width : 372
     readonly property real targetWidth: panelVisible ? (collapsed ? 132 : expandedWidth) : 0
     readonly property var filterAgent: agentHub ? agentHub.filterAgent : null
     readonly property var selectionAgent: agentHub ? agentHub.selectionAgent : null
@@ -43,14 +51,7 @@ Item {
         { "value": "past", "label": "Прошлые" },
         { "value": "cancelled", "label": "Отмененные" }
     ]
-    readonly property var eventTypeOptions: [
-        { "value": "all", "label": "Все типы" },
-        { "value": "operations", "label": "Операции" },
-        { "value": "communications", "label": "Связь" },
-        { "value": "monitoring", "label": "Наблюдение" },
-        { "value": "logistics", "label": "Логистика" },
-        { "value": "infrastructure", "label": "Инфраструктура" }
-    ]
+    property var eventTypeOptions: [{ "idTypeEvent": 0, "label": "Все типы" }]
     readonly property string selectedStructurePath: appState ? appState.selectedStructurePath : ""
     readonly property var selectedStructureNode: structureAgent ? structureAgent.nodeDetails(selectedStructurePath) : ({})
     readonly property bool structureMode: appState && appState.selectionType === "structure" && selectedStructurePath !== ""
@@ -67,9 +68,16 @@ Item {
         NumberAnimation { duration: 180 }
     }
 
+    WheelHandler {
+        target: null
+        onWheel: function(event) {
+            event.accepted = true
+        }
+    }
+
     onCurrentTabChanged: {
         if (agentHub && agentHub.uiStateAgent)
-            agentHub.uiStateAgent.setInspectorTab(currentTab === "events" ? 1 : currentTab === "symbols" ? 2 : 0)
+            agentHub.uiStateAgent.setInspectorTab(currentTab === "events" ? 1 : 0)
     }
 
     function openTab(tabName) {
@@ -77,18 +85,21 @@ Item {
         if (agentHub && agentHub.uiStateAgent) {
             agentHub.uiStateAgent.setInspectorVisible(true)
             agentHub.uiStateAgent.setActivePanel(1)
-            agentHub.uiStateAgent.setInspectorTab(tabName === "events" ? 1 : tabName === "symbols" ? 2 : 0)
+            agentHub.uiStateAgent.setInspectorTab(tabName === "events" ? 1 : 0)
         }
     }
 
     function closePanel() {
-        if (agentHub && agentHub.uiStateAgent)
-            agentHub.uiStateAgent.setInspectorVisible(false)
+        var nextCollapsed = !root.uiCollapsed
+        root.uiCollapsed = nextCollapsed
+        if (root.panelManager && root.panelManager.setPanelState)
+            root.panelManager.setPanelState("right-sidebar", { "visible": true, "collapsed": nextCollapsed })
+        if (root.appState)
+            root.appState.inspectorVisible = true
     }
 
     function toggleCollapsed() {
-        if (panelManager)
-            panelManager.toggleCollapsed("right-sidebar")
+        root.closePanel()
     }
 
     function statusColor(statusValue) {
@@ -123,16 +134,14 @@ Item {
 
     function typeIcon(typeValue) {
         switch (typeValue) {
-        case "operations":
-            return "◎"
-        case "communications":
+        case "cyber":
             return "≈"
-        case "monitoring":
+        case "fire":
+            return "◎"
+        case "intel":
             return "◈"
-        case "logistics":
-            return "⇄"
-        case "infrastructure":
-            return "▣"
+        case "other":
+            return "⌁"
         default:
             return "⌘"
         }
@@ -140,16 +149,14 @@ Item {
 
     function typeLabel(typeValue) {
         switch (typeValue) {
-        case "operations":
-            return "Операции"
-        case "communications":
-            return "Связь"
-        case "monitoring":
-            return "Наблюдение"
-        case "logistics":
-            return "Логистика"
-        case "infrastructure":
-            return "Инфраструктура"
+        case "cyber":
+            return "Кибер"
+        case "fire":
+            return "Огневые"
+        case "intel":
+            return "Разведка"
+        case "other":
+            return "Прочие"
         default:
             return "Событие"
         }
@@ -160,7 +167,7 @@ Item {
     }
 
     function tabNameByIndex(index) {
-        return index === 1 ? "events" : index === 2 ? "symbols" : "inspector"
+        return index === 1 ? "events" : "inspector"
     }
 
     function symbolTypeLabel(typePath) {
@@ -244,6 +251,109 @@ Item {
         return rows
     }
 
+    function objectLegacyRows() {
+        var rows = []
+        if (!root.selectedObject)
+            return rows
+
+        function addRow(label, value) {
+            if (value === null || value === undefined)
+                return
+            var text = String(value)
+            if (text === "" || text === "0" || text === "0.0" || text === "NaN")
+                return
+            rows.push({ "label": label, "value": text })
+        }
+
+        addRow("ID объекта", root.selectedObject.objectId)
+        addRow("Тип объекта", root.selectedObject.objectType)
+        addRow("ID знака", root.selectedObject.idSign)
+        addRow("Код знака", root.selectedObject.signKey)
+        addRow("Семантика 17501", root.selectedObject.legacySemantic17501)
+        addRow("Семантика 17502", root.selectedObject.legacySemantic17502)
+        addRow("Семантика 105", root.selectedObject.legacySemantic105)
+        addRow("Семантика 18", root.selectedObject.legacySemantic18)
+        addRow("Семантика 19", root.selectedObject.legacySemantic19)
+        addRow("Семантика 32811", root.selectedObject.legacySemantic32811)
+        addRow("Семантика 32852", root.selectedObject.legacySemantic32852)
+        return rows
+    }
+
+    function rebuildEventTypeOptions() {
+        var options = [{ "idTypeEvent": 0, "label": "Все типы" }]
+        var catalog = root.appState && root.appState.eventTypeCatalog ? root.appState.eventTypeCatalog : []
+        for (var i = 0; i < catalog.length; ++i) {
+            var row = catalog[i]
+            var idTypeEvent = Number(row.idTypeEvent || 0)
+            if (idTypeEvent <= 0)
+                continue
+            options.push({
+                "idTypeEvent": idTypeEvent,
+                "label": String(row.typeName || ("Тип #" + idTypeEvent))
+            })
+        }
+        root.eventTypeOptions = options
+        if (root.appState && Number(root.appState.eventTypeFilterId || 0) > 0) {
+            var exists = false
+            for (var k = 0; k < options.length; ++k) {
+                if (Number(options[k].idTypeEvent) === Number(root.appState.eventTypeFilterId)) {
+                    exists = true
+                    break
+                }
+            }
+            if (!exists)
+                root.appState.eventTypeFilterId = 0
+        }
+    }
+
+    function eventDetailsRows() {
+        var rows = []
+        if (!root.selectedEvent)
+            return rows
+        var detailsPayload = root.selectedEvent.details || ({})
+        appendObjectRows(rows, "", detailsPayload, 0)
+        return rows
+    }
+
+    function eventLegacyRows() {
+        var rows = []
+        if (!root.selectedEvent)
+            return rows
+
+        function addRow(label, value) {
+            if (value === null || value === undefined)
+                return
+            var text = String(value)
+            if (text === "")
+                return
+            rows.push({ "label": label, "value": text })
+        }
+
+        var details = root.selectedEvent.details || ({})
+        var objects = details.objects || []
+        var coordinates = details.coordinates || []
+        var media = details.media || []
+        var initiators = 0
+        var participants = 0
+        for (var i = 0; i < objects.length; ++i) {
+            if (objects[i] && objects[i].isEventSource)
+                initiators += 1
+            else
+                participants += 1
+        }
+
+        addRow("ID события", root.selectedEvent.id)
+        addRow("ID типа", root.selectedEvent.idTypeEvent)
+        addRow("ID статуса", root.selectedEvent.idEventStatus)
+        addRow("ID знака", root.selectedEvent.idSign)
+        addRow("Код знака", root.selectedEvent.signKey)
+        addRow("Инициаторов", initiators)
+        addRow("Участников", participants)
+        addRow("Координат", coordinates.length)
+        addRow("Медиа", media.length)
+        return rows
+    }
+
     function syncSymbolDraft() {
         symbolDraftName = selectedSymbol && selectedSymbol.name ? selectedSymbol.name : ""
         symbolDraftGlyph = selectedSymbol && selectedSymbol.glyph ? selectedSymbol.glyph : "●"
@@ -266,6 +376,7 @@ Item {
 
     Component.onCompleted: {
         syncSymbolDraft()
+        rebuildEventTypeOptions()
         if (root.appState)
             root.currentTab = root.tabNameByIndex(root.appState.activeInspectorTab)
     }
@@ -289,6 +400,10 @@ Item {
                 return
             root.currentTab = root.tabNameByIndex(root.appState.activeInspectorTab)
         }
+
+        function onEventTypeCatalogChanged() {
+            root.rebuildEventTypeOptions()
+        }
     }
 
     Connections {
@@ -299,13 +414,23 @@ Item {
         }
     }
 
+    onPanelStateChanged: {
+        if (panelState && panelState.collapsed !== undefined)
+            uiCollapsed = panelState.collapsed === true
+    }
+
+    onEffectivePanelStateChanged: {
+        if (effectivePanelState && effectivePanelState.collapsed !== undefined)
+            uiCollapsed = effectivePanelState.collapsed === true
+    }
+
     GlassPanel {
         anchors.fill: parent
         radius: 22
         padding: 0
         backdropSource: root.backdropSource
         surfaceColor: "#141c24"
-        surfaceOpacity: 0.50
+        surfaceOpacity: 1.0
         shadowOpacity: 0.06
         highlightOpacity: 0.04
         edgeOpacity: 0.05
@@ -316,7 +441,8 @@ Item {
             Row {
                 visible: !root.collapsed
                 anchors.left: parent.left
-                anchors.right: parent.right
+                anchors.right: hidePanelButton.left
+                anchors.rightMargin: 8
                 anchors.top: parent.top
                 anchors.margins: 12
                 height: 30
@@ -325,8 +451,7 @@ Item {
                 Repeater {
                     model: [
                         { "id": "inspector", "label": "Инспектор" },
-                        { "id": "events", "label": "События" },
-                        { "id": "symbols", "label": "Символы" }
+                        { "id": "events", "label": "События" }
                     ]
 
                     delegate: Rectangle {
@@ -359,7 +484,7 @@ Item {
 
                 Item {
                     id: dragZone
-                    width: Math.max(0, parent.width - 232)
+                    width: Math.max(0, parent.width - x - 6)
                     height: parent.height
 
                     MouseArea {
@@ -395,15 +520,44 @@ Item {
                     }
                 }
 
-                HeaderButton {
-                    label: root.collapsed ? "‹" : "›"
-                    rotationValue: root.collapsed ? 0 : 180
-                    onClicked: root.toggleCollapsed()
+                Item {
+                    width: 2
+                    height: 1
+                }
+            }
+
+            Rectangle {
+                id: hidePanelButton
+                anchors.top: parent.top
+                anchors.right: parent.right
+                anchors.topMargin: 12
+                anchors.rightMargin: 12
+                width: 28
+                height: 28
+                radius: 12
+                z: 5
+                color: hideButtonMouse.pressed
+                    ? Qt.rgba(1, 1, 1, 0.12)
+                    : hideButtonMouse.containsMouse
+                        ? Qt.rgba(1, 1, 1, 0.08)
+                        : Qt.rgba(1, 1, 1, 0.06)
+
+                Text {
+                    anchors.centerIn: parent
+                    text: root.collapsed ? ">" : "<"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    color: "#eaf2fb"
+                    font.pixelSize: 14
+                    font.weight: Font.DemiBold
                 }
 
-                HeaderButton {
-                    label: "×"
-                    onClicked: root.closePanel()
+                MouseArea {
+                    id: hideButtonMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: root.toggleCollapsed()
                 }
             }
 
@@ -466,26 +620,6 @@ Item {
                     onClicked: root.openTab("events")
                 }
 
-                Button {
-                    id: collapsedSymbolsButton
-                    text: "Знаки"
-                    flat: true
-                    implicitWidth: 96
-                    implicitHeight: 28
-                    background: Rectangle {
-                        radius: 14
-                        color: "#ffffff"
-                        opacity: collapsedSymbolsButton.down ? 0.10 : collapsedSymbolsButton.hovered ? 0.06 : 0.04
-                    }
-                    contentItem: Text {
-                        text: collapsedSymbolsButton.text
-                        color: "#dce4ed"
-                        font.pixelSize: 12
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                    }
-                    onClicked: root.openTab("symbols")
-                }
             }
 
             Loader {
@@ -501,13 +635,11 @@ Item {
                 visible: !root.collapsed
                 sourceComponent: root.currentTab === "events"
                     ? eventsTab
-                    : root.currentTab === "symbols"
-                        ? symbolsTab
-                        : inspectorTab
+                    : inspectorTab
             }
 
             Rectangle {
-                anchors.left: parent.left
+                anchors.right: parent.right
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 width: 8
@@ -527,7 +659,7 @@ Item {
                     onPositionChanged: function(mouse) {
                         if (!pressed || !root.panelManager)
                             return
-                        var nextWidth = Math.max(320, root.dragStartWidth - (mouse.x - startMouseX))
+                        var nextWidth = Math.max(320, root.dragStartWidth + (mouse.x - startMouseX))
                         root.panelManager.resizePanel("right-sidebar", nextWidth, root.height)
                     }
                 }
@@ -738,6 +870,47 @@ Item {
                             wrapMode: Text.WordWrap
                         }
 
+                        Rectangle {
+                            visible: !root.structureMode && root.objectLegacyRows().length > 0
+                            width: parent.width
+                            implicitHeight: legacyBlockTitle.implicitHeight + legacyRows.implicitHeight + 14
+                            radius: 14
+                            color: Qt.rgba(1, 1, 1, 0.018)
+                            border.width: 1
+                            border.color: Qt.rgba(1, 1, 1, 0.03)
+
+                            Column {
+                                anchors.fill: parent
+                                anchors.margins: 7
+                                spacing: 6
+
+                                Text {
+                                    id: legacyBlockTitle
+                                    width: parent.width
+                                    text: "Ключевые поля (legacy)"
+                                    color: Qt.rgba(1, 1, 1, 0.86)
+                                    font.pixelSize: 12
+                                    font.weight: Font.Medium
+                                }
+
+                                Column {
+                                    id: legacyRows
+                                    width: parent.width
+                                    spacing: 4
+
+                                    Repeater {
+                                        model: root.objectLegacyRows()
+
+                                        delegate: InfoField {
+                                            width: legacyRows.width
+                                            label: modelData.label
+                                            value: modelData.value
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                         InfoField {
                             visible: root.structureMode
                             label: "Путь"
@@ -928,9 +1101,9 @@ Item {
 
                             delegate: FilterChip {
                                 required property var modelData
-                                text: modelData.label
-                                checked: root.appState && root.appState.eventTypeFilter === modelData.value
-                                onClicked: root.appState.eventTypeFilter = modelData.value
+                                text: modelData.label || ("Тип #" + modelData.idTypeEvent)
+                                checked: root.appState && Number(root.appState.eventTypeFilterId || 0) === Number(modelData.idTypeEvent || 0)
+                                onClicked: root.appState.eventTypeFilterId = Number(modelData.idTypeEvent || 0)
                             }
                         }
                     }
@@ -1058,10 +1231,55 @@ Item {
                             wrapMode: Text.WordWrap
                         }
 
+                        Rectangle {
+                            visible: root.selectedEvent && root.eventLegacyRows().length > 0
+                            width: parent.width
+                            implicitHeight: eventLegacyTitle.implicitHeight + eventLegacyRows.implicitHeight + 14
+                            radius: 14
+                            color: Qt.rgba(1, 1, 1, 0.018)
+                            border.width: 1
+                            border.color: Qt.rgba(1, 1, 1, 0.03)
+
+                            Column {
+                                anchors.fill: parent
+                                anchors.margins: 7
+                                spacing: 6
+
+                                Text {
+                                    id: eventLegacyTitle
+                                    width: parent.width
+                                    text: "Ключевые поля события"
+                                    color: Qt.rgba(1, 1, 1, 0.86)
+                                    font.pixelSize: 12
+                                    font.weight: Font.Medium
+                                }
+
+                                Column {
+                                    id: eventLegacyRows
+                                    width: parent.width
+                                    spacing: 4
+
+                                    Repeater {
+                                        model: root.eventLegacyRows()
+
+                                        delegate: InfoField {
+                                            width: eventLegacyRows.width
+                                            label: modelData.label
+                                            value: modelData.value
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                         InfoField { label: "Начало"; value: root.selectedEvent && root.selectedEvent.startTimestamp ? root.selectedEvent.startTimestamp : "—" }
                         InfoField { label: "Окончание"; value: root.selectedEvent && root.selectedEvent.endTimestamp ? root.selectedEvent.endTimestamp : "—" }
                         InfoField { label: "Обновлено"; value: root.selectedEvent && root.selectedEvent.updatedTimestamp ? root.selectedEvent.updatedTimestamp : "—" }
                         InfoField { label: "Связи"; value: root.selectedEvent && root.selectedEvent.objectIds ? String(root.selectedEvent.objectIds.length) + " объектов" : "—" }
+                        InfoField { label: "ID типа"; value: root.selectedEvent && root.selectedEvent.idTypeEvent ? String(root.selectedEvent.idTypeEvent) : "—" }
+                        InfoField { label: "ID статуса"; value: root.selectedEvent && root.selectedEvent.idEventStatus ? String(root.selectedEvent.idEventStatus) : "—" }
+                        InfoField { label: "ID знака"; value: root.selectedEvent && root.selectedEvent.idSign ? String(root.selectedEvent.idSign) : "—" }
+                        InfoField { label: "Код знака"; value: root.selectedEvent && root.selectedEvent.signKey ? String(root.selectedEvent.signKey) : "—" }
 
                         Text {
                             width: parent.width
@@ -1071,6 +1289,63 @@ Item {
                             font.pixelSize: 12
                             lineHeight: 1.24
                             wrapMode: Text.WordWrap
+                        }
+
+                        Rectangle {
+                            width: parent.width
+                            implicitHeight: Math.max(140, Math.min(320, eventDetailsList.contentHeight + 14))
+                            radius: 14
+                            color: Qt.rgba(1, 1, 1, 0.018)
+                            border.width: 1
+                            border.color: Qt.rgba(1, 1, 1, 0.03)
+                            visible: root.selectedEvent && root.selectedEvent.id !== undefined
+
+                            ListView {
+                                id: eventDetailsList
+                                anchors.fill: parent
+                                anchors.margins: 6
+                                clip: true
+                                spacing: 4
+                                model: root.eventDetailsRows()
+
+                                delegate: Rectangle {
+                                    id: eventDetailRow
+                                    required property var modelData
+
+                                    width: ListView.view.width
+                                    implicitHeight: Math.max(32, detailKey.implicitHeight + detailValue.implicitHeight + 10)
+                                    radius: 10
+                                    color: Qt.rgba(1, 1, 1, 0.02)
+                                    border.width: 1
+                                    border.color: Qt.rgba(1, 1, 1, 0.025)
+
+                                    Column {
+                                        anchors.fill: parent
+                                        anchors.margins: 6
+                                        spacing: 2
+
+                                        Text {
+                                            id: detailKey
+                                            width: parent.width
+                                            text: eventDetailRow.modelData.label
+                                            color: Qt.rgba(1, 1, 1, 0.46)
+                                            font.pixelSize: 11
+                                            wrapMode: Text.WrapAnywhere
+                                        }
+
+                                        Text {
+                                            id: detailValue
+                                            width: parent.width
+                                            text: eventDetailRow.modelData.value
+                                            color: Qt.rgba(1, 1, 1, 0.80)
+                                            font.pixelSize: 12
+                                            wrapMode: Text.WrapAnywhere
+                                        }
+                                    }
+                                }
+
+                                ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded; width: 6 }
+                            }
                         }
                     }
 

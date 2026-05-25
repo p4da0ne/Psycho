@@ -133,6 +133,15 @@ if(WIN32)
             COMMAND "${CMAKE_COMMAND}" -E copy_if_different
                 "$<$<CONFIG:Debug>:${_qt_bin_dir}/QMapLibreWidgetsd.dll>$<$<NOT:$<CONFIG:Debug>>:${_qt_bin_dir}/QMapLibreWidgets.dll>"
                 "$<TARGET_FILE_DIR:saturn>/"
+            COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+                "$<$<CONFIG:Debug>:${_qt_bin_dir}/Qt6Core5Compatd.dll>$<$<NOT:$<CONFIG:Debug>>:${_qt_bin_dir}/Qt6Core5Compat.dll>"
+                "$<TARGET_FILE_DIR:saturn>/"
+            COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+                "$<$<CONFIG:Debug>:${_qt_bin_dir}/Qt6PrintSupportd.dll>$<$<NOT:$<CONFIG:Debug>>:${_qt_bin_dir}/Qt6PrintSupport.dll>"
+                "$<TARGET_FILE_DIR:saturn>/"
+            COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+                "$<$<CONFIG:Debug>:${_qt_bin_dir}/Qt6Widgetsd.dll>$<$<NOT:$<CONFIG:Debug>>:${_qt_bin_dir}/Qt6Widgets.dll>"
+                "$<TARGET_FILE_DIR:saturn>/"
             COMMAND "${CMAKE_COMMAND}" -E env
                 "APP_DIR=$<TARGET_FILE_DIR:saturn>"
                 "POSTGRESQL_RUNTIME_DIR=${POSTGRESQL_RUNTIME_DIR}"

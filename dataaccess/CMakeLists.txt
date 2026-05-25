@@ -23,8 +23,11 @@ qt_add_library(dataaccess
     mapruntimeservice.cpp mapruntimeservice.h
     mapsnapshotservice.cpp mapsnapshotservice.h
     objectdetailsrepository.cpp objectdetailsrepository.h
+    objecttypemapper.cpp objecttypemapper.h
     personnelrepository.cpp personnelrepository.h
     pollingservice.cpp pollingservice.h
+    localgeojsonrepository.cpp localgeojsonrepository.h
+    uidatarepository.cpp uidatarepository.h
 )
 target_compile_definitions(dataaccess PRIVATE
     DATAACCESS_BUILD_DLL

@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtLocation 6.5
 import QtPositioning 6.5
 import MapLibre 3.0
+import Saturn.Backend 1.0
 
 Item {
     id: root
@@ -22,6 +23,21 @@ Item {
     property int markerOuterSizeSelected: 24
     property int markerInnerSize: 9
     property int markerInnerSizeSelected: 12
+    property bool interactionInProgress: false
+    property double lastInteractionSignalTs: 0
+    property point pendingCursorPoint: Qt.point(0, 0)
+    property string gadmBasePath: "C:/Users/96kgballs/Downloads/gadm41_RUS"
+    property string russiaSubjectsPath: ":/Resources/russia_disputed_regions_ru_view_2026.geojson"
+    property var gadmAdm0Data: emptyFeatureCollection()
+    property var gadmAdm1Data: emptyFeatureCollection()
+    property var gadmAdm2Data: emptyFeatureCollection()
+    property var gadmAdm3Data: emptyFeatureCollection()
+    property var russiaSubjectsData: emptyFeatureCollection()
+    property bool gadmAdm0Loaded: false
+    property bool gadmAdm1Loaded: false
+    property bool gadmAdm2Loaded: false
+    property bool gadmAdm3Loaded: false
+    property bool russiaSubjectsLoaded: false
 
     signal interactionActivity()
     signal requestMapMenu(real lon, real lat, real screenX, real screenY)
@@ -35,9 +51,28 @@ Item {
     signal editPointInserted(int index, real longitude, real latitude)
 
     function clampZoom(nextZoom) {
-        var minZoom = mapView.minimumZoomLevel !== undefined ? Number(mapView.minimumZoomLevel) : 1
-        var maxZoom = mapView.maximumZoomLevel !== undefined ? Number(mapView.maximumZoomLevel) : 20
+        var minZoom = mapView.map.minimumZoomLevel !== undefined ? Number(mapView.map.minimumZoomLevel) : 1
+        var maxZoom = mapView.map.maximumZoomLevel !== undefined ? Number(mapView.map.maximumZoomLevel) : 20
         return Math.max(minZoom, Math.min(maxZoom, Number(nextZoom)))
+    }
+
+    function markInteraction() {
+        interactionInProgress = true
+        interactionIdleTimer.restart()
+        var now = Date.now()
+        if (now - lastInteractionSignalTs >= 120) {
+            lastInteractionSignalTs = now
+            root.interactionActivity()
+        }
+    }
+
+    function scheduleViewportUpdate(immediate) {
+        if (immediate) {
+            updateScaleMetrics()
+            updateViewportBounds()
+            return
+        }
+        viewportUpdateTimer.restart()
     }
 
     function updateScaleMetrics() {
@@ -52,8 +87,8 @@ Item {
 
         var pointA = Qt.point((mapView.width - samplePixels) / 2, mapView.height / 2)
         var pointB = Qt.point(pointA.x + samplePixels, pointA.y)
-        var coordA = mapView.toCoordinate(pointA, false)
-        var coordB = mapView.toCoordinate(pointB, false)
+        var coordA = mapView.map.toCoordinate(pointA, false)
+        var coordB = mapView.map.toCoordinate(pointB, false)
         if (!coordA.isValid || !coordB.isValid)
             return
 
@@ -71,10 +106,10 @@ Item {
         if (!root.appState || mapView.width < 2 || mapView.height < 2)
             return
 
-        var topLeft = mapView.toCoordinate(Qt.point(0, 0), false)
-        var topRight = mapView.toCoordinate(Qt.point(mapView.width, 0), false)
-        var bottomLeft = mapView.toCoordinate(Qt.point(0, mapView.height), false)
-        var bottomRight = mapView.toCoordinate(Qt.point(mapView.width, mapView.height), false)
+        var topLeft = mapView.map.toCoordinate(Qt.point(0, 0), false)
+        var topRight = mapView.map.toCoordinate(Qt.point(mapView.width, 0), false)
+        var bottomLeft = mapView.map.toCoordinate(Qt.point(0, mapView.height), false)
+        var bottomRight = mapView.map.toCoordinate(Qt.point(mapView.width, mapView.height), false)
         if (!topLeft.isValid || !topRight.isValid || !bottomLeft.isValid || !bottomRight.isValid)
             return
 
@@ -201,6 +236,372 @@ Item {
         return result
     }
 
+    function geoPointFromLonLat(lon, lat) {
+        return {
+            "type": "Point",
+            "coordinates": [Number(lon), Number(lat)]
+        }
+    }
+
+    function geoLineFromPath(pathData) {
+        var coords = []
+        var src = pathData || []
+        for (var i = 0; i < src.length; ++i) {
+            coords.push([Number(src[i].lon), Number(src[i].lat)])
+        }
+        if (coords.length < 2)
+            return null
+        return {
+            "type": "LineString",
+            "coordinates": coords
+        }
+    }
+
+    function geoPolygonFromPath(pathData) {
+        var ring = []
+        var src = pathData || []
+        for (var i = 0; i < src.length; ++i) {
+            ring.push([Number(src[i].lon), Number(src[i].lat)])
+        }
+        if (ring.length < 3)
+            return null
+        var first = ring[0]
+        var last = ring[ring.length - 1]
+        if (first[0] !== last[0] || first[1] !== last[1])
+            ring.push([first[0], first[1]])
+        return {
+            "type": "Polygon",
+            "coordinates": [ring]
+        }
+    }
+
+    function buildFeatureCollection(features) {
+        return {
+            "type": "FeatureCollection",
+            "features": features
+        }
+    }
+
+    function emptyFeatureCollection() {
+        return buildFeatureCollection([])
+    }
+
+    function lineFeaturesGeoJson() {
+        var items = root.lines || []
+        var out = []
+        for (var i = 0; i < items.length; ++i) {
+            var row = items[i] || {}
+            var geometry = geoLineFromPath(row.path)
+            if (!geometry)
+                continue
+            out.push({
+                "type": "Feature",
+                "id": String(row.id || ("line_" + i)),
+                "geometry": geometry,
+                "properties": {
+                    "side": String(row.side || ""),
+                    "heatValue": Number(row.heatValue || 0)
+                }
+            })
+        }
+        return buildFeatureCollection(out)
+    }
+
+    function polygonFeaturesGeoJson() {
+        var items = root.polygons || []
+        var out = []
+        for (var i = 0; i < items.length; ++i) {
+            var row = items[i] || {}
+            var geometry = geoPolygonFromPath(row.path)
+            if (!geometry)
+                continue
+            out.push({
+                "type": "Feature",
+                "id": String(row.id || ("polygon_" + i)),
+                "geometry": geometry,
+                "properties": {
+                    "side": String(row.side || ""),
+                    "heatValue": Number(row.heatValue || 0)
+                }
+            })
+        }
+        return buildFeatureCollection(out)
+    }
+
+    function labelFeaturesGeoJson() {
+        var items = root.labels || []
+        var out = []
+        for (var i = 0; i < items.length; ++i) {
+            var row = items[i] || {}
+            out.push({
+                "type": "Feature",
+                "id": String(row.id || ("label_" + i)),
+                "geometry": geoPointFromLonLat(row.lon, row.lat),
+                "properties": {
+                    "name": String(row.name || "")
+                }
+            })
+        }
+        return buildFeatureCollection(out)
+    }
+
+    function heatFeaturesGeoJson() {
+        var items = root.objects || []
+        var out = []
+        for (var i = 0; i < items.length; ++i) {
+            var row = items[i] || {}
+            var heatValue = Number(row.heatValue || 0)
+            if (!(heatValue > 0.01))
+                continue
+            out.push({
+                "type": "Feature",
+                "id": String(row.id || ("heat_" + i)),
+                "geometry": geoPointFromLonLat(row.lon, row.lat),
+                "properties": {
+                    "heatValue": heatValue
+                }
+            })
+        }
+        return buildFeatureCollection(out)
+    }
+
+    function objectFeaturesGeoJson() {
+        var items = root.objects || []
+        var out = []
+        for (var i = 0; i < items.length; ++i) {
+            var row = items[i] || {}
+            out.push({
+                "type": "Feature",
+                "id": String(row.id || ("obj_" + i)),
+                "geometry": geoPointFromLonLat(row.lon, row.lat),
+                "properties": {
+                    "id": String(row.id || ""),
+                    "name": String(row.name || ""),
+                    "side": String(row.side || ""),
+                    "kind": String(row.kind || ""),
+                    "heatValue": Number(row.heatValue || 0)
+                }
+            })
+        }
+        return buildFeatureCollection(out)
+    }
+
+    function interactionRadiusMeters() {
+        if (!root.appState)
+            return 1200
+        var mpp = Number(root.appState.mapMetersPerPixel || 0)
+        if (!(mpp > 0))
+            return 1200
+        return Math.max(120, Math.min(26000, mpp * 28))
+    }
+
+    function nearestInteractiveTargetAt(coord) {
+        if (!coord || !coord.isValid)
+            return null
+
+        var maxDistance = interactionRadiusMeters()
+        var bestDistance = maxDistance + 1
+        var best = null
+
+        var objectsSource = root.objects || []
+        for (var i = 0; i < objectsSource.length; ++i) {
+            var objectData = objectsSource[i] || {}
+            var objectCoord = QtPositioning.coordinate(Number(objectData.lat), Number(objectData.lon))
+            if (!objectCoord.isValid)
+                continue
+            var distance = coord.distanceTo(objectCoord)
+            if (distance < bestDistance) {
+                bestDistance = distance
+                best = objectData
+            }
+        }
+
+        var linesSource = root.lines || []
+        for (var j = 0; j < linesSource.length; ++j) {
+            var lineData = linesSource[j] || {}
+            var lineCenter = pathCenter(lineData.path)
+            if (!lineCenter.isValid)
+                continue
+            var lineDistance = coord.distanceTo(lineCenter)
+            if (lineDistance < bestDistance) {
+                bestDistance = lineDistance
+                best = lineData
+            }
+        }
+
+        var polygonsSource = root.polygons || []
+        for (var k = 0; k < polygonsSource.length; ++k) {
+            var polygonData = polygonsSource[k] || {}
+            var polygonCenter = pathCenter(polygonData.path)
+            if (!polygonCenter.isValid)
+                continue
+            var polygonDistance = coord.distanceTo(polygonCenter)
+            if (polygonDistance < bestDistance) {
+                bestDistance = polygonDistance
+                best = polygonData
+            }
+        }
+
+        if (bestDistance > maxDistance)
+            return null
+        return best
+    }
+
+    function gadmGeoJsonPath(level) {
+        var base = String(root.gadmBasePath || "")
+        if (base.length === 0)
+            return ""
+        base = base.replace(/\\/g, "/")
+        if (base.charAt(base.length - 1) !== "/")
+            base += "/"
+        return base + "gadm41_RUS_" + String(level) + ".json"
+    }
+
+    function activeAdmLevelForZoom(zoomLevel) {
+        var z = Number(zoomLevel)
+        if (!(z >= 0))
+            z = 0
+        if (z < 4)
+            return 0
+        if (z < 6)
+            return 1
+        if (z < 9)
+            return 2
+        if (z <= 12)
+            return 3
+        return 3
+    }
+
+    function isAdmLevelLoaded(level) {
+        if (level === 0)
+            return root.gadmAdm0Loaded
+        if (level === 1)
+            return root.gadmAdm1Loaded
+        if (level === 2)
+            return root.gadmAdm2Loaded
+        if (level === 3)
+            return root.gadmAdm3Loaded
+        return false
+    }
+
+    function setAdmLevelLoaded(level, loaded) {
+        if (level === 0)
+            root.gadmAdm0Loaded = loaded
+        else if (level === 1)
+            root.gadmAdm1Loaded = loaded
+        else if (level === 2)
+            root.gadmAdm2Loaded = loaded
+        else if (level === 3)
+            root.gadmAdm3Loaded = loaded
+    }
+
+    function setAdmLevelData(level, collection) {
+        var data = collection
+        if (!data || data.type !== "FeatureCollection")
+            data = root.emptyFeatureCollection()
+        if (level === 0)
+            root.gadmAdm0Data = data
+        else if (level === 1)
+            root.gadmAdm1Data = data
+        else if (level === 2)
+            root.gadmAdm2Data = data
+        else if (level === 3)
+            root.gadmAdm3Data = data
+    }
+
+    function ensureAdmLevelLoaded(level) {
+        if (level < 0 || level > 3)
+            return
+        if (isAdmLevelLoaded(level))
+            return
+        var path = gadmGeoJsonPath(level)
+        var loaded = LocalGeoJsonRepo.loadGeoJson(path)
+        setAdmLevelData(level, loaded)
+        setAdmLevelLoaded(level, true)
+    }
+
+    function ensureAdmForCurrentZoom() {
+        var zoom = mapView && mapView.map ? mapView.map.zoomLevel : (root.appState ? root.appState.zoomLevel : 5)
+        ensureAdmLevelLoaded(activeAdmLevelForZoom(zoom))
+    }
+
+    function disputedRegionsFilterExpression() {
+        return ["any",
+                ["==", ["get", "name_en"], "Crimea"],
+                ["==", ["get", "name_en"], "Sevastopol'"],
+                ["==", ["get", "name_en"], "Donetsk People's Republic"],
+                ["==", ["get", "name_en"], "Luhansk People's Republic"],
+                ["==", ["get", "name_en"], "Zaporizhzhia Oblast"],
+                ["==", ["get", "name_en"], "Kherson Oblast"]]
+    }
+
+    function normalizedLocalPath(pathValue) {
+        var path = String(pathValue || "").replace(/\\/g, "/").trim()
+        return path
+    }
+
+    function ensureRussiaSubjectsLoaded() {
+        if (root.russiaSubjectsLoaded)
+            return
+        var path = normalizedLocalPath(root.russiaSubjectsPath)
+        if (path.length === 0) {
+            root.russiaSubjectsData = root.emptyFeatureCollection()
+            root.russiaSubjectsLoaded = true
+            return
+        }
+        var loaded = LocalGeoJsonRepo.loadGeoJson(path)
+        if (!loaded || loaded.type !== "FeatureCollection")
+            loaded = root.emptyFeatureCollection()
+        root.russiaSubjectsData = loaded
+        root.russiaSubjectsLoaded = true
+    }
+
+    function ensureDisputedRegionsForCurrentZoom() {
+        var zoom = mapView && mapView.map ? mapView.map.zoomLevel : (root.appState ? root.appState.zoomLevel : 5)
+        if (Number(zoom) >= 4)
+            ensureRussiaSubjectsLoaded()
+    }
+
+    Timer {
+        id: viewportUpdateTimer
+        interval: 85
+        repeat: false
+        onTriggered: {
+            root.updateScaleMetrics()
+            root.updateViewportBounds()
+        }
+    }
+
+    Timer {
+        id: cursorUpdateTimer
+        interval: 40
+        repeat: false
+        onTriggered: {
+            if (!root.appState)
+                return
+            var coord = mapView.map.toCoordinate(root.pendingCursorPoint, false)
+            root.appState.cursorLon = coord.longitude
+            root.appState.cursorLat = coord.latitude
+        }
+    }
+
+    Timer {
+        id: interactionIdleTimer
+        interval: 170
+        repeat: false
+        onTriggered: root.interactionInProgress = false
+    }
+
+    Timer {
+        id: deferredGeoLoadTimer
+        interval: 220
+        repeat: false
+        onTriggered: {
+            root.ensureAdmForCurrentZoom()
+            root.ensureDisputedRegionsForCurrentZoom()
+        }
+    }
+
     Plugin {
         id: mapPlugin
         name: "maplibre"
@@ -209,50 +610,276 @@ Item {
             name: "maplibre.map.styles"
             value: (root.appState && root.appState.mapStyleUrl && root.appState.mapStyleUrl.length > 0)
                 ? root.appState.mapStyleUrl
-                : "http://localhost:8080/styles/maptiler-basic/style.json"
+                : "https://demotiles.maplibre.org/style.json"
         }
     }
 
-    Map {
+    MapView {
         id: mapView
         anchors.fill: parent
 
-        plugin: mapPlugin
-        zoomLevel: root.appState ? root.appState.zoomLevel : 5
-        center: QtPositioning.coordinate(
+        map.plugin: mapPlugin
+        map.zoomLevel: root.appState ? root.appState.zoomLevel : 5
+        map.center: QtPositioning.coordinate(
                         root.appState ? root.appState.centerLat : 55.7558,
                         root.appState ? root.appState.centerLon : 37.6176)
         onWidthChanged: {
-            root.updateScaleMetrics()
-            root.updateViewportBounds()
+            root.scheduleViewportUpdate(true)
         }
         onHeightChanged: {
-            root.updateScaleMetrics()
-            root.updateViewportBounds()
+            root.scheduleViewportUpdate(true)
         }
         Component.onCompleted: {
-            root.updateScaleMetrics()
-            root.updateViewportBounds()
+            if (mapView.map.supportedMapTypes && mapView.map.supportedMapTypes.length > 0) {
+                var selectedType = null
+                for (var i = 0; i < mapView.map.supportedMapTypes.length; ++i) {
+                    var mapType = mapView.map.supportedMapTypes[i]
+                    var metadata = mapType && mapType.metadata ? mapType.metadata : ({})
+                    var styleUrl = String(metadata.url || "")
+                    if (styleUrl.indexOf("demotiles.maplibre.org/style.json") !== -1) {
+                        selectedType = mapType
+                        break
+                    }
+                }
+                if (selectedType) {
+                    mapView.map.activeMapType = selectedType
+                }
+            }
+            deferredGeoLoadTimer.start()
+            root.scheduleViewportUpdate(true)
+        }
+
+        MapLibre.style: Style {
+            SourceParameter {
+                styleId: "saturn-runtime-lines"
+                type: "geojson"
+                property var data: root.lineFeaturesGeoJson()
+            }
+
+            SourceParameter {
+                styleId: "saturn-runtime-polygons"
+                type: "geojson"
+                property var data: root.polygonFeaturesGeoJson()
+            }
+
+            SourceParameter {
+                styleId: "saturn-runtime-labels"
+                type: "geojson"
+                property var data: root.labelFeaturesGeoJson()
+            }
+
+            SourceParameter {
+                styleId: "saturn-runtime-heat"
+                type: "geojson"
+                property var data: root.heatFeaturesGeoJson()
+            }
+
+            SourceParameter {
+                styleId: "saturn-runtime-objects"
+                type: "geojson"
+                property var data: root.objectFeaturesGeoJson()
+            }
+
+            SourceParameter {
+                styleId: "saturn-rus-adm0"
+                type: "geojson"
+                property var data: root.gadmAdm0Data
+            }
+
+            SourceParameter {
+                styleId: "saturn-rus-adm1"
+                type: "geojson"
+                property var data: root.gadmAdm1Data
+            }
+
+            SourceParameter {
+                styleId: "saturn-rus-adm2"
+                type: "geojson"
+                property var data: root.gadmAdm2Data
+            }
+
+            SourceParameter {
+                styleId: "saturn-rus-adm3"
+                type: "geojson"
+                property var data: root.gadmAdm3Data
+            }
+
+            SourceParameter {
+                styleId: "saturn-rus-subjects"
+                type: "geojson"
+                property var data: root.russiaSubjectsData
+            }
+
+            LayerParameter {
+                styleId: "saturn-rus-adm0-lines"
+                type: "line"
+                property string source: "saturn-rus-adm0"
+                paint: {
+                    "line-color": "#8e99a4",
+                    "line-width": ["interpolate", ["linear"], ["zoom"], 0, 1.2, 4, 1.8],
+                    "line-opacity": ["step", ["zoom"], 0.72, 4, 0.0]
+                }
+            }
+
+            LayerParameter {
+                styleId: "saturn-rus-adm1-lines"
+                type: "line"
+                property string source: "saturn-rus-adm1"
+                paint: {
+                    "line-color": "#8a95a0",
+                    "line-width": ["interpolate", ["linear"], ["zoom"], 4, 0.9, 6, 1.4],
+                    "line-opacity": ["step", ["zoom"], 0.0, 4, 0.66, 6, 0.0]
+                }
+            }
+
+            LayerParameter {
+                styleId: "saturn-rus-adm2-lines"
+                type: "line"
+                property string source: "saturn-rus-adm2"
+                paint: {
+                    "line-color": "#87939e",
+                    "line-width": ["interpolate", ["linear"], ["zoom"], 6, 0.8, 9, 1.2],
+                    "line-opacity": ["step", ["zoom"], 0.0, 6, 0.62, 9, 0.0]
+                }
+            }
+
+            LayerParameter {
+                styleId: "saturn-rus-adm3-lines"
+                type: "line"
+                property string source: "saturn-rus-adm3"
+                paint: {
+                    "line-color": "#7f8a95",
+                    "line-width": ["interpolate", ["linear"], ["zoom"], 9, 0.7, 12, 1.1],
+                    "line-opacity": ["step", ["zoom"], 0.0, 9, 0.58, 12, 0.0]
+                }
+            }
+
+            LayerParameter {
+                styleId: "saturn-rus-disputed-fill"
+                type: "fill"
+                property string source: "saturn-rus-subjects"
+                property var filter: root.disputedRegionsFilterExpression()
+                paint: {
+                    "fill-color": "#d5d88a",
+                    "fill-opacity": ["step", ["zoom"], 0.0, 4, 0.96]
+                }
+            }
+
+            LayerParameter {
+                styleId: "saturn-rus-disputed-line"
+                type: "line"
+                property string source: "saturn-rus-subjects"
+                property var filter: root.disputedRegionsFilterExpression()
+                paint: {
+                    "line-color": "#9ca699",
+                    "line-width": ["interpolate", ["linear"], ["zoom"], 4, 0.8, 9, 1.3, 12, 1.6],
+                    "line-opacity": ["step", ["zoom"], 0.0, 4, 0.88]
+                }
+            }
+
+            LayerParameter {
+                styleId: "saturn-runtime-polygons-fill"
+                type: "fill"
+                property string source: "saturn-runtime-polygons"
+                paint: {
+                    "fill-color": root.appState && root.appState.mapMode === "heatmap"
+                        ? ["interpolate", ["linear"], ["coalesce", ["get", "heatValue"], 0], 0, "#4799d6", 0.5, "#dcb840", 1, "#ca4839"]
+                        : ["match", ["get", "side"], "friendly", "#78a3ff", "foreign", "#dbe6f2", "#9dabb8"],
+                    "fill-opacity": root.appState && root.appState.mapMode === "heatmap" ? 0.28 : 0.14
+                }
+            }
+
+            LayerParameter {
+                styleId: "saturn-runtime-polygons-line"
+                type: "line"
+                property string source: "saturn-runtime-polygons"
+                paint: {
+                    "line-color": root.appState && root.appState.mapMode === "heatmap"
+                        ? ["interpolate", ["linear"], ["coalesce", ["get", "heatValue"], 0], 0, "#63b5e8", 0.5, "#e6c557", 1, "#d85649"]
+                        : ["match", ["get", "side"], "friendly", "#78a3ff", "foreign", "#dbe6f2", "#9dabb8"],
+                    "line-width": 1.6
+                }
+            }
+
+            LayerParameter {
+                styleId: "saturn-runtime-lines-layer"
+                type: "line"
+                property string source: "saturn-runtime-lines"
+                paint: {
+                    "line-color": root.appState && root.appState.mapMode === "heatmap"
+                        ? ["interpolate", ["linear"], ["coalesce", ["get", "heatValue"], 0], 0, "#63b5e8", 0.5, "#e6c557", 1, "#d85649"]
+                        : ["match", ["get", "side"], "friendly", "#78a3ff", "foreign", "#dbe6f2", "#9dabb8"],
+                    "line-width": 2.0
+                }
+            }
+
+            LayerParameter {
+                styleId: "saturn-runtime-heat-circles"
+                type: "circle"
+                property string source: "saturn-runtime-heat"
+                paint: {
+                    "circle-radius": ["interpolate", ["linear"], ["coalesce", ["get", "heatValue"], 0], 0.01, 6, 1.0, 28],
+                    "circle-color": ["interpolate", ["linear"], ["coalesce", ["get", "heatValue"], 0], 0.0, "#5ca6d7", 0.5, "#dfb641", 1.0, "#cc4c3b"],
+                    "circle-opacity": root.appState
+                        && root.appState.mapMode === "heatmap"
+                        && root.appState.showHeatmapLayer
+                        && !root.interactionInProgress ? 0.22 : 0.0,
+                    "circle-stroke-width": 0
+                }
+            }
+
+            LayerParameter {
+                styleId: "saturn-runtime-objects-circles"
+                type: "circle"
+                property string source: "saturn-runtime-objects"
+                paint: {
+                    "circle-radius": ["interpolate", ["linear"], ["zoom"], 3, 4, 8, 7, 12, 11],
+                    "circle-color": ["match", ["get", "side"], "friendly", "#7298f6", "foreign", "#d7dee7", "#909ba7"],
+                    "circle-stroke-color": "#f2f7fc",
+                    "circle-stroke-width": ["interpolate", ["linear"], ["zoom"], 3, 0.8, 10, 1.6],
+                    "circle-opacity": root.appState && root.appState.mapMode === "heatmap" ? 0.46 : 0.96
+                }
+            }
+
+            LayerParameter {
+                styleId: "saturn-runtime-labels-layer"
+                type: "symbol"
+                property string source: "saturn-runtime-labels"
+                layout: {
+                    "text-field": ["get", "name"],
+                    "text-size": 13,
+                    "text-offset": [0, 0.9],
+                    "text-anchor": "top"
+                }
+                paint: {
+                    "text-color": "#808995",
+                    "text-halo-color": "#0b0f14",
+                    "text-halo-width": 0.3,
+                    "text-opacity": (root.appState ? root.appState.showLabels : true)
+                        && mapView.map.zoomLevel >= root.labelMinZoom
+                        && !root.interactionInProgress ? 0.78 : 0.0
+                }
+            }
         }
 
         Connections {
-            target: mapView
+            target: mapView.map
 
             function onCenterChanged() {
-                if (!root.appState || !mapView.center.isValid)
+                if (!root.appState || !mapView.map.center.isValid)
                     return
-                root.appState.centerLat = mapView.center.latitude
-                root.appState.centerLon = mapView.center.longitude
-                root.updateScaleMetrics()
-                root.updateViewportBounds()
+                root.appState.centerLat = mapView.map.center.latitude
+                root.appState.centerLon = mapView.map.center.longitude
+                root.scheduleViewportUpdate(false)
             }
 
             function onZoomLevelChanged() {
+                root.ensureAdmForCurrentZoom()
+                root.ensureDisputedRegionsForCurrentZoom()
                 if (!root.appState)
                     return
-                root.appState.zoomLevel = mapView.zoomLevel
-                root.updateScaleMetrics()
-                root.updateViewportBounds()
+                root.appState.zoomLevel = mapView.map.zoomLevel
+                root.scheduleViewportUpdate(false)
             }
         }
 
@@ -268,219 +895,37 @@ Item {
                 if (rawDelta === 0)
                     return
 
-                root.interactionActivity()
+                root.markInteraction()
                 var zoomStep = rawDelta > 0 ? 0.6 : -0.6
-                mapView.zoomLevel = root.clampZoom(mapView.zoomLevel + zoomStep)
+                mapView.map.zoomLevel = root.clampZoom(mapView.map.zoomLevel + zoomStep)
                 event.accepted = true
-            }
-        }
-    }
-
-    MapItemView {
-        parent: mapView
-        model: root.polygons || []
-
-        delegate: MapPolygon {
-            id: polygonItem
-
-            required property var modelData
-
-            path: root.pathToCoordinates(modelData.path)
-            border.width: root.appState && root.appState.selectedObject && root.appState.selectedObject.id === modelData.id ? 2 : 1
-            border.color: root.appState && root.appState.mapMode === "heatmap"
-                ? root.heatLineColor(modelData.heatValue)
-                : root.strokeColor(modelData.side)
-            color: root.appState && root.appState.mapMode === "heatmap"
-                ? root.heatFillColor(modelData.heatValue)
-                : root.fillColor(modelData.side)
-            smooth: true
-            antialiasing: true
-        }
-    }
-
-    MapItemView {
-        parent: mapView
-        model: root.polygons || []
-
-        delegate: MapQuickItem {
-            id: polygonHotspot
-
-            required property var modelData
-
-            coordinate: root.pathCenter(modelData.path)
-            anchorPoint.x: hitArea.width / 2
-            anchorPoint.y: hitArea.height / 2
-            z: 19
-
-            sourceItem: Item {
-                id: hitArea
-                width: 44
-                height: 44
-
-                MouseArea {
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    acceptedButtons: Qt.LeftButton | Qt.RightButton
-                    cursorShape: Qt.PointingHandCursor
-
-                    onEntered: root.hoverObject(polygonHotspot.modelData)
-                    onExited: root.hoverObject(null)
-
-                    onPressed: function(mouse) {
-                        if (mouse.button !== Qt.RightButton)
-                            return
-                        root.interactionActivity()
-                        var point = mapView.fromCoordinate(polygonHotspot.coordinate, false)
-                        root.requestObjectMenu(polygonHotspot.modelData, point.x + 16, point.y + 12)
-                        mouse.accepted = true
-                    }
-
-                    onClicked: function(mouse) {
-                        if (mouse.button !== Qt.LeftButton)
-                            return
-                        root.interactionActivity()
-                        root.requestSelectObject(polygonHotspot.modelData)
-                    }
-                }
-            }
-        }
-    }
-
-    MapItemView {
-        parent: mapView
-        model: root.lines || []
-
-        delegate: MapPolyline {
-            id: lineItem
-
-            required property var modelData
-
-            path: root.pathToCoordinates(modelData.path)
-            line.width: root.appState && root.appState.selectedObject && root.appState.selectedObject.id === modelData.id ? 3 : 2
-            line.color: root.appState && root.appState.mapMode === "heatmap"
-                ? root.heatLineColor(modelData.heatValue)
-                : root.strokeColor(modelData.side)
-            smooth: true
-            antialiasing: true
-        }
-    }
-
-    MapItemView {
-        parent: mapView
-        model: root.objects || []
-
-        delegate: MapCircle {
-            id: heatCircle
-
-            required property var modelData
-
-            visible: root.appState
-                && root.appState.mapMode === "heatmap"
-                && root.appState.showHeatmapLayer
-                && Number(modelData.heatValue || 0) > 0.01
-            center: QtPositioning.coordinate(Number(modelData.lat), Number(modelData.lon))
-            radius: 260 + 1740 * root.clamp01(modelData.heatValue)
-            color: root.heatFillColor(modelData.heatValue)
-            border.width: 0
-            z: 8
-        }
-    }
-
-    MapItemView {
-        parent: mapView
-        model: root.lines || []
-
-        delegate: MapQuickItem {
-            id: lineHotspot
-
-            required property var modelData
-
-            coordinate: root.pathCenter(modelData.path)
-            anchorPoint.x: hitArea.width / 2
-            anchorPoint.y: hitArea.height / 2
-            z: 19
-
-            sourceItem: Item {
-                id: hitArea
-                width: 38
-                height: 38
-
-                MouseArea {
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    acceptedButtons: Qt.LeftButton | Qt.RightButton
-                    cursorShape: Qt.PointingHandCursor
-
-                    onEntered: root.hoverObject(lineHotspot.modelData)
-                    onExited: root.hoverObject(null)
-
-                    onPressed: function(mouse) {
-                        if (mouse.button !== Qt.RightButton)
-                            return
-                        root.interactionActivity()
-                        var point = mapView.fromCoordinate(lineHotspot.coordinate, false)
-                        root.requestObjectMenu(lineHotspot.modelData, point.x + 16, point.y + 12)
-                        mouse.accepted = true
-                    }
-
-                    onClicked: function(mouse) {
-                        if (mouse.button !== Qt.LeftButton)
-                            return
-                        root.interactionActivity()
-                        root.requestSelectObject(lineHotspot.modelData)
-                    }
-                }
-            }
-        }
-    }
-
-    MapItemView {
-        parent: mapView
-        model: root.labels || []
-
-        delegate: MapQuickItem {
-            id: labelItem
-
-            required property var modelData
-
-            coordinate: QtPositioning.coordinate(Number(modelData.lat), Number(modelData.lon))
-            anchorPoint.x: labelText.width / 2
-            anchorPoint.y: labelText.height / 2
-            visible: (root.appState ? root.appState.showLabels : true) && mapView.zoomLevel >= root.labelMinZoom
-
-            sourceItem: Text {
-                id: labelText
-                text: String(labelItem.modelData.name || "")
-                color: "#808995"
-                font.pixelSize: 17
-                opacity: root.appState && root.appState.selectedObject ? 0.42 : 0.80
             }
         }
     }
 
     MapPolyline {
         visible: root.editActive && root.editGeometryType === "LineString" && (root.editPoints || []).length >= 2
-        parent: mapView
+        parent: mapView.map
         path: root.editPathCoordinates()
         line.width: 3
         line.color: "#60a5fa"
-        smooth: true
-        antialiasing: true
+        smooth: !root.interactionInProgress
+        antialiasing: !root.interactionInProgress
     }
 
     MapPolygon {
         visible: root.editActive && root.editGeometryType === "Polygon" && (root.editPoints || []).length >= 3
-        parent: mapView
+        parent: mapView.map
         path: root.editPathCoordinates()
         color: Qt.rgba(0.38, 0.64, 1.0, 0.16)
         border.width: 2
         border.color: "#60a5fa"
-        smooth: true
-        antialiasing: true
+        smooth: !root.interactionInProgress
+        antialiasing: !root.interactionInProgress
     }
 
     MapItemView {
-        parent: mapView
+        parent: mapView.map
         model: root.editPoints || []
         visible: root.editActive
 
@@ -529,8 +974,8 @@ Item {
                     onPositionChanged: function(mouse) {
                         if (!dragging)
                             return
-                        var p = vertexHit.mapToItem(mapView, mouse.x, mouse.y)
-                        var c = mapView.toCoordinate(Qt.point(p.x, p.y), false)
+                        var p = vertexHit.mapToItem(mapView.map, mouse.x, mouse.y)
+                        var c = mapView.map.toCoordinate(Qt.point(p.x, p.y), false)
                         root.editPointMoved(editVertex.index, c.longitude, c.latitude)
                     }
 
@@ -542,7 +987,7 @@ Item {
     }
 
     MapItemView {
-        parent: mapView
+        parent: mapView.map
         model: root.editSegmentMidpoints()
         visible: root.editActive && (root.editGeometryType === "LineString" || root.editGeometryType === "Polygon")
 
@@ -584,122 +1029,6 @@ Item {
         }
     }
 
-    MapItemView {
-        parent: mapView
-        model: root.objects || []
-
-        delegate: MapQuickItem {
-            id: markerItem
-
-            required property var modelData
-
-            readonly property bool selected: root.appState
-                && root.appState.selectedObject
-                && root.appState.selectedObject.id === modelData.id
-            readonly property bool hovered: root.appState
-                && root.appState.hoveredObject
-                && root.appState.hoveredObject.id === modelData.id
-            readonly property bool muted: root.appState && root.appState.selectedObject && !selected
-            readonly property string markerColor: modelData.side === "friendly"
-                ? "#7298f6"
-                : (modelData.side === "foreign" ? "#d7dee7" : "#909ba7")
-            readonly property string markerTopColor: modelData.side === "friendly"
-                ? "#8DB7FF"
-                : (modelData.side === "foreign" ? "#EEF4FB" : "#ACB6C2")
-
-            coordinate: QtPositioning.coordinate(Number(modelData.lat), Number(modelData.lon))
-            anchorPoint.x: markerRoot.width / 2
-            anchorPoint.y: markerRoot.height / 2
-            z: selected ? 20 : 10
-
-            sourceItem: Item {
-                id: markerRoot
-                width: root.markerHitSize
-                height: root.markerHitSize
-                opacity: markerItem.muted ? 0.56 : 1.0
-                scale: markerItem.selected ? 1.15 : markerItem.hovered ? 1.03 : 1.0
-
-                Rectangle {
-                    anchors.centerIn: parent
-                    width: markerItem.selected ? root.markerOuterSizeSelected : root.markerOuterSize
-                    height: width
-                    radius: markerItem.modelData.kind === "lbs" ? 3 : width / 2
-                    border.width: 1
-                    border.color: markerItem.selected ? "#F2F7FC" : Qt.rgba(1, 1, 1, 0.26)
-                    gradient: Gradient {
-                        GradientStop { position: 0.0; color: markerItem.markerTopColor }
-                        GradientStop { position: 1.0; color: markerItem.markerColor }
-                    }
-                }
-
-                Rectangle {
-                    anchors.centerIn: parent
-                    width: markerItem.selected ? root.markerInnerSizeSelected : root.markerInnerSize
-                    height: width
-                    radius: width / 2
-                    color: "#f6f9fc"
-                    opacity: markerItem.modelData.side === "foreign" ? 0.72 : 0.88
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    acceptedButtons: Qt.LeftButton | Qt.RightButton
-                    cursorShape: Qt.PointingHandCursor
-
-                    onEntered: root.hoverObject(markerItem.modelData)
-                    onExited: root.hoverObject(null)
-
-                    onPressed: function(mouse) {
-                        if (mouse.button !== Qt.RightButton)
-                            return
-                        root.interactionActivity()
-                        var point = mapView.fromCoordinate(
-                                        QtPositioning.coordinate(Number(markerItem.modelData.lat),
-                                                                 Number(markerItem.modelData.lon)),
-                                        false)
-                        root.requestObjectMenu(markerItem.modelData, point.x + 16, point.y + 12)
-                        mouse.accepted = true
-                    }
-
-                    onClicked: function(mouse) {
-                        if (mouse.button !== Qt.LeftButton)
-                            return
-                        root.interactionActivity()
-                        root.requestSelectObject(markerItem.modelData)
-                    }
-                }
-            }
-        }
-    }
-
-    DragHandler {
-        id: mapPanHandler
-        target: null
-        acceptedButtons: Qt.LeftButton
-        enabled: !root.editActive
-        property point lastPosition: Qt.point(0, 0)
-
-        onActiveChanged: {
-            if (!active)
-                return
-            lastPosition = centroid.position
-            root.interactionActivity()
-        }
-
-        onCentroidChanged: {
-            if (!active)
-                return
-            var dx = centroid.position.x - lastPosition.x
-            var dy = centroid.position.y - lastPosition.y
-            if (dx === 0 && dy === 0)
-                return
-            mapView.pan(-dx, -dy)
-            lastPosition = centroid.position
-            root.interactionActivity()
-        }
-    }
-
     MouseArea {
         id: mapHoverArea
         anchors.fill: parent
@@ -708,11 +1037,10 @@ Item {
         propagateComposedEvents: true
 
         onPositionChanged: function(mouse) {
-            if (!root.appState)
+            if (!root.appState || root.interactionInProgress)
                 return
-            var coord = mapView.toCoordinate(Qt.point(mouse.x, mouse.y), false)
-            root.appState.cursorLon = coord.longitude
-            root.appState.cursorLat = coord.latitude
+            root.pendingCursorPoint = Qt.point(mouse.x, mouse.y)
+            cursorUpdateTimer.restart()
         }
 
     }
@@ -725,19 +1053,26 @@ Item {
         grabPermissions: PointerHandler.CanTakeOverFromAnything
 
         onTapped: function(point, button) {
-            root.interactionActivity()
+            root.markInteraction()
+            var coord = mapView.map.toCoordinate(point.position, false)
+            var hitObject = root.nearestInteractiveTargetAt(coord)
             if (button === Qt.RightButton) {
-                var coord = mapView.toCoordinate(point.position, false)
-                root.requestMapMenu(coord.longitude, coord.latitude, point.position.x, point.position.y)
+                if (hitObject) {
+                    root.requestObjectMenu(hitObject, point.position.x + 16, point.position.y + 12)
+                } else {
+                    root.requestMapMenu(coord.longitude, coord.latitude, point.position.x, point.position.y)
+                }
                 return
             }
 
             if (root.editActive) {
-                var c = mapView.toCoordinate(point.position, false)
-                root.editPointAppended(c.longitude, c.latitude)
+                root.editPointAppended(coord.longitude, coord.latitude)
                 return
             }
-            root.requestClearSelection()
+            if (hitObject)
+                root.requestSelectObject(hitObject)
+            else
+                root.requestClearSelection()
         }
     }
 }

@@ -16,6 +16,18 @@
         "Qt6_DIR": "C:/Qt/6.5.3/msvc2019_64/lib/cmake/Qt6",
         "QMapLibre_DIR": "C:/Qt/6.5.3/msvc2019_64/lib/cmake/QMapLibre"
       }
+    },
+    {
+      "name": "windows-buildtools-ninja",
+      "displayName": "Windows BuildTools + Ninja (Qt 6.5.3 + QMapLibre)",
+      "description": "Second-device preset. Use from VS 2022 BuildTools Developer Command Prompt (vcvars64).",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "Qt6_DIR": "C:/Qt/6.5.3/msvc2019_64/lib/cmake/Qt6",
+        "QMapLibre_DIR": "C:/Qt/6.5.3/msvc2019_64/lib/cmake/QMapLibre",
+        "CMAKE_MAKE_PROGRAM": "C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe"
+      }
     }
   ],
   "buildPresets": [
@@ -23,6 +35,12 @@
       "name": "windows-qt653-maplibre-debug",
       "displayName": "Build Debug (Qt 6.5.3 + QMapLibre)",
       "configurePreset": "windows-qt653-maplibre",
+      "configuration": "Debug"
+    },
+    {
+      "name": "windows-buildtools-ninja-debug",
+      "displayName": "Build Debug (BuildTools + Ninja)",
+      "configurePreset": "windows-buildtools-ninja",
       "configuration": "Debug"
     }
   ]

@@ -231,7 +231,13 @@ bool MapSnapshotService::pollingBound() const
 
 QString MapSnapshotService::refreshAll()
 {
-    requestWorkerBuild(supportedMapTypes(), kDefaultSnapshotLimit, true);
+    return refreshAllWithLimit(kDefaultSnapshotLimit);
+}
+
+QString MapSnapshotService::refreshAllWithLimit(int limit)
+{
+    const int effectiveLimit = limit > 0 ? limit : kDefaultSnapshotLimit;
+    requestWorkerBuild(supportedMapTypes(), effectiveLimit, true);
     return featureCollectionAll();
 }
 

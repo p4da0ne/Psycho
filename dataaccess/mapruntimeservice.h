@@ -20,6 +20,10 @@ class __EXPORT_DATAACCESS MapRuntimeService : public QObject
     Q_PROPERTY(QString linesSource READ linesSource NOTIFY sourcesUpdated)
     Q_PROPERTY(QString polygonsSource READ polygonsSource NOTIFY sourcesUpdated)
     Q_PROPERTY(QString lastRuntimeUpdateIso READ lastRuntimeUpdateIso NOTIFY sourcesUpdated)
+    Q_PROPERTY(QVariantList mapObjects READ mapObjects NOTIFY sourcesUpdated)
+    Q_PROPERTY(QVariantList mapLines READ mapLines NOTIFY sourcesUpdated)
+    Q_PROPERTY(QVariantList mapPolygons READ mapPolygons NOTIFY sourcesUpdated)
+    Q_PROPERTY(QVariantList locationLabels READ locationLabels NOTIFY sourcesUpdated)
 
 public:
     explicit MapRuntimeService(QObject *parent = nullptr);
@@ -31,8 +35,13 @@ public:
     QString linesSource() const;
     QString polygonsSource() const;
     QString lastRuntimeUpdateIso() const;
+    QVariantList mapObjects() const;
+    QVariantList mapLines() const;
+    QVariantList mapPolygons() const;
+    QVariantList locationLabels() const;
 
     Q_INVOKABLE void refreshNow();
+    Q_INVOKABLE void refreshNowLimited(int limit);
     Q_INVOKABLE QString sourceForGeometry(const QString &geometryFamily) const;
     Q_INVOKABLE QVariantList updateMeta() const;
 
@@ -50,6 +59,10 @@ private:
     void flushPendingTypeRefreshes();
     void updateTypeCaches(int objectType, const QString &typeCollectionJson);
     void rebuildMergedSourcesFromTypeCaches();
+    void rebuildViewModelsFromGeometryArrays(
+        const QJsonArray &points,
+        const QJsonArray &lines,
+        const QJsonArray &polygons);
     static void splitCollectionByGeometry(
         const QString &collectionJson,
         QJsonArray &points,
@@ -62,6 +75,10 @@ private:
     QString m_linesSource;
     QString m_polygonsSource;
     QString m_lastRuntimeUpdateIso;
+    QVariantList m_mapObjects;
+    QVariantList m_mapLines;
+    QVariantList m_mapPolygons;
+    QVariantList m_locationLabels;
     int m_pointsCount = 0;
     int m_linesCount = 0;
     int m_polygonsCount = 0;

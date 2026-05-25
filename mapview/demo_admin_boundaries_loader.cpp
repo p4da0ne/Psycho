@@ -70,15 +70,8 @@ QVariantList DemoAdminBoundariesLoader::loadDefaultPolygons() const
 {
     QVariantList result;
     const QVariantList europe = loadPolygonsFromResource(":/data/europe_admin_demo.geojson");
-    const QVariantList subjects = loadPolygonsFromResource(":/data/russia_subjects_demo.geojson");
-
-    result.reserve(std::min<qsizetype>(europe.size() + subjects.size(), kMaxPolygonsCombined));
+    result.reserve(std::min<qsizetype>(europe.size(), kMaxPolygonsCombined));
     for (const QVariant &item : europe) {
-        if (result.size() >= kMaxPolygonsCombined)
-            break;
-        result.push_back(item);
-    }
-    for (const QVariant &item : subjects) {
         if (result.size() >= kMaxPolygonsCombined)
             break;
         result.push_back(item);

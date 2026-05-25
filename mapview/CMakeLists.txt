@@ -93,6 +93,7 @@ set(mapview_resource_files
     "Resources/no_photo1.png"
     "Resources/print.png"
     "Resources/print_part.png"
+    "Resources/russia_disputed_regions_ru_view_2026.geojson"
     "Resources/search.png"
     "Resources/up_bright.png"
     "MyMapView.qml"

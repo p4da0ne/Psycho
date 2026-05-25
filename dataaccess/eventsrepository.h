@@ -20,6 +20,7 @@ public:
     static EventsRepository* instance();
 
     Q_INVOKABLE QVariantList listEvents(const QString &nameFilter = QString(), int limit = 300, int offset = 0);
+    Q_INVOKABLE QVariantList eventTypeCatalog();
     Q_INVOKABLE QVariantMap eventDetails(int eventId);
 
 private:

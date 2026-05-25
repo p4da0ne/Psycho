@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 import QtQuick 2.15
 import QtQuick.Window 2.15
+import Qt5Compat.GraphicalEffects
 import Saturn.Backend 1.0
 import "qrc:/components"
 
@@ -26,6 +27,7 @@ Window {
     property bool connectedBootstrapScheduled: false
     property bool connectedBootstrapRunning: false
     property bool connectedBootstrapRerunRequested: false
+    property bool connectedBootstrapMapFullScheduled: false
 
     QtObject {
         id: appState
@@ -41,7 +43,7 @@ Window {
         property real viewWest: centerLon
         property real mapMetersPerPixel: 0
         property real mapScaleDenominator: 0
-        property string mapStyleUrl: "http://localhost:8080/styles/maptiler-basic/style.json"
+        property string mapStyleUrl: "https://demotiles.maplibre.org/style.json"
         property string mapMode: "point"
         property string activeTool: "navigate"
         property string searchText: ""
@@ -53,13 +55,20 @@ Window {
         property bool showLabels: true
         property bool controlsVisible: true
         property bool inspectorVisible: true
-        property bool navigationVisible: true
+        property bool navigationVisible: false
         property int activePanel: 0
         property int activeInspectorTab: 0
         property string selectedGroup: ""
         property string selectedStructurePath: ""
         property string eventStatusFilter: "all"
         property string eventTypeFilter: "all"
+        property int eventTypeFilterId: 0
+        property var eventTypeCatalog: []
+        property int quickFilterObjectType: 0
+        property string quickFilterOwnership: "all"
+        property string quickFilterRegionScope: "all"
+        property string quickFilterEventFrom: ""
+        property string quickFilterEventTo: ""
         property bool geometryEditActive: false
         property string geometryEditRole: ""
         property string geometryEditType: ""
@@ -144,7 +153,7 @@ Window {
         property var panels: ({
             "reference-panel": {
                 "id": "reference-panel",
-                "visible": true,
+                "visible": false,
                 "collapsed": false,
                 "detached": false,
                 "x": 16,
@@ -157,7 +166,7 @@ Window {
                 "visible": true,
                 "collapsed": false,
                 "detached": false,
-                "x": root.width - 388,
+                "x": 16,
                 "y": 120,
                 "width": 372,
                 "height": 620
@@ -260,6 +269,67 @@ Window {
     QtObject {
         id: filterAgent
 
+        function parseFilterDateMs(rawValue, endOfDay) {
+            var text = String(rawValue || "").trim()
+            if (text === "")
+                return NaN
+            if (text.length === 10 && text.indexOf("T") === -1)
+                text += endOfDay ? "T23:59:59" : "T00:00:00"
+            var ms = (new Date(text)).getTime()
+            return isNaN(ms) ? NaN : ms
+        }
+
+        function locationBucket(latValue, lonValue) {
+            var lat = Number(latValue)
+            var lon = Number(lonValue)
+            if (!isFinite(lat) || !isFinite(lon))
+                return "unknown"
+            if (lat < 41 || lat > 82)
+                return "foreign"
+            var lon360 = lon
+            if (lon360 < 0)
+                lon360 += 360
+            if (lon360 >= 19 && lon360 <= 191)
+                return "russia"
+            return "foreign"
+        }
+
+        function objectMatchesType(objectData) {
+            var selectedType = Number(appState.quickFilterObjectType || 0)
+            if (selectedType <= 0)
+                return true
+            if (selectedType === 8)
+                return false
+            return Number(objectData.objectType || 0) === selectedType
+        }
+
+        function objectMatchesOwnership(objectData) {
+            if (appState.quickFilterOwnership === "friendly")
+                return String(objectData.side || "") === "friendly"
+            if (appState.quickFilterOwnership === "enemy")
+                return String(objectData.side || "") === "foreign"
+            return true
+        }
+
+        function objectMatchesRegion(objectData) {
+            var regionScope = String(appState.quickFilterRegionScope || "all")
+            if (regionScope === "all")
+                return true
+            var dbScope = String(objectData.countryScope || "").toLowerCase()
+            if (dbScope === "russia")
+                return regionScope === "russia"
+            if (dbScope === "foreign")
+                return regionScope === "foreign"
+            var bucket = locationBucket(objectData.lat, objectData.lon)
+            if (bucket === "unknown")
+                return true
+            if (regionScope === "russia")
+                return bucket === "russia"
+            if (regionScope === "foreign")
+                return bucket === "foreign"
+            return true
+        }
+
         function objectVisible(objectData) {
             if (!objectData)
                 return false
@@ -280,6 +350,12 @@ Window {
             if (objectData.side === "foreign" && !appState.showForeign)
                 return false
             if (objectData.side === "infrastructure" && !appState.showBaseStations)
+                return false
+            if (!objectMatchesType(objectData))
+                return false
+            if (!objectMatchesOwnership(objectData))
+                return false
+            if (!objectMatchesRegion(objectData))
                 return false
             return true
         }
@@ -309,8 +385,14 @@ Window {
         }
 
         function visibleEvents(items) {
+            var selectedType = Number(appState.quickFilterObjectType || 0)
+            if (selectedType > 0 && selectedType !== 8)
+                return []
             var source = items || []
             var result = []
+            var fromMs = parseFilterDateMs(appState.quickFilterEventFrom, false)
+            var toMs = parseFilterDateMs(appState.quickFilterEventTo, true)
+            var regionScope = String(appState.quickFilterRegionScope || "all")
             for (var i = 0; i < source.length; ++i) {
                 var row = source[i]
                 if (appState.searchText !== "") {
@@ -321,8 +403,25 @@ Window {
                 }
                 if (appState.eventStatusFilter !== "all" && String(row.status || "") !== appState.eventStatusFilter)
                     continue
-                if (appState.eventTypeFilter !== "all" && String(row.type || "") !== appState.eventTypeFilter)
+                if (Number(appState.eventTypeFilterId || 0) > 0
+                        && Number(row.idTypeEvent || 0) !== Number(appState.eventTypeFilterId || 0))
                     continue
+                if (!isNaN(fromMs) || !isNaN(toMs)) {
+                    var rowStartMs = (new Date(String(row.startTimestamp || ""))).getTime()
+                    if (!isNaN(fromMs) && !isNaN(rowStartMs) && rowStartMs < fromMs)
+                        continue
+                    if (!isNaN(toMs) && !isNaN(rowStartMs) && rowStartMs > toMs)
+                        continue
+                }
+                if (regionScope !== "all") {
+                    var eventBucket = locationBucket(row.lat, row.lon)
+                    if (eventBucket !== "unknown") {
+                        if (regionScope === "russia" && eventBucket !== "russia")
+                            continue
+                        if (regionScope === "foreign" && eventBucket !== "foreign")
+                            continue
+                    }
+                }
                 result.push(row)
             }
             return result
@@ -395,7 +494,9 @@ Window {
             var objects = details && details.objects ? details.objects : []
             for (var i = 0; i < objects.length; ++i) {
                 var obj = objects[i]
-                var objectType = objectTypeByTableName(obj.tableName)
+                var objectType = Number(obj.objectType || 0)
+                if (objectType <= 0)
+                    objectType = objectTypeByTableName(obj)
                 if (objectType > 0)
                     linked.push(objectType + "-" + Number(obj.idObject || 0))
             }
@@ -404,11 +505,16 @@ Window {
                 "name": eventData.name,
                 "type": eventData.type,
                 "status": eventData.status,
+                "idTypeEvent": Number(eventData.idTypeEvent || (details ? details.idTypeEvent : 0) || 0),
+                "idEventStatus": Number(eventData.idEventStatus || (details ? details.idEventStatus : 0) || 0),
+                "idSign": Number(eventData.idSign || (details ? details.idSign : 0) || 0),
+                "signKey": String(eventData.signKey || (details ? details.signKey : "") || ""),
                 "startTimestamp": eventData.startTimestamp,
                 "endTimestamp": eventData.endTimestamp,
                 "updatedTimestamp": eventData.updatedTimestamp,
                 "description": details && details.description ? String(details.description) : (eventData.description || ""),
-                "objectIds": linked
+                "objectIds": linked,
+                "details": details || ({})
             }
             appState.selectionType = eventData ? "event" : "none"
             appState.activeInspectorTab = 1
@@ -471,6 +577,13 @@ Window {
                 appState.showForeign = !!enabled
             else if (filterKey === "infrastructure")
                 appState.showBaseStations = !!enabled
+        }
+        function setQuickFilterObjectType(objectTypeValue) { appState.quickFilterObjectType = Number(objectTypeValue || 0) }
+        function setQuickFilterOwnership(value) { appState.quickFilterOwnership = String(value || "all") }
+        function setQuickFilterRegionScope(value) { appState.quickFilterRegionScope = String(value || "all") }
+        function setQuickFilterEventRange(fromValue, toValue) {
+            appState.quickFilterEventFrom = String(fromValue || "")
+            appState.quickFilterEventTo = String(toValue || "")
         }
         function setSelectedGroup(groupKey) { appState.selectedGroup = groupKey || "" }
         function clearSelectedGroup() { appState.selectedGroup = "" }
@@ -803,10 +916,9 @@ Window {
     }
 
     property var stateManager: appState
-    property bool leftDockedVisible: root.referencePanelState
-        && root.referencePanelState.visible === true
-        && root.referencePanelState.detached !== true
-    property bool rightDockedVisible: root.rightSidebarState
+    property bool leftDockedVisible: false
+    property bool rightDockedVisible: false
+    property bool inspectorDockedLeftVisible: root.rightSidebarState
         && root.rightSidebarState.visible === true
         && root.rightSidebarState.detached !== true
     property var referencePanelState: {
@@ -922,14 +1034,33 @@ Window {
         return "monitoring"
     }
 
-    function objectTypeByTableName(tableName) {
+    function objectTypeByTableName(sourceObject) {
+        var tableName = sourceObject
+        var mpoLsId = 0
+        var mpoSmiId = 0
+        var mpoGroupsId = 0
+
+        if (typeof sourceObject === "object" && sourceObject !== null) {
+            tableName = sourceObject.tableName
+            mpoLsId = Number(sourceObject.idLs || 0)
+            mpoSmiId = Number(sourceObject.idSmi || 0)
+            mpoGroupsId = Number(sourceObject.idGroups || 0)
+        }
+
         var key = String(tableName || "").toLowerCase()
         if (key === "ls")
             return 1
         if (key === "special_conditions")
             return 2
-        if (key === "mpo_pso")
+        if (key === "mpo_pso") {
+            if (mpoGroupsId > 0)
+                return 5
+            if (mpoLsId > 0)
+                return 4
+            if (mpoSmiId > 0)
+                return 3
             return 3
+        }
         if (key === "region")
             return 6
         if (key === "persones")
@@ -1241,409 +1372,35 @@ Window {
         appState.statusMessage = "Редактирование геометрии отменено"
     }
 
-    function buildLineEntriesFromFeature(feature) {
-        var entries = []
-        if (!feature || !feature.geometry)
-            return entries
-
-        var geometry = feature.geometry
-        var props = feature.properties || {}
-        var objectType = Number(props.objectType || 0)
-        var objectId = Number(props.objectId || 0)
-        var base = {
-            "id": objectType + "-" + objectId,
-            "objectType": objectType,
-            "objectId": objectId,
-            "name": props.title || ("Object " + objectId),
-            "side": sideByType(objectType),
-            "kind": kindByType(objectType),
-            "role": String(props.geometryRole || ""),
-            "calcSource": String(props.calcSource || ""),
-            "legacyScoreRaw": Number(props.legacyScoreRaw !== undefined ? props.legacyScoreRaw : 0.5),
-            "legacyScoreNormalized": Number(props.legacyScoreNormalized !== undefined ? props.legacyScoreNormalized : 0.5),
-            "heatValue": Number(props.heatValue !== undefined ? props.heatValue : 0.5),
-            "heatClass": Number(props.heatClass !== undefined ? props.heatClass : 0)
-        }
-
-        if (geometry.type === "LineString") {
-            var linePath = []
-            var coords = geometry.coordinates || []
-            for (var i = 0; i < coords.length; ++i) {
-                var point = coordinatePairToPoint(coords[i])
-                if (point)
-                    linePath.push(point)
-            }
-            if (linePath.length >= 2)
-                entries.push(Object.assign({ "path": linePath }, base))
-            return entries
-        }
-
-        if (geometry.type === "MultiLineString") {
-            var lineList = geometry.coordinates || []
-            for (var l = 0; l < lineList.length; ++l) {
-                var segment = lineList[l] || []
-                var segmentPath = []
-                for (var p = 0; p < segment.length; ++p) {
-                    var segmentPoint = coordinatePairToPoint(segment[p])
-                    if (segmentPoint)
-                        segmentPath.push(segmentPoint)
-                }
-                if (segmentPath.length >= 2) {
-                    entries.push(Object.assign({
-                        "id": base.id + "-l" + l,
-                        "path": segmentPath
-                    }, base))
-                }
-            }
-        }
-        return entries
-    }
-
-    function buildPolygonEntriesFromFeature(feature) {
-        var entries = []
-        if (!feature || !feature.geometry)
-            return entries
-
-        var geometry = feature.geometry
-        var props = feature.properties || {}
-        var objectType = Number(props.objectType || 0)
-        var objectId = Number(props.objectId || 0)
-        var base = {
-            "id": objectType + "-" + objectId,
-            "objectType": objectType,
-            "objectId": objectId,
-            "name": props.title || ("Object " + objectId),
-            "side": sideByType(objectType),
-            "kind": kindByType(objectType),
-            "role": String(props.geometryRole || ""),
-            "calcSource": String(props.calcSource || ""),
-            "legacyScoreRaw": Number(props.legacyScoreRaw !== undefined ? props.legacyScoreRaw : 0.5),
-            "legacyScoreNormalized": Number(props.legacyScoreNormalized !== undefined ? props.legacyScoreNormalized : 0.5),
-            "heatValue": Number(props.heatValue !== undefined ? props.heatValue : 0.5),
-            "heatClass": Number(props.heatClass !== undefined ? props.heatClass : 0)
-        }
-
-        function ringToPath(ring) {
-            var path = []
-            for (var i = 0; i < ring.length; ++i) {
-                var point = coordinatePairToPoint(ring[i])
-                if (point)
-                    path.push(point)
-            }
-            return path
-        }
-
-        if (geometry.type === "Polygon") {
-            var rings = geometry.coordinates || []
-            if (rings.length > 0) {
-                var outer = ringToPath(rings[0])
-                if (outer.length >= 3)
-                    entries.push(Object.assign({ "path": outer }, base))
-            }
-            return entries
-        }
-
-        if (geometry.type === "MultiPolygon") {
-            var polygons = geometry.coordinates || []
-            for (var g = 0; g < polygons.length; ++g) {
-                var polyRings = polygons[g] || []
-                if (polyRings.length === 0)
-                    continue
-                var polyOuter = ringToPath(polyRings[0])
-                if (polyOuter.length >= 3) {
-                    entries.push(Object.assign({
-                        "id": base.id + "-p" + g,
-                        "path": polyOuter
-                    }, base))
-                }
-            }
-        }
-        return entries
-    }
-
-    function refreshReferenceTreeFromDb() {
+    function refreshReferenceTreeFromDb(objectsLimitArg, personnelLimitArg, eventsLimitArg) {
         if (!Database.connected)
             return
-        var objectsLimit = 1500
-        var personnelLimit = 1500
-        var eventsLimit = 1500
-        var objectTypeNodes = []
-        var mapTypes = [1, 3, 4, 5, 6, 9, 10]
-        for (var i = 0; i < mapTypes.length; ++i) {
-            var mapType = mapTypes[i]
-            var mapRows = MapObjectsRepo.listObjectsByType(mapType, objectsLimit)
-            var mapLeaves = []
-            for (var j = 0; j < mapRows.length; ++j) {
-                var mapRow = mapRows[j]
-                mapLeaves.push({
-                    "id": "obj_" + mapType + "_" + mapRow.id,
-                    "label": mapRow.name ? String(mapRow.name) : (typeLabel(mapType) + " #" + mapRow.id),
-                    "subtitle": mapRow.subtitle ? String(mapRow.subtitle) : "",
-                    "nodeKind": "object",
-                    "objectType": mapType,
-                    "objectId": Number(mapRow.id),
-                    "children": []
-                })
-            }
-            objectTypeNodes.push({
-                "id": "map_type_" + mapType,
-                "label": typeLabel(mapType) + " [" + mapLeaves.length + "]",
-                "children": mapLeaves
-            })
-        }
-
-        var personnelRows = PersonnelRepo.listPersonnel("", personnelLimit, 0)
-        var personnelGroups = ({})
-        for (var p = 0; p < personnelRows.length; ++p) {
-            var person = personnelRows[p]
-            var personType = person.typeName ? String(person.typeName) : "Без типа"
-            if (!personnelGroups[personType])
-                personnelGroups[personType] = []
-            personnelGroups[personType].push({
-                "id": "pers_" + Number(person.id),
-                "label": person.name ? String(person.name) : ("Персоналия #" + person.id),
-                "subtitle": person.rank ? String(person.rank) : "",
-                "nodeKind": "object",
-                "objectType": 7,
-                "objectId": Number(person.id),
-                "children": []
-            })
-        }
-        var personnelNodes = []
-        var personnelTypes = Object.keys(personnelGroups)
-        personnelTypes.sort()
-        for (var pt = 0; pt < personnelTypes.length; ++pt) {
-            var personnelTypeName = personnelTypes[pt]
-            var personnelLeaves = personnelGroups[personnelTypeName]
-            personnelNodes.push({
-                "id": "pers_type_" + pt,
-                "label": personnelTypeName + " [" + personnelLeaves.length + "]",
-                "children": personnelLeaves
-            })
-        }
-
-        var specialRows = MapObjectsRepo.listObjectsByType(2, objectsLimit)
-        var specialGroups = ({})
-        for (var s = 0; s < specialRows.length; ++s) {
-            var sc = specialRows[s]
-            var scType = sc.subtitle ? String(sc.subtitle) : "Без типа"
-            if (!specialGroups[scType])
-                specialGroups[scType] = []
-            specialGroups[scType].push({
-                "id": "sc_" + Number(sc.id),
-                "label": sc.name ? String(sc.name) : ("Особое условие #" + sc.id),
-                "subtitle": sc.subtitle ? String(sc.subtitle) : "",
-                "nodeKind": "object",
-                "objectType": 2,
-                "objectId": Number(sc.id),
-                "children": []
-            })
-        }
-        var specialNodes = []
-        var specialTypes = Object.keys(specialGroups)
-        specialTypes.sort()
-        for (var st = 0; st < specialTypes.length; ++st) {
-            var specialTypeName = specialTypes[st]
-            var specialLeaves = specialGroups[specialTypeName]
-            specialNodes.push({
-                "id": "sc_type_" + st,
-                "label": specialTypeName + " [" + specialLeaves.length + "]",
-                "children": specialLeaves
-            })
-        }
-
-        var eventRows = EventsRepo.listEvents("", eventsLimit, 0)
-        var eventStatusGroups = ({})
-        for (var e = 0; e < eventRows.length; ++e) {
-            var eventRow = eventRows[e]
-            var statusKey = eventStatusValue(eventRow.statusName, eventRow.start, eventRow.end)
-            if (!eventStatusGroups[statusKey])
-                eventStatusGroups[statusKey] = ({})
-            var typeKey = eventTypeValue(eventRow.typeName)
-            if (!eventStatusGroups[statusKey][typeKey])
-                eventStatusGroups[statusKey][typeKey] = []
-            eventStatusGroups[statusKey][typeKey].push({
-                "id": "event_" + Number(eventRow.id),
-                "label": eventRow.name ? String(eventRow.name) : ("Событие #" + eventRow.id),
-                "nodeKind": "event",
-                "eventId": Number(eventRow.id),
-                "eventType": typeKey,
-                "eventStatus": statusKey,
-                "eventStart": eventRow.start ? String(eventRow.start) : "",
-                "eventEnd": eventRow.end ? String(eventRow.end) : "",
-                "children": []
-            })
-        }
-        var eventNodes = []
-        var statusOrder = ["actual", "planned", "past", "cancelled"]
-        for (var so = 0; so < statusOrder.length; ++so) {
-            var statusName = statusOrder[so]
-            var typeGroups = eventStatusGroups[statusName]
-            if (!typeGroups)
-                continue
-            var typeNodes = []
-            var typeKeys = Object.keys(typeGroups)
-            typeKeys.sort()
-            for (var tk = 0; tk < typeKeys.length; ++tk) {
-                var typeName = typeKeys[tk]
-                var eventLeaves = typeGroups[typeName]
-                typeNodes.push({
-                    "id": "event_type_" + statusName + "_" + typeName,
-                    "label": typeName + " [" + eventLeaves.length + "]",
-                    "children": eventLeaves
-                })
-            }
-            eventNodes.push({
-                "id": "event_status_" + statusName,
-                "label": eventStatusLabel(statusName) + " [" + typeNodes.length + "]",
-                "children": typeNodes
-            })
-        }
-
-        var roots = [{
-            "id": "db_entities",
-            "label": "Сущности БД",
-            "children": [
-                { "id": "db_map_objects", "label": "Объекты", "children": objectTypeNodes },
-                { "id": "db_personnel", "label": "Персоналии", "children": personnelNodes },
-                { "id": "db_special_conditions", "label": "Особые условия", "children": specialNodes },
-                { "id": "db_events", "label": "События", "children": eventNodes }
-            ]
-        }]
-        referenceTreeData = roots
+        var objectsLimit = objectsLimitArg !== undefined ? Number(objectsLimitArg) : 1500
+        var personnelLimit = personnelLimitArg !== undefined ? Number(personnelLimitArg) : 1500
+        var eventsLimit = eventsLimitArg !== undefined ? Number(eventsLimitArg) : 1500
+        var roots = UiDataRepo.buildReferenceTree(objectsLimit, personnelLimit, eventsLimit)
+        referenceTreeData = roots || []
         if (structureAgent)
-            structureAgent.referenceTree = roots
+            structureAgent.referenceTree = referenceTreeData
     }
-
-    function refreshEventsFromDb() {
+    function refreshEventsFromDb(limitArg) {
         if (!Database.connected)
             return
-        var list = EventsRepo.listEvents("", 500, 0)
-        var mapped = []
-        for (var i = 0; i < list.length; ++i) {
-            var row = list[i]
-            var eventId = Number(row.id || 0)
-            mapped.push({
-                "id": eventId,
-                "name": row.name || ("Событие " + eventId),
-                "type": eventTypeValue(row.typeName),
-                "status": eventStatusValue(row.statusName, row.start, row.end),
-                "startTimestamp": row.start ? String(row.start) : "",
-                "endTimestamp": row.end ? String(row.end) : "",
-                "updatedTimestamp": "",
-                "description": "",
-                "objectIds": []
-            })
-        }
-        mapEvents = mapped
+        var limit = limitArg !== undefined ? Number(limitArg) : 500
+        mapEvents = UiDataRepo.listMapEvents(limit) || []
     }
-
-    function refreshObjectsFromRuntime() {
-        var pointsJson = MapRuntime.pointsSource
-        var linesJson = MapRuntime.linesSource
-        var polygonsJson = MapRuntime.polygonsSource
-        if (!pointsJson || pointsJson.length === 0) {
-            mapObjects = []
-            mapLines = []
-            mapPolygons = []
-            locationLabels = []
+    function refreshEventTypeCatalogFromDb() {
+        if (!Database.connected)
             return
-        }
-
-        var parsed = JSON.parse(pointsJson)
-        var features = parsed.features || []
-        var objects = []
-        var objectByKey = ({})
-        var lines = []
-        var polygons = []
-        var labels = []
-
-        for (var i = 0; i < features.length; ++i) {
-            var feature = features[i]
-            if (!feature || !feature.geometry || feature.geometry.type !== "Point")
-                continue
-
-            var coords = feature.geometry.coordinates || []
-            if (coords.length < 2)
-                continue
-
-            var props = feature.properties || {}
-            var objectType = Number(props.objectType || 0)
-            var objectId = Number(props.objectId || 0)
-            if (objectType <= 0 || objectId <= 0)
-                continue
-            var legacyScore = Number(props.legacyScoreNormalized !== undefined ? props.legacyScoreNormalized : 0.5)
-            var heatValue = Number(props.heatValue !== undefined ? props.heatValue : (1.0 - legacyScore))
-            var geometryRole = String(props.geometryRole || "").toLowerCase()
-            var key = objectType + "-" + objectId
-            var row = {
-                "id": key,
-                "objectType": objectType,
-                "objectId": objectId,
-                "name": props.title || ("Object " + objectId),
-                "side": sideByType(objectType),
-                "kind": kindByType(objectType),
-                "role": geometryRole,
-                "lat": Number(coords[1]),
-                "lon": Number(coords[0]),
-                "mpps": Math.round(legacyScore * 100),
-                "speed": props.speed !== undefined ? Number(props.speed) : undefined,
-                "course": props.course !== undefined ? Number(props.course) : undefined,
-                "source": props.source !== undefined ? String(props.source) : "",
-                "notes": props.subtitle || "",
-                "structurePath": structurePathByType(objectType),
-                "calcSource": String(props.calcSource || ""),
-                "legacyScoreRaw": Number(props.legacyScoreRaw !== undefined ? props.legacyScoreRaw : legacyScore),
-                "legacyScoreNormalized": legacyScore,
-                "heatValue": heatValue,
-                "heatClass": Number(props.heatClass !== undefined ? props.heatClass : 0)
-            }
-            var existing = objectByKey[key]
-            if (!existing) {
-                objectByKey[key] = row
-            } else {
-                var existingIsPosition = existing.role === "position"
-                var currentIsPosition = geometryRole === "position"
-                if (currentIsPosition && !existingIsPosition)
-                    objectByKey[key] = row
-            }
-        }
-
-        var objectKeys = Object.keys(objectByKey)
-        objectKeys.sort()
-        for (var ok = 0; ok < objectKeys.length; ++ok) {
-            var objectRow = objectByKey[objectKeys[ok]]
-            objects.push(objectRow)
-            labels.push({ "name": objectRow.name, "lat": objectRow.lat, "lon": objectRow.lon })
-        }
-
-        mapObjects = objects
-        if (linesJson && linesJson.length > 0) {
-            var linesCollection = JSON.parse(linesJson)
-            var lineFeatures = linesCollection.features || []
-            for (var l = 0; l < lineFeatures.length; ++l) {
-                var lineEntries = buildLineEntriesFromFeature(lineFeatures[l])
-                for (var le = 0; le < lineEntries.length; ++le)
-                    lines.push(lineEntries[le])
-            }
-        }
-
-        if (polygonsJson && polygonsJson.length > 0) {
-            var polygonsCollection = JSON.parse(polygonsJson)
-            var polygonFeatures = polygonsCollection.features || []
-            for (var p = 0; p < polygonFeatures.length; ++p) {
-                var polygonEntries = buildPolygonEntriesFromFeature(polygonFeatures[p])
-                for (var pe = 0; pe < polygonEntries.length; ++pe)
-                    polygons.push(polygonEntries[pe])
-            }
-        }
-
-        mapLines = lines
-        mapPolygons = polygons
-        locationLabels = labels
-        appState.statusMessage = "Объектов: " + objects.length + ", линий: " + lines.length + ", полигонов: " + polygons.length
+        appState.eventTypeCatalog = EventsRepo.eventTypeCatalog() || []
     }
-
+    function refreshObjectsFromRuntime() {
+        mapObjects = MapRuntime.mapObjects || []
+        mapLines = MapRuntime.mapLines || []
+        mapPolygons = MapRuntime.mapPolygons || []
+        locationLabels = MapRuntime.locationLabels || []
+        appState.statusMessage = "Объектов: " + mapObjects.length + ", линий: " + mapLines.length + ", полигонов: " + mapPolygons.length
+    }
     function syncLayoutBounds() {
         if (!root.panelManager)
             return
@@ -1673,18 +1430,21 @@ Window {
         if (!Database.connected)
             return
         connectedBootstrapRunning = true
-        appState.statusMessage = "Загрузка данных из БД..."
-        MapRuntime.refreshNow()
+        appState.statusMessage = "Быстрая загрузка карты..."
+        MapRuntime.refreshNowLimited(260)
+        connectedBootstrapMapFullScheduled = true
+        dbBootstrapMapFullTimer.restart()
         dbBootstrapMetaTimer.restart()
     }
-
     function runConnectedBootstrapMetaPhase() {
         if (!Database.connected) {
             connectedBootstrapRunning = false
             return
         }
-        refreshEventsFromDb()
-        refreshReferenceTreeFromDb()
+        refreshEventsFromDb(160)
+        refreshEventTypeCatalogFromDb()
+        if (root.stateManager && root.stateManager.navigationVisible)
+            refreshReferenceTreeFromDb(280, 280, 280)
         connectedBootstrapRunning = false
         if (connectedBootstrapRerunRequested) {
             connectedBootstrapRerunRequested = false
@@ -1693,7 +1453,12 @@ Window {
         }
         pendingDbBootstrap = false
     }
-
+    function runConnectedBootstrapMapFullPhase() {
+        connectedBootstrapMapFullScheduled = false
+        if (!Database.connected)
+            return
+        MapRuntime.refreshNow()
+    }
     onPanelChanged: {
         if (panel === "none" && pendingDbBootstrap && Database.connected)
             scheduleConnectedBootstrap()
@@ -1709,6 +1474,7 @@ Window {
                 scheduleConnectedBootstrap()
             else
                 pendingDbBootstrap = true
+            refreshEventTypeCatalogFromDb()
         }
         refreshObjectsFromRuntime()
         syncLayoutBounds()
@@ -1734,6 +1500,7 @@ Window {
             if (!Database.connected)
                 return
             refreshEventsFromDb()
+            refreshEventTypeCatalogFromDb()
             if (root.stateManager && root.stateManager.navigationVisible)
                 refreshReferenceTreeFromDb()
         }
@@ -1750,6 +1517,7 @@ Window {
                 scheduleConnectedBootstrap()
             else
                 pendingDbBootstrap = true
+            refreshEventTypeCatalogFromDb()
         }
     }
 
@@ -1760,6 +1528,13 @@ Window {
         onTriggered: runConnectedBootstrapMapPhase()
     }
 
+
+    Timer {
+        id: dbBootstrapMapFullTimer
+        interval: 900
+        repeat: false
+        onTriggered: runConnectedBootstrapMapFullPhase()
+    }
     Timer {
         id: dbBootstrapMetaTimer
         interval: 0
@@ -1799,16 +1574,46 @@ Window {
         id: controlsReturnTimer
         interval: 1100
         repeat: false
-        onTriggered: root.agentHub.uiStateAgent.setControlsVisible(true)
+        onTriggered: {
+            if (root.agentHub && root.agentHub.uiStateAgent)
+                root.agentHub.uiStateAgent.setControlsVisible(true)
+        }
+    }
+
+    Item {
+        id: preAuthBackdrop
+        anchors.fill: parent
+        z: 2
+        visible: !Auth.loggedIn
+
+        Rectangle {
+            anchors.fill: parent
+            color: "#040A15"
+        }
+
+        RadialGradient {
+            anchors.fill: parent
+            horizontalRadius: width * 0.56
+            verticalRadius: height * 0.56
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: "#24497A" }
+                GradientStop { position: 0.48; color: "#132746" }
+                GradientStop { position: 1.0; color: "#050B17" }
+            }
+        }
     }
 
     Item {
         id: dragSurface
         anchors.fill: parent
+        z: 10
+        visible: true
+        enabled: true
 
         Toolbar {
             id: topBar
             z: 40
+            visible: Auth.loggedIn
             width: Math.min(parent.width - 32, 680)
             anchors.top: parent.top
             anchors.topMargin: 18
@@ -1819,77 +1624,13 @@ Window {
             backdropSource: mapCanvas.sceneContent
         }
 
-        Item {
-            id: inspectorReopenHandle
-            z: 55
-            visible: root.stateManager ? !root.stateManager.inspectorVisible : false
-            width: 36
-            height: 138
-            anchors.right: parent.right
-            anchors.rightMargin: 8
-            anchors.verticalCenter: parent.verticalCenter
-
-            GlassPanel {
-                anchors.fill: parent
-                radius: 18
-                padding: 0
-                backdropSource: mapCanvas.sceneContent
-                surfaceColor: "#141c24"
-                surfaceOpacity: reopenMouseArea.pressed ? 0.68 : reopenMouseArea.containsMouse ? 0.62 : 0.56
-                shadowOpacity: 0.08
-                highlightOpacity: 0.05
-                edgeOpacity: 0.07
-
-                Text {
-                    anchors.centerIn: parent
-                    rotation: -90
-                    text: "Инспектор"
-                    color: Qt.rgba(1, 1, 1, 0.90)
-                    font.pixelSize: 10
-                    font.weight: Font.Medium
-                }
-            }
-
-            MouseArea {
-                id: reopenMouseArea
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: {
-                    if (root.agentHub && root.agentHub.uiStateAgent)
-                        root.agentHub.uiStateAgent.setInspectorVisible(true)
-                }
-            }
-        }
-
-        ReferenceSidebar {
-            id: leftSidebar
-            z: 30
-            x: root.referencePanelState && root.referencePanelState.detached
-                ? (root.referencePanelState.x || 16)
-                : 16
-            y: root.referencePanelState && root.referencePanelState.detached
-                ? (root.referencePanelState.y || (topBar.y + topBar.height + 14))
-                : (topBar.y + topBar.height + 14)
-            height: root.referencePanelState && root.referencePanelState.detached
-                ? Math.max(72, root.referencePanelState.height || 300)
-                : (statusBar.visible ? (statusBar.y - 12 - y) : (parent.height - 16 - y))
-            panelManager: root.panelManager
-            panelState: root.referencePanelState
-            appState: root.stateManager
-            agentHub: root.agentHub
-            objects: root.mapObjects
-            structureAgent: root.structureAgent
-            backdropSource: mapCanvas.sceneContent
-            dragSurface: dragSurface
-        }
-
         RightSidebar {
             id: rightSidebar
             z: 30
+            visible: Auth.loggedIn && width > 0.5
             x: root.rightSidebarState && root.rightSidebarState.detached
-                ? (root.rightSidebarState.x || (parent.width - width - 16))
-                : (parent.width - width - 16)
+                ? (root.rightSidebarState.x || 16)
+                : 16
             y: root.rightSidebarState && root.rightSidebarState.detached
                 ? (root.rightSidebarState.y || (topBar.y + topBar.height + 14))
                 : (topBar.y + topBar.height + 14)
@@ -1909,10 +1650,11 @@ Window {
         BottomStatusBar {
             id: statusBar
             z: 35
+            visible: Auth.loggedIn
             anchors.left: parent.left
-            anchors.leftMargin: root.leftDockedVisible ? leftSidebar.width + 28 : 16
+            anchors.leftMargin: root.inspectorDockedLeftVisible ? rightSidebar.width + 28 : 16
             anchors.right: parent.right
-            anchors.rightMargin: root.rightDockedVisible ? rightSidebar.width + 28 : 16
+            anchors.rightMargin: 16
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 8
             appState: root.stateManager
@@ -1923,10 +1665,11 @@ Window {
         MapCanvas {
             id: mapCanvas
             z: 10
+            visible: Auth.loggedIn
             anchors.left: parent.left
-            anchors.leftMargin: root.leftDockedVisible ? leftSidebar.width + 28 : 16
+            anchors.leftMargin: root.inspectorDockedLeftVisible ? rightSidebar.width + 28 : 16
             anchors.right: parent.right
-            anchors.rightMargin: root.rightDockedVisible ? rightSidebar.width + 28 : 16
+            anchors.rightMargin: 16
             anchors.top: topBar.bottom
             anchors.topMargin: 14
             anchors.bottom: statusBar.visible ? statusBar.top : parent.bottom
@@ -1938,7 +1681,8 @@ Window {
             polygons: root.mapPolygons
             labels: root.locationLabels
             onInteractionActivity: {
-                root.agentHub.uiStateAgent.setControlsVisible(false)
+                if (root.agentHub && root.agentHub.uiStateAgent)
+                    root.agentHub.uiStateAgent.setControlsVisible(false)
                 controlsReturnTimer.restart()
             }
         }
@@ -1949,10 +1693,7 @@ Window {
             width: 272
             height: 170
             visible: !Auth.loggedIn
-            anchors.left: parent.left
-            anchors.leftMargin: 18
-            anchors.top: parent.top
-            anchors.topMargin: 18
+            anchors.centerIn: parent
             backdropSource: mapCanvas.sceneContent
             surfaceColor: "#121a23"
             surfaceOpacity: 0.56
@@ -2009,19 +1750,54 @@ Window {
                         onClicked: root.panel = "db"
                     }
                 }
+
+                Row {
+                    width: parent.width
+                    spacing: 8
+
+                    Rectangle {
+                        width: 8
+                        height: 8
+                        radius: 4
+                        anchors.verticalCenter: parent.verticalCenter
+                        color: Database.connected ? "#8be9a8" : "#fca5a5"
+                        border.width: 1
+                        border.color: Database.connected ? "#b8f5ca" : "#fecaca"
+                    }
+
+                    Text {
+                        width: parent.width - 16
+                        text: Database.connected
+                            ? "\u0421\u0442\u0430\u0442\u0443\u0441 \u0411\u0414: \u043f\u043e\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u043e"
+                            : "\u0421\u0442\u0430\u0442\u0443\u0441 \u0411\u0414: \u043d\u0435\u0442 \u043f\u043e\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u044f"
+                        color: Database.connected ? "#8be9a8" : "#fca5a5"
+                        font.pixelSize: 12
+                        wrapMode: Text.WordWrap
+                    }
+                }
+
+                Text {
+                    width: parent.width
+                    visible: !Database.connected && Database.lastError && Database.lastError.length > 0
+                    text: Database.lastError
+                    color: "#94a3b8"
+                    font.pixelSize: 11
+                    wrapMode: Text.WordWrap
+                    maximumLineCount: 3
+                    elide: Text.ElideRight
+                }
             }
         }
 
         Item {
             id: panelHost
             z: 65
-            anchors.right: parent.right
-            anchors.rightMargin: 18
-            anchors.top: parent.top
-            anchors.topMargin: 18
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.verticalCenterOffset: 170
             width: Math.min(parent.width * 0.42, 580)
             height: Math.min(parent.height * 0.48, 420)
-            visible: root.panel !== "none"
+            visible: !Auth.loggedIn && root.panel !== "none"
 
             GlassPanel {
                 anchors.fill: parent
@@ -2076,12 +1852,18 @@ Window {
 
     Shortcut {
         sequence: "Ctrl+1"
-        onActivated: root.agentHub.uiStateAgent.setMapMode("point")
+        onActivated: {
+            if (root.agentHub && root.agentHub.uiStateAgent)
+                root.agentHub.uiStateAgent.setMapMode("point")
+        }
     }
 
     Shortcut {
         sequence: "Ctrl+2"
-        onActivated: root.agentHub.uiStateAgent.setMapMode("heatmap")
+        onActivated: {
+            if (root.agentHub && root.agentHub.uiStateAgent)
+                root.agentHub.uiStateAgent.setMapMode("heatmap")
+        }
     }
 
     Shortcut {
