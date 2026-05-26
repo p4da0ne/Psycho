@@ -1,8 +1,10 @@
 {
   "options": {
     "paths": {
+      "root": ".",
       "fonts": "fonts",
-      "styles": "styles"
+      "styles": "styles",
+      "mbtiles": "data"
     }
   },
   "styles": {
@@ -23,7 +25,7 @@
   },
   "data": {
     "openmaptiles": {
-      "mbtiles": "E:/saturn_tiles_data/saturn-russia-eu.mbtiles"
+      "mbtiles": "saturn-russia-eu.mbtiles"
     }
   }
 }

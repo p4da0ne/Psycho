@@ -3,6 +3,7 @@ param(
     [string]$ConfigPath = "",
     [string]$StyleName = "maptiler-basic",
     [int]$Port = 8080,
+    [string]$MbtilesSource = "E:\saturn_tiles_data",
     [switch]$Background,
     [switch]$ForceStopOnPortConflict,
     [switch]$SkipOverlaySetup
@@ -21,6 +22,21 @@ if ([string]::IsNullOrWhiteSpace($ConfigPath)) {
 
 if (-not (Test-Path -LiteralPath $ConfigPath)) {
     throw "Config not found: $ConfigPath"
+}
+
+# Junction обходит баг url.parse в @mapbox/mbtiles на пути с буквой диска: 'E:/foo'
+# распарсится как URL с протоколом 'E:', и SQLite получит мусорный путь.
+$mbtilesLink = Join-Path $TileServerRoot "data"
+if (-not (Test-Path -LiteralPath $mbtilesLink)) {
+    if (-not [string]::IsNullOrWhiteSpace($MbtilesSource) -and (Test-Path -LiteralPath $MbtilesSource)) {
+        Write-Host "Creating junction: $mbtilesLink -> $MbtilesSource"
+        & cmd /c mklink /J `"$mbtilesLink`" `"$MbtilesSource`" | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            throw "Failed to create junction $mbtilesLink -> $MbtilesSource (exit $LASTEXITCODE)"
+        }
+    } else {
+        Write-Warning "Mbtiles source '$MbtilesSource' not found and '$mbtilesLink' does not exist. Tileserver will fail to load data."
+    }
 }
 
 $nodeCmd = (Get-Command "node.exe" -ErrorAction SilentlyContinue)

@@ -75,3 +75,13 @@ tileserver-gl/styles/*/dynamic/manifest.json
 
 # Tileserver data sources (large geo/OSM blobs, build inputs)
 tileserver-gl/data-src/
+
+# Tileserver mbtiles directory (created as a junction to E:\saturn_tiles_data by start_tileserver.ps1)
+tileserver-gl/data/
+
+# Tileserver-gl runtime install
+tileserver-gl/node_modules/
+tileserver-gl/package-lock.json
+
+# Stray mbtiles in repo root (tileserver may drop a demo file if data path is misconfigured)
+/zurich_switzerland.mbtiles
