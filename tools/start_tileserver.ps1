@@ -59,6 +59,49 @@ if (-not (Test-Path -LiteralPath $tileServerMain)) {
     throw "tileserver-gl entrypoint not found. Install local copy in repo: `npx --yes npm@latest i --prefix `"$TileServerRoot`" tileserver-gl@5.4.0` or install globally: `npm i -g tileserver-gl`."
 }
 
+# Перевод mbtiles в WAL journal mode: без него @mapbox/mbtiles сериализует
+# конкурентные tile-запросы в очередь и сервер виснет под нагрузкой при панораме
+# карты. WAL даёт concurrent readers и persists в самом .mbtiles.
+function Switch-MbtilesToWal {
+    param([string]$NodeExe, [string]$TileServerMain, [string]$MbtilesPath)
+    if (-not (Test-Path -LiteralPath $MbtilesPath)) { return }
+    # tileserver-gl/src/main.js -> tileserver-gl/node_modules/sqlite3/lib/sqlite3.js
+    $tileserverRoot = Split-Path -Parent (Split-Path -Parent $TileServerMain)
+    $sqliteJs = Join-Path $tileserverRoot "node_modules\sqlite3\lib\sqlite3.js"
+    if (-not (Test-Path -LiteralPath $sqliteJs)) {
+        Write-Warning "sqlite3 module not found at $sqliteJs; cannot verify WAL mode."
+        return
+    }
+    $mbForUrl = ($MbtilesPath -replace '\\','/')
+    $sqliteForUrl = "file:///" + ($sqliteJs -replace '\\','/')
+    $script = @"
+import sqlite3pkg from '$sqliteForUrl';
+const sqlite3 = sqlite3pkg.verbose();
+const db = new sqlite3.Database('$mbForUrl', sqlite3.OPEN_READWRITE);
+function run(sql) { return new Promise(r => db.all(sql, (e, rows) => r({err: e?.message, rows}))); }
+const before = await run('PRAGMA journal_mode');
+const current = before.rows && before.rows[0] ? String(before.rows[0].journal_mode || '') : '';
+if (current.toLowerCase() === 'wal') {
+  console.log('mbtiles already in WAL mode');
+} else {
+  const after = await run('PRAGMA journal_mode=WAL');
+  const next = after.rows && after.rows[0] ? String(after.rows[0].journal_mode || '') : '';
+  console.log('mbtiles journal_mode: ' + current + ' -> ' + next);
+}
+db.close();
+"@
+    $scriptFile = Join-Path $env:TEMP ("saturn-mbtiles-wal-" + [guid]::NewGuid().ToString("N") + ".mjs")
+    try {
+        Set-Content -Path $scriptFile -Value $script -Encoding UTF8
+        & $NodeExe $scriptFile
+    } finally {
+        Remove-Item -LiteralPath $scriptFile -ErrorAction SilentlyContinue
+    }
+}
+
+$mbtilesFile = Join-Path $mbtilesLink "saturn-russia-eu.mbtiles"
+Switch-MbtilesToWal -NodeExe $nodeCmd.Source -TileServerMain $tileServerMain -MbtilesPath $mbtilesFile
+
 function Get-PortOwners {
     param([int]$CheckPort)
 
