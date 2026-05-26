@@ -602,15 +602,31 @@ Item {
         }
     }
 
+    // Список стилей tileserver-gl, доступных переключателю.
+    readonly property var availableMapStyles: {
+        var host = (root.appState && root.appState.tileServerHost)
+            ? root.appState.tileServerHost
+            : "http://localhost:8080"
+        return [
+            { "name": "maptiler-basic", "title": "MapTiler Basic",
+              "url": host + "/styles/maptiler-basic/style.json" },
+            { "name": "osm-bright",     "title": "OSM Bright",
+              "url": host + "/styles/osm-bright/style.json" }
+        ]
+    }
+
     Plugin {
         id: mapPlugin
         name: "maplibre"
 
         PluginParameter {
             name: "maplibre.map.styles"
-            value: (root.appState && root.appState.mapStyleUrl && root.appState.mapStyleUrl.length > 0)
-                ? root.appState.mapStyleUrl
-                : "https://demotiles.maplibre.org/style.json"
+            value: {
+                var urls = []
+                for (var i = 0; i < root.availableMapStyles.length; ++i)
+                    urls.push(root.availableMapStyles[i].url)
+                return urls.join(",")
+            }
         }
     }
 
@@ -629,24 +645,44 @@ Item {
         onHeightChanged: {
             root.scheduleViewportUpdate(true)
         }
-        Component.onCompleted: {
-            if (mapView.map.supportedMapTypes && mapView.map.supportedMapTypes.length > 0) {
-                var selectedType = null
-                for (var i = 0; i < mapView.map.supportedMapTypes.length; ++i) {
-                    var mapType = mapView.map.supportedMapTypes[i]
-                    var metadata = mapType && mapType.metadata ? mapType.metadata : ({})
-                    var styleUrl = String(metadata.url || "")
-                    if (styleUrl.indexOf("demotiles.maplibre.org/style.json") !== -1) {
-                        selectedType = mapType
-                        break
-                    }
-                }
-                if (selectedType) {
-                    mapView.map.activeMapType = selectedType
+        function applyActiveMapStyle() {
+            if (!mapView.map.supportedMapTypes || mapView.map.supportedMapTypes.length === 0)
+                return
+            var wantedName = root.appState ? String(root.appState.mapStyleName || "") : ""
+            var wantedUrl = ""
+            for (var i = 0; i < root.availableMapStyles.length; ++i) {
+                if (root.availableMapStyles[i].name === wantedName) {
+                    wantedUrl = root.availableMapStyles[i].url
+                    break
                 }
             }
+            var selectedType = null
+            for (var j = 0; j < mapView.map.supportedMapTypes.length; ++j) {
+                var mapType = mapView.map.supportedMapTypes[j]
+                var metadata = mapType && mapType.metadata ? mapType.metadata : ({})
+                var styleUrl = String(metadata.url || "")
+                if (wantedUrl.length > 0 && styleUrl === wantedUrl) {
+                    selectedType = mapType
+                    break
+                }
+            }
+            if (!selectedType)
+                selectedType = mapView.map.supportedMapTypes[0]
+            if (selectedType && mapView.map.activeMapType !== selectedType)
+                mapView.map.activeMapType = selectedType
+        }
+
+        Component.onCompleted: {
+            mapView.applyActiveMapStyle()
             deferredGeoLoadTimer.start()
             root.scheduleViewportUpdate(true)
+        }
+
+        Connections {
+            target: root.appState
+            ignoreUnknownSignals: true
+            function onMapStyleNameChanged() { mapView.applyActiveMapStyle() }
+            function onTileServerHostChanged() { mapView.applyActiveMapStyle() }
         }
 
         MapLibre.style: Style {

@@ -6,34 +6,24 @@
     }
   },
   "styles": {
-    "test-style": {
-      "style": "osm-bright/style.json",
-      "tilejson": {
-        "type": "overlay",
-        "bounds": [
-          8.529446,
-          47.364758,
-          8.55232,
-          47.380539
-        ]
-      }
-    },
     "maptiler-basic": {
       "style": "maptiler-basic/style.json",
       "tilejson": {
         "type": "overlay",
-        "bounds": [
-          8.529446,
-          47.364758,
-          8.55232,
-          47.380539
-        ]
+        "bounds": [-25.0, 35.0, 180.0, 82.0]
+      }
+    },
+    "osm-bright": {
+      "style": "osm-bright/style.json",
+      "tilejson": {
+        "type": "overlay",
+        "bounds": [-25.0, 35.0, 180.0, 82.0]
       }
     }
   },
   "data": {
     "openmaptiles": {
-      "mbtiles": "zurich_switzerland.mbtiles"
+      "mbtiles": "E:/saturn_tiles_data/saturn-russia-eu.mbtiles"
     }
   }
 }

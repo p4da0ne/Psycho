@@ -677,7 +677,7 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 122
+                height: 164
                 radius: 18
                 color: Qt.rgba(1, 1, 1, 0.018)
                 border.width: 1
@@ -730,6 +730,28 @@ Item {
                             text: "Heat слой"
                             checked: root.appState ? root.appState.showHeatmapLayer : true
                             onClicked: root.toggleBooleanState("showHeatmapLayer")
+                        }
+                    }
+
+                    Row {
+                        spacing: 6
+
+                        FilterChip {
+                            text: "MapTiler Basic"
+                            checked: root.appState && root.appState.mapStyleName === "maptiler-basic"
+                            onClicked: {
+                                if (root.appState)
+                                    root.appState.mapStyleName = "maptiler-basic"
+                            }
+                        }
+
+                        FilterChip {
+                            text: "OSM Bright"
+                            checked: root.appState && root.appState.mapStyleName === "osm-bright"
+                            onClicked: {
+                                if (root.appState)
+                                    root.appState.mapStyleName = "osm-bright"
+                            }
                         }
                     }
                 }

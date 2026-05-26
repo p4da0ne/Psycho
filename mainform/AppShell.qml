@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 import QtQuick 2.15
 import QtQuick.Window 2.15
 import Qt5Compat.GraphicalEffects
+import Qt.labs.settings 1.0
 import Saturn.Backend 1.0
 import "qrc:/components"
 
@@ -43,7 +44,12 @@ Window {
         property real viewWest: centerLon
         property real mapMetersPerPixel: 0
         property real mapScaleDenominator: 0
-        property string mapStyleUrl: "https://demotiles.maplibre.org/style.json"
+        // Локальный tileserver-gl, поднимается через tools/start_tileserver.ps1.
+        property string tileServerHost: "http://localhost:8080"
+        property string mapStyleName: "maptiler-basic"
+        readonly property string mapStyleUrl: (tileServerHost && tileServerHost.length > 0 && mapStyleName && mapStyleName.length > 0)
+            ? tileServerHost + "/styles/" + mapStyleName + "/style.json"
+            : "https://demotiles.maplibre.org/style.json"
         property string mapMode: "point"
         property string activeTool: "navigate"
         property string searchText: ""
@@ -146,6 +152,12 @@ Window {
             nextBundle[geometryEditRole] = entry
             geometryEditBundle = nextBundle
         }
+    }
+
+    Settings {
+        category: "map"
+        property alias tileServerHost: appState.tileServerHost
+        property alias mapStyleName: appState.mapStyleName
     }
 
     QtObject {
