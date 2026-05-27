@@ -251,6 +251,125 @@ Item {
         return rows
     }
 
+    // Соответствие object_type → русское название (синхронизировано с Toolbar.objectTypeFilters).
+    function objectTypeLabel(typeId) {
+        var t = Number(typeId || 0)
+        if (t === 1) return "Формирование"
+        if (t === 2) return "Особое условие"
+        if (t === 3) return "Средство СМИ"
+        if (t === 4) return "Средство формирования"
+        if (t === 5) return "Средство группы"
+        if (t === 6) return "Регион"
+        if (t === 7) return "Персоналия"
+        if (t === 8) return "Событие"
+        if (t === 9) return "Группа"
+        if (t === 10) return "СМИ"
+        return ""
+    }
+
+    // Whitelist полей БД с человеческими лейблами.
+    // Возвращает массив {label, value} только для непустых и осмысленных значений.
+    function readableDetailsRows() {
+        var rows = []
+        function add(label, value) {
+            if (value === null || value === undefined)
+                return
+            var text = String(value).trim()
+            if (text === "" || text === "0" || text === "0.0" || text === "NaN" || text === "null")
+                return
+            rows.push({ "label": label, "value": text })
+        }
+
+        // 1. Тип объекта — из selectedObject (русский лейбл).
+        if (root.selectedObject && root.selectedObject.objectType) {
+            var typeLabel = objectTypeLabel(root.selectedObject.objectType)
+            if (typeLabel !== "")
+                add("Тип объекта", typeLabel)
+        }
+
+        var details = root.selectedObjectDetails || {}
+        var payload = details.fullRow || details.payload || {}
+        if (!payload || typeof payload !== "object")
+            return rows
+
+        // 2. Имя объекта — приоритет name_* (любого), затем name, затем title.
+        var nameKey = ""
+        for (var k in payload) {
+            if (k === "name" || /^name_/.test(k) || k === "title") {
+                if (String(payload[k] || "").trim() !== "") {
+                    nameKey = k
+                    add("Название", payload[k])
+                    break
+                }
+            }
+        }
+
+        // 3. Короткое имя.
+        for (var k2 in payload) {
+            if (k2 === "short_name" || /^short_name_/.test(k2)) {
+                add("Краткое имя", payload[k2])
+                break
+            }
+        }
+
+        // 4. Дополнительные типы / роли (имена справочников, без id).
+        var typeKeys = [
+            "type_name", "rank_name", "name_type_event",
+            "name_type_special_conditions", "name_type_ls",
+            "name_type_mpo_pso", "name_type_persones",
+            "name_type_region", "nametype_smi", "name_type_office_smi",
+            "name_type_broadcast_smi", "name_theme_smi", "name_level_smi",
+            "name_position_smi", "name_form_groups", "name_sphere_groups",
+            "name_trend_groups", "sign_name"
+        ]
+        for (var i = 0; i < typeKeys.length; ++i) {
+            var key = typeKeys[i]
+            if (payload[key] !== undefined) {
+                var label = key === "sign_name" ? "Знак"
+                          : key === "rank_name" ? "Звание"
+                          : key === "type_name" ? "Тип"
+                          : "Подтип"
+                add(label, payload[key])
+            }
+        }
+
+        // 5. Описание / резюме.
+        for (var k3 in payload) {
+            if (k3 === "description" || /^description_/.test(k3)) {
+                add("Описание", payload[k3])
+                break
+            }
+        }
+        if (payload.resume_event !== undefined)
+            add("Резюме", payload.resume_event)
+
+        // 6. Персональные поля (если объект — Персоналия).
+        if (payload.rank_persones !== undefined && payload.rank_name === undefined)
+            add("Звание", payload.rank_persones)
+        if (payload.birth_date !== undefined)
+            add("Дата рождения", payload.birth_date)
+        if (payload.birth_place !== undefined)
+            add("Место рождения", payload.birth_place)
+        if (payload.nationality !== undefined)
+            add("Национальность", payload.nationality)
+
+        // 7. СМИ-специфичные.
+        if (payload.site_smi !== undefined)
+            add("Сайт", payload.site_smi)
+        if (payload.frequency_smi !== undefined)
+            add("Частота", payload.frequency_smi)
+
+        // 8. Комментарии — любое поле, содержащее "comment".
+        for (var k4 in payload) {
+            if (/comment/i.test(k4) && payload[k4]) {
+                add("Комментарии", payload[k4])
+                break
+            }
+        }
+
+        return rows
+    }
+
     function objectLegacyRows() {
         var rows = []
         if (!root.selectedObject)
@@ -677,13 +796,14 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 164
+                implicitHeight: layersCardColumn.implicitHeight + 20
                 radius: 18
                 color: Qt.rgba(1, 1, 1, 0.018)
                 border.width: 1
                 border.color: Qt.rgba(1, 1, 1, 0.03)
 
                 Column {
+                    id: layersCardColumn
                     anchors.fill: parent
                     anchors.margins: 10
                     spacing: 8
@@ -695,62 +815,120 @@ Item {
                         font.weight: Font.Medium
                     }
 
+                    // Режим: точки vs тепловая карта (слой heat завязан на этот же переключатель).
                     Row {
-                        spacing: 6
+                        spacing: 8
+                        anchors.left: parent.left
+                        anchors.right: parent.right
 
-                        FilterChip {
-                            text: "Точки"
-                            checked: root.appState && root.appState.mapMode === "point"
-                            onClicked: root.appState.mapMode = "point"
+                        Text {
+                            text: "Режим"
+                            color: Qt.rgba(1, 1, 1, 0.55)
+                            font.pixelSize: 11
+                            width: 72
+                            anchors.verticalCenter: parent.verticalCenter
                         }
 
-                        FilterChip {
-                            text: "Heatmap"
-                            checked: root.appState && root.appState.mapMode === "heatmap"
-                            onClicked: root.appState.mapMode = "heatmap"
-                        }
-                    }
+                        Row {
+                            spacing: 6
+                            anchors.verticalCenter: parent.verticalCenter
 
-                    Row {
-                        spacing: 6
+                            FilterChip {
+                                text: "Точки"
+                                checked: root.appState && root.appState.mapMode === "point"
+                                onClicked: {
+                                    if (root.appState)
+                                        root.appState.mapMode = "point"
+                                }
+                            }
 
-                        FilterChip {
-                            text: "Линии"
-                            checked: root.appState ? root.appState.showCoverageLine : true
-                            onClicked: root.toggleBooleanState("showCoverageLine")
-                        }
-
-                        FilterChip {
-                            text: "Подписи"
-                            checked: root.appState ? root.appState.showLabels : true
-                            onClicked: root.toggleBooleanState("showLabels")
-                        }
-
-                        FilterChip {
-                            text: "Heat слой"
-                            checked: root.appState ? root.appState.showHeatmapLayer : true
-                            onClicked: root.toggleBooleanState("showHeatmapLayer")
-                        }
-                    }
-
-                    Row {
-                        spacing: 6
-
-                        FilterChip {
-                            text: "MapTiler Basic"
-                            checked: root.appState && root.appState.mapStyleName === "maptiler-basic"
-                            onClicked: {
-                                if (root.appState)
-                                    root.appState.mapStyleName = "maptiler-basic"
+                            FilterChip {
+                                text: "Тепловая карта"
+                                checked: root.appState && root.appState.mapMode === "heatmap"
+                                onClicked: {
+                                    if (root.appState)
+                                        root.appState.mapMode = "heatmap"
+                                }
                             }
                         }
+                    }
 
-                        FilterChip {
-                            text: "OSM Bright"
-                            checked: root.appState && root.appState.mapStyleName === "osm-bright"
-                            onClicked: {
-                                if (root.appState)
-                                    root.appState.mapStyleName = "osm-bright"
+                    Rectangle {
+                        width: parent.width
+                        height: 1
+                        color: Qt.rgba(1, 1, 1, 0.05)
+                    }
+
+                    Row {
+                        spacing: 8
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+
+                        Text {
+                            text: "Видимость"
+                            color: Qt.rgba(1, 1, 1, 0.55)
+                            font.pixelSize: 11
+                            width: 72
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+
+                        Row {
+                            spacing: 6
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            FilterChip {
+                                text: "Линии"
+                                checked: root.appState ? root.appState.showCoverageLine : true
+                                onClicked: root.toggleBooleanState("showCoverageLine")
+                            }
+
+                            FilterChip {
+                                text: "Подписи"
+                                checked: root.appState ? root.appState.showLabels : true
+                                onClicked: root.toggleBooleanState("showLabels")
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        width: parent.width
+                        height: 1
+                        color: Qt.rgba(1, 1, 1, 0.05)
+                    }
+
+                    Row {
+                        spacing: 8
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+
+                        Text {
+                            text: "Стиль"
+                            color: Qt.rgba(1, 1, 1, 0.55)
+                            font.pixelSize: 11
+                            width: 72
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+
+                        Row {
+                            spacing: 6
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            FilterChip {
+                                text: "MapTiler Basic"
+                                checked: root.appState && root.appState.mapStyleName === "maptiler-basic"
+                                onClicked: {
+                                    if (root.appState)
+                                        root.appState.mapStyleName = "maptiler-basic"
+                                }
+                            }
+
+                            FilterChip {
+                                text: "OSM Bright"
+                                checked: root.appState && root.appState.mapStyleName === "osm-bright"
+                                onClicked: {
+                                    if (root.appState)
+                                        root.appState.mapStyleName = "osm-bright"
+                                }
                             }
                         }
                     }
@@ -835,10 +1013,23 @@ Item {
 
                         MouseArea {
                             anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
                             onClicked: {
                                 if (root.structureMode)
                                     return
-                                root.selectionAgent.selectObject(objectRow.modelData)
+                                var item = objectRow.modelData
+                                // Центрируем карту: appState.center* → MyMapView.map.center (one-way binding).
+                                if (root.appState && item) {
+                                    var lat = Number(item.lat)
+                                    var lon = Number(item.lon)
+                                    if (isFinite(lat) && isFinite(lon)) {
+                                        root.appState.centerLat = lat
+                                        root.appState.centerLon = lon
+                                    }
+                                }
+                                // Выбор объекта (триггерит loadObjectDetailsForObject → таблица "Детали").
+                                if (root.selectionAgent)
+                                    root.selectionAgent.selectObject(item)
                             }
                         }
                     }
@@ -892,47 +1083,6 @@ Item {
                             wrapMode: Text.WordWrap
                         }
 
-                        Rectangle {
-                            visible: !root.structureMode && root.objectLegacyRows().length > 0
-                            width: parent.width
-                            implicitHeight: legacyBlockTitle.implicitHeight + legacyRows.implicitHeight + 14
-                            radius: 14
-                            color: Qt.rgba(1, 1, 1, 0.018)
-                            border.width: 1
-                            border.color: Qt.rgba(1, 1, 1, 0.03)
-
-                            Column {
-                                anchors.fill: parent
-                                anchors.margins: 7
-                                spacing: 6
-
-                                Text {
-                                    id: legacyBlockTitle
-                                    width: parent.width
-                                    text: "Ключевые поля (legacy)"
-                                    color: Qt.rgba(1, 1, 1, 0.86)
-                                    font.pixelSize: 12
-                                    font.weight: Font.Medium
-                                }
-
-                                Column {
-                                    id: legacyRows
-                                    width: parent.width
-                                    spacing: 4
-
-                                    Repeater {
-                                        model: root.objectLegacyRows()
-
-                                        delegate: InfoField {
-                                            width: legacyRows.width
-                                            label: modelData.label
-                                            value: modelData.value
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
                         InfoField {
                             visible: root.structureMode
                             label: "Путь"
@@ -968,10 +1118,10 @@ Item {
                                 Row {
                                     id: tableHeader
                                     width: parent.width
-                                    height: 28
+                                    height: 32
 
                                     Rectangle {
-                                        width: Math.max(120, parent.width * 0.38)
+                                        width: Math.max(140, parent.width * 0.38)
                                         height: parent.height
                                         color: Qt.rgba(1, 1, 1, 0.06)
 
@@ -981,13 +1131,13 @@ Item {
                                             anchors.leftMargin: 8
                                             text: "Поле"
                                             color: Qt.rgba(1, 1, 1, 0.80)
-                                            font.pixelSize: 12
+                                            font.pixelSize: 14
                                             font.weight: Font.Medium
                                         }
                                     }
 
                                     Rectangle {
-                                        width: parent.width - (Math.max(120, parent.width * 0.38))
+                                        width: parent.width - (Math.max(140, parent.width * 0.38))
                                         height: parent.height
                                         color: Qt.rgba(1, 1, 1, 0.06)
 
@@ -997,7 +1147,7 @@ Item {
                                             anchors.leftMargin: 8
                                             text: "Значение"
                                             color: Qt.rgba(1, 1, 1, 0.80)
-                                            font.pixelSize: 12
+                                            font.pixelSize: 14
                                             font.weight: Font.Medium
                                         }
                                     }
@@ -1009,16 +1159,16 @@ Item {
                                     spacing: 0
 
                                     Repeater {
-                                        model: root.detailsRows()
+                                        model: root.readableDetailsRows()
 
                                         delegate: Row {
                                             required property int index
                                             required property var modelData
                                             width: tableRows.width
-                                            height: 26
+                                            height: Math.max(30, valueText.implicitHeight + 8)
 
                                             Rectangle {
-                                                width: Math.max(120, parent.width * 0.38)
+                                                width: Math.max(140, parent.width * 0.38)
                                                 height: parent.height
                                                 color: (index % 2 === 0) ? Qt.rgba(1, 1, 1, 0.025) : Qt.rgba(1, 1, 1, 0.01)
 
@@ -1029,27 +1179,28 @@ Item {
                                                     anchors.right: parent.right
                                                     anchors.rightMargin: 6
                                                     text: modelData.label
-                                                    color: Qt.rgba(1, 1, 1, 0.62)
-                                                    font.pixelSize: 11
+                                                    color: Qt.rgba(1, 1, 1, 0.74)
+                                                    font.pixelSize: 13
                                                     elide: Text.ElideRight
                                                 }
                                             }
 
                                             Rectangle {
-                                                width: parent.width - (Math.max(120, parent.width * 0.38))
+                                                width: parent.width - (Math.max(140, parent.width * 0.38))
                                                 height: parent.height
                                                 color: (index % 2 === 0) ? Qt.rgba(1, 1, 1, 0.025) : Qt.rgba(1, 1, 1, 0.01)
 
                                                 Text {
+                                                    id: valueText
                                                     anchors.verticalCenter: parent.verticalCenter
                                                     anchors.left: parent.left
                                                     anchors.leftMargin: 8
                                                     anchors.right: parent.right
                                                     anchors.rightMargin: 6
                                                     text: modelData.value
-                                                    color: Qt.rgba(1, 1, 1, 0.78)
-                                                    font.pixelSize: 11
-                                                    elide: Text.ElideRight
+                                                    color: Qt.rgba(1, 1, 1, 0.92)
+                                                    font.pixelSize: 13
+                                                    wrapMode: Text.WordWrap
                                                 }
                                             }
                                         }
@@ -1062,7 +1213,7 @@ Item {
                             width: parent.width
                             text: root.structureMode
                                 ? "Выберите объект на карте или в структуре для перехода к детальным параметрам."
-                                : (root.detailsRows().length === 0 ? "Нет данных БД для выбранного объекта." : "")
+                                : (root.readableDetailsRows().length === 0 ? "Нет данных БД для выбранного объекта." : "")
                             visible: text.length > 0
                             color: Qt.rgba(1, 1, 1, 0.60)
                             font.pixelSize: 12

@@ -858,7 +858,6 @@ Item {
                     "circle-color": ["interpolate", ["linear"], ["coalesce", ["get", "heatValue"], 0], 0.0, "#5ca6d7", 0.5, "#dfb641", 1.0, "#cc4c3b"],
                     "circle-opacity": root.appState
                         && root.appState.mapMode === "heatmap"
-                        && root.appState.showHeatmapLayer
                         && !root.interactionInProgress ? 0.22 : 0.0,
                     "circle-stroke-width": 0
                 }

@@ -12,8 +12,8 @@ Item {
 
     readonly property bool panelVisible: panelState && panelState.visible !== undefined ? panelState.visible : true
     readonly property bool collapsed: panelState && panelState.collapsed ? panelState.collapsed : false
-    readonly property real expandedHeight: panelState && panelState.height ? panelState.height : 36
-    readonly property real targetHeight: panelVisible ? (collapsed ? 28 : expandedHeight) : 0
+    readonly property real expandedHeight: panelState && panelState.height ? panelState.height : 24
+    readonly property real targetHeight: panelVisible ? (collapsed ? 18 : expandedHeight) : 0
 
     implicitHeight: targetHeight
     height: targetHeight
@@ -68,7 +68,7 @@ Item {
                     onPositionChanged: function(mouse) {
                         if (!pressed || !root.panelManager)
                             return
-                        var nextHeight = Math.max(28, root.dragStartHeight - (mouse.y - startMouseY))
+                        var nextHeight = Math.max(18, root.dragStartHeight - (mouse.y - startMouseY))
                         root.panelManager.resizePanel("status-bar", root.width, nextHeight)
                     }
                 }
@@ -89,7 +89,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     text: "Долгота: " + Number(root.appState ? root.appState.cursorLon : 0).toFixed(5)
                     color: Qt.rgba(1, 1, 1, 0.76)
-                    font.pixelSize: 13
+                    font.pixelSize: 11
                     elide: Text.ElideRight
                 }
 
@@ -98,7 +98,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     text: "Широта: " + Number(root.appState ? root.appState.cursorLat : 0).toFixed(5)
                     color: Qt.rgba(1, 1, 1, 0.76)
-                    font.pixelSize: 13
+                    font.pixelSize: 11
                     elide: Text.ElideRight
                 }
 
@@ -107,7 +107,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     text: "Масштаб: " + root.approximateScale()
                     color: Qt.rgba(1, 1, 1, 0.56)
-                    font.pixelSize: 13
+                    font.pixelSize: 11
                     elide: Text.ElideRight
                 }
             }

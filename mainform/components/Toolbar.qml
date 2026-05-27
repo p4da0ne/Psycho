@@ -41,7 +41,7 @@ Item {
         return fallbackIndex
     }
 
-    implicitHeight: 50
+    implicitHeight: 25
     opacity: appState && appState.controlsVisible ? 1 : 0.88
     y: 0
 
@@ -63,8 +63,8 @@ Item {
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
         width: field.activeFocus || field.text.length > 0 ? Math.min(root.width, 540) : Math.min(root.width, 490)
-        height: 42
-        radius: 21
+        height: 22
+        radius: 11
         padding: 0
         backdropSource: root.backdropSource
         surfaceColor: "#141c24"
@@ -90,7 +90,7 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 text: "⌕"
                 color: "#d9e2ed"
-                font.pixelSize: 17
+                font.pixelSize: 13
                 opacity: 0.80
             }
 
@@ -107,7 +107,7 @@ Item {
                 placeholderTextColor: "#91a0b0"
                 text: root.appState ? root.appState.searchText : ""
                 color: Qt.rgba(1, 1, 1, 0.88)
-                font.pixelSize: 16
+                font.pixelSize: 12
                 font.weight: Font.Normal
                 leftPadding: 0
                 rightPadding: 0
