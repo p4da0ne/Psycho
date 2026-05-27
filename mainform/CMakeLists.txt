@@ -17,7 +17,6 @@ set(MAINFORM_QML_FILES
     components/ContextMenuObject.qml
     components/GlassPanel.qml
     components/MapCanvas.qml
-    components/ReferenceSidebar.qml
     components/RightSidebar.qml
     components/Toolbar.qml
 )
