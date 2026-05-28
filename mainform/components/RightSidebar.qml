@@ -1007,7 +1007,7 @@ Item {
                                     width: parent.width
                                     text: root.structureMode
                                         ? ("Путь: " + (root.selectedStructurePath || "—"))
-                                        : (objectRow.modelData.kind === "relay" ? "узел связи" : objectRow.modelData.kind === "lbs" ? "линейный объект" : "подразделение") + " · МППС " + objectRow.modelData.mpps
+                                        : (root.objectTypeLabel(objectRow.modelData.objectType) || "Объект") + " · МППС " + objectRow.modelData.mpps
                                     color: Qt.rgba(1, 1, 1, 0.44)
                                     font.pixelSize: 11
                                     elide: Text.ElideRight

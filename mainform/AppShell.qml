@@ -22,6 +22,9 @@ Window {
     property var mapLines: []
     property var mapPolygons: []
     property var locationLabels: []
+    // Перечень для правой панели: точки + по одному представителю на каждый
+    // линейный/полигональный объект (центроид), чтобы в списке были все объекты карты.
+    readonly property var mapObjectListModel: root.buildMapObjectListModel(mapObjects, mapLines, mapPolygons)
     property var mapEvents: []
     property var referenceTreeData: []
     property bool pendingDbBootstrap: false
@@ -1405,6 +1408,62 @@ Window {
             return
         appState.eventTypeCatalog = EventsRepo.eventTypeCatalog() || []
     }
+    function pathCentroid(path) {
+        var list = path || []
+        var sumLat = 0
+        var sumLon = 0
+        var count = 0
+        for (var i = 0; i < list.length; ++i) {
+            var p = list[i] || {}
+            var la = Number(p.lat)
+            var lo = Number(p.lon)
+            if (isFinite(la) && isFinite(lo)) {
+                sumLat += la
+                sumLon += lo
+                ++count
+            }
+        }
+        if (count === 0)
+            return null
+        return { "lat": sumLat / count, "lon": sumLon / count }
+    }
+    function buildMapObjectListModel(points, lines, polygons) {
+        var out = []
+        var seen = ({})
+        var pushItem = function(item, center) {
+            var oid = Number(item.objectId || 0)
+            var key = Number(item.objectType || 0) + "-" + oid
+            if (oid > 0 && seen[key])
+                return
+            if (oid > 0)
+                seen[key] = true
+            if (!center) {
+                out.push(item)
+                return
+            }
+            var clone = ({})
+            for (var k in item)
+                clone[k] = item[k]
+            clone.lat = center.lat
+            clone.lon = center.lon
+            if (clone.mpps === undefined)
+                clone.mpps = Math.round(Number(clone.legacyScoreNormalized || 0.5) * 100)
+            out.push(clone)
+        }
+        var pts = points || []
+        for (var i = 0; i < pts.length; ++i)
+            pushItem(pts[i] || ({}), null)
+        var addPathList = function(items) {
+            var list = items || []
+            for (var j = 0; j < list.length; ++j) {
+                var item = list[j] || ({})
+                pushItem(item, root.pathCentroid(item.path))
+            }
+        }
+        addPathList(lines)
+        addPathList(polygons)
+        return out
+    }
     function refreshObjectsFromRuntime() {
         mapObjects = MapRuntime.mapObjects || []
         mapLines = MapRuntime.mapLines || []
@@ -1650,7 +1709,7 @@ Window {
                 : (statusBar.visible ? (statusBar.y - 12 - y) : (parent.height - 16 - y))
             appState: root.stateManager
             agentHub: root.agentHub
-            objects: root.mapObjects
+            objects: root.mapObjectListModel
             events: root.mapEvents
             panelManager: root.panelManager
             panelState: root.rightSidebarState
