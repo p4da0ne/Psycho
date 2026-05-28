@@ -27,17 +27,14 @@ Item {
     property double lastInteractionSignalTs: 0
     property point pendingCursorPoint: Qt.point(0, 0)
     property string gadmBasePath: "C:/Users/96kgballs/Downloads/gadm41_RUS"
-    property string russiaSubjectsPath: ":/Resources/russia_disputed_regions_ru_view_2026.geojson"
     property var gadmAdm0Data: emptyFeatureCollection()
     property var gadmAdm1Data: emptyFeatureCollection()
     property var gadmAdm2Data: emptyFeatureCollection()
     property var gadmAdm3Data: emptyFeatureCollection()
-    property var russiaSubjectsData: emptyFeatureCollection()
     property bool gadmAdm0Loaded: false
     property bool gadmAdm1Loaded: false
     property bool gadmAdm2Loaded: false
     property bool gadmAdm3Loaded: false
-    property bool russiaSubjectsLoaded: false
 
     signal interactionActivity()
     signal requestMapMenu(real lon, real lat, real screenX, real screenY)
@@ -525,43 +522,6 @@ Item {
         ensureAdmLevelLoaded(activeAdmLevelForZoom(zoom))
     }
 
-    function disputedRegionsFilterExpression() {
-        return ["any",
-                ["==", ["get", "name_en"], "Crimea"],
-                ["==", ["get", "name_en"], "Sevastopol'"],
-                ["==", ["get", "name_en"], "Donetsk People's Republic"],
-                ["==", ["get", "name_en"], "Luhansk People's Republic"],
-                ["==", ["get", "name_en"], "Zaporizhzhia Oblast"],
-                ["==", ["get", "name_en"], "Kherson Oblast"]]
-    }
-
-    function normalizedLocalPath(pathValue) {
-        var path = String(pathValue || "").replace(/\\/g, "/").trim()
-        return path
-    }
-
-    function ensureRussiaSubjectsLoaded() {
-        if (root.russiaSubjectsLoaded)
-            return
-        var path = normalizedLocalPath(root.russiaSubjectsPath)
-        if (path.length === 0) {
-            root.russiaSubjectsData = root.emptyFeatureCollection()
-            root.russiaSubjectsLoaded = true
-            return
-        }
-        var loaded = LocalGeoJsonRepo.loadGeoJson(path)
-        if (!loaded || loaded.type !== "FeatureCollection")
-            loaded = root.emptyFeatureCollection()
-        root.russiaSubjectsData = loaded
-        root.russiaSubjectsLoaded = true
-    }
-
-    function ensureDisputedRegionsForCurrentZoom() {
-        var zoom = mapView && mapView.map ? mapView.map.zoomLevel : (root.appState ? root.appState.zoomLevel : 5)
-        if (Number(zoom) >= 4)
-            ensureRussiaSubjectsLoaded()
-    }
-
     Timer {
         id: viewportUpdateTimer
         interval: 85
@@ -598,7 +558,6 @@ Item {
         repeat: false
         onTriggered: {
             root.ensureAdmForCurrentZoom()
-            root.ensureDisputedRegionsForCurrentZoom()
         }
     }
 
@@ -740,12 +699,6 @@ Item {
                 property var data: root.gadmAdm3Data
             }
 
-            SourceParameter {
-                styleId: "saturn-rus-subjects"
-                type: "geojson"
-                property var data: root.russiaSubjectsData
-            }
-
             LayerParameter {
                 styleId: "saturn-rus-adm0-lines"
                 type: "line"
@@ -787,32 +740,6 @@ Item {
                     "line-color": "#7f8a95",
                     "line-width": ["interpolate", ["linear"], ["zoom"], 9, 0.7, 12, 1.1],
                     "line-opacity": ["step", ["zoom"], 0.0, 9, 0.58, 12, 0.0]
-                }
-            }
-
-            // Спорные субъекты (Крым, Севастополь, ДНР, ЛНР, Запорожская и Херсонская обл.):
-            // визуально сливаем с российской сушей — тот же бежевый landuse-цвет, что в osm-bright,
-            // достаточная opacity чтобы перекрыть украинскую заливку OSM, без разделительной линии.
-            LayerParameter {
-                styleId: "saturn-rus-disputed-fill"
-                type: "fill"
-                property string source: "saturn-rus-subjects"
-                property var filter: root.disputedRegionsFilterExpression()
-                paint: {
-                    "fill-color": "#f7f5f0",
-                    "fill-opacity": ["step", ["zoom"], 0.0, 4, 0.72]
-                }
-            }
-
-            LayerParameter {
-                styleId: "saturn-rus-disputed-line"
-                type: "line"
-                property string source: "saturn-rus-subjects"
-                property var filter: root.disputedRegionsFilterExpression()
-                paint: {
-                    "line-color": "#9ca699",
-                    "line-width": 0,
-                    "line-opacity": 0
                 }
             }
 
@@ -913,7 +840,6 @@ Item {
 
             function onZoomLevelChanged() {
                 root.ensureAdmForCurrentZoom()
-                root.ensureDisputedRegionsForCurrentZoom()
                 if (!root.appState)
                     return
                 root.appState.zoomLevel = mapView.map.zoomLevel
