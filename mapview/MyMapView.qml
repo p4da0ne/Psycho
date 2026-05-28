@@ -790,14 +790,17 @@ Item {
                 }
             }
 
+            // Спорные субъекты (Крым, Севастополь, ДНР, ЛНР, Запорожская и Херсонская обл.):
+            // визуально сливаем с российской сушей — тот же бежевый landuse-цвет, что в osm-bright,
+            // достаточная opacity чтобы перекрыть украинскую заливку OSM, без разделительной линии.
             LayerParameter {
                 styleId: "saturn-rus-disputed-fill"
                 type: "fill"
                 property string source: "saturn-rus-subjects"
                 property var filter: root.disputedRegionsFilterExpression()
                 paint: {
-                    "fill-color": "#d5d88a",
-                    "fill-opacity": ["step", ["zoom"], 0.0, 4, 0.96]
+                    "fill-color": "#f7f5f0",
+                    "fill-opacity": ["step", ["zoom"], 0.0, 4, 0.72]
                 }
             }
 
@@ -808,8 +811,8 @@ Item {
                 property var filter: root.disputedRegionsFilterExpression()
                 paint: {
                     "line-color": "#9ca699",
-                    "line-width": ["interpolate", ["linear"], ["zoom"], 4, 0.8, 9, 1.3, 12, 1.6],
-                    "line-opacity": ["step", ["zoom"], 0.0, 4, 0.88]
+                    "line-width": 0,
+                    "line-opacity": 0
                 }
             }
 

@@ -341,28 +341,6 @@ Window {
             return true
         }
 
-        function objectInViewport(objectData) {
-            var lat = Number(objectData.lat)
-            var lon = Number(objectData.lon)
-            if (!isFinite(lat) || !isFinite(lon))
-                return true  // объекты без координат — не отсекаем
-            var n = Number(appState.viewNorth)
-            var s = Number(appState.viewSouth)
-            var e = Number(appState.viewEast)
-            var w = Number(appState.viewWest)
-            // viewport ещё не инициализирован (n==s, e==w) — не фильтруем
-            if (!isFinite(n) || !isFinite(s) || !isFinite(e) || !isFinite(w))
-                return true
-            if (Math.abs(n - s) < 1e-9 && Math.abs(e - w) < 1e-9)
-                return true
-            if (lat < s || lat > n)
-                return false
-            // нормальный диапазон долготы; антимеридианы пока не учитываем (Russia/EU в одном "куске")
-            if (lon < w || lon > e)
-                return false
-            return true
-        }
-
         function objectVisible(objectData) {
             if (!objectData)
                 return false
@@ -389,8 +367,6 @@ Window {
             if (!objectMatchesOwnership(objectData))
                 return false
             if (!objectMatchesRegion(objectData))
-                return false
-            if (!objectInViewport(objectData))
                 return false
             return true
         }

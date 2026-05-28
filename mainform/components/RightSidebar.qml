@@ -792,7 +792,11 @@ Item {
         Column {
             spacing: 10
 
-            SectionTitle { text: root.structureMode ? "Выбранный узел" : "Список объектов" }
+            SectionTitle {
+                text: root.structureMode
+                    ? "Выбранный узел"
+                    : "Список объектов (" + (root.filteredObjects ? root.filteredObjects.length : 0) + ")"
+            }
 
             Rectangle {
                 width: parent.width
