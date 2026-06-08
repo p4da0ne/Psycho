@@ -27,6 +27,10 @@ Rectangle {
     function markerVisible(objectData) {
         if (!objectData || !appState)
             return false
+        // Единый фильтр видимости — из filterAgent, чтобы карта и список совпадали.
+        if (agentHub && agentHub.filterAgent)
+            return agentHub.filterAgent.objectVisible(objectData)
+        // Fallback, если agentHub ещё не передан.
         if (objectData.side === "friendly" && !appState.showFriendly)
             return false
         if (objectData.side === "foreign" && !appState.showForeign)
