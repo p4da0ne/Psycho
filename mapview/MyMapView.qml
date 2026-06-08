@@ -26,7 +26,9 @@ Item {
     property bool interactionInProgress: false
     property double lastInteractionSignalTs: 0
     property point pendingCursorPoint: Qt.point(0, 0)
-    property string gadmBasePath: "C:/Users/96kgballs/Downloads/gadm41_RUS"
+    // Опционально: каталог с файлами gadm41_RUS_<level>.json для overlay админграниц.
+    // Пусто => overlay выключен (границы берутся из стиля tileserver). См. README.
+    property string gadmBasePath: ""
     property var gadmAdm0Data: emptyFeatureCollection()
     property var gadmAdm1Data: emptyFeatureCollection()
     property var gadmAdm2Data: emptyFeatureCollection()
@@ -512,6 +514,10 @@ Item {
         if (isAdmLevelLoaded(level))
             return
         var path = gadmGeoJsonPath(level)
+        if (path.length === 0) {
+            setAdmLevelLoaded(level, true)
+            return
+        }
         var loaded = LocalGeoJsonRepo.loadGeoJson(path)
         setAdmLevelData(level, loaded)
         setAdmLevelLoaded(level, true)
