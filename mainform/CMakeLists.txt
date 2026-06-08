@@ -12,6 +12,7 @@ set(MAINFORM_QML_FILES
     AppShell.qml
     LoginScreen.qml
     DBConnectScreen.qml
+    components/Agents.qml
     components/BottomStatusBar.qml
     components/ContextMenuMap.qml
     components/ContextMenuObject.qml
