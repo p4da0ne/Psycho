@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import "qrc:/theme"
 
 Item {
     id: root
@@ -67,7 +68,7 @@ Item {
         radius: 11
         padding: 0
         backdropSource: root.backdropSource
-        surfaceColor: "#141c24"
+        surfaceColor: Theme.surface
         surfaceOpacity: field.activeFocus ? 0.52 : 0.46
         shadowOpacity: 0.05
         highlightOpacity: 0.04
@@ -89,7 +90,7 @@ Item {
                 id: searchIcon
                 anchors.verticalCenter: parent.verticalCenter
                 text: "⌕"
-                color: "#d9e2ed"
+                color: Theme.textSoft
                 font.pixelSize: 13
                 opacity: 0.80
             }
@@ -104,9 +105,9 @@ Item {
                                 - 34)
                 height: parent.height
                 placeholderText: "Поиск"
-                placeholderTextColor: "#91a0b0"
+                placeholderTextColor: Theme.muted5
                 text: root.appState ? root.appState.searchText : ""
-                color: Qt.rgba(1, 1, 1, 0.88)
+                color: Theme.ink(0.88)
                 font.pixelSize: 12
                 font.weight: Font.Normal
                 leftPadding: 0
@@ -139,14 +140,14 @@ Item {
                 flat: true
                 background: Rectangle {
                     radius: 12
-                    color: "#ffffff"
+                    color: Theme.white
                     opacity: clearButton.down ? 0.09 : clearButton.hovered ? 0.06 : 0.04
                 }
                 contentItem: Text {
                     text: "×"
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
-                    color: "#d7e0ea"
+                    color: Theme.textSoft2
                     font.pixelSize: 18
                 }
                 onClicked: {
@@ -180,9 +181,9 @@ Item {
 
         background: Rectangle {
             radius: 14
-            color: "#1a242f"
+            color: Theme.surface4
             border.width: 1
-            border.color: Qt.rgba(1, 1, 1, 0.09)
+            border.color: Theme.ink(0.09)
         }
 
         contentItem: ColumnLayout {
@@ -192,7 +193,7 @@ Item {
 
             Text {
                 text: "Фильтры"
-                color: "#e7eef7"
+                color: Theme.textLight
                 font.pixelSize: 16
                 font.weight: Font.DemiBold
                 Layout.fillWidth: true
@@ -204,7 +205,7 @@ Item {
 
                 Text {
                     text: "Тип объекта"
-                    color: "#c8d4e2"
+                    color: Theme.textMuted
                     font.pixelSize: 13
                     Layout.preferredWidth: 146
                 }
@@ -231,7 +232,7 @@ Item {
 
                 Text {
                     text: "Принадлежность"
-                    color: "#c8d4e2"
+                    color: Theme.textMuted
                     font.pixelSize: 13
                     Layout.preferredWidth: 146
                 }
@@ -259,7 +260,7 @@ Item {
 
                 Text {
                     text: "Временные рамки"
-                    color: "#c8d4e2"
+                    color: Theme.textMuted
                     font.pixelSize: 13
                     Layout.preferredWidth: 146
                 }
@@ -295,7 +296,7 @@ Item {
 
                 Text {
                     text: "Регионы"
-                    color: "#c8d4e2"
+                    color: Theme.textMuted
                     font.pixelSize: 13
                     Layout.preferredWidth: 146
                 }

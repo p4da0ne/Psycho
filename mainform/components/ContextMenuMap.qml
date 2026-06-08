@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import Saturn.Backend 1.0
+import "qrc:/theme"
 
 Menu {
     id: root
@@ -9,8 +10,8 @@ Menu {
     font.pixelSize: 14
 
     background: Rectangle {
-        color: "#111821"
-        border.color: Qt.rgba(1, 1, 1, 0.07)
+        color: Theme.surface2
+        border.color: Theme.ink(0.07)
         border.width: 1
         radius: 14
     }

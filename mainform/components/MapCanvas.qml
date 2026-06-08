@@ -2,11 +2,12 @@ pragma ComponentBehavior: Bound
 import QtQuick 2.15
 import mapview 1.0
 import Saturn.Backend 1.0
+import "qrc:/theme"
 
 Rectangle {
     id: root
 
-    color: "#0B0F14"
+    color: Theme.bg
     clip: true
 
     property var appState
@@ -211,7 +212,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 26
         backdropSource: root.sceneContent
-        surfaceColor: "#10161d"
+        surfaceColor: Theme.surface1
         surfaceOpacity: 0.64
         radius: 18
         padding: 12
@@ -223,7 +224,7 @@ Rectangle {
             Text {
                 width: parent.width
                 text: "Редактирование геометрии: " + (root.appState ? root.appState.geometryEditRole : "")
-                color: "#f3f7fb"
+                color: Theme.textBright2
                 font.pixelSize: 17
                 font.weight: Font.Medium
                 elide: Text.ElideRight
@@ -233,7 +234,7 @@ Rectangle {
                 width: parent.width
                 text: (root.appState ? root.appState.geometryEditObjectName : "") +
                       " | точек: " + String(root.appState && root.appState.geometryEditPoints ? root.appState.geometryEditPoints.length : 0)
-                color: "#9fb0c3"
+                color: Theme.muted3
                 font.pixelSize: 14
                 elide: Text.ElideRight
             }
@@ -241,7 +242,7 @@ Rectangle {
             Text {
                 width: parent.width
                 text: "ЛКМ по карте: добавить вершину в конец. ЛКМ по ромбу: вставить в сегмент. ПКМ по вершине: удалить."
-                color: "#8b98a6"
+                color: Theme.muted8
                 font.pixelSize: 13
                 wrapMode: Text.WordWrap
             }
@@ -259,12 +260,12 @@ Rectangle {
                         width: 104
                         height: 28
                         radius: 8
-                        color: root.appState && root.appState.geometryEditRole === roleItem.roleId ? "#1d4ed8" : "#334155"
+                        color: root.appState && root.appState.geometryEditRole === roleItem.roleId ? Theme.accentDeep : Theme.slate
 
                         Text {
                             anchors.centerIn: parent
                             text: roleItem.label || ""
-                            color: "#f8fafc"
+                            color: Theme.textBright
                             font.pixelSize: 14
                         }
 
@@ -284,12 +285,12 @@ Rectangle {
                     width: 110
                     height: 32
                     radius: 10
-                    color: "#1d4ed8"
+                    color: Theme.accentDeep
 
                     Text {
                         anchors.centerIn: parent
                         text: "Сохранить"
-                        color: "#f8fafc"
+                        color: Theme.textBright
                         font.pixelSize: 16
                     }
 
@@ -304,12 +305,12 @@ Rectangle {
                     width: 110
                     height: 32
                     radius: 10
-                    color: "#334155"
+                    color: Theme.slate
 
                     Text {
                         anchors.centerIn: parent
                         text: "Отменить"
-                        color: "#f8fafc"
+                        color: Theme.textBright
                         font.pixelSize: 16
                     }
 

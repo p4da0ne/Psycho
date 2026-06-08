@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 import QtQuick 2.15
 import QtQuick.Controls 2.15
+import "qrc:/theme"
 
 Item {
     id: root
@@ -105,15 +106,15 @@ Item {
     function statusColor(statusValue) {
         switch (statusValue) {
         case "actual":
-            return Qt.rgba(0.50, 0.72, 1.0, 1.0)
+            return Theme.accentVivid
         case "planned":
-            return Qt.rgba(0.58, 0.66, 1.0, 1.0)
+            return Theme.friendlyRgb
         case "past":
-            return Qt.rgba(0.58, 0.63, 0.68, 1.0)
+            return Theme.muteRgb
         case "cancelled":
-            return Qt.rgba(0.71, 0.56, 0.58, 1.0)
+            return Theme.dangerRgb
         default:
-            return Qt.rgba(0.56, 0.64, 0.73, 1.0)
+            return Theme.slateRgb
         }
     }
 
@@ -163,7 +164,7 @@ Item {
     }
 
     function symbolPreviewColor() {
-        return symbolDraftFillColor || "#7298f6"
+        return symbolDraftFillColor || Theme.friendly
     }
 
     function tabNameByIndex(index) {
@@ -476,8 +477,8 @@ Item {
     function syncSymbolDraft() {
         symbolDraftName = selectedSymbol && selectedSymbol.name ? selectedSymbol.name : ""
         symbolDraftGlyph = selectedSymbol && selectedSymbol.glyph ? selectedSymbol.glyph : "●"
-        symbolDraftFillColor = selectedSymbol && selectedSymbol.fillColor ? selectedSymbol.fillColor : "#7298f6"
-        symbolDraftTopColor = selectedSymbol && selectedSymbol.topColor ? selectedSymbol.topColor : "#8DB7FF"
+        symbolDraftFillColor = selectedSymbol && selectedSymbol.fillColor ? selectedSymbol.fillColor : Theme.friendly
+        symbolDraftTopColor = selectedSymbol && selectedSymbol.topColor ? selectedSymbol.topColor : Theme.friendlyLight
         symbolDraftInnerOpacity = selectedSymbol && selectedSymbol.innerOpacity !== undefined
             ? selectedSymbol.innerOpacity
             : 0.82
@@ -548,7 +549,7 @@ Item {
         radius: 22
         padding: 0
         backdropSource: root.backdropSource
-        surfaceColor: "#141c24"
+        surfaceColor: Theme.surface
         surfaceOpacity: 1.0
         shadowOpacity: 0.06
         highlightOpacity: 0.04
@@ -581,15 +582,15 @@ Item {
                         height: 28
                         radius: 14
                         width: tabText.implicitWidth + 16
-                        color: root.currentTab === tabButton.modelData.id ? Qt.rgba(1, 1, 1, 0.08) : Qt.rgba(1, 1, 1, 0.025)
+                        color: root.currentTab === tabButton.modelData.id ? Theme.ink(0.08) : Theme.ink(0.025)
                         border.width: 1
-                        border.color: root.currentTab === tabButton.modelData.id ? Qt.rgba(1, 1, 1, 0.08) : Qt.rgba(1, 1, 1, 0.03)
+                        border.color: root.currentTab === tabButton.modelData.id ? Theme.ink(0.08) : Theme.ink(0.03)
 
                         Text {
                             id: tabText
                             anchors.centerIn: parent
                             text: tabButton.modelData.label
-                            color: root.currentTab === tabButton.modelData.id ? Qt.rgba(1, 1, 1, 0.90) : Qt.rgba(1, 1, 1, 0.62)
+                            color: root.currentTab === tabButton.modelData.id ? Theme.ink(0.90) : Theme.ink(0.62)
                             font.pixelSize: 12
                             font.weight: root.currentTab === tabButton.modelData.id ? Font.Medium : Font.Normal
                         }
@@ -656,17 +657,17 @@ Item {
                 radius: 12
                 z: 5
                 color: hideButtonMouse.pressed
-                    ? Qt.rgba(1, 1, 1, 0.12)
+                    ? Theme.ink(0.12)
                     : hideButtonMouse.containsMouse
-                        ? Qt.rgba(1, 1, 1, 0.08)
-                        : Qt.rgba(1, 1, 1, 0.06)
+                        ? Theme.ink(0.08)
+                        : Theme.ink(0.06)
 
                 Text {
                     anchors.centerIn: parent
                     text: root.collapsed ? ">" : "<"
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
-                    color: "#eaf2fb"
+                    color: Theme.textLight2
                     font.pixelSize: 14
                     font.weight: Font.DemiBold
                 }
@@ -689,7 +690,7 @@ Item {
 
                 Text {
                     text: "Инспектор"
-                    color: Qt.rgba(1, 1, 1, 0.76)
+                    color: Theme.ink(0.76)
                     font.pixelSize: 12
                     font.weight: Font.Medium
                     horizontalAlignment: Text.AlignHCenter
@@ -705,12 +706,12 @@ Item {
                     implicitHeight: 28
                     background: Rectangle {
                         radius: 14
-                        color: "#ffffff"
+                        color: Theme.white
                         opacity: collapsedInspectorButton.down ? 0.10 : collapsedInspectorButton.hovered ? 0.06 : 0.04
                     }
                     contentItem: Text {
                         text: collapsedInspectorButton.text
-                        color: "#dce4ed"
+                        color: Theme.textSoft3
                         font.pixelSize: 12
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
@@ -726,12 +727,12 @@ Item {
                     implicitHeight: 28
                     background: Rectangle {
                         radius: 14
-                        color: "#ffffff"
+                        color: Theme.white
                         opacity: collapsedEventsButton.down ? 0.10 : collapsedEventsButton.hovered ? 0.06 : 0.04
                     }
                     contentItem: Text {
                         text: collapsedEventsButton.text
-                        color: "#dce4ed"
+                        color: Theme.textSoft3
                         font.pixelSize: 12
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
@@ -802,9 +803,9 @@ Item {
                 width: parent.width
                 implicitHeight: layersCardColumn.implicitHeight + 20
                 radius: 18
-                color: Qt.rgba(1, 1, 1, 0.018)
+                color: Theme.ink(0.018)
                 border.width: 1
-                border.color: Qt.rgba(1, 1, 1, 0.03)
+                border.color: Theme.ink(0.03)
 
                 Column {
                     id: layersCardColumn
@@ -814,7 +815,7 @@ Item {
 
                     Text {
                         text: "Карта и слои"
-                        color: Qt.rgba(1, 1, 1, 0.50)
+                        color: Theme.ink(0.50)
                         font.pixelSize: 11
                         font.weight: Font.Medium
                     }
@@ -827,7 +828,7 @@ Item {
 
                         Text {
                             text: "Режим"
-                            color: Qt.rgba(1, 1, 1, 0.55)
+                            color: Theme.ink(0.55)
                             font.pixelSize: 11
                             width: 72
                             anchors.verticalCenter: parent.verticalCenter
@@ -860,7 +861,7 @@ Item {
                     Rectangle {
                         width: parent.width
                         height: 1
-                        color: Qt.rgba(1, 1, 1, 0.05)
+                        color: Theme.ink(0.05)
                     }
 
                     Row {
@@ -870,7 +871,7 @@ Item {
 
                         Text {
                             text: "Видимость"
-                            color: Qt.rgba(1, 1, 1, 0.55)
+                            color: Theme.ink(0.55)
                             font.pixelSize: 11
                             width: 72
                             anchors.verticalCenter: parent.verticalCenter
@@ -897,7 +898,7 @@ Item {
                     Rectangle {
                         width: parent.width
                         height: 1
-                        color: Qt.rgba(1, 1, 1, 0.05)
+                        color: Theme.ink(0.05)
                     }
 
                     Row {
@@ -907,7 +908,7 @@ Item {
 
                         Text {
                             text: "Стиль"
-                            color: Qt.rgba(1, 1, 1, 0.55)
+                            color: Theme.ink(0.55)
                             font.pixelSize: 11
                             width: 72
                             anchors.verticalCenter: parent.verticalCenter
@@ -943,9 +944,9 @@ Item {
                 width: parent.width
                 height: Math.max(170, parent.height * 0.38)
                 radius: 18
-                color: Qt.rgba(1, 1, 1, 0.018)
+                color: Theme.ink(0.018)
                 border.width: 1
-                border.color: Qt.rgba(1, 1, 1, 0.03)
+                border.color: Theme.ink(0.03)
 
                 ListView {
                     anchors.fill: parent
@@ -969,9 +970,9 @@ Item {
                         width: ListView.view.width
                         height: 48
                         radius: 14
-                        color: objectRow.selected ? Qt.rgba(1, 1, 1, 0.06) : Qt.rgba(1, 1, 1, 0.02)
+                        color: objectRow.selected ? Theme.ink(0.06) : Theme.ink(0.02)
                         border.width: 1
-                        border.color: objectRow.selected ? Qt.rgba(1, 1, 1, 0.09) : Qt.rgba(1, 1, 1, 0.028)
+                        border.color: objectRow.selected ? Theme.ink(0.09) : Theme.ink(0.028)
 
                         Row {
                             anchors.fill: parent
@@ -984,7 +985,7 @@ Item {
                                 width: 8
                                 height: 8
                                 radius: 4
-                                color: root.structureMode ? Qt.rgba(0.68, 0.76, 0.90, 0.90) : root.agentHub.symbolAgent.markerColor(objectRow.modelData)
+                                color: root.structureMode ? Theme.structureDot : root.agentHub.symbolAgent.markerColor(objectRow.modelData)
                             }
 
                             Column {
@@ -997,7 +998,7 @@ Item {
                                     text: root.structureMode
                                         ? (objectRow.modelData.label || "Узел структуры")
                                         : objectRow.modelData.name
-                                    color: objectRow.selected ? Qt.rgba(1, 1, 1, 0.92) : Qt.rgba(1, 1, 1, 0.76)
+                                    color: objectRow.selected ? Theme.ink(0.92) : Theme.ink(0.76)
                                     font.pixelSize: 13
                                     font.weight: objectRow.selected ? Font.Medium : Font.Normal
                                     elide: Text.ElideRight
@@ -1008,7 +1009,7 @@ Item {
                                     text: root.structureMode
                                         ? ("Путь: " + (root.selectedStructurePath || "—"))
                                         : (root.objectTypeLabel(objectRow.modelData.objectType) || "Объект") + " · МППС " + objectRow.modelData.mpps
-                                    color: Qt.rgba(1, 1, 1, 0.44)
+                                    color: Theme.ink(0.44)
                                     font.pixelSize: 11
                                     elide: Text.ElideRight
                                 }
@@ -1048,9 +1049,9 @@ Item {
                 width: parent.width
                 height: Math.max(0, parent.height - y)
                 radius: 18
-                color: Qt.rgba(1, 1, 1, 0.018)
+                color: Theme.ink(0.018)
                 border.width: 1
-                border.color: Qt.rgba(1, 1, 1, 0.03)
+                border.color: Theme.ink(0.03)
 
                 Flickable {
                     anchors.fill: parent
@@ -1071,7 +1072,7 @@ Item {
                             text: root.structureMode
                                 ? (root.selectedStructureNode && root.selectedStructureNode.label ? root.selectedStructureNode.label : "Выберите узел структуры")
                                 : (root.selectedObject && root.selectedObject.name ? root.selectedObject.name : "Выберите объект")
-                            color: Qt.rgba(1, 1, 1, 0.92)
+                            color: Theme.ink(0.92)
                             font.pixelSize: 16
                             font.weight: Font.Medium
                             elide: Text.ElideRight
@@ -1082,7 +1083,7 @@ Item {
                             text: root.structureMode
                                 ? "Узел структуры и связанные объекты"
                                 : "Данные объекта из БД (табличный режим)"
-                            color: Qt.rgba(1, 1, 1, 0.52)
+                            color: Theme.ink(0.52)
                             font.pixelSize: 12
                             wrapMode: Text.WordWrap
                         }
@@ -1110,9 +1111,9 @@ Item {
                             width: parent.width
                             implicitHeight: tableHeader.implicitHeight + tableRows.implicitHeight + 12
                             radius: 14
-                            color: Qt.rgba(1, 1, 1, 0.015)
+                            color: Theme.ink(0.015)
                             border.width: 1
-                            border.color: Qt.rgba(1, 1, 1, 0.03)
+                            border.color: Theme.ink(0.03)
 
                             Column {
                                 anchors.fill: parent
@@ -1127,14 +1128,14 @@ Item {
                                     Rectangle {
                                         width: Math.max(140, parent.width * 0.38)
                                         height: parent.height
-                                        color: Qt.rgba(1, 1, 1, 0.06)
+                                        color: Theme.ink(0.06)
 
                                         Text {
                                             anchors.verticalCenter: parent.verticalCenter
                                             anchors.left: parent.left
                                             anchors.leftMargin: 8
                                             text: "Поле"
-                                            color: Qt.rgba(1, 1, 1, 0.80)
+                                            color: Theme.ink(0.80)
                                             font.pixelSize: 14
                                             font.weight: Font.Medium
                                         }
@@ -1143,14 +1144,14 @@ Item {
                                     Rectangle {
                                         width: parent.width - (Math.max(140, parent.width * 0.38))
                                         height: parent.height
-                                        color: Qt.rgba(1, 1, 1, 0.06)
+                                        color: Theme.ink(0.06)
 
                                         Text {
                                             anchors.verticalCenter: parent.verticalCenter
                                             anchors.left: parent.left
                                             anchors.leftMargin: 8
                                             text: "Значение"
-                                            color: Qt.rgba(1, 1, 1, 0.80)
+                                            color: Theme.ink(0.80)
                                             font.pixelSize: 14
                                             font.weight: Font.Medium
                                         }
@@ -1174,7 +1175,7 @@ Item {
                                             Rectangle {
                                                 width: Math.max(140, parent.width * 0.38)
                                                 height: parent.height
-                                                color: (index % 2 === 0) ? Qt.rgba(1, 1, 1, 0.025) : Qt.rgba(1, 1, 1, 0.01)
+                                                color: (index % 2 === 0) ? Theme.ink(0.025) : Theme.ink(0.01)
 
                                                 Text {
                                                     anchors.verticalCenter: parent.verticalCenter
@@ -1183,7 +1184,7 @@ Item {
                                                     anchors.right: parent.right
                                                     anchors.rightMargin: 6
                                                     text: modelData.label
-                                                    color: Qt.rgba(1, 1, 1, 0.74)
+                                                    color: Theme.ink(0.74)
                                                     font.pixelSize: 13
                                                     elide: Text.ElideRight
                                                 }
@@ -1192,7 +1193,7 @@ Item {
                                             Rectangle {
                                                 width: parent.width - (Math.max(140, parent.width * 0.38))
                                                 height: parent.height
-                                                color: (index % 2 === 0) ? Qt.rgba(1, 1, 1, 0.025) : Qt.rgba(1, 1, 1, 0.01)
+                                                color: (index % 2 === 0) ? Theme.ink(0.025) : Theme.ink(0.01)
 
                                                 Text {
                                                     id: valueText
@@ -1202,7 +1203,7 @@ Item {
                                                     anchors.right: parent.right
                                                     anchors.rightMargin: 6
                                                     text: modelData.value
-                                                    color: Qt.rgba(1, 1, 1, 0.92)
+                                                    color: Theme.ink(0.92)
                                                     font.pixelSize: 13
                                                     wrapMode: Text.WordWrap
                                                 }
@@ -1219,7 +1220,7 @@ Item {
                                 ? "Выберите объект на карте или в структуре для перехода к детальным параметрам."
                                 : (root.readableDetailsRows().length === 0 ? "Нет данных БД для выбранного объекта." : "")
                             visible: text.length > 0
-                            color: Qt.rgba(1, 1, 1, 0.60)
+                            color: Theme.ink(0.60)
                             font.pixelSize: 12
                             lineHeight: 1.24
                             wrapMode: Text.WordWrap
@@ -1244,9 +1245,9 @@ Item {
                 width: parent.width
                 height: 98
                 radius: 18
-                color: Qt.rgba(1, 1, 1, 0.018)
+                color: Theme.ink(0.018)
                 border.width: 1
-                border.color: Qt.rgba(1, 1, 1, 0.03)
+                border.color: Theme.ink(0.03)
 
                 Column {
                     anchors.fill: parent
@@ -1291,9 +1292,9 @@ Item {
                 width: parent.width
                 height: Math.max(170, parent.height * 0.38)
                 radius: 18
-                color: Qt.rgba(1, 1, 1, 0.018)
+                color: Theme.ink(0.018)
                 border.width: 1
-                border.color: Qt.rgba(1, 1, 1, 0.03)
+                border.color: Theme.ink(0.03)
 
                 ListView {
                     anchors.fill: parent
@@ -1313,9 +1314,9 @@ Item {
                         width: ListView.view.width
                         height: 54
                         radius: 14
-                        color: eventRow.selected ? Qt.rgba(1, 1, 1, 0.06) : Qt.rgba(1, 1, 1, 0.02)
+                        color: eventRow.selected ? Theme.ink(0.06) : Theme.ink(0.02)
                         border.width: 1
-                        border.color: eventRow.selected ? Qt.rgba(1, 1, 1, 0.09) : Qt.rgba(1, 1, 1, 0.028)
+                        border.color: eventRow.selected ? Theme.ink(0.09) : Theme.ink(0.028)
 
                         Row {
                             anchors.fill: parent
@@ -1339,7 +1340,7 @@ Item {
                                 Text {
                                     width: parent.width
                                     text: eventRow.modelData.name
-                                    color: eventRow.selected ? Qt.rgba(1, 1, 1, 0.92) : Qt.rgba(1, 1, 1, 0.76)
+                                    color: eventRow.selected ? Theme.ink(0.92) : Theme.ink(0.76)
                                     font.pixelSize: 13
                                     font.weight: eventRow.selected ? Font.Medium : Font.Normal
                                     elide: Text.ElideRight
@@ -1348,7 +1349,7 @@ Item {
                                 Text {
                                     width: parent.width
                                     text: root.typeIcon(eventRow.modelData.type) + " " + root.typeLabel(eventRow.modelData.type) + " · " + root.statusLabel(eventRow.modelData.status)
-                                    color: Qt.rgba(1, 1, 1, 0.44)
+                                    color: Theme.ink(0.44)
                                     font.pixelSize: 11
                                     elide: Text.ElideRight
                                 }
@@ -1371,9 +1372,9 @@ Item {
                 width: parent.width
                 height: Math.max(0, parent.height - y)
                 radius: 18
-                color: Qt.rgba(1, 1, 1, 0.018)
+                color: Theme.ink(0.018)
                 border.width: 1
-                border.color: Qt.rgba(1, 1, 1, 0.03)
+                border.color: Theme.ink(0.03)
 
                 Flickable {
                     anchors.fill: parent
@@ -1392,7 +1393,7 @@ Item {
                         Text {
                             width: parent.width
                             text: root.selectedEvent && root.selectedEvent.name ? root.selectedEvent.name : "Выберите событие"
-                            color: Qt.rgba(1, 1, 1, 0.92)
+                            color: Theme.ink(0.92)
                             font.pixelSize: 16
                             font.weight: Font.Medium
                             elide: Text.ElideRight
@@ -1403,7 +1404,7 @@ Item {
                             text: root.selectedEvent && root.selectedEvent.type
                                 ? root.typeIcon(root.selectedEvent.type) + " " + root.typeLabel(root.selectedEvent.type) + " · " + root.statusLabel(root.selectedEvent.status)
                                 : "Выберите событие выше для просмотра деталей"
-                            color: Qt.rgba(1, 1, 1, 0.52)
+                            color: Theme.ink(0.52)
                             font.pixelSize: 12
                             wrapMode: Text.WordWrap
                         }
@@ -1413,9 +1414,9 @@ Item {
                             width: parent.width
                             implicitHeight: eventLegacyTitle.implicitHeight + eventLegacyRows.implicitHeight + 14
                             radius: 14
-                            color: Qt.rgba(1, 1, 1, 0.018)
+                            color: Theme.ink(0.018)
                             border.width: 1
-                            border.color: Qt.rgba(1, 1, 1, 0.03)
+                            border.color: Theme.ink(0.03)
 
                             Column {
                                 anchors.fill: parent
@@ -1426,7 +1427,7 @@ Item {
                                     id: eventLegacyTitle
                                     width: parent.width
                                     text: "Ключевые поля события"
-                                    color: Qt.rgba(1, 1, 1, 0.86)
+                                    color: Theme.ink(0.86)
                                     font.pixelSize: 12
                                     font.weight: Font.Medium
                                 }
@@ -1462,7 +1463,7 @@ Item {
                             width: parent.width
                             text: root.selectedEvent && root.selectedEvent.description ? root.selectedEvent.description : ""
                             visible: text.length > 0
-                            color: Qt.rgba(1, 1, 1, 0.60)
+                            color: Theme.ink(0.60)
                             font.pixelSize: 12
                             lineHeight: 1.24
                             wrapMode: Text.WordWrap
@@ -1472,9 +1473,9 @@ Item {
                             width: parent.width
                             implicitHeight: Math.max(140, Math.min(320, eventDetailsList.contentHeight + 14))
                             radius: 14
-                            color: Qt.rgba(1, 1, 1, 0.018)
+                            color: Theme.ink(0.018)
                             border.width: 1
-                            border.color: Qt.rgba(1, 1, 1, 0.03)
+                            border.color: Theme.ink(0.03)
                             visible: root.selectedEvent && root.selectedEvent.id !== undefined
 
                             ListView {
@@ -1492,9 +1493,9 @@ Item {
                                     width: ListView.view.width
                                     implicitHeight: Math.max(32, detailKey.implicitHeight + detailValue.implicitHeight + 10)
                                     radius: 10
-                                    color: Qt.rgba(1, 1, 1, 0.02)
+                                    color: Theme.ink(0.02)
                                     border.width: 1
-                                    border.color: Qt.rgba(1, 1, 1, 0.025)
+                                    border.color: Theme.ink(0.025)
 
                                     Column {
                                         anchors.fill: parent
@@ -1505,7 +1506,7 @@ Item {
                                             id: detailKey
                                             width: parent.width
                                             text: eventDetailRow.modelData.label
-                                            color: Qt.rgba(1, 1, 1, 0.46)
+                                            color: Theme.ink(0.46)
                                             font.pixelSize: 11
                                             wrapMode: Text.WrapAnywhere
                                         }
@@ -1514,7 +1515,7 @@ Item {
                                             id: detailValue
                                             width: parent.width
                                             text: eventDetailRow.modelData.value
-                                            color: Qt.rgba(1, 1, 1, 0.80)
+                                            color: Theme.ink(0.80)
                                             font.pixelSize: 12
                                             wrapMode: Text.WrapAnywhere
                                         }
@@ -1544,9 +1545,9 @@ Item {
                 width: parent.width
                 height: Math.max(150, parent.height * 0.34)
                 radius: 18
-                color: Qt.rgba(1, 1, 1, 0.018)
+                color: Theme.ink(0.018)
                 border.width: 1
-                border.color: Qt.rgba(1, 1, 1, 0.03)
+                border.color: Theme.ink(0.03)
 
                 Column {
                     anchors.fill: parent
@@ -1556,7 +1557,7 @@ Item {
                     Text {
                         width: parent.width
                         text: root.symbolAgent ? root.symbolTypeLabel(root.symbolAgent.selectedTypePath) : "Тип не выбран"
-                        color: Qt.rgba(1, 1, 1, 0.56)
+                        color: Theme.ink(0.56)
                         font.pixelSize: 12
                         elide: Text.ElideRight
                     }
@@ -1578,9 +1579,9 @@ Item {
                             width: ListView.view.width
                             height: 46
                             radius: 14
-                            color: symbolRow.selected ? Qt.rgba(1, 1, 1, 0.06) : Qt.rgba(1, 1, 1, 0.02)
+                            color: symbolRow.selected ? Theme.ink(0.06) : Theme.ink(0.02)
                             border.width: 1
-                            border.color: symbolRow.selected ? Qt.rgba(1, 1, 1, 0.09) : Qt.rgba(1, 1, 1, 0.028)
+                            border.color: symbolRow.selected ? Theme.ink(0.09) : Theme.ink(0.028)
 
                             Row {
                                 anchors.fill: parent
@@ -1607,7 +1608,7 @@ Item {
                                     Text {
                                         width: parent.width
                                         text: symbolRow.modelData.name
-                                        color: symbolRow.selected ? Qt.rgba(1, 1, 1, 0.92) : Qt.rgba(1, 1, 1, 0.76)
+                                        color: symbolRow.selected ? Theme.ink(0.92) : Theme.ink(0.76)
                                         font.pixelSize: 13
                                         font.weight: symbolRow.selected ? Font.Medium : Font.Normal
                                         elide: Text.ElideRight
@@ -1616,7 +1617,7 @@ Item {
                                     Text {
                                         width: parent.width
                                         text: symbolRow.modelData.glyph + " · " + symbolRow.modelData.fillColor
-                                        color: Qt.rgba(1, 1, 1, 0.44)
+                                        color: Theme.ink(0.44)
                                         font.pixelSize: 11
                                         elide: Text.ElideRight
                                     }
@@ -1638,9 +1639,9 @@ Item {
                 width: parent.width
                 height: Math.max(0, parent.height - y)
                 radius: 18
-                color: Qt.rgba(1, 1, 1, 0.018)
+                color: Theme.ink(0.018)
                 border.width: 1
-                border.color: Qt.rgba(1, 1, 1, 0.03)
+                border.color: Theme.ink(0.03)
 
                 Flickable {
                     anchors.fill: parent
@@ -1664,9 +1665,9 @@ Item {
                                 width: 62
                                 height: 62
                                 radius: 18
-                                color: Qt.rgba(1, 1, 1, 0.025)
+                                color: Theme.ink(0.025)
                                 border.width: 1
-                                border.color: Qt.rgba(1, 1, 1, 0.04)
+                                border.color: Theme.ink(0.04)
 
                                 Rectangle {
                                     anchors.centerIn: parent
@@ -1674,7 +1675,7 @@ Item {
                                     height: 24
                                     radius: 12
                                     gradient: Gradient {
-                                        GradientStop { position: 0.0; color: root.symbolDraftTopColor || "#8DB7FF" }
+                                        GradientStop { position: 0.0; color: root.symbolDraftTopColor || Theme.friendlyLight }
                                         GradientStop { position: 1.0; color: root.symbolPreviewColor() }
                                     }
                                 }
@@ -1682,7 +1683,7 @@ Item {
                                 Text {
                                     anchors.centerIn: parent
                                     text: root.symbolDraftGlyph || "●"
-                                    color: Qt.rgba(1, 1, 1, 0.86)
+                                    color: Theme.ink(0.86)
                                     font.pixelSize: 14
                                 }
                             }
@@ -1694,7 +1695,7 @@ Item {
                                 Text {
                                     width: parent.width
                                     text: root.symbolDraftName || "Выберите символ"
-                                    color: Qt.rgba(1, 1, 1, 0.92)
+                                    color: Theme.ink(0.92)
                                     font.pixelSize: 15
                                     font.weight: Font.Medium
                                     elide: Text.ElideRight
@@ -1703,7 +1704,7 @@ Item {
                                 Text {
                                     width: parent.width
                                     text: root.symbolAgent ? root.symbolTypeLabel(root.symbolAgent.selectedTypePath) : "—"
-                                    color: Qt.rgba(1, 1, 1, 0.52)
+                                    color: Theme.ink(0.52)
                                     font.pixelSize: 12
                                     elide: Text.ElideRight
                                 }
@@ -1759,9 +1760,9 @@ Item {
                             width: parent.width
                             implicitHeight: 50
                             radius: 16
-                            color: Qt.rgba(1, 1, 1, 0.022)
+                            color: Theme.ink(0.022)
                             border.width: 1
-                            border.color: Qt.rgba(1, 1, 1, 0.03)
+                            border.color: Theme.ink(0.03)
 
                             Column {
                                 anchors.fill: parent
@@ -1770,7 +1771,7 @@ Item {
 
                                 Text {
                                     text: "Внутренняя непрозрачность"
-                                    color: Qt.rgba(1, 1, 1, 0.48)
+                                    color: Theme.ink(0.48)
                                     font.pixelSize: 11
                                 }
 
@@ -1804,7 +1805,7 @@ Item {
         flat: true
         background: Rectangle {
             radius: 14
-            color: "#ffffff"
+            color: Theme.white
             opacity: headerButton.down ? 0.08 : headerButton.hovered ? 0.05 : 0.03
         }
         contentItem: Text {
@@ -1812,13 +1813,13 @@ Item {
             rotation: headerButton.rotationValue
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
-            color: "#dce4ed"
+            color: Theme.textSoft3
             font.pixelSize: 15
         }
     }
 
     component SectionTitle: Text {
-        color: Qt.rgba(1, 1, 1, 0.44)
+        color: Theme.ink(0.44)
         font.pixelSize: 11
         font.weight: Font.Medium
         font.letterSpacing: 0.4
@@ -1833,9 +1834,9 @@ Item {
 
         implicitHeight: 34
         radius: 14
-        color: Qt.rgba(1, 1, 1, 0.02)
+        color: Theme.ink(0.02)
         border.width: 1
-        border.color: Qt.rgba(1, 1, 1, 0.03)
+        border.color: Theme.ink(0.03)
 
         Row {
             anchors.fill: parent
@@ -1847,7 +1848,7 @@ Item {
                 width: 82
                 anchors.verticalCenter: parent.verticalCenter
                 text: infoField.label
-                color: Qt.rgba(1, 1, 1, 0.46)
+                color: Theme.ink(0.46)
                 font.pixelSize: 11
                 elide: Text.ElideRight
             }
@@ -1856,7 +1857,7 @@ Item {
                 width: Math.max(0, parent.width - 92)
                 anchors.verticalCenter: parent.verticalCenter
                 text: infoField.value
-                color: infoField.accent ? Qt.rgba(1, 1, 1, 0.90) : Qt.rgba(1, 1, 1, 0.76)
+                color: infoField.accent ? Theme.ink(0.90) : Theme.ink(0.76)
                 font.pixelSize: 12
                 font.weight: infoField.accent ? Font.Medium : Font.Normal
                 elide: Text.ElideRight
@@ -1873,9 +1874,9 @@ Item {
 
         implicitHeight: 48
         radius: 16
-        color: Qt.rgba(1, 1, 1, 0.02)
+        color: Theme.ink(0.02)
         border.width: 1
-        border.color: Qt.rgba(1, 1, 1, 0.03)
+        border.color: Theme.ink(0.03)
 
         Column {
             anchors.fill: parent
@@ -1884,7 +1885,7 @@ Item {
 
             Text {
                 text: editField.label
-                color: Qt.rgba(1, 1, 1, 0.46)
+                color: Theme.ink(0.46)
                 font.pixelSize: 11
                 font.weight: Font.Medium
             }
@@ -1892,7 +1893,7 @@ Item {
             TextField {
                 width: parent.width
                 text: editField.value
-                color: Qt.rgba(1, 1, 1, 0.84)
+                color: Theme.ink(0.84)
                 font.pixelSize: 12
                 padding: 0
                 background: Item {}
@@ -1910,15 +1911,15 @@ Item {
         width: chipText.implicitWidth + 16
         height: 28
         radius: 14
-        color: checked ? Qt.rgba(1, 1, 1, 0.10) : Qt.rgba(1, 1, 1, 0.03)
+        color: checked ? Theme.ink(0.10) : Theme.ink(0.03)
         border.width: 1
-        border.color: checked ? Qt.rgba(1, 1, 1, 0.12) : Qt.rgba(1, 1, 1, 0.04)
+        border.color: checked ? Theme.ink(0.12) : Theme.ink(0.04)
 
         Text {
             id: chipText
             anchors.centerIn: parent
             text: filterChip.text
-            color: filterChip.checked ? Qt.rgba(1, 1, 1, 0.90) : Qt.rgba(1, 1, 1, 0.62)
+            color: filterChip.checked ? Theme.ink(0.90) : Theme.ink(0.62)
             font.pixelSize: 12
             font.weight: filterChip.checked ? Font.Medium : Font.Normal
         }

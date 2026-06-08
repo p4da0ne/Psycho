@@ -20,6 +20,8 @@ set(MAINFORM_QML_FILES
     components/MapCanvas.qml
     components/RightSidebar.qml
     components/Toolbar.qml
+    theme/Theme.qml
+    theme/qmldir
 )
 
 qt_add_executable(saturn WIN32 MACOSX_BUNDLE

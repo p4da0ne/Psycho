@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 import QtQuick 2.15
 import QtQuick.Controls 2.15
+import "qrc:/theme"
 
 Item {
     id: root
@@ -37,7 +38,7 @@ Item {
         anchors.fill: parent
         radius: 16
         padding: 0
-        surfaceColor: "#141c24"
+        surfaceColor: Theme.surface
         surfaceOpacity: 0.42
         shadowOpacity: 0.03
         highlightOpacity: 0.03
@@ -88,7 +89,7 @@ Item {
                     width: 152
                     anchors.verticalCenter: parent.verticalCenter
                     text: "Долгота: " + Number(root.appState ? root.appState.cursorLon : 0).toFixed(5)
-                    color: Qt.rgba(1, 1, 1, 0.76)
+                    color: Theme.ink(0.76)
                     font.pixelSize: 11
                     elide: Text.ElideRight
                 }
@@ -97,7 +98,7 @@ Item {
                     width: 150
                     anchors.verticalCenter: parent.verticalCenter
                     text: "Широта: " + Number(root.appState ? root.appState.cursorLat : 0).toFixed(5)
-                    color: Qt.rgba(1, 1, 1, 0.76)
+                    color: Theme.ink(0.76)
                     font.pixelSize: 11
                     elide: Text.ElideRight
                 }
@@ -106,7 +107,7 @@ Item {
                     width: 116
                     anchors.verticalCenter: parent.verticalCenter
                     text: "Масштаб: " + root.approximateScale()
-                    color: Qt.rgba(1, 1, 1, 0.56)
+                    color: Theme.ink(0.56)
                     font.pixelSize: 11
                     elide: Text.ElideRight
                 }
@@ -121,7 +122,7 @@ Item {
                 anchors.rightMargin: 10
                 anchors.verticalCenter: parent.verticalCenter
                 text: "Статус: " + (root.appState ? root.appState.statusMessage : "")
-                color: Qt.rgba(1, 1, 1, 0.50)
+                color: Theme.ink(0.50)
                 font.pixelSize: 13
                 elide: Text.ElideRight
             }

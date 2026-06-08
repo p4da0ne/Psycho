@@ -1,12 +1,13 @@
 import QtQuick 2.15
 import QtQuick.Effects
+import "qrc:/theme"
 
 Item {
     id: root
 
     property real radius: 24
     property real padding: 16
-    property color surfaceColor: "#10161e"
+    property color surfaceColor: Theme.surface1b
     property real surfaceOpacity: 0.50
     property real noiseOpacity: 0.008
     property real shadowOpacity: 0.09
@@ -25,7 +26,7 @@ Item {
         anchors.margins: -8
         y: 10
         radius: root.radius + 8
-        color: "#000000"
+        color: Theme.shadow
         opacity: root.shadowOpacity * 0.10
     }
 
@@ -34,7 +35,7 @@ Item {
         anchors.margins: -3
         y: 5
         radius: root.radius + 3
-        color: "#000000"
+        color: Theme.shadow
         opacity: root.shadowOpacity * 0.36
     }
 
@@ -88,7 +89,7 @@ Item {
             anchors.top: parent.top
             height: 1
             radius: parent.radius
-            color: "#ffffff"
+            color: Theme.white
             opacity: root.highlightOpacity
         }
 
@@ -98,14 +99,14 @@ Item {
             radius: parent.radius
             x: parent.width * 0.20
             y: 1
-            color: "#ffffff"
+            color: Theme.white
             opacity: root.highlightOpacity * 0.07
         }
 
         Rectangle {
             anchors.fill: parent
             radius: parent.radius
-            color: "#000000"
+            color: Theme.shadow
             opacity: 0.032
         }
 
@@ -114,7 +115,7 @@ Item {
             radius: parent.radius
             color: "transparent"
             border.width: 1
-            border.color: Qt.rgba(1, 1, 1, root.edgeOpacity)
+            border.color: Theme.ink(root.edgeOpacity)
         }
 
         Rectangle {
@@ -123,7 +124,7 @@ Item {
             anchors.bottom: parent.bottom
             height: parent.height * 0.16
             radius: parent.radius
-            color: "#000000"
+            color: Theme.shadow
             opacity: 0.035
         }
 
@@ -132,7 +133,7 @@ Item {
             radius: parent.radius
             color: "transparent"
             border.width: 1
-            border.color: Qt.rgba(1, 1, 1, 0.03)
+            border.color: Theme.ink(0.03)
         }
 
         Canvas {

@@ -5,6 +5,7 @@ import Qt5Compat.GraphicalEffects
 import Qt.labs.settings 1.0
 import Saturn.Backend 1.0
 import "qrc:/components"
+import "qrc:/theme"
 
 Window {
     id: root
@@ -15,7 +16,7 @@ Window {
     minimumWidth: 1180
     minimumHeight: 760
     title: "Saturn GIS"
-    color: "#0B0F14"
+    color: Theme.bg
 
     property string panel: "none"
     property var mapObjects: []
@@ -1016,7 +1017,7 @@ Window {
 
         Rectangle {
             anchors.fill: parent
-            color: "#040A15"
+            color: Theme.bgDeep
         }
 
         RadialGradient {
@@ -1024,9 +1025,9 @@ Window {
             horizontalRadius: width * 0.56
             verticalRadius: height * 0.56
             gradient: Gradient {
-                GradientStop { position: 0.0; color: "#24497A" }
-                GradientStop { position: 0.48; color: "#132746" }
-                GradientStop { position: 1.0; color: "#050B17" }
+                GradientStop { position: 0.0; color: Theme.navyMid }
+                GradientStop { position: 0.48; color: Theme.navy }
+                GradientStop { position: 1.0; color: Theme.bgDeep2 }
             }
         }
     }
@@ -1123,7 +1124,7 @@ Window {
             visible: !Auth.loggedIn
             anchors.centerIn: parent
             backdropSource: mapCanvas.sceneContent
-            surfaceColor: "#121a23"
+            surfaceColor: Theme.surface3
             surfaceOpacity: 0.56
 
             Column {
@@ -1132,7 +1133,7 @@ Window {
 
                 Text {
                     text: "Главное меню"
-                    color: "#f3f7fb"
+                    color: Theme.textBright2
                     font.pixelSize: 14
                     font.weight: Font.Medium
                 }
@@ -1141,13 +1142,13 @@ Window {
                     width: parent.width
                     height: 44
                     radius: 12
-                    color: "#1e2937"
-                    border.color: "#334155"
+                    color: Theme.surface5
+                    border.color: Theme.slate
 
                     Text {
                         anchors.centerIn: parent
                         text: "Авторизация"
-                        color: "#f8fafc"
+                        color: Theme.textBright
                         font.pixelSize: 14
                     }
 
@@ -1162,13 +1163,13 @@ Window {
                     width: parent.width
                     height: 44
                     radius: 12
-                    color: "#1e2937"
-                    border.color: "#334155"
+                    color: Theme.surface5
+                    border.color: Theme.slate
 
                     Text {
                         anchors.centerIn: parent
                         text: "Настройки подключения к БД"
-                        color: "#f8fafc"
+                        color: Theme.textBright
                         font.pixelSize: 14
                     }
 
@@ -1188,9 +1189,9 @@ Window {
                         height: 8
                         radius: 4
                         anchors.verticalCenter: parent.verticalCenter
-                        color: Database.connected ? "#8be9a8" : "#fca5a5"
+                        color: Database.connected ? Theme.success : Theme.danger
                         border.width: 1
-                        border.color: Database.connected ? "#b8f5ca" : "#fecaca"
+                        border.color: Database.connected ? Theme.successLight : Theme.dangerLight
                     }
 
                     Text {
@@ -1198,7 +1199,7 @@ Window {
                         text: Database.connected
                             ? "\u0421\u0442\u0430\u0442\u0443\u0441 \u0411\u0414: \u043f\u043e\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u043e"
                             : "\u0421\u0442\u0430\u0442\u0443\u0441 \u0411\u0414: \u043d\u0435\u0442 \u043f\u043e\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u044f"
-                        color: Database.connected ? "#8be9a8" : "#fca5a5"
+                        color: Database.connected ? Theme.success : Theme.danger
                         font.pixelSize: 12
                         wrapMode: Text.WordWrap
                     }
@@ -1208,7 +1209,7 @@ Window {
                     width: parent.width
                     visible: !Database.connected && Database.lastError && Database.lastError.length > 0
                     text: Database.lastError
-                    color: "#94a3b8"
+                    color: Theme.muted4
                     font.pixelSize: 11
                     wrapMode: Text.WordWrap
                     maximumLineCount: 3
@@ -1230,7 +1231,7 @@ Window {
             GlassPanel {
                 anchors.fill: parent
                 backdropSource: mapCanvas.sceneContent
-                surfaceColor: "#10161e"
+                surfaceColor: Theme.surface1b
                 surfaceOpacity: 0.62
 
                 Loader {
@@ -1247,13 +1248,13 @@ Window {
                 anchors.right: parent.right
                 anchors.top: parent.top
                 anchors.margins: 8
-                color: "#1f2937"
-                border.color: "#334155"
+                color: Theme.surface6
+                border.color: Theme.slate
 
                 Text {
                     anchors.centerIn: parent
                     text: "×"
-                    color: "#e2e8f0"
+                    color: Theme.textLight3
                     font.pixelSize: 14
                 }
 

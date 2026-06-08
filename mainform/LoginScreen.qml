@@ -1,13 +1,14 @@
 import QtQuick 2.15
 import Saturn.Backend 1.0
+import "qrc:/theme"
 
 Rectangle {
     id: root
     signal loginSucceeded()
 
-    color: "#0f172a"
+    color: Theme.surfaceSlate
     radius: 12
-    border.color: "#1e293b"
+    border.color: Theme.panelSlate
     border.width: 1
 
     Column {
@@ -17,7 +18,7 @@ Rectangle {
 
         Text {
             text: "Авторизация"
-            color: "#e2e8f0"
+            color: Theme.textLight3
             font.pixelSize: 24
             font.bold: true
         }
@@ -26,16 +27,16 @@ Rectangle {
             id: loginField
             width: parent.width
             height: 40
-            color: "#1e293b"
+            color: Theme.panelSlate
             radius: 6
             border.width: 1
-            border.color: "#334155"
+            border.color: Theme.slate
 
             TextInput {
                 id: loginInput
                 anchors.fill: parent
                 anchors.margins: 10
-                color: "#f8fafc"
+                color: Theme.textBright
                 verticalAlignment: TextInput.AlignVCenter
                 clip: true
             }
@@ -45,7 +46,7 @@ Rectangle {
                 anchors.left: parent.left
                 anchors.leftMargin: 12
                 text: loginInput.text.length === 0 ? "Логин" : ""
-                color: "#64748b"
+                color: Theme.slateSoft
             }
         }
 
@@ -53,16 +54,16 @@ Rectangle {
             id: passwordField
             width: parent.width
             height: 40
-            color: "#1e293b"
+            color: Theme.panelSlate
             radius: 6
             border.width: 1
-            border.color: "#334155"
+            border.color: Theme.slate
 
             TextInput {
                 id: passwordInput
                 anchors.fill: parent
                 anchors.margins: 10
-                color: "#f8fafc"
+                color: Theme.textBright
                 verticalAlignment: TextInput.AlignVCenter
                 echoMode: TextInput.Password
                 clip: true
@@ -73,7 +74,7 @@ Rectangle {
                 anchors.left: parent.left
                 anchors.leftMargin: 12
                 text: passwordInput.text.length === 0 ? "Пароль" : ""
-                color: "#64748b"
+                color: Theme.slateSoft
             }
         }
 
@@ -84,13 +85,13 @@ Rectangle {
                 width: 130
                 height: 40
                 radius: 6
-                color: "#2563eb"
-                border.color: "#3b82f6"
+                color: Theme.accentStrong
+                border.color: Theme.accent
 
                 Text {
                     anchors.centerIn: parent
                     text: "Войти"
-                    color: "#f8fafc"
+                    color: Theme.textBright
                 }
 
                 MouseArea {
@@ -118,13 +119,13 @@ Rectangle {
                 width: 130
                 height: 40
                 radius: 6
-                color: "#475569"
-                border.color: "#64748b"
+                color: Theme.slateMid
+                border.color: Theme.slateSoft
 
                 Text {
                     anchors.centerIn: parent
                     text: "Выйти"
-                    color: "#f8fafc"
+                    color: Theme.textBright
                 }
 
                 MouseArea {
@@ -142,7 +143,7 @@ Rectangle {
             id: messageText
             width: parent.width
             wrapMode: Text.Wrap
-            color: "#fca5a5"
+            color: Theme.danger
             text: ""
         }
     }
