@@ -20,7 +20,9 @@ set(MAINFORM_QML_FILES
     components/FilterChip.qml
     components/HeaderButton.qml
     components/InfoField.qml
+    components/InspectorTab.qml
     components/SectionTitle.qml
+    components/SymbolsTab.qml
     components/ContextMenuObject.qml
     components/GlassPanel.qml
     components/MapCanvas.qml
