@@ -15,6 +15,11 @@ set(MAINFORM_QML_FILES
     components/Agents.qml
     components/BottomStatusBar.qml
     components/ContextMenuMap.qml
+    components/EditField.qml
+    components/FilterChip.qml
+    components/HeaderButton.qml
+    components/InfoField.qml
+    components/SectionTitle.qml
     components/ContextMenuObject.qml
     components/GlassPanel.qml
     components/MapCanvas.qml
