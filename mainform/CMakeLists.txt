@@ -16,6 +16,7 @@ set(MAINFORM_QML_FILES
     components/BottomStatusBar.qml
     components/ContextMenuMap.qml
     components/EditField.qml
+    components/EventsTab.qml
     components/FilterChip.qml
     components/HeaderButton.qml
     components/InfoField.qml
