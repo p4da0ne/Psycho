@@ -282,11 +282,14 @@ Window {
     }
 
     Agents {
-        id: agentHub
+        id: agentHubObj
         appState: appState
         panelManager: panelManager
         host: root
     }
+    // agentHub как свойство root: дочерние панели получают его через root.agentHub
+    // (id ребёнка не виден как root.<id>, поэтому нужна явная property).
+    property var agentHub: agentHubObj
 
     property var stateManager: appState
     property bool leftDockedVisible: false
